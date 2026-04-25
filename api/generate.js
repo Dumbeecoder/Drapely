@@ -6,61 +6,56 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { garment_img, model_img } = req.body;
-  if (!garment_img || !model_img) return res.status(400).json({ error: 'Missing images' });
+  const { garment_img, model_index } = req.body;
+  if (!garment_img) return res.status(400).json({ error: 'Missing suit image' });
+
+  // Fixed model images hosted publicly
+  const modelUrls = [
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Gatto_europeo4.jpg/220px-Gatto_europeo4.jpg',
+    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=512&q=80',
+    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=512&q=80',
+    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=512&q=80',
+    'https://images.unsplash.com/photo-1483959651481-dc75b89291f1?w=512&q=80',
+  ];
+
+  const humanImgUrl = modelUrls[model_index || 0];
 
   try {
-    // Retry up to 3 times — model may need to warm up
-    let lastError = '';
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      const response = await fetch(
-        'https://api-inference.huggingface.co/models/yisol/IDM-VTON',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.HUGGING_FACE_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            inputs: {
-              garm_img: garment_img,
-              human_img: model_img,
-              garment_des: 'Indian designer suit',
-              is_checked: true,
-              denoise_steps: 25,
-              seed: 42
-            }
-          })
-        }
-      );
-
-      const contentType = response.headers.get('content-type') || '';
-
-      // If we got an image back — success!
-      if (contentType.includes('image')) {
-        const buffer = await response.arrayBuffer();
-        const base64 = Buffer.from(buffer).toString('base64');
-        const imageUrl = `data:image/jpeg;base64,${base64}`;
-        return res.status(200).json({ output: [imageUrl] });
+    // Use Gradio API for IDM-VTON which accepts URLs
+    const response = await fetch(
+      'https://yisol-idm-vton.hf.space/run/predict',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fn_index: 0,
+          data: [
+            { path: humanImgUrl },
+            { path: humanImgUrl },
+            { path: garment_img },
+            { path: garment_img },
+            true,
+            false,
+            'Indian designer suit',
+            25,
+            42
+          ]
+        })
       }
+    );
 
-      // Otherwise read the error
-      const text = await response.text();
-      let parsed;
-      try { parsed = JSON.parse(text); } catch { parsed = { error: text }; }
+    const data = await response.json();
 
-      // Model is loading — wait and retry
-      if (parsed.error && parsed.error.includes('loading')) {
-        const wait = (parsed.estimated_time || 20) * 1000;
-        await new Promise(r => setTimeout(r, Math.min(wait, 25000)));
-        continue;
-      }
+    if (data.error) return res.status(500).json({ error: data.error });
 
-      lastError = parsed.error || text;
-      break;
-    }
+    // Extract image from response
+    const output = data.data;
+    if (!output || !output[0]) return res.status(500).json({ error: 'No image returned. Try again.' });
 
-    return res.status(500).json({ error: lastError || 'Model unavailable. Please try again in 1 minute.' });
+    const imgData = output[0];
+    const imageUrl = imgData.url || imgData.path || imgData;
+
+    return res.status(200).json({ output: [imageUrl] });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
