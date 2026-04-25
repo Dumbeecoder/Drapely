@@ -542,8 +542,19 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // ── SUPABASE SETUP ──
+  const SUPABASE_URL = 'https://oqmoneclnirnhqpcdeqy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   let currentTab = 'signin';
+
+  // ── If already logged in, go straight to dashboard ──
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) window.location.href = 'dashboard.html';
+  });
 
   function switchTab(tab) {
     currentTab = tab;
@@ -559,7 +570,7 @@
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    setTimeout(() => t.classList.remove('show'), 3500);
   }
 
   function setLoading(btnId, loading) {
@@ -579,10 +590,11 @@
     document.getElementById(errId).classList.add('visible');
   }
 
-  function handleSignIn() {
+  // ── SIGN IN ──
+  async function handleSignIn() {
     clearErrors();
     const email = document.getElementById('signin-email').value.trim();
-    const pass = document.getElementById('signin-password').value;
+    const pass  = document.getElementById('signin-password').value;
     let valid = true;
 
     if (!email || !email.includes('@')) { showError('signin-email', 'signin-email-err'); valid = false; }
@@ -590,20 +602,29 @@
     if (!valid) return;
 
     setLoading('signin-btn', true);
-    setTimeout(() => {
-      setLoading('signin-btn', false);
-      showToast('✓ Signed in! Redirecting to your studio...');
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-    }, 1800);
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+
+    setLoading('signin-btn', false);
+
+    if (error) {
+      showToast('✗ ' + (error.message === 'Invalid login credentials' ? 'Wrong email or password. Try again.' : error.message));
+      return;
+    }
+
+    showToast('✓ Signed in! Taking you to your studio...');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
   }
 
-  function handleSignUp() {
+  // ── SIGN UP ──
+  async function handleSignUp() {
     clearErrors();
     const fname = document.getElementById('signup-fname').value.trim();
+    const lname = document.getElementById('signup-lname').value.trim();
     const store = document.getElementById('signup-store').value.trim();
     const phone = document.getElementById('signup-phone').value.trim();
     const email = document.getElementById('signup-email').value.trim();
-    const pass = document.getElementById('signup-password').value;
+    const pass  = document.getElementById('signup-password').value;
     let valid = true;
 
     if (!fname) { showError('signup-fname', 'signup-fname-err'); valid = false; }
@@ -614,15 +635,35 @@
     if (!valid) return;
 
     setLoading('signup-btn', true);
-    setTimeout(() => {
-      setLoading('signup-btn', false);
-      document.getElementById('panel-signup').style.display = 'none';
-      document.querySelectorAll('.tabs')[0].style.display = 'none';
-      const s = document.getElementById('success-state');
-      s.classList.add('visible');
-      document.getElementById('success-title').textContent = 'Welcome, ' + fname + '!';
-      document.getElementById('success-msg').textContent = 'Your Drapely account is ready. We\'ve sent a confirmation to ' + email + '. Click below to go to your studio.';
-    }, 2000);
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+      options: {
+        data: {
+          first_name: fname,
+          last_name: lname,
+          store_name: store,
+          phone: phone,
+        }
+      }
+    });
+
+    setLoading('signup-btn', false);
+
+    if (error) {
+      showToast('✗ ' + error.message);
+      return;
+    }
+
+    // Show success screen
+    document.getElementById('panel-signup').style.display = 'none';
+    document.querySelectorAll('.tabs')[0].style.display = 'none';
+    const s = document.getElementById('success-state');
+    s.classList.add('visible');
+    document.getElementById('success-title').textContent = 'Welcome, ' + fname + '!';
+    document.getElementById('success-msg').textContent =
+      'Your Drapely account is ready! We sent a confirmation email to ' + email + '. Check your inbox, confirm your email, then click below to enter your studio.';
   }
 
   function handleWhatsApp() {
