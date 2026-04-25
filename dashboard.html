@@ -135,7 +135,7 @@
     </a>
     <a class="nav-item" href="#"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>My gallery</a>
     <div class="nav-section-label" style="margin-top:8px;">Account</div>
-    <a class="nav-item" href="auth.html"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>Sign out</a>
+    <a class="nav-item" href="#" onclick="doSignOut()"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>Sign out</a>
   </nav>
   <div class="sidebar-footer">
     <div class="user-chip">
@@ -303,7 +303,7 @@
   sb.auth.getSession().then(function(r) {
     if (!r.data.session) { window.location.href = 'auth.html'; return; }
     var user = r.data.session.user;
-    var name = (user.user_metadata && user.user_metadata.first_name) || user.email.split('@')[0];
+    var meta = user.user_metadata || {}; var name = (meta.first_name && meta.first_name.length > 1) ? meta.first_name : user.email.split('@')[0];
     document.getElementById('user-name').textContent = name;
     document.getElementById('user-avatar').textContent = name.slice(0,2).toUpperCase();
     document.getElementById('topbar-sub').textContent = 'Welcome back, ' + name + '!';
@@ -443,7 +443,9 @@
 
       for (var i = 0; i < count; i++) {
         progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
-        var response = await fetch('/api/generate', {
+        // AI temporarily disabled - show friendly message
+        showToast("⏳ AI generation activating soon! We will notify you."); clearInterval(interval); progressWrap.classList.remove("visible"); studioBody.style.display = "block"; return;
+        var response = await fetch("/api/generate", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex })
@@ -527,6 +529,11 @@
     document.getElementById('suit-input').value = '';
     goStep(0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function doSignOut() {
+    await sb.auth.signOut();
+    window.location.href = 'auth.html';
   }
 
   document.querySelectorAll('.enhance-item').forEach(function(item) {
