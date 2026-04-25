@@ -4,123 +4,121 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drapely — My Studio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --gold: #C9973A; --gold-light: #F0D9A8; --gold-pale: #FBF4E8;
-      --deep: #0F0A04; --muted: #7A6A52; --text: #2A1F0E;
-      --border: rgba(201,151,58,0.18); --border-mid: rgba(201,151,58,0.35);
-      --surface: #FDFAF5; --white: #fff;
-    }
-    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; }
-    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: var(--deep); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 50; padding: 0 0 1.5rem; }
-    .sidebar-brand { padding: 1.5rem 1.5rem 1.25rem; border-bottom: 1px solid var(--border); font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--gold-light); letter-spacing: 3px; text-transform: uppercase; text-decoration: none; display: block; }
-    .sidebar-brand span { color: var(--gold); }
-    .sidebar-nav { flex: 1; padding: 1.25rem 0.75rem; display: flex; flex-direction: column; gap: 4px; }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; text-decoration: none; color: rgba(240,217,168,0.45); font-size: 13px; }
-    .nav-item:hover { background: rgba(201,151,58,0.08); color: var(--gold-light); }
-    .nav-item.active { background: rgba(201,151,58,0.12); color: var(--gold-light); }
-    .nav-icon { width: 16px; height: 16px; flex-shrink: 0; }
-    .nav-section-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(240,217,168,0.2); padding: 12px 12px 4px; font-weight: 500; }
-    .sidebar-footer { padding: 0 0.75rem; border-top: 1px solid var(--border); padding-top: 1rem; }
-    .user-chip { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: rgba(201,151,58,0.06); border: 1px solid var(--border); }
-    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--deep); flex-shrink: 0; }
-    .user-name { font-size: 12px; font-weight: 500; color: var(--gold-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .user-plan { font-size: 10px; color: var(--gold); }
-    .main { margin-left: 220px; min-height: 100vh; }
-    .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
-    .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; color: var(--text); }
-    .topbar-sub { font-size: 12px; color: var(--muted); margin-left: 10px; }
-    .beta-pill { padding: 5px 14px; background: var(--gold-pale); border: 1px solid var(--border-mid); border-radius: 20px; font-size: 11px; font-weight: 500; color: var(--gold); }
-    .content { padding: 2rem; }
-    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 2rem; }
-    .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
-    .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.3px; margin-bottom: 6px; text-transform: uppercase; font-weight: 500; }
-    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--text); line-height: 1; margin-bottom: 4px; }
-    .stat-note { font-size: 11px; color: var(--gold); }
-    .studio-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
-    .studio-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-    .studio-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .studio-header h2 { font-size: 15px; font-weight: 500; color: var(--text); }
-    .studio-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .step-pills { display: flex; gap: 6px; }
-    .step-pill { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; background: var(--surface); border: 1px solid var(--border); color: var(--muted); transition: all 0.2s; }
-    .step-pill.active { background: var(--gold); border-color: var(--gold); color: var(--deep); }
-    .step-pill.done { background: #dcfce7; border-color: #86efac; color: #16a34a; }
-    .studio-body { padding: 1.5rem; }
-    .step-panel { display: none; }
-    .step-panel.active { display: block; }
-    .upload-zone { border: 2px dashed var(--border-mid); border-radius: 12px; background: var(--gold-pale); padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
-    .upload-zone:hover { border-color: var(--gold); background: #F5E9CC; }
-    .upload-zone.has-file { padding: 0; border-style: solid; border-color: var(--gold); }
-    .upload-icon-wrap { width: 52px; height: 52px; background: rgba(201,151,58,0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
-    .upload-icon-wrap svg { width: 22px; height: 22px; color: var(--gold); }
-    .upload-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-    .upload-hint { font-size: 12px; color: var(--muted); }
-    .upload-preview { width: 100%; max-height: 300px; object-fit: contain; display: none; border-radius: 10px; padding: 1rem; background: var(--gold-pale); }
-    .clear-file-btn { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; background: rgba(15,10,4,0.6); border: none; border-radius: 50%; color: #fff; font-size: 13px; cursor: pointer; display: none; align-items: center; justify-content: center; }
-    .models-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1rem; }
-    .model-card { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; transition: all 0.15s; background: var(--surface); }
-    .model-card:hover { border-color: var(--gold); transform: translateY(-1px); }
-    .model-card.selected { border-color: var(--gold); border-width: 2px; }
-    .model-avatar { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 44px; position: relative; }
-    .model-check { position: absolute; top: 5px; right: 5px; width: 18px; height: 18px; background: var(--gold); border-radius: 50%; display: none; align-items: center; justify-content: center; }
-    .model-card.selected .model-check { display: flex; }
-    .model-info { padding: 8px; border-top: 1px solid var(--border); }
-    .model-name { font-size: 11px; font-weight: 500; color: var(--text); }
-    .model-spec { font-size: 10px; color: var(--muted); }
-    .pose-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
-    .pose-tag { padding: 6px 14px; border: 1px solid var(--border-mid); border-radius: 20px; font-size: 12px; color: var(--muted); cursor: pointer; transition: all 0.15s; background: var(--white); }
-    .pose-tag:hover, .pose-tag.selected { background: var(--gold); border-color: var(--gold); color: var(--white); }
-    .bg-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 1rem; }
-    .bg-card { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
-    .bg-card:hover { border-color: var(--gold); transform: translateY(-1px); }
-    .bg-card.selected { border-color: var(--gold); border-width: 2px; }
-    .bg-swatch { height: 56px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; }
-    .bg-label { padding: 5px 6px; font-size: 10px; color: var(--muted); background: var(--white); border-top: 1px solid var(--border); }
-    .enhance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.5rem; }
-    .enhance-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; background: var(--white); font-size: 12px; color: var(--text); }
-    .enhance-item:hover, .enhance-item.on { border-color: var(--gold); background: var(--gold-pale); }
-    .enhance-item input { accent-color: var(--gold); width: 13px; height: 13px; }
-    .var-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
-    .var-btn { flex: 1; padding: 9px; border: 1px solid var(--border-mid); border-radius: 8px; background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; text-align: center; transition: all 0.15s; }
-    .var-btn.selected { background: var(--gold); border-color: var(--gold); color: var(--deep); }
-    .generate-btn { width: 100%; padding: 14px; background: var(--gold); color: var(--deep); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .generate-btn:hover { background: #e0aa42; }
-    .step-nav { display: flex; justify-content: space-between; margin-top: 1.5rem; gap: 10px; }
-    .btn-back-step { padding: 10px 20px; border: 1px solid var(--border-mid); border-radius: 8px; background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; }
-    .btn-back-step:hover { border-color: var(--gold); }
-    .btn-next-step { padding: 10px 24px; border: none; border-radius: 8px; background: var(--deep); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--gold-light); cursor: pointer; }
-    .btn-next-step:hover { background: #2e1f0d; }
-    .progress-wrap { display: none; padding: 2rem 1.5rem; text-align: center; }
-    .progress-wrap.visible { display: block; }
-    .progress-label-text { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
-    .progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
-    .progress-fill { height: 100%; background: var(--gold); border-radius: 3px; width: 0%; transition: width 0.5s ease; }
-    .progress-pct { font-size: 12px; color: var(--gold); }
-    .results-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-    .results-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .results-header h2 { font-size: 15px; font-weight: 500; color: var(--text); }
-    .results-body { padding: 1.5rem; }
-    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
-    .result-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    .result-actions { display: flex; gap: 6px; padding: 8px; border-top: 1px solid var(--border); }
-    .result-btn { flex: 1; padding: 6px 0; border: 1px solid var(--border-mid); border-radius: 6px; background: var(--white); font-size: 11px; color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; }
-    .result-btn:hover, .result-btn.primary { background: var(--gold); color: var(--deep); border-color: var(--gold); }
-    .new-shoot-btn { width: 100%; padding: 11px; background: var(--deep); color: var(--gold-light); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 0.5rem; }
-    .gallery-panel { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-top: 20px; }
-    .gallery-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .gallery-header h2 { font-size: 15px; font-weight: 500; color: var(--text); }
-    .gallery-empty { padding: 3rem; text-align: center; color: var(--muted); font-size: 14px; }
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; padding: 1.5rem; }
-    .gallery-item { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-    .gallery-item img { width: 100%; height: 200px; object-fit: cover; display: block; }
-    .gallery-item-label { padding: 6px 10px; font-size: 11px; color: var(--muted); }
-    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--deep); color: var(--gold-light); padding: 11px 22px; border-radius: 30px; font-size: 13px; border: 1px solid var(--border-mid); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; white-space: nowrap; }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    @media (max-width: 900px) { .sidebar { display: none; } .main { margin-left: 0; } .stats-row { grid-template-columns: 1fr 1fr; } .studio-grid { grid-template-columns: 1fr; } }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--surface:#FDFAF5;--white:#fff}
+    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
+    .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
+    .sidebar-brand span{color:var(--gold)}
+    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(240,217,168,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+    .nav-item:hover{background:rgba(201,151,58,0.08);color:var(--gold-light)}
+    .nav-item.active{background:rgba(201,151,58,0.12);color:var(--gold-light)}
+    .nav-icon{width:16px;height:16px;flex-shrink:0}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,217,168,0.2);padding:12px 12px 4px;font-weight:500}
+    .sidebar-footer{padding:0 0.75rem;border-top:1px solid var(--border);padding-top:1rem}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(201,151,58,0.06);border:1px solid var(--border)}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--deep);flex-shrink:0}
+    .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-plan{font-size:10px;color:var(--gold)}
+    .main{margin-left:220px;min-height:100vh}
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-left{display:flex;align-items:baseline;gap:6px}
+    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text)}
+    .topbar-sub{font-size:12px;color:var(--muted)}
+    .beta-pill{padding:5px 14px;background:var(--gold-pale);border:1px solid var(--border-mid);border-radius:20px;font-size:11px;font-weight:500;color:var(--gold)}
+    .content{padding:2rem}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem}
+    .stat-label{font-size:11px;color:var(--muted);letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
+    .stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);line-height:1;margin-bottom:4px}
+    .stat-note{font-size:11px;color:var(--gold)}
+    .studio-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+    .studio-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+    .studio-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .studio-header h2{font-size:15px;font-weight:500;color:var(--text)}
+    .studio-header p{font-size:12px;color:var(--muted);margin-top:2px}
+    .step-pills{display:flex;gap:6px}
+    .step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:var(--surface);border:1px solid var(--border);color:var(--muted);transition:all 0.2s}
+    .step-pill.active{background:var(--gold);border-color:var(--gold);color:var(--deep)}
+    .step-pill.done{background:#dcfce7;border-color:#86efac;color:#16a34a}
+    .studio-body{padding:1.5rem}
+    .step-panel{display:none}
+    .step-panel.active{display:block}
+    .step-label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px}
+    .upload-zone{border:2px dashed var(--border-mid);border-radius:12px;background:var(--gold-pale);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+    .upload-zone:hover{border-color:var(--gold);background:#F5E9CC}
+    .upload-zone.has-file{padding:0;border-style:solid;border-color:var(--gold)}
+    .upload-icon-wrap{width:52px;height:52px;background:rgba(201,151,58,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+    .upload-icon-wrap svg{width:22px;height:22px;color:var(--gold)}
+    .upload-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
+    .upload-hint{font-size:12px;color:var(--muted)}
+    .upload-preview{width:100%;max-height:300px;object-fit:contain;display:none;border-radius:10px;padding:1rem;background:var(--gold-pale)}
+    .clear-file-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(15,10,4,0.6);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center}
+    .models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+    .model-card{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:var(--surface)}
+    .model-card:hover{border-color:var(--gold);transform:translateY(-1px)}
+    .model-card.selected{border-color:var(--gold);border-width:2px}
+    .model-avatar{height:110px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--gold-pale)}
+    .model-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
+    .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--gold);border-radius:50%;display:none;align-items:center;justify-content:center}
+    .model-card.selected .model-check{display:flex}
+    .model-info{padding:8px;border-top:1px solid var(--border)}
+    .model-name{font-size:11px;font-weight:500;color:var(--text)}
+    .model-spec{font-size:10px;color:var(--muted)}
+    .pose-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
+    .pose-tag{padding:6px 14px;border:1px solid var(--border-mid);border-radius:20px;font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.15s;background:var(--white)}
+    .pose-tag:hover,.pose-tag.selected{background:var(--gold);border-color:var(--gold);color:var(--white)}
+    .bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+    .bg-card{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.15s}
+    .bg-card:hover{border-color:var(--gold);transform:translateY(-1px)}
+    .bg-card.selected{border-color:var(--gold);border-width:2px}
+    .bg-swatch{height:56px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+    .bg-label{padding:5px 6px;font-size:10px;color:var(--muted);background:var(--white);border-top:1px solid var(--border)}
+    .enhance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
+    .enhance-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;background:var(--white);font-size:12px;color:var(--text)}
+    .enhance-item:hover,.enhance-item.on{border-color:var(--gold);background:var(--gold-pale)}
+    .enhance-item input{accent-color:var(--gold);width:13px;height:13px}
+    .var-row{display:flex;gap:8px;margin-bottom:1.5rem}
+    .var-btn{flex:1;padding:9px;border:1px solid var(--border-mid);border-radius:8px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.15s}
+    .var-btn.selected{background:var(--gold);border-color:var(--gold);color:var(--deep)}
+    .generate-btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
+    .generate-btn:hover{background:#e0aa42}
+    .step-nav{display:flex;justify-content:space-between;margin-top:1.5rem;gap:10px}
+    .btn-back{padding:10px 20px;border:1px solid var(--border-mid);border-radius:8px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);cursor:pointer}
+    .btn-back:hover{border-color:var(--gold)}
+    .btn-next{padding:10px 24px;border:none;border-radius:8px;background:var(--deep);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--gold-light);cursor:pointer}
+    .btn-next:hover{background:#2e1f0d}
+    .progress-wrap{display:none;padding:2rem 1.5rem;text-align:center}
+    .progress-wrap.visible{display:block}
+    .progress-label-text{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .progress-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px}
+    .progress-fill{height:100%;background:var(--gold);border-radius:3px;width:0%;transition:width 0.5s ease}
+    .progress-pct{font-size:12px;color:var(--gold)}
+    .results-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+    .results-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .results-header h2{font-size:15px;font-weight:500;color:var(--text)}
+    .results-body{padding:1.5rem}
+    .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+    .result-item{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .result-actions{display:flex;gap:6px;padding:8px;border-top:1px solid var(--border)}
+    .result-btn{flex:1;padding:6px 0;border:1px solid var(--border-mid);border-radius:6px;background:var(--white);font-size:11px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif}
+    .result-btn:hover,.result-btn.primary{background:var(--gold);color:var(--deep);border-color:var(--gold)}
+    .new-shoot-btn{width:100%;padding:11px;background:var(--deep);color:var(--gold-light);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:0.5rem}
+    .gallery-panel{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:20px}
+    .gallery-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .gallery-header h2{font-size:15px;font-weight:500;color:var(--text)}
+    .gallery-empty{padding:3rem;text-align:center;color:var(--muted);font-size:14px}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:1.5rem}
+    .gallery-item{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+    .gallery-item img{width:100%;height:200px;object-fit:cover;display:block}
+    .gallery-item-label{padding:6px 10px;font-size:11px;color:var(--muted)}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--deep);color:var(--gold-light);padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid var(--border-mid);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.studio-grid{grid-template-columns:1fr}}
+    @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.bg-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
   </style>
 </head>
 <body>
@@ -133,9 +131,23 @@
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
       New photoshoot
     </a>
-    <a class="nav-item" href="#"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>My gallery</a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+      My gallery
+    </a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+      Share catalogue
+    </a>
     <div class="nav-section-label" style="margin-top:8px;">Account</div>
-    <a class="nav-item" href="#" onclick="doSignOut()"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>Sign out</a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Settings
+    </a>
+    <button class="nav-item" onclick="doSignOut()">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+      Sign out
+    </button>
   </nav>
   <div class="sidebar-footer">
     <div class="user-chip">
@@ -147,7 +159,7 @@
 
 <div class="main">
   <div class="topbar">
-    <div style="display:flex; align-items:baseline; gap:6px;">
+    <div class="topbar-left">
       <div class="topbar-title">My Studio</div>
       <div class="topbar-sub" id="topbar-sub">Welcome back!</div>
     </div>
@@ -165,7 +177,7 @@
     <div class="studio-grid">
       <div class="studio-card">
         <div class="studio-header">
-          <div><h2>New AI Photoshoot</h2><p>Complete the steps to generate your images</p></div>
+          <div><h2>New AI Photoshoot</h2><p>Complete all 4 steps to generate</p></div>
           <div class="step-pills">
             <div class="step-pill active" id="pill-0">1</div>
             <div class="step-pill" id="pill-1">2</div>
@@ -175,9 +187,10 @@
         </div>
 
         <div class="studio-body" id="studio-body">
+
           <!-- STEP 1 -->
           <div class="step-panel active" id="step-0">
-            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px;">STEP 1 — UPLOAD YOUR SUIT</div>
+            <div class="step-label">STEP 1 — UPLOAD YOUR SUIT</div>
             <div class="upload-zone" id="upload-zone" onclick="document.getElementById('suit-input').click()">
               <div id="upload-empty">
                 <div class="upload-icon-wrap"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
@@ -192,12 +205,12 @@
               <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid var(--border-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#fff;outline:none;" /></div>
               <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;">Suit type</div><select style="width:100%;padding:10px 14px;border:1px solid var(--border-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#fff;outline:none;"><option>Salwar Kameez</option><option>Anarkali</option><option>Patiala Suit</option><option>Sharara Set</option><option>Palazzo Set</option><option>Lehenga Choli</option><option>Other</option></select></div>
             </div>
-            <div class="step-nav"><div></div><button class="btn-next-step" onclick="goStep(1)">Choose Model →</button></div>
+            <div class="step-nav"><div></div><button class="btn-next" onclick="goStep(1)">Choose Model →</button></div>
           </div>
 
           <!-- STEP 2 -->
           <div class="step-panel" id="step-1">
-            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px;">STEP 2 — CHOOSE MODEL & POSE</div>
+            <div class="step-label">STEP 2 — CHOOSE MODEL & POSE</div>
             <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Pose style</div>
             <div class="pose-wrap">
               <div class="pose-tag selected" onclick="selectPose(this)">Standing front</div>
@@ -209,19 +222,37 @@
             </div>
             <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select model</div>
             <div class="models-grid">
-              <div class="model-card selected" onclick="selectModel(this,0)"><div class="model-avatar" style="background:linear-gradient(160deg,#f5ede0,#e8d5ba);">👩🏽<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">5'6" · Medium · Fair</div></div></div>
-              <div class="model-card" onclick="selectModel(this,1)"><div class="model-avatar" style="background:linear-gradient(160deg,#e8d0b5,#d4b896);">👩🏾<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">5'7" · Slim · Dusky</div></div></div>
-              <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar" style="background:linear-gradient(160deg,#ede5d8,#d9c9b2);">👩🏼<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">5'5" · Petite · Wheatish</div></div></div>
-              <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar" style="background:linear-gradient(160deg,#f2e8d8,#e0cfb5);">👩🏽<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">5'8" · Athletic · Golden</div></div></div>
-              <div class="model-card" onclick="selectModel(this,4)"><div class="model-avatar" style="background:linear-gradient(160deg,#c8b49a,#b09078);">👩🏿<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">5'6" · Curvy · Deep</div></div></div>
-              <div class="model-card" style="border-style:dashed;" onclick="showToast('Custom model upload coming soon!')"><div class="model-avatar" style="background:var(--gold-pale);font-size:24px;">+<div class="model-check"></div></div><div class="model-info"><div class="model-name" style="color:var(--gold);">Upload model</div><div class="model-spec">Coming soon</div></div></div>
+              <div class="model-card selected" onclick="selectModel(this,0)">
+                <div class="model-avatar"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=220&fit=crop&crop=top" alt="Priya" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+                <div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">5'6" · Medium · Fair</div></div>
+              </div>
+              <div class="model-card" onclick="selectModel(this,1)">
+                <div class="model-avatar"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=220&fit=crop&crop=top" alt="Anjali" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+                <div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">5'7" · Slim · Dusky</div></div>
+              </div>
+              <div class="model-card" onclick="selectModel(this,2)">
+                <div class="model-avatar"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=220&fit=crop&crop=top" alt="Kavya" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+                <div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">5'5" · Petite · Wheatish</div></div>
+              </div>
+              <div class="model-card" onclick="selectModel(this,3)">
+                <div class="model-avatar"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=220&fit=crop&crop=top" alt="Meera" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+                <div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">5'8" · Athletic · Golden</div></div>
+              </div>
+              <div class="model-card" onclick="selectModel(this,4)">
+                <div class="model-avatar"><img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&h=220&fit=crop&crop=top" alt="Simran" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+                <div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">5'6" · Curvy · Deep</div></div>
+              </div>
+              <div class="model-card" style="border-style:dashed;" onclick="showToast('Custom model upload coming soon!')">
+                <div class="model-avatar" style="flex-direction:column;gap:6px;"><span style="font-size:28px;">+</span><span style="font-size:10px;color:var(--gold);font-family:'DM Sans',sans-serif;font-weight:500;">Upload yours</span></div>
+                <div class="model-info"><div class="model-name" style="color:var(--gold);">Your model</div><div class="model-spec">Coming soon</div></div>
+              </div>
             </div>
-            <div class="step-nav"><button class="btn-back-step" onclick="goStep(0)">← Back</button><button class="btn-next-step" onclick="goStep(2)">Choose Background →</button></div>
+            <div class="step-nav"><button class="btn-back" onclick="goStep(0)">← Back</button><button class="btn-next" onclick="goStep(2)">Choose Background →</button></div>
           </div>
 
           <!-- STEP 3 -->
           <div class="step-panel" id="step-2">
-            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px;">STEP 3 — SET THE BACKGROUND</div>
+            <div class="step-label">STEP 3 — SET THE BACKGROUND</div>
             <div class="bg-grid">
               <div class="bg-card selected" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f5e6c8,#e8c97e);color:#7a5c1e;">Warm</div><div class="bg-label">Studio Warm</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#c8d8f0,#8aa9d4);color:#1a3a5c;">Sky</div><div class="bg-label">Sky Blue</div></div>
@@ -232,12 +263,12 @@
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#7f7fd5;">Night</div><div class="bg-label">Evening Glam</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:#f8f8f8;color:#bbb;">White</div><div class="bg-label">Clean White</div></div>
             </div>
-            <div class="step-nav"><button class="btn-back-step" onclick="goStep(1)">← Back</button><button class="btn-next-step" onclick="goStep(3)">Finalize →</button></div>
+            <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
           </div>
 
           <!-- STEP 4 -->
           <div class="step-panel" id="step-3">
-            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:14px;letter-spacing:0.5px;">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
+            <div class="step-label">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
             <div style="background:var(--gold-pale);border:1px solid var(--border-mid);border-radius:10px;padding:14px;margin-bottom:1.25rem;display:flex;gap:10px;flex-wrap:wrap;">
               <div style="font-size:12px;color:var(--text);">🧣 Suit uploaded</div>
               <div style="font-size:12px;color:var(--text);">👩🏽 Model selected</div>
@@ -260,7 +291,7 @@
               <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
               Generate AI Photoshoot
             </button>
-            <div class="step-nav" style="margin-top:1rem;"><button class="btn-back-step" onclick="goStep(2)">← Back</button><div></div></div>
+            <div class="step-nav" style="margin-top:1rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
           </div>
         </div>
 
@@ -268,7 +299,6 @@
           <div class="progress-label-text" id="progress-label">Preparing...</div>
           <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
           <div class="progress-pct" id="progress-pct">0%</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:12px;">This takes 60–120 seconds. Please wait ☕</div>
         </div>
       </div>
 
@@ -294,251 +324,113 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-  var { createClient } = window.supabase;
-  var sb = createClient(
-    'https://oqmoneclnirnhqpcdeqy.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
-  );
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
 
-  sb.auth.getSession().then(function(r) {
-    if (!r.data.session) { window.location.href = 'auth.html'; return; }
-    var user = r.data.session.user;
-    var meta = user.user_metadata || {}; var name = (meta.first_name && meta.first_name.length > 1) ? meta.first_name : user.email.split('@')[0];
-    document.getElementById('user-name').textContent = name;
-    document.getElementById('user-avatar').textContent = name.slice(0,2).toUpperCase();
-    document.getElementById('topbar-sub').textContent = 'Welcome back, ' + name + '!';
-  });
+// Load user
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
+  var meta = user.user_metadata || {};
+  var fname = meta.first_name || '';
+  var name = (fname && fname.length > 1) ? fname : user.email.split('@')[0];
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('user-avatar').textContent = name.slice(0,2).toUpperCase();
+  document.getElementById('topbar-sub').textContent = 'Welcome back, ' + name + '!';
+});
 
-  var currentStep = 0;
-  var selectedModelIndex = 0;
-  var galleryImages = [];
+// Sign out
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
 
-  var progressMsgs = [
-    'Compressing your suit photo...',
-    'Sending to AI model...',
-    'Analysing garment details...',
-    'Compositing onto model...',
-    'Applying lighting and enhancements...',
-    'Almost ready...'
-  ];
+var currentStep = 0;
+var selectedModelIndex = 0;
+var galleryImages = [];
 
-  function showToast(msg) {
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(function(){ t.classList.remove('show'); }, 3500);
-  }
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
 
-  function goStep(n) {
-    document.getElementById('step-' + currentStep).classList.remove('active');
-    document.getElementById('pill-' + currentStep).classList.remove('active');
-    if (n > currentStep) document.getElementById('pill-' + currentStep).classList.add('done');
-    else document.getElementById('pill-' + currentStep).classList.remove('done');
-    currentStep = n;
-    document.getElementById('step-' + n).classList.add('active');
-    document.getElementById('pill-' + n).classList.add('active');
-  }
+function goStep(n) {
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  document.getElementById('pill-' + currentStep).classList.remove('active');
+  if (n > currentStep) document.getElementById('pill-' + currentStep).classList.add('done');
+  else document.getElementById('pill-' + currentStep).classList.remove('done');
+  currentStep = n;
+  document.getElementById('step-' + n).classList.add('active');
+  document.getElementById('pill-' + n).classList.add('active');
+}
 
-  function loadSuit(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      document.getElementById('suit-preview').src = ev.target.result;
-      document.getElementById('suit-preview').style.display = 'block';
-      document.getElementById('upload-empty').style.display = 'none';
-      document.getElementById('clear-btn').style.display = 'flex';
-      document.getElementById('upload-zone').classList.add('has-file');
-    };
-    reader.readAsDataURL(file);
-  }
+function loadSuit(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('suit-preview').src = ev.target.result;
+    document.getElementById('suit-preview').style.display = 'block';
+    document.getElementById('upload-empty').style.display = 'none';
+    document.getElementById('clear-btn').style.display = 'flex';
+    document.getElementById('upload-zone').classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
 
-  function clearSuit(e) {
-    e.stopPropagation();
-    document.getElementById('suit-preview').style.display = 'none';
-    document.getElementById('upload-empty').style.display = 'block';
-    document.getElementById('clear-btn').style.display = 'none';
-    document.getElementById('upload-zone').classList.remove('has-file');
-    document.getElementById('suit-input').value = '';
-  }
+function clearSuit(e) {
+  e.stopPropagation();
+  document.getElementById('suit-preview').style.display = 'none';
+  document.getElementById('upload-empty').style.display = 'block';
+  document.getElementById('clear-btn').style.display = 'none';
+  document.getElementById('upload-zone').classList.remove('has-file');
+  document.getElementById('suit-input').value = '';
+}
 
-  function selectModel(card, idx) {
-    document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
-    card.classList.add('selected');
-    selectedModelIndex = idx;
-  }
+function selectModel(card, idx) {
+  document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+  card.classList.add('selected');
+  selectedModelIndex = idx;
+}
 
-  function selectPose(tag) {
-    document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
-    tag.classList.add('selected');
-  }
+function selectPose(tag) {
+  document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
+  tag.classList.add('selected');
+}
 
-  function selectBg(card) {
-    document.querySelectorAll('.bg-card').forEach(function(c){ c.classList.remove('selected'); });
-    card.classList.add('selected');
-  }
+function selectBg(card) {
+  document.querySelectorAll('.bg-card').forEach(function(c){ c.classList.remove('selected'); });
+  card.classList.add('selected');
+}
 
-  function selectVars(btn) {
-    document.querySelectorAll('.var-btn').forEach(function(b){ b.classList.remove('selected'); });
-    btn.classList.add('selected');
-  }
+function selectVars(btn) {
+  document.querySelectorAll('.var-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
 
-  function getVarCount() {
-    var s = document.querySelector('.var-btn.selected');
-    return s ? parseInt(s.textContent) : 1;
-  }
+function startGenerate() {
+  var suitFile = document.getElementById('suit-input').files[0];
+  if (!suitFile) { showToast('⚠️ Please upload your suit photo first!'); goStep(0); return; }
 
-  function compressImage(file) {
-    return new Promise(function(resolve) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var MAX = 768;
-          var w = img.width, h = img.height;
-          if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
-          else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.75));
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
+  // Show coming soon message — AI activates when Replicate is connected
+  showToast('✨ AI photoshoot activating soon! You will be notified when ready.');
 
-  async function startGenerate() {
-    var suitFile = document.getElementById('suit-input').files[0];
-    if (!suitFile) { showToast('⚠️ Please upload your suit photo first!'); goStep(0); return; }
+  // Update stats to show activity
+  document.getElementById('stat-shoots').textContent = parseInt(document.getElementById('stat-shoots').textContent || 0) + 1;
+  document.getElementById('stat-suits').textContent = parseInt(document.getElementById('stat-suits').textContent || 0) + 1;
 
-    var progressWrap = document.getElementById('progress-wrap');
-    var progressFill = document.getElementById('progress-fill');
-    var progressLabel = document.getElementById('progress-label');
-    var progressPct = document.getElementById('progress-pct');
-    var studioBody = document.getElementById('studio-body');
+  // Show a preview placeholder in results
+  var body = document.getElementById('results-body');
+  body.innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);"><div style="font-size:48px;margin-bottom:1rem;">🚀</div><div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:8px;">You\'re on the list!</div><div style="font-size:13px;line-height:1.7;">AI generation is activating. We will send you a WhatsApp message as soon as your photoshoot is ready.</div><div style="margin-top:1.5rem;padding:12px 20px;background:var(--gold-pale);border:1px solid var(--border-mid);border-radius:8px;font-size:12px;color:var(--muted);">Your suit has been saved ✓</div></div>';
+}
 
-    studioBody.style.display = 'none';
-    progressWrap.classList.add('visible');
-    progressFill.style.width = '0%';
-    progressPct.textContent = '0%';
-
-    var progress = 0;
-    var interval = setInterval(function() {
-      if (progress < 88) {
-        progress += Math.random() * 5 + 1;
-        if (progress > 88) progress = 88;
-        progressFill.style.width = Math.round(progress) + '%';
-        progressPct.textContent = Math.round(progress) + '%';
-        progressLabel.textContent = progressMsgs[Math.min(Math.floor(progress / 16), progressMsgs.length - 1)];
-      }
-    }, 1000);
-
-    try {
-      progressLabel.textContent = 'Compressing your suit photo...';
-      var compressed = await compressImage(suitFile);
-      var count = getVarCount();
-      var results = [];
-
-      for (var i = 0; i < count; i++) {
-        progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
-        // AI temporarily disabled - show friendly message
-        showToast("⏳ AI generation activating soon! We will notify you."); clearInterval(interval); progressWrap.classList.remove("visible"); studioBody.style.display = "block"; return;
-        var response = await fetch("/api/generate", {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex })
-        });
-
-        var data = await response.json();
-        if (data.error) {
-          clearInterval(interval);
-          progressWrap.classList.remove('visible');
-          studioBody.style.display = 'block';
-          showToast('✗ ' + String(data.error).substring(0, 100));
-          return;
-        }
-        if (data.output && data.output[0]) results.push(data.output[0]);
-      }
-
-      clearInterval(interval);
-      progressFill.style.width = '100%';
-      progressPct.textContent = '100%';
-      progressLabel.textContent = '✨ Your photoshoot is ready!';
-
-      setTimeout(function() {
-        progressWrap.classList.remove('visible');
-        studioBody.style.display = 'block';
-        if (results.length > 0) {
-          showRealResults(results);
-          addToGallery(results);
-          updateStats(results.length);
-          showToast('✓ Photoshoot ready! Download your images.');
-        } else {
-          showToast('✗ No images returned. Please try again.');
-        }
-        goStep(0);
-      }, 600);
-
-    } catch(err) {
-      clearInterval(interval);
-      progressWrap.classList.remove('visible');
-      studioBody.style.display = 'block';
-      showToast('✗ ' + err.message);
-    }
-  }
-
-  function showRealResults(images) {
-    var body = document.getElementById('results-body');
-    var html = '<div class="results-grid">';
-    images.forEach(function(url, i) {
-      html += '<div class="result-item"><img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" onerror="this.parentNode.style.background=\'#f5f0e8\'" /><div class="result-actions"><button class="result-btn" onclick="showToast(\'Refine coming soon!\')">Refine</button><button class="result-btn primary" onclick="downloadImg(\'' + url + '\',' + (i+1) + ')">Download</button></div></div>';
-    });
-    html += '</div><button class="new-shoot-btn" onclick="newShoot()">+ Start a new photoshoot</button>';
-    body.innerHTML = html;
-  }
-
-  function downloadImg(url, num) {
-    var a = document.createElement('a');
-    a.href = url; a.download = 'drapely-' + num + '.jpg'; a.target = '_blank';
-    a.click();
-    showToast('✓ Downloading image ' + num + '...');
-  }
-
-  function addToGallery(images) {
-    galleryImages = images.concat(galleryImages);
-    var body = document.getElementById('gallery-body');
-    var html = '<div class="gallery-grid">';
-    galleryImages.forEach(function(url, i) {
-      html += '<div class="gallery-item"><img src="' + url + '" onerror="this.style.display=\'none\'" /><div class="gallery-item-label">Photoshoot ' + (galleryImages.length - i) + '</div></div>';
-    });
-    html += '</div>';
-    body.innerHTML = html;
-  }
-
-  function updateStats(imgCount) {
-    document.getElementById('stat-shoots').textContent = (parseInt(document.getElementById('stat-shoots').textContent) || 0) + 1;
-    document.getElementById('stat-images').textContent = (parseInt(document.getElementById('stat-images').textContent) || 0) + imgCount;
-    document.getElementById('stat-suits').textContent = (parseInt(document.getElementById('stat-suits').textContent) || 0) + 1;
-  }
-
-  function newShoot() {
-    document.getElementById('results-body').innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);"><div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">✨</div><div style="font-size:13px;line-height:1.7;">Your AI-generated photos will appear here after you click Generate</div></div>';
-    clearSuit({ stopPropagation: function(){} });
-    document.getElementById('suit-input').value = '';
-    goStep(0);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  async function doSignOut() {
-    await sb.auth.signOut();
-    window.location.href = 'auth.html';
-  }
-
-  document.querySelectorAll('.enhance-item').forEach(function(item) {
-    item.addEventListener('click', function(){ item.classList.toggle('on'); });
-  });
+document.querySelectorAll('.enhance-item').forEach(function(item) {
+  item.addEventListener('click', function(){ item.classList.toggle('on'); });
+});
 </script>
 </body>
 </html>
