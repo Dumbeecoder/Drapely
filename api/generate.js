@@ -7,55 +7,43 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { garment_img, model_index } = req.body;
-  if (!garment_img) return res.status(400).json({ error: 'Missing suit image' });
+  if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
-  // Fixed model images hosted publicly
-  const modelUrls = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Gatto_europeo4.jpg/220px-Gatto_europeo4.jpg',
-    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=512&q=80',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=512&q=80',
-    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=512&q=80',
-    'https://images.unsplash.com/photo-1483959651481-dc75b89291f1?w=512&q=80',
+  const models = [
+    'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=512',
+    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=512',
+    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=512',
+    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=512',
+    'https://images.unsplash.com/photo-1483959651481-dc75b89291f1?w=512',
   ];
 
-  const humanImgUrl = modelUrls[model_index || 0];
-
   try {
-    // Use Gradio API for IDM-VTON which accepts URLs
-    const response = await fetch(
-      'https://yisol-idm-vton.hf.space/run/predict',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fn_index: 0,
-          data: [
-            { path: humanImgUrl },
-            { path: humanImgUrl },
-            { path: garment_img },
-            { path: garment_img },
-            true,
-            false,
-            'Indian designer suit',
-            25,
-            42
-          ]
-        })
-      }
-    );
+    const response = await fetch('https://api-inference.huggingface.co/models/Kwai-Kolors/Kolors-Virtual-Try-On', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.HUGGING_FACE_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: {
+          human_image: models[model_index || 0],
+          garment_image: garment_img,
+        }
+      })
+    });
 
-    const data = await response.json();
+    const contentType = response.headers.get('content-type') || '';
 
-    if (data.error) return res.status(500).json({ error: data.error });
+    if (contentType.includes('image')) {
+      const buffer = await response.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString('base64');
+      return res.status(200).json({ output: [`data:image/jpeg;base64,${base64}`] });
+    }
 
-    // Extract image from response
-    const output = data.data;
-    if (!output || !output[0]) return res.status(500).json({ error: 'No image returned. Try again.' });
-
-    const imgData = output[0];
-    const imageUrl = imgData.url || imgData.path || imgData;
-
-    return res.status(200).json({ output: [imageUrl] });
+    const text = await response.text();
+    let msg = text;
+    try { msg = JSON.parse(text).error || text; } catch {}
+    return res.status(500).json({ error: msg });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
