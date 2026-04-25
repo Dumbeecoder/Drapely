@@ -4,401 +4,198 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drapely — Sign In</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --gold: #C9973A; --gold-light: #F0D9A8; --gold-pale: #FBF4E8;
-      --deep: #0F0A04; --deep2: #1C1309; --muted: #7A6A52; --text: #2A1F0E;
-      --border: rgba(201,151,58,0.18); --border-mid: rgba(201,151,58,0.35);
-      --error: #dc2626; --success: #16a34a;
-    }
-    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--deep); color: var(--text); }
-    .page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
-
-    .left {
-      background: var(--deep); display: flex; flex-direction: column;
-      justify-content: space-between; padding: 2.5rem;
-      border-right: 1px solid var(--border); position: relative; overflow: hidden;
-    }
-    .left::before {
-      content: ''; position: absolute; bottom: -100px; left: -100px;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(201,151,58,0.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .left-brand {
-      font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300;
-      color: var(--gold-light); letter-spacing: 4px; text-transform: uppercase; text-decoration: none;
-    }
-    .left-brand span { color: var(--gold); }
-    .left-center { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2rem 0; }
-    .left-title {
-      font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 3.5vw, 52px);
-      font-weight: 300; color: var(--gold-light); line-height: 1.15; margin-bottom: 1.5rem;
-    }
-    .left-title em { font-style: italic; color: var(--gold); }
-    .left-points { list-style: none; display: flex; flex-direction: column; gap: 14px; }
-    .left-points li { display: flex; align-items: center; gap: 12px; font-size: 14px; color: rgba(240,217,168,0.55); line-height: 1.5; }
-    .point-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
-    .left-footer { font-size: 12px; color: rgba(240,217,168,0.2); }
-
-    .right { background: #FDFAF5; display: flex; align-items: center; justify-content: center; padding: 2.5rem; }
-    .auth-box { width: 100%; max-width: 420px; }
-
-    .tabs {
-      display: flex; background: rgba(201,151,58,0.08); border-radius: 10px;
-      padding: 4px; margin-bottom: 2rem; border: 1px solid var(--border);
-    }
-    .tab {
-      flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 500;
-      color: var(--muted); border-radius: 7px; cursor: pointer; transition: all 0.2s; user-select: none;
-    }
-    .tab.active { background: var(--gold); color: var(--deep); }
-
-    .form-panel { display: none; }
-    .form-panel.active { display: block; }
-
-    .form-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--text); margin-bottom: 6px; }
-    .form-sub { font-size: 13px; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
-
-    .field { margin-bottom: 16px; }
-    .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.3px; }
-    .field input {
-      width: 100%; padding: 12px 16px; border: 1px solid rgba(201,151,58,0.25); border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: #fff;
-      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .field input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,58,0.1); }
-    .field input::placeholder { color: #C4B49A; }
-    .field input.error { border-color: var(--error); }
-    .field-error { font-size: 12px; color: var(--error); margin-top: 5px; display: none; }
-    .field-error.visible { display: block; }
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .forgot { display: flex; justify-content: flex-end; margin-top: -8px; margin-bottom: 16px; }
-    .forgot a { font-size: 12px; color: var(--gold); text-decoration: none; }
-    .forgot a:hover { text-decoration: underline; }
-
-    .submit-btn {
-      width: 100%; padding: 14px; background: var(--gold); color: var(--deep); border: none;
-      border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
-      cursor: pointer; transition: background 0.2s, transform 0.15s; margin-bottom: 1.5rem; position: relative;
-    }
-    .submit-btn:hover { background: #e0aa42; transform: translateY(-1px); }
-    .submit-btn:active { transform: scale(0.99); }
-    .submit-btn:disabled { background: #d4b87a; cursor: not-allowed; transform: none; }
-
-    .btn-spinner {
-      display: none; width: 16px; height: 16px;
-      border: 2px solid rgba(15,10,4,0.3); border-top-color: var(--deep);
-      border-radius: 50%; animation: spin 0.7s linear infinite;
-      position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
-    }
-    .submit-btn.loading .btn-spinner { display: block; }
-    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
-
-    .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(201,151,58,0.2); }
-    .divider span { font-size: 12px; color: var(--muted); white-space: nowrap; }
-
-    .whatsapp-btn {
-      width: 100%; padding: 13px; background: #fff; border: 1px solid rgba(201,151,58,0.3);
-      border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-      color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center;
-      gap: 10px; transition: border-color 0.2s, background 0.2s; margin-bottom: 1.5rem; text-decoration: none;
-    }
-    .whatsapp-btn:hover { border-color: #25D366; background: #f0fff4; }
-    .whatsapp-icon { width: 20px; height: 20px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-
-    .terms { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.6; }
-    .terms a { color: var(--gold); text-decoration: none; }
-    .terms a:hover { text-decoration: underline; }
-
-    .success-state { display: none; text-align: center; padding: 2rem 0; }
-    .success-state.visible { display: block; }
-    .success-icon {
-      width: 64px; height: 64px; background: rgba(22,163,74,0.1); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;
-      border: 1px solid rgba(22,163,74,0.2);
-    }
-    .success-icon svg { width: 28px; height: 28px; color: var(--success); }
-    .success-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--text); margin-bottom: 8px; }
-    .success-msg { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; }
-    .back-btn { font-size: 13px; color: var(--gold); text-decoration: none; cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; }
-
-    .toast {
-      position: fixed; bottom: 2rem; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--deep); color: var(--gold-light);
-      padding: 12px 24px; border-radius: 30px; font-size: 13px;
-      border: 1px solid var(--border-mid);
-      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-      z-index: 1000; white-space: nowrap;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-
-    @media (max-width: 768px) {
-      .page { grid-template-columns: 1fr; }
-      .left { display: none; }
-      .right { padding: 2rem 1.5rem; align-items: flex-start; padding-top: 3rem; }
-      .auth-box { max-width: 100%; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--error:#dc2626}
+    html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--deep)}
+    .page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+    .left{background:var(--deep);display:flex;flex-direction:column;justify-content:space-between;padding:2.5rem;border-right:1px solid var(--border)}
+    .left-brand{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--gold-light);letter-spacing:4px;text-transform:uppercase;text-decoration:none}
+    .left-brand span{color:var(--gold)}
+    .left-center{flex:1;display:flex;flex-direction:column;justify-content:center;padding:2rem 0}
+    .left-title{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--gold-light);line-height:1.15;margin-bottom:1.5rem}
+    .left-title em{font-style:italic;color:var(--gold)}
+    .left-points{list-style:none;display:flex;flex-direction:column;gap:14px}
+    .left-points li{display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(240,217,168,0.55)}
+    .dot{width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
+    .left-footer{font-size:12px;color:rgba(240,217,168,0.2)}
+    .right{background:#FDFAF5;display:flex;align-items:center;justify-content:center;padding:2.5rem}
+    .auth-box{width:100%;max-width:420px}
+    .tabs{display:flex;background:rgba(201,151,58,0.08);border-radius:10px;padding:4px;margin-bottom:2rem;border:1px solid var(--border)}
+    .tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:500;color:var(--muted);border-radius:7px;cursor:pointer;transition:all 0.2s}
+    .tab.active{background:var(--gold);color:var(--deep)}
+    .form-panel{display:none}
+    .form-panel.active{display:block}
+    .form-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text);margin-bottom:6px}
+    .form-sub{font-size:13px;color:var(--muted);margin-bottom:2rem;line-height:1.6}
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
+    .field input{width:100%;padding:12px 16px;border:1px solid rgba(201,151,58,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:#fff;outline:none}
+    .field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,151,58,0.1)}
+    .field input::placeholder{color:#C4B49A}
+    .field input.err{border-color:var(--error)}
+    .field-error{font-size:12px;color:var(--error);margin-top:5px;display:none}
+    .field-error.show{display:block}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .forgot{display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:16px}
+    .forgot a{font-size:12px;color:var(--gold);text-decoration:none}
+    .btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:1.5rem;transition:background 0.2s}
+    .btn:hover{background:#e0aa42}
+    .btn:disabled{background:#d4b87a;cursor:not-allowed}
+    .divider{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(201,151,58,0.2)}
+    .divider span{font-size:12px;color:var(--muted)}
+    .wa-btn{width:100%;padding:13px;background:#fff;border:1px solid rgba(201,151,58,0.3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.5rem}
+    .wa-btn:hover{border-color:#25D366;background:#f0fff4}
+    .wa-icon{width:20px;height:20px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .terms{font-size:12px;color:var(--muted);text-align:center;line-height:1.8}
+    .terms a{color:var(--gold);text-decoration:none}
+    .success-box{display:none;text-align:center;padding:2rem 0}
+    .success-box.show{display:block}
+    .success-icon{width:64px;height:64px;background:rgba(22,163,74,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;border:1px solid rgba(22,163,74,0.2)}
+    .success-icon svg{width:28px;height:28px;color:#16a34a}
+    .success-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text);margin-bottom:8px}
+    .success-msg{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:2rem}
+    .back-link{font-size:13px;color:var(--gold);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--deep);color:var(--gold-light);padding:12px 24px;border-radius:30px;font-size:13px;border:1px solid var(--border-mid);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);z-index:1000;white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:768px){
+      .page{grid-template-columns:1fr}
+      .left{display:none}
+      .right{padding:2rem 1.25rem;align-items:flex-start;padding-top:2.5rem}
+      .auth-box{max-width:100%}
+      .field-row{grid-template-columns:1fr}
+      .form-title{font-size:24px}
     }
   </style>
 </head>
 <body>
-
 <div class="page">
-
-  <!-- LEFT PANEL -->
   <div class="left">
     <a href="index.html" class="left-brand">Drape<span>ly</span></a>
     <div class="left-center">
       <h1 class="left-title">Professional photos<br/>for every <em>suit you make</em></h1>
       <ul class="left-points">
-        <li><div class="point-dot"></div>AI puts your suit on real models instantly</li>
-        <li><div class="point-dot"></div>Choose from 10+ Indian model types & poses</li>
-        <li><div class="point-dot"></div>Studio, heritage, and custom backgrounds</li>
-        <li><div class="point-dot"></div>Download HD — ready for WhatsApp & Instagram</li>
-        <li><div class="point-dot"></div>100% free during beta — no credit card</li>
+        <li><div class="dot"></div>AI puts your suit on real models instantly</li>
+        <li><div class="dot"></div>10+ Indian model types and poses</li>
+        <li><div class="dot"></div>Studio, heritage, and custom backgrounds</li>
+        <li><div class="dot"></div>HD downloads for WhatsApp and Instagram</li>
+        <li><div class="dot"></div>100% free during beta</li>
       </ul>
     </div>
-    <div class="left-footer">© 2025 Drapely · Made for Indian fashion · Surat, Gujarat</div>
+    <div class="left-footer">© 2025 Drapely · Surat, Gujarat</div>
   </div>
-
-  <!-- RIGHT PANEL -->
   <div class="right">
     <div class="auth-box">
-
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab('signin')">Sign in</div>
-        <div class="tab" onclick="switchTab('signup')">Create account</div>
+      <div class="tabs" id="tabs">
+        <div class="tab active" onclick="goTab('signin')">Sign in</div>
+        <div class="tab" onclick="goTab('signup')">Create account</div>
       </div>
-
-      <!-- SIGN IN -->
       <div class="form-panel active" id="panel-signin">
         <div class="form-title">Welcome back</div>
-        <div class="form-sub">Sign in to your Drapely account to continue.</div>
-        <div class="field">
-          <label>Email address</label>
-          <input type="email" id="signin-email" placeholder="you@example.com" />
-          <div class="field-error" id="signin-email-err">Please enter a valid email</div>
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="signin-password" placeholder="Your password" />
-          <div class="field-error" id="signin-pass-err">Please enter your password</div>
-        </div>
+        <div class="form-sub">Sign in to your Drapely account.</div>
+        <div class="field"><label>Email</label><input type="email" id="si-email" placeholder="you@example.com"/><div class="field-error" id="e-si-email">Enter a valid email</div></div>
+        <div class="field"><label>Password</label><input type="password" id="si-pass" placeholder="Your password"/><div class="field-error" id="e-si-pass">Enter your password</div></div>
         <div class="forgot"><a href="#">Forgot password?</a></div>
-        <button class="submit-btn" id="signin-btn" onclick="handleSignIn()">
-          Sign in to Drapely
-          <div class="btn-spinner"></div>
-        </button>
-        <div class="divider"><span>or continue with</span></div>
-        <a class="whatsapp-btn" href="#" onclick="handleWhatsApp()">
-          <div class="whatsapp-icon">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/>
-            </svg>
-          </div>
+        <button class="btn" id="si-btn" onclick="doSignIn()">Sign in to Drapely</button>
+        <div class="divider"><span>or</span></div>
+        <button class="wa-btn" onclick="toast('WhatsApp OTP coming soon!')">
+          <div class="wa-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg></div>
           Continue with WhatsApp OTP
-        </a>
-        <div class="terms">
-          Don't have an account? <a href="#" onclick="switchTab('signup')">Create one free</a>
-        </div>
+        </button>
+        <div class="terms">No account? <a href="#" onclick="goTab('signup')">Create one free</a></div>
       </div>
-
-      <!-- SIGN UP -->
       <div class="form-panel" id="panel-signup">
         <div class="form-title">Join Drapely free</div>
-        <div class="form-sub">Create your account — no credit card needed during beta.</div>
+        <div class="form-sub">No credit card needed during beta.</div>
         <div class="field-row">
-          <div class="field">
-            <label>First name</label>
-            <input type="text" id="signup-fname" placeholder="Priya" />
-            <div class="field-error" id="signup-fname-err">Required</div>
-          </div>
-          <div class="field">
-            <label>Last name</label>
-            <input type="text" id="signup-lname" placeholder="Shah" />
-          </div>
+          <div class="field"><label>First name</label><input type="text" id="su-fname" placeholder="Priya"/><div class="field-error" id="e-su-fname">Required</div></div>
+          <div class="field"><label>Last name</label><input type="text" id="su-lname" placeholder="Shah"/></div>
         </div>
-        <div class="field">
-          <label>Store / Business name</label>
-          <input type="text" id="signup-store" placeholder="e.g. Priya Boutique, Surat" />
-          <div class="field-error" id="signup-store-err">Please enter your store name</div>
-        </div>
-        <div class="field">
-          <label>WhatsApp number</label>
-          <input type="tel" id="signup-phone" placeholder="+91 98765 43210" />
-          <div class="field-error" id="signup-phone-err">Please enter your WhatsApp number</div>
-        </div>
-        <div class="field">
-          <label>Email address</label>
-          <input type="email" id="signup-email" placeholder="you@example.com" />
-          <div class="field-error" id="signup-email-err">Please enter a valid email</div>
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="signup-password" placeholder="Create a password (min 8 characters)" />
-          <div class="field-error" id="signup-pass-err">Password must be at least 8 characters</div>
-        </div>
-        <button class="submit-btn" id="signup-btn" onclick="handleSignUp()">
-          Create free account
-          <div class="btn-spinner"></div>
-        </button>
-        <div class="terms">
-          By signing up you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.<br/>
-          Already have an account? <a href="#" onclick="switchTab('signin')">Sign in</a>
-        </div>
+        <div class="field"><label>Store name</label><input type="text" id="su-store" placeholder="Priya Boutique, Surat"/><div class="field-error" id="e-su-store">Required</div></div>
+        <div class="field"><label>WhatsApp number</label><input type="tel" id="su-phone" placeholder="+91 98765 43210"/><div class="field-error" id="e-su-phone">Required</div></div>
+        <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com"/><div class="field-error" id="e-su-email">Enter a valid email</div></div>
+        <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Min 8 characters"/><div class="field-error" id="e-su-pass">Min 8 characters required</div></div>
+        <button class="btn" id="su-btn" onclick="doSignUp()">Create free account</button>
+        <div class="terms">Have an account? <a href="#" onclick="goTab('signin')">Sign in</a></div>
       </div>
-
-      <!-- SUCCESS -->
-      <div class="success-state" id="success-state">
-        <div class="success-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-          </svg>
-        </div>
+      <div class="success-box" id="success-box">
+        <div class="success-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
         <div class="success-title" id="success-title">Account created!</div>
-        <div class="success-msg" id="success-msg">Welcome to Drapely! Check your email to confirm your account, then sign in below.</div>
-        <button class="back-btn" onclick="resetToForm()">← Go to sign in</button>
+        <div class="success-msg" id="success-msg">Check your email to confirm, then sign in.</div>
+        <button class="back-link" onclick="goBack()">← Back to sign in</button>
       </div>
-
     </div>
   </div>
 </div>
-
-<div class="toast" id="toast"></div>
-
+<div class="toast" id="toast-el"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-  const { createClient } = window.supabase;
-  const supabase = createClient(
-    'https://oqmoneclnirnhqpcdeqy.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
-  );
-
-  let currentTab = 'signin';
-
-  // If already logged in → go straight to dashboard
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session) window.location.href = 'dashboard.html';
-  });
-
-  function switchTab(tab) {
-    currentTab = tab;
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('active', (i === 0 && tab === 'signin') || (i === 1 && tab === 'signup'));
-    });
-    document.getElementById('panel-signin').classList.toggle('active', tab === 'signin');
-    document.getElementById('panel-signup').classList.toggle('active', tab === 'signup');
-    document.getElementById('success-state').classList.remove('visible');
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
-  }
-
-  function setLoading(btnId, loading) {
-    const btn = document.getElementById(btnId);
-    btn.disabled = loading;
-    btn.classList.toggle('loading', loading);
-    btn.childNodes[0].textContent = loading ? ' ' : (btnId === 'signin-btn' ? 'Sign in to Drapely' : 'Create free account');
-  }
-
-  function clearErrors() {
-    document.querySelectorAll('.field-error').forEach(e => e.classList.remove('visible'));
-    document.querySelectorAll('input').forEach(i => i.classList.remove('error'));
-  }
-
-  function showError(fieldId, errId) {
-    document.getElementById(fieldId).classList.add('error');
-    document.getElementById(errId).classList.add('visible');
-  }
-
-  async function handleSignIn() {
-    clearErrors();
-    const email = document.getElementById('signin-email').value.trim();
-    const pass  = document.getElementById('signin-password').value;
-    let valid = true;
-    if (!email || !email.includes('@')) { showError('signin-email', 'signin-email-err'); valid = false; }
-    if (!pass) { showError('signin-password', 'signin-pass-err'); valid = false; }
-    if (!valid) return;
-
-    setLoading('signin-btn', true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
-    setLoading('signin-btn', false);
-
-    if (error) {
-      showToast('✗ Wrong email or password. Try again.');
-      return;
-    }
-    showToast('✓ Signed in! Taking you to your studio...');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-  }
-
-  async function handleSignUp() {
-    clearErrors();
-    const fname = document.getElementById('signup-fname').value.trim();
-    const lname = document.getElementById('signup-lname').value.trim();
-    const store = document.getElementById('signup-store').value.trim();
-    const phone = document.getElementById('signup-phone').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-    const pass  = document.getElementById('signup-password').value;
-    let valid = true;
-
-    if (!fname) { showError('signup-fname', 'signup-fname-err'); valid = false; }
-    if (!store) { showError('signup-store', 'signup-store-err'); valid = false; }
-    if (!phone) { showError('signup-phone', 'signup-phone-err'); valid = false; }
-    if (!email || !email.includes('@')) { showError('signup-email', 'signup-email-err'); valid = false; }
-    if (!pass || pass.length < 8) { showError('signup-password', 'signup-pass-err'); valid = false; }
-    if (!valid) return;
-
-    setLoading('signup-btn', true);
-    const { error } = await supabase.auth.signUp({
-      email, password: pass,
-      options: { data: { first_name: fname, last_name: lname, store_name: store, phone } }
-    });
-    setLoading('signup-btn', false);
-
-    if (error) {
-      showToast('✗ ' + error.message);
-      return;
-    }
-
-    document.getElementById('panel-signup').style.display = 'none';
-    document.querySelector('.tabs').style.display = 'none';
-    const s = document.getElementById('success-state');
-    s.classList.add('visible');
-    document.getElementById('success-title').textContent = 'Welcome, ' + fname + '!';
-    document.getElementById('success-msg').textContent = 'We sent a confirmation email to ' + email + '. Check your inbox and confirm, then come back to sign in.';
-  }
-
-  function handleWhatsApp() {
-    showToast('WhatsApp OTP coming soon — use email for now');
-  }
-
-  function resetToForm() {
-    document.getElementById('success-state').classList.remove('visible');
-    document.getElementById('panel-signup').style.display = '';
-    document.querySelector('.tabs').style.display = '';
-    switchTab('signin');
-  }
-
-  document.querySelectorAll('input').forEach(input => {
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        if (currentTab === 'signin') handleSignIn();
-        else handleSignUp();
-      }
-    });
-  });
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+var curTab = 'signin';
+sb.auth.getSession().then(function(r){ if(r.data.session) window.location.href='dashboard.html'; });
+function goTab(t){
+  curTab=t;
+  document.querySelectorAll('.tab').forEach(function(el,i){ el.classList.toggle('active',(i===0&&t==='signin')||(i===1&&t==='signup')); });
+  document.getElementById('panel-signin').classList.toggle('active',t==='signin');
+  document.getElementById('panel-signup').classList.toggle('active',t==='signup');
+  document.getElementById('success-box').classList.remove('show');
+}
+function toast(msg){ var e=document.getElementById('toast-el'); e.textContent=msg; e.classList.add('show'); setTimeout(function(){ e.classList.remove('show'); },3500); }
+function clrErr(){ document.querySelectorAll('.field-error').forEach(function(e){ e.classList.remove('show'); }); document.querySelectorAll('input').forEach(function(i){ i.classList.remove('err'); }); }
+function shErr(fid,eid){ document.getElementById(fid).classList.add('err'); document.getElementById(eid).classList.add('show'); }
+function setBtn(id,on,lbl){ var b=document.getElementById(id); b.disabled=on; b.textContent=on?'Please wait...':lbl; }
+async function doSignIn(){
+  clrErr();
+  var email=document.getElementById('si-email').value.trim();
+  var pass=document.getElementById('si-pass').value;
+  var ok=true;
+  if(!email||!email.includes('@')){ shErr('si-email','e-si-email'); ok=false; }
+  if(!pass){ shErr('si-pass','e-si-pass'); ok=false; }
+  if(!ok) return;
+  setBtn('si-btn',true,'Sign in to Drapely');
+  var r=await sb.auth.signInWithPassword({email:email,password:pass});
+  setBtn('si-btn',false,'Sign in to Drapely');
+  if(r.error){ toast('✗ Wrong email or password'); return; }
+  toast('✓ Signed in! Going to your studio...');
+  setTimeout(function(){ window.location.href='dashboard.html'; },1200);
+}
+async function doSignUp(){
+  clrErr();
+  var fname=document.getElementById('su-fname').value.trim();
+  var lname=document.getElementById('su-lname').value.trim();
+  var store=document.getElementById('su-store').value.trim();
+  var phone=document.getElementById('su-phone').value.trim();
+  var email=document.getElementById('su-email').value.trim();
+  var pass=document.getElementById('su-pass').value;
+  var ok=true;
+  if(!fname){ shErr('su-fname','e-su-fname'); ok=false; }
+  if(!store){ shErr('su-store','e-su-store'); ok=false; }
+  if(!phone){ shErr('su-phone','e-su-phone'); ok=false; }
+  if(!email||!email.includes('@')){ shErr('su-email','e-su-email'); ok=false; }
+  if(!pass||pass.length<8){ shErr('su-pass','e-su-pass'); ok=false; }
+  if(!ok) return;
+  setBtn('su-btn',true,'Create free account');
+  var r=await sb.auth.signUp({email:email,password:pass,options:{data:{first_name:fname,last_name:lname,store_name:store,phone:phone}}});
+  setBtn('su-btn',false,'Create free account');
+  if(r.error){ toast('✗ '+r.error.message); return; }
+  document.getElementById('panel-signup').style.display='none';
+  document.getElementById('tabs').style.display='none';
+  var s=document.getElementById('success-box');
+  s.classList.add('show');
+  document.getElementById('success-title').textContent='Welcome, '+fname+'!';
+  document.getElementById('success-msg').textContent='We sent a confirmation to '+email+'. Check your inbox then sign in.';
+}
+function goBack(){
+  document.getElementById('success-box').classList.remove('show');
+  document.getElementById('panel-signup').style.display='';
+  document.getElementById('tabs').style.display='';
+  goTab('signin');
+}
 </script>
-
 </body>
 </html>
