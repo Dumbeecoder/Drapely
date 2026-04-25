@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drapely — My Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9973A; --gold-light: #F0D9A8; --gold-pale: #FBF4E8;
+      --deep: #0F0A04; --muted: #7A6A52; --text: #2A1F0E;
+      --border: rgba(201,151,58,0.18); --border-mid: rgba(201,151,58,0.35);
+      --surface: #FDFAF5; --white: #fff;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; }
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: var(--deep); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 50; padding: 0 0 1.5rem; }
+    .sidebar-brand { padding: 1.5rem 1.5rem 1.25rem; border-bottom: 1px solid var(--border); font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--gold-light); letter-spacing: 3px; text-transform: uppercase; text-decoration: none; display: block; }
+    .sidebar-brand span { color: var(--gold); }
+    .sidebar-nav { flex: 1; padding: 1.25rem 0.75rem; display: flex; flex-direction: column; gap: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; text-decoration: none; color: rgba(240,217,168,0.45); font-size: 13px; }
+    .nav-item:hover { background: rgba(201,151,58,0.08); color: var(--gold-light); }
+    .nav-item.active { background: rgba(201,151,58,0.12); color: var(--gold-light); }
+    .nav-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-section-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(240,217,168,0.2); padding: 12px 12px 4px; font-weight: 500; }
+    .sidebar-footer { padding: 0 0.75rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+    .user-chip { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: rgba(201,151,58,0.06); border: 1px solid var(--border); }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--deep); flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: var(--gold-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-plan { font-size: 10px; color: var(--gold); }
+    .main { margin-left: 220px; min-height: 100vh; }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+    .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; color: var(--text); }
+    .topbar-sub { font-size: 12px; color: var(--muted); margin-left: 10px; }
+    .beta-pill { padding: 5px 14px; background: var(--gold-pale); border: 1px solid var(--border-mid); border-radius: 20px; font-size: 11px; font-weight: 500; color: var(--gold); }
+    .content { padding: 2rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 2rem; }
+    .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
+    .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.3px; margin-bottom: 6px; text-transform: uppercase; font-weight: 500; }
+    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .stat-note { font-size: 11px; color: var(--gold); }
+    .studio-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
+    .studio-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .studio-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .studio-header h2 { font-size: 15px; font-weight: 500; color: var(--text); }
+    .studio-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .step-pills { display: flex; gap: 6px; }
+    .step-pill { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; background: var(--surface); border: 1px solid var(--border); color: var(--muted); transition: all 0.2s; }
+    .step-pill.active { background: var(--gold); border-color: var(--gold); color: var(--deep); }
+    .step-pill.done { background: #dcfce7; border-color: #86efac; color: #16a34a; }
+    .studio-body { padding: 1.5rem; }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    .upload-zone { border: 2px dashed var(--border-mid); border-radius: 12px; background: var(--gold-pale); padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+    .upload-zone:hover { border-color: var(--gold); background: #F5E9CC; }
+    .upload-zone.has-file { padding: 0; border-style: solid; border-color: var(--gold); }
+    .upload-icon-wrap { width: 52px; height: 52px; background: rgba(201,151,58,0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+    .upload-icon-wrap svg { width: 22px; height: 22px; color: var(--gold); }
+    .upload-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .upload-hint { font-size: 12px; color: var(--muted); }
+    .upload-preview { width: 100%; max-height: 300px; object-fit: contain; display: none; border-radius: 10px; padding: 1rem; background: var(--gold-pale); }
+    .clear-file-btn { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; background: rgba(15,10,4,0.6); border: none; border-radius: 50%; color: #fff; font-size: 13px; cursor: pointer; display: none; align-items: center; justify-content: center; }
+    .models-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1rem; }
+    .model-card { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; transition: all 0.15s; background: var(--surface); }
+    .model-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+    .model-card.selected { border-color: var(--gold); border-width: 2px; }
+    .model-avatar { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 44px; position: relative; }
+    .model-check { position: absolute; top: 5px; right: 5px; width: 18px; height: 18px; background: var(--gold); border-radius: 50%; display: none; align-items: center; justify-content: center; }
+    .model-card.selected .model-check { display: flex; }
+    .model-info { padding: 8px; border-top: 1px solid var(--border); }
+    .model-name { font-size: 11px; font-weight: 500; color: var(--text); }
+    .model-spec { font-size: 10px; color: var(--muted); }
+    .pose-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+    .pose-tag { padding: 6px 14px; border: 1px solid var(--border-mid); border-radius: 20px; font-size: 12px; color: var(--muted); cursor: pointer; transition: all 0.15s; background: var(--white); }
+    .pose-tag:hover, .pose-tag.selected { background: var(--gold); border-color: var(--gold); color: var(--white); }
+    .bg-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 1rem; }
+    .bg-card { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
+    .bg-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+    .bg-card.selected { border-color: var(--gold); border-width: 2px; }
+    .bg-swatch { height: 56px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; }
+    .bg-label { padding: 5px 6px; font-size: 10px; color: var(--muted); background: var(--white); border-top: 1px solid var(--border); }
+    .enhance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.5rem; }
+    .enhance-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; background: var(--white); font-size: 12px; color: var(--text); }
+    .enhance-item:hover, .enhance-item.on { border-color: var(--gold); background: var(--gold-pale); }
+    .enhance-item input { accent-color: var(--gold); width: 13px; height: 13px; }
+    .var-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+    .var-btn { flex: 1; padding: 9px; border: 1px solid var(--border-mid); border-radius: 8px; background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; text-align: center; transition: all 0.15s; }
+    .var-btn.selected { background: var(--gold); border-color: var(--gold); color: var(--deep); }
+    .generate-btn { width: 100%; padding: 14px; background: var(--gold); color: var(--deep); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .generate-btn:hover { background: #e0aa42; }
+    .step-nav { display: flex; justify-content: space-between; margin-top: 1.5rem; gap: 10px; }
+    .btn-back-step { padding: 10px 20px; border: 1px solid var(--border-mid); border-radius: 8px; background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; }
+    .btn-back-step:hover { border-color: var(--gold); }
+    .btn-next-step { padding: 10px 24px; border: none; border-radius: 8px; background: var(--deep); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--gold-light); cursor: pointer; }
+    .btn-next-step:hover { background: #2e1f0d; }
+    .progress-wrap { display: none; padding: 2rem 1.5rem; text-align: center; }
+    .progress-wrap.visible { display: block; }
+    .progress-label-text { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill { height: 100%; background: var(--gold); border-radius: 3px; width: 0%; transition: width 0.5s ease; }
+    .progress-pct { font-size: 12px; color: var(--gold); }
+    .results-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .results-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .results-header h2 { font-size: 15px; font-weight: 500; color: var(--text); }
+    .results-body { padding: 1.5rem; }
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+    .result-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .result-actions { display: flex; gap: 6px; padding: 8px; border-top: 1px solid var(--border); }
+    .result-btn { flex: 1; padding: 6px 0; border: 1px solid var(--border-mid); border-radius: 6px; background: var(--white); font-size: 11px; color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .result-btn:hover, .result-btn.primary { background: var(--gold); color: var(--deep); border-color: var(--gold); }
+    .new-shoot-btn { width: 100%; padding: 11px; background: var(--deep); color: var(--gold-light); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 0.5rem; }
+    .gallery-panel { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-top: 20px; }
+    .gallery-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .gallery-header h2 { font-size: 15px; font-weight: 500; color: var(--text); }
+    .gallery-empty { padding: 3rem; text-align: center; color: var(--muted); font-size: 14px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; padding: 1.5rem; }
+    .gallery-item { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .gallery-item img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .gallery-item-label { padding: 6px 10px; font-size: 11px; color: var(--muted); }
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--deep); color: var(--gold-light); padding: 11px 22px; border-radius: 30px; font-size: 13px; border: 1px solid var(--border-mid); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; white-space: nowrap; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    @media (max-width: 900px) { .sidebar { display: none; } .main { margin-left: 0; } .stats-row { grid-template-columns: 1fr 1fr; } .studio-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="index.html" class="sidebar-brand">Drape<span>ly</span></a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Studio</div>
+    <a class="nav-item active" href="dashboard.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+      New photoshoot
+    </a>
+    <a class="nav-item" href="#"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>My gallery</a>
+    <div class="nav-section-label" style="margin-top:8px;">Account</div>
+    <a class="nav-item" href="auth.html"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>Sign out</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex; align-items:baseline; gap:6px;">
+      <div class="topbar-title">My Studio</div>
+      <div class="topbar-sub" id="topbar-sub">Welcome back!</div>
+    </div>
+    <div class="beta-pill">✦ Beta — Free access</div>
+  </div>
+
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
+      <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
+      <div class="stat-card"><div class="stat-label">Suits uploaded</div><div class="stat-val" id="stat-suits">0</div><div class="stat-note">Any hanger or flat photo</div></div>
+      <div class="stat-card"><div class="stat-label">Your plan</div><div class="stat-val" style="font-size:24px;padding-top:4px;">Free</div><div class="stat-note">Unlimited during beta</div></div>
+    </div>
+
+    <div class="studio-grid">
+      <div class="studio-card">
+        <div class="studio-header">
+          <div><h2>New AI Photoshoot</h2><p>Complete the steps to generate your images</p></div>
+          <div class="step-pills">
+            <div class="step-pill active" id="pill-0">1</div>
+            <div class="step-pill" id="pill-1">2</div>
+            <div class="step-pill" id="pill-2">3</div>
+            <div class="step-pill" id="pill-3">4</div>
+          </div>
+        </div>
+
+        <div class="studio-body" id="studio-body">
+          <!-- STEP 1 -->
+          <div class="step-panel active" id="step-0">
+            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px;">STEP 1 — UPLOAD YOUR SUIT</div>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('suit-input').click()">
+              <div id="upload-empty">
+                <div class="upload-icon-wrap"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
+                <div class="upload-title">Click to upload your suit photo</div>
+                <div class="upload-hint">JPG or PNG · Any size · We compress automatically</div>
+              </div>
+              <img id="suit-preview" class="upload-preview" />
+              <button class="clear-file-btn" id="clear-btn" onclick="clearSuit(event)">✕</button>
+            </div>
+            <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
+            <div style="margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid var(--border-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#fff;outline:none;" /></div>
+              <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;">Suit type</div><select style="width:100%;padding:10px 14px;border:1px solid var(--border-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#fff;outline:none;"><option>Salwar Kameez</option><option>Anarkali</option><option>Patiala Suit</option><option>Sharara Set</option><option>Palazzo Set</option><option>Lehenga Choli</option><option>Other</option></select></div>
+            </div>
+            <div class="step-nav"><div></div><button class="btn-next-step" onclick="goStep(1)">Choose Model →</button></div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="step-panel" id="step-1">
+            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px;">STEP 2 — CHOOSE MODEL & POSE</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Pose style</div>
+            <div class="pose-wrap">
+              <div class="pose-tag selected" onclick="selectPose(this)">Standing front</div>
+              <div class="pose-tag" onclick="selectPose(this)">3/4 turn</div>
+              <div class="pose-tag" onclick="selectPose(this)">Side profile</div>
+              <div class="pose-tag" onclick="selectPose(this)">Walking pose</div>
+              <div class="pose-tag" onclick="selectPose(this)">Sitting graceful</div>
+              <div class="pose-tag" onclick="selectPose(this)">Full length</div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select model</div>
+            <div class="models-grid">
+              <div class="model-card selected" onclick="selectModel(this,0)"><div class="model-avatar" style="background:linear-gradient(160deg,#f5ede0,#e8d5ba);">👩🏽<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">5'6" · Medium · Fair</div></div></div>
+              <div class="model-card" onclick="selectModel(this,1)"><div class="model-avatar" style="background:linear-gradient(160deg,#e8d0b5,#d4b896);">👩🏾<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">5'7" · Slim · Dusky</div></div></div>
+              <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar" style="background:linear-gradient(160deg,#ede5d8,#d9c9b2);">👩🏼<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">5'5" · Petite · Wheatish</div></div></div>
+              <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar" style="background:linear-gradient(160deg,#f2e8d8,#e0cfb5);">👩🏽<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">5'8" · Athletic · Golden</div></div></div>
+              <div class="model-card" onclick="selectModel(this,4)"><div class="model-avatar" style="background:linear-gradient(160deg,#c8b49a,#b09078);">👩🏿<div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">5'6" · Curvy · Deep</div></div></div>
+              <div class="model-card" style="border-style:dashed;" onclick="showToast('Custom model upload coming soon!')"><div class="model-avatar" style="background:var(--gold-pale);font-size:24px;">+<div class="model-check"></div></div><div class="model-info"><div class="model-name" style="color:var(--gold);">Upload model</div><div class="model-spec">Coming soon</div></div></div>
+            </div>
+            <div class="step-nav"><button class="btn-back-step" onclick="goStep(0)">← Back</button><button class="btn-next-step" onclick="goStep(2)">Choose Background →</button></div>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="step-panel" id="step-2">
+            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px;">STEP 3 — SET THE BACKGROUND</div>
+            <div class="bg-grid">
+              <div class="bg-card selected" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f5e6c8,#e8c97e);color:#7a5c1e;">Warm</div><div class="bg-label">Studio Warm</div></div>
+              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#c8d8f0,#8aa9d4);color:#1a3a5c;">Sky</div><div class="bg-label">Sky Blue</div></div>
+              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#2d1a0e,#5c3a1e);color:#e8c07a;">Royal</div><div class="bg-label">Royal Dark</div></div>
+              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#e8f5e1,#b8dda0);color:#2d5a1e;">Garden</div><div class="bg-label">Botanical</div></div>
+              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f0e8d8,#d4c4a8);color:#5a4a2e;">Haveli</div><div class="bg-label">Heritage</div></div>
+              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#fce4ec,#f48fb1);color:#880e4f;">Rose</div><div class="bg-label">Floral Pink</div></div>
+              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#7f7fd5;">Night</div><div class="bg-label">Evening Glam</div></div>
+              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:#f8f8f8;color:#bbb;">White</div><div class="bg-label">Clean White</div></div>
+            </div>
+            <div class="step-nav"><button class="btn-back-step" onclick="goStep(1)">← Back</button><button class="btn-next-step" onclick="goStep(3)">Finalize →</button></div>
+          </div>
+
+          <!-- STEP 4 -->
+          <div class="step-panel" id="step-3">
+            <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:14px;letter-spacing:0.5px;">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
+            <div style="background:var(--gold-pale);border:1px solid var(--border-mid);border-radius:10px;padding:14px;margin-bottom:1.25rem;display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="font-size:12px;color:var(--text);">🧣 Suit uploaded</div>
+              <div style="font-size:12px;color:var(--text);">👩🏽 Model selected</div>
+              <div style="font-size:12px;color:var(--text);">🎨 Background set</div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;">AI enhancements</div>
+            <div class="enhance-grid">
+              <label class="enhance-item on"><input type="checkbox" checked /> Professional lighting</label>
+              <label class="enhance-item on"><input type="checkbox" checked /> Dupatta styling</label>
+              <label class="enhance-item on"><input type="checkbox" checked /> Jewellery suggestion</label>
+              <label class="enhance-item"><input type="checkbox" /> Soft shadow effect</label>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;">Number of images</div>
+            <div class="var-row">
+              <button class="var-btn selected" onclick="selectVars(this)">1 image</button>
+              <button class="var-btn" onclick="selectVars(this)">2 images</button>
+              <button class="var-btn" onclick="selectVars(this)">4 images</button>
+            </div>
+            <button class="generate-btn" onclick="startGenerate()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+              Generate AI Photoshoot
+            </button>
+            <div class="step-nav" style="margin-top:1rem;"><button class="btn-back-step" onclick="goStep(2)">← Back</button><div></div></div>
+          </div>
+        </div>
+
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-label-text" id="progress-label">Preparing...</div>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="progress-pct" id="progress-pct">0%</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:12px;">This takes 60–120 seconds. Please wait ☕</div>
+        </div>
+      </div>
+
+      <div class="results-card">
+        <div class="results-header"><h2>Generated photos</h2><span style="font-size:12px;color:var(--muted);">Ready to download</span></div>
+        <div class="results-body" id="results-body">
+          <div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);">
+            <div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">✨</div>
+            <div style="font-size:13px;line-height:1.7;">Your AI-generated photos will appear here after you click Generate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-panel">
+      <div class="gallery-header"><h2>My photoshoot gallery</h2><span style="font-size:12px;color:var(--muted);">All your generated images</span></div>
+      <div id="gallery-body"><div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photoshoots yet — generate your first one above!</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  var { createClient } = window.supabase;
+  var sb = createClient(
+    'https://oqmoneclnirnhqpcdeqy.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+  );
+
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) { window.location.href = 'auth.html'; return; }
+    var user = r.data.session.user;
+    var name = (user.user_metadata && user.user_metadata.first_name) || user.email.split('@')[0];
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('user-avatar').textContent = name.slice(0,2).toUpperCase();
+    document.getElementById('topbar-sub').textContent = 'Welcome back, ' + name + '!';
+  });
+
+  var currentStep = 0;
+  var selectedModelIndex = 0;
+  var galleryImages = [];
+
+  var progressMsgs = [
+    'Compressing your suit photo...',
+    'Sending to AI model...',
+    'Analysing garment details...',
+    'Compositing onto model...',
+    'Applying lighting and enhancements...',
+    'Almost ready...'
+  ];
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 3500);
+  }
+
+  function goStep(n) {
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    document.getElementById('pill-' + currentStep).classList.remove('active');
+    if (n > currentStep) document.getElementById('pill-' + currentStep).classList.add('done');
+    else document.getElementById('pill-' + currentStep).classList.remove('done');
+    currentStep = n;
+    document.getElementById('step-' + n).classList.add('active');
+    document.getElementById('pill-' + n).classList.add('active');
+  }
+
+  function loadSuit(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      document.getElementById('suit-preview').src = ev.target.result;
+      document.getElementById('suit-preview').style.display = 'block';
+      document.getElementById('upload-empty').style.display = 'none';
+      document.getElementById('clear-btn').style.display = 'flex';
+      document.getElementById('upload-zone').classList.add('has-file');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearSuit(e) {
+    e.stopPropagation();
+    document.getElementById('suit-preview').style.display = 'none';
+    document.getElementById('upload-empty').style.display = 'block';
+    document.getElementById('clear-btn').style.display = 'none';
+    document.getElementById('upload-zone').classList.remove('has-file');
+    document.getElementById('suit-input').value = '';
+  }
+
+  function selectModel(card, idx) {
+    document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+    card.classList.add('selected');
+    selectedModelIndex = idx;
+  }
+
+  function selectPose(tag) {
+    document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
+    tag.classList.add('selected');
+  }
+
+  function selectBg(card) {
+    document.querySelectorAll('.bg-card').forEach(function(c){ c.classList.remove('selected'); });
+    card.classList.add('selected');
+  }
+
+  function selectVars(btn) {
+    document.querySelectorAll('.var-btn').forEach(function(b){ b.classList.remove('selected'); });
+    btn.classList.add('selected');
+  }
+
+  function getVarCount() {
+    var s = document.querySelector('.var-btn.selected');
+    return s ? parseInt(s.textContent) : 1;
+  }
+
+  function compressImage(file) {
+    return new Promise(function(resolve) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var MAX = 768;
+          var w = img.width, h = img.height;
+          if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+          else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.75));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function startGenerate() {
+    var suitFile = document.getElementById('suit-input').files[0];
+    if (!suitFile) { showToast('⚠️ Please upload your suit photo first!'); goStep(0); return; }
+
+    var progressWrap = document.getElementById('progress-wrap');
+    var progressFill = document.getElementById('progress-fill');
+    var progressLabel = document.getElementById('progress-label');
+    var progressPct = document.getElementById('progress-pct');
+    var studioBody = document.getElementById('studio-body');
+
+    studioBody.style.display = 'none';
+    progressWrap.classList.add('visible');
+    progressFill.style.width = '0%';
+    progressPct.textContent = '0%';
+
+    var progress = 0;
+    var interval = setInterval(function() {
+      if (progress < 88) {
+        progress += Math.random() * 5 + 1;
+        if (progress > 88) progress = 88;
+        progressFill.style.width = Math.round(progress) + '%';
+        progressPct.textContent = Math.round(progress) + '%';
+        progressLabel.textContent = progressMsgs[Math.min(Math.floor(progress / 16), progressMsgs.length - 1)];
+      }
+    }, 1000);
+
+    try {
+      progressLabel.textContent = 'Compressing your suit photo...';
+      var compressed = await compressImage(suitFile);
+      var count = getVarCount();
+      var results = [];
+
+      for (var i = 0; i < count; i++) {
+        progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
+        var response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex })
+        });
+
+        var data = await response.json();
+        if (data.error) {
+          clearInterval(interval);
+          progressWrap.classList.remove('visible');
+          studioBody.style.display = 'block';
+          showToast('✗ ' + String(data.error).substring(0, 100));
+          return;
+        }
+        if (data.output && data.output[0]) results.push(data.output[0]);
+      }
+
+      clearInterval(interval);
+      progressFill.style.width = '100%';
+      progressPct.textContent = '100%';
+      progressLabel.textContent = '✨ Your photoshoot is ready!';
+
+      setTimeout(function() {
+        progressWrap.classList.remove('visible');
+        studioBody.style.display = 'block';
+        if (results.length > 0) {
+          showRealResults(results);
+          addToGallery(results);
+          updateStats(results.length);
+          showToast('✓ Photoshoot ready! Download your images.');
+        } else {
+          showToast('✗ No images returned. Please try again.');
+        }
+        goStep(0);
+      }, 600);
+
+    } catch(err) {
+      clearInterval(interval);
+      progressWrap.classList.remove('visible');
+      studioBody.style.display = 'block';
+      showToast('✗ ' + err.message);
+    }
+  }
+
+  function showRealResults(images) {
+    var body = document.getElementById('results-body');
+    var html = '<div class="results-grid">';
+    images.forEach(function(url, i) {
+      html += '<div class="result-item"><img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" onerror="this.parentNode.style.background=\'#f5f0e8\'" /><div class="result-actions"><button class="result-btn" onclick="showToast(\'Refine coming soon!\')">Refine</button><button class="result-btn primary" onclick="downloadImg(\'' + url + '\',' + (i+1) + ')">Download</button></div></div>';
+    });
+    html += '</div><button class="new-shoot-btn" onclick="newShoot()">+ Start a new photoshoot</button>';
+    body.innerHTML = html;
+  }
+
+  function downloadImg(url, num) {
+    var a = document.createElement('a');
+    a.href = url; a.download = 'drapely-' + num + '.jpg'; a.target = '_blank';
+    a.click();
+    showToast('✓ Downloading image ' + num + '...');
+  }
+
+  function addToGallery(images) {
+    galleryImages = images.concat(galleryImages);
+    var body = document.getElementById('gallery-body');
+    var html = '<div class="gallery-grid">';
+    galleryImages.forEach(function(url, i) {
+      html += '<div class="gallery-item"><img src="' + url + '" onerror="this.style.display=\'none\'" /><div class="gallery-item-label">Photoshoot ' + (galleryImages.length - i) + '</div></div>';
+    });
+    html += '</div>';
+    body.innerHTML = html;
+  }
+
+  function updateStats(imgCount) {
+    document.getElementById('stat-shoots').textContent = (parseInt(document.getElementById('stat-shoots').textContent) || 0) + 1;
+    document.getElementById('stat-images').textContent = (parseInt(document.getElementById('stat-images').textContent) || 0) + imgCount;
+    document.getElementById('stat-suits').textContent = (parseInt(document.getElementById('stat-suits').textContent) || 0) + 1;
+  }
+
+  function newShoot() {
+    document.getElementById('results-body').innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);"><div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">✨</div><div style="font-size:13px;line-height:1.7;">Your AI-generated photos will appear here after you click Generate</div></div>';
+    clearSuit({ stopPropagation: function(){} });
+    document.getElementById('suit-input').value = '';
+    goStep(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.enhance-item').forEach(function(item) {
+    item.addEventListener('click', function(){ item.classList.toggle('on'); });
+  });
+</script>
+</body>
+</html>
