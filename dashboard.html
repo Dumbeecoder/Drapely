@@ -7,19 +7,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--surface:#FDFAF5;--white:#fff}
-    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh}
+    :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--surface: #ffffff;--white:#fff}
+    body{font-family:'DM Sans',sans-serif;background:#ffffff;color:var(--text);min-height:100vh}
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
     .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
     .sidebar-brand span{color:var(--gold)}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(240,217,168,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-    .nav-item:hover{background:rgba(201,151,58,0.08);color:var(--gold-light)}
-    .nav-item.active{background:rgba(201,151,58,0.12);color:var(--gold-light)}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.5);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+    .nav-item:hover{background:rgba(233,30,99,0.08);color:var(--gold-light)}
+    .nav-item.active{background:rgba(233,30,99,0.12);color:var(--gold-light)}
     .nav-icon{width:16px;height:16px;flex-shrink:0}
-    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,217,168,0.2);padding:12px 12px 4px;font-weight:500}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500}
     .sidebar-footer{padding:0 0.75rem;border-top:1px solid var(--border);padding-top:1rem}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(201,151,58,0.06);border:1px solid var(--border)}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.06);border:1px solid var(--border)}
     .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--deep);flex-shrink:0}
     .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-plan{font-size:10px;color:var(--gold)}
@@ -41,7 +41,7 @@
     .studio-header h2{font-size:15px;font-weight:500;color:var(--text)}
     .studio-header p{font-size:12px;color:var(--muted);margin-top:2px}
     .step-pills{display:flex;gap:6px}
-    .step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:var(--surface);border:1px solid var(--border);color:var(--muted);transition:all 0.2s}
+    .step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:#ffffff;border:1px solid var(--border);color:var(--muted);transition:all 0.2s}
     .step-pill.active{background:var(--gold);border-color:var(--gold);color:var(--deep)}
     .step-pill.done{background:#dcfce7;border-color:#86efac;color:#16a34a}
     .studio-body{padding:1.5rem}
@@ -49,16 +49,16 @@
     .step-panel.active{display:block}
     .step-label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px}
     .upload-zone{border:2px dashed var(--border-mid);border-radius:12px;background:var(--gold-pale);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
-    .upload-zone:hover{border-color:var(--gold);background:#F5E9CC}
+    .upload-zone:hover{border-color:var(--gold);background:#ffffff}
     .upload-zone.has-file{padding:0;border-style:solid;border-color:var(--gold)}
-    .upload-icon-wrap{width:52px;height:52px;background:rgba(201,151,58,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+    .upload-icon-wrap{width:52px;height:52px;background:rgba(233,30,99,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
     .upload-icon-wrap svg{width:22px;height:22px;color:var(--gold)}
     .upload-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
     .upload-hint{font-size:12px;color:var(--muted)}
     .upload-preview{width:100%;max-height:300px;object-fit:contain;display:none;border-radius:10px;padding:1rem;background:var(--gold-pale)}
-    .clear-file-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(15,10,4,0.6);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center}
+    .clear-file-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center}
     .models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
-    .model-card{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:var(--surface)}
+    .model-card{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#ffffff}
     .model-card:hover{border-color:var(--gold);transform:translateY(-1px)}
     .model-card.selected{border-color:var(--gold);border-width:2px}
     .model-avatar{height:200px;position:relative;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;background:var(--gold-pale)}
@@ -80,17 +80,17 @@
     .enhance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
     .enhance-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;background:var(--white);font-size:12px;color:var(--text)}
     .enhance-item:hover,.enhance-item.on{border-color:var(--gold);background:var(--gold-pale)}
-    .enhance-item input{accent-color:var(--gold);width:13px;height:13px}
+    .enhance-item input{accent-color:#E91E63;width:13px;height:13px}
     .var-row{display:flex;gap:8px;margin-bottom:1.5rem}
     .var-btn{flex:1;padding:9px;border:1px solid var(--border-mid);border-radius:8px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.15s}
     .var-btn.selected{background:var(--gold);border-color:var(--gold);color:var(--deep)}
     .generate-btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
-    .generate-btn:hover{background:#e0aa42}
+    .generate-btn:hover{background:#c2185b}
     .step-nav{display:flex;justify-content:space-between;margin-top:1.5rem;gap:10px}
     .btn-back{padding:10px 20px;border:1px solid var(--border-mid);border-radius:8px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);cursor:pointer}
     .btn-back:hover{border-color:var(--gold)}
     .btn-next{padding:10px 24px;border:none;border-radius:8px;background:var(--deep);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--gold-light);cursor:pointer}
-    .btn-next:hover{background:#2e1f0d}
+    .btn-next:hover{background:#111111}
     .progress-wrap{display:none;padding:2rem 1.5rem;text-align:center}
     .progress-wrap.visible{display:block}
     .progress-label-text{font-size:13px;color:var(--muted);margin-bottom:12px}
@@ -255,7 +255,7 @@
           <div class="step-panel" id="step-2">
             <div class="step-label">STEP 3 — SET THE BACKGROUND</div>
             <div class="bg-grid">
-              <div class="bg-card selected" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f5e6c8,#e8c97e);color:#7a5c1e;">Warm</div><div class="bg-label">Studio Warm</div></div>
+              <div class="bg-card selected" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f5e6c8,#e8c97e);color:#000000;">Warm</div><div class="bg-label">Studio Warm</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#c8d8f0,#8aa9d4);color:#1a3a5c;">Sky</div><div class="bg-label">Sky Blue</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#2d1a0e,#5c3a1e);color:#e8c07a;">Royal</div><div class="bg-label">Royal Dark</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#e8f5e1,#b8dda0);color:#2d5a1e;">Garden</div><div class="bg-label">Botanical</div></div>
@@ -323,18 +323,18 @@
 
 
 <!-- CREDITS MODAL -->
-<div id="credits-modal" onclick="handleModalClick(event)" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+<div id="credits-modal" onclick="handleModalClick(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem;">
   <div id="credits-modal-inner" style="background:#fff;border-radius:14px;padding:1.5rem;max-width:320px;width:100%;text-align:center;position:relative;max-height:90vh;overflow-y:auto;">
     <button onclick="hideBuyCredits()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:#999;line-height:1;">✕</button>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#2A1F0E;margin-bottom:4px;">Buy Credits</div>
-    <div style="font-size:12px;color:#7A6A52;margin-bottom:1.25rem;line-height:1.6;">₹100 = 10 photos · Pay via UPI<br/>Credits added within 30 minutes</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#000000;margin-bottom:4px;">Buy Credits</div>
+    <div style="font-size:12px;color:#444444;margin-bottom:1.25rem;line-height:1.6;">₹100 = 10 photos · Pay via UPI<br/>Credits added within 30 minutes</div>
     <div style="background:#f8f4ee;border-radius:10px;padding:1rem;margin-bottom:1rem;">
       <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=100%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;" alt="UPI QR" />
-      <div style="font-size:12px;font-weight:500;color:#2A1F0E;margin-top:8px;">GPay · PhonePe · Paytm</div>
-      <div style="font-size:11px;color:#7A6A52;margin-top:3px;">6352197977@ptyes</div>
-      <div style="font-size:13px;font-weight:500;color:#C9973A;margin-top:5px;">₹100</div>
+      <div style="font-size:12px;font-weight:500;color:#000000;margin-top:8px;">GPay · PhonePe · Paytm</div>
+      <div style="font-size:11px;color:#444444;margin-top:3px;">6352197977@ptyes</div>
+      <div style="font-size:13px;font-weight:500;color:#E91E63;margin-top:5px;">₹100</div>
     </div>
-    <div style="text-align:left;background:#fbf4e8;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:11px;color:#7A6A52;line-height:1.9;">
+    <div style="text-align:left;background:#fbf4e8;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:11px;color:#444444;line-height:1.9;">
       1. Scan QR and pay ₹100<br/>
       2. Screenshot the payment<br/>
       3. Send on WhatsApp below<br/>
