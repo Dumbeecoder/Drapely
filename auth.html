@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--error:#dc2626;--success:#16a34a}
+    :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--error:#dc2626;--success:#16a34a}
     html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--deep)}
     .page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
     .left{background:var(--deep);display:flex;flex-direction:column;justify-content:space-between;padding:2.5rem;border-right:1px solid var(--border)}
@@ -17,12 +17,12 @@
     .left-title{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--gold-light);line-height:1.15;margin-bottom:1.5rem}
     .left-title em{font-style:italic;color:var(--gold)}
     .left-points{list-style:none;display:flex;flex-direction:column;gap:14px}
-    .left-points li{display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(240,217,168,0.55)}
+    .left-points li{display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(255,255,255,0.6)}
     .dot{width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
-    .left-footer{font-size:12px;color:rgba(240,217,168,0.2)}
-    .right{background:#FDFAF5;display:flex;align-items:center;justify-content:center;padding:2.5rem}
+    .left-footer{font-size:12px;color:rgba(255,255,255,0.2)}
+    .right{background:#ffffff;display:flex;align-items:center;justify-content:center;padding:2.5rem}
     .auth-box{width:100%;max-width:420px}
-    .tabs{display:flex;background:rgba(201,151,58,0.08);border-radius:10px;padding:4px;margin-bottom:2rem;border:1px solid var(--border)}
+    .tabs{display:flex;background:rgba(233,30,99,0.08);border-radius:10px;padding:4px;margin-bottom:2rem;border:1px solid var(--border)}
     .tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:500;color:var(--muted);border-radius:7px;cursor:pointer;transition:all 0.2s}
     .tab.active{background:var(--gold);color:var(--deep)}
     .form-panel{display:none}
@@ -31,8 +31,8 @@
     .form-sub{font-size:13px;color:var(--muted);margin-bottom:2rem;line-height:1.6}
     .field{margin-bottom:16px}
     .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
-    .field input{width:100%;padding:12px 16px;border:1px solid rgba(201,151,58,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:#fff;outline:none}
-    .field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,151,58,0.1)}
+    .field input{width:100%;padding:12px 16px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:#fff;outline:none}
+    .field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(233,30,99,0.1)}
     .field input::placeholder{color:#C4B49A}
     .field input.err{border-color:var(--error)}
     .field-error{font-size:12px;color:var(--error);margin-top:5px;display:none}
@@ -41,8 +41,8 @@
     .forgot{display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:16px}
     .forgot a{font-size:12px;color:var(--gold);text-decoration:none}
     .btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:1.5rem;transition:background 0.2s}
-    .btn:hover{background:#e0aa42}
-    .btn:disabled{background:#d4b87a;cursor:not-allowed}
+    .btn:hover{background:#c2185b}
+    .btn:disabled{background:#f06292;cursor:not-allowed}
     .terms{font-size:12px;color:var(--muted);text-align:center;line-height:1.8}
     .terms a{color:var(--gold);text-decoration:none}
     .success-box{display:none;text-align:center;padding:2rem 0}
