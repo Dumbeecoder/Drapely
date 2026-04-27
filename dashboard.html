@@ -364,22 +364,28 @@ sb.auth.getSession().then(function(r) {
   if (!r.data.session) { window.location.href = 'auth.html'; return; }
   var user = r.data.session.user;
   var meta = user.user_metadata || {};
-  var fname = meta.first_name || '';
-  var name = (fname && fname.length > 1) ? fname : user.email.split('@')[0];
-  document.getElementById('user-name').textContent = name;
-  document.getElementById('user-avatar').textContent = name.slice(0,2).toUpperCase();
-  document.getElementById('topbar-sub').textContent = 'Welcome back, ' + name + '!';
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var fullname = (fname + ' ' + lname).trim();
+  var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
+  var initials = fname && lname ? (fname[0] + lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('topbar-sub').textContent = 'Welcome back, ' + (fname || displayName) + '!';
   loadCredits(user.id);
 });
 
 function loadCredits(userId) {
   sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
-    if (r.data) {
+    if (r.data !== null && r.data !== undefined) {
       document.getElementById('stat-credits').textContent = r.data.balance;
     } else {
-      // First time user - insert 3 free credits
-      sb.from('credits').insert({ user_id: userId, balance: 3 }).then(function() {
-        document.getElementById('stat-credits').textContent = '3';
+      // No credits row yet - show 3 and try to create
+      document.getElementById('stat-credits').textContent = '3';
+      sb.from('credits').upsert({ user_id: userId, balance: 3 }, { onConflict: 'user_id' }).then(function(res) {
+        if (res.error) {
+          console.log('Credits upsert error:', res.error.message);
+        }
       });
     }
   });
