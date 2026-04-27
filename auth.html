@@ -87,7 +87,7 @@
         <div class="form-sub">Sign in to your Drapely account.</div>
         <div class="field"><label>Email address</label><input type="email" id="si-email" placeholder="you@example.com" /><div class="field-error" id="e-si-email">Enter a valid email</div></div>
         <div class="field"><label>Password</label><input type="password" id="si-pass" placeholder="Your password" /><div class="field-error" id="e-si-pass">Enter your password</div></div>
-        <div class="forgot"><a href="#">Forgot password?</a></div>
+        <div class="forgot"><a href="#" onclick="forgotPassword()">Forgot password?</a></div>
         <button class="btn" id="si-btn" onclick="doSignIn()">Sign in to Drapely</button>
         <div class="terms">No account? <a href="#" onclick="goTab('signup')">Create one free</a></div>
       </div>
@@ -182,6 +182,20 @@ async function doSignUp(){
   document.getElementById('success-box').classList.add('show');
   document.getElementById('success-title').textContent='Welcome, '+fname+'!';
   document.getElementById('success-msg').textContent='We sent a confirmation to '+email+'. Check your inbox then sign in.';
+}
+
+async function forgotPassword(){
+  var email = document.getElementById('si-email').value.trim();
+  if(!email || !email.includes('@')){
+    toast('⚠️ Enter your email address first');
+    document.getElementById('si-email').focus();
+    return;
+  }
+  var r = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://drapely.vercel.app/auth.html'
+  });
+  if(r.error){ toast('✗ ' + r.error.message); return; }
+  toast('✓ Password reset link sent to ' + email);
 }
 
 function goBack(){
