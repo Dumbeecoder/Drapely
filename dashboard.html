@@ -171,7 +171,11 @@
       <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
       <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
       <div class="stat-card"><div class="stat-label">Suits uploaded</div><div class="stat-val" id="stat-suits">0</div><div class="stat-note">Any hanger or flat photo</div></div>
-      <div class="stat-card"><div class="stat-label">Your plan</div><div class="stat-val" style="font-size:24px;padding-top:4px;">Free</div><div class="stat-note">Unlimited during beta</div></div>
+      <div class="stat-card" style="border-color:var(--gold);">
+        <div class="stat-label">Your credits</div>
+        <div class="stat-val" id="stat-credits" style="font-size:36px;">...</div>
+        <div class="stat-note"><button onclick="showBuyCredits()" style="background:none;border:none;color:var(--gold);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;">+ Buy more credits</button></div>
+      </div>
     </div>
 
     <div class="studio-grid">
@@ -320,6 +324,37 @@
   </div>
 </div>
 
+
+<!-- CREDITS MODAL -->
+<div id="credits-modal" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,0.7);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:2rem;max-width:380px;width:90%;text-align:center;position:relative;">
+    <button onclick="hideBuyCredits()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#999;">✕</button>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:#2A1F0E;margin-bottom:6px;">Buy Credits</div>
+    <div style="font-size:13px;color:#7A6A52;margin-bottom:1.5rem;line-height:1.6;">₹100 = 10 photos · Pay via UPI · Credits added within 30 minutes</div>
+
+    <!-- QR CODE -->
+    <div style="background:#f8f4ee;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=100%26cu=INR%26tn=Drapely+Credits" style="width:180px;height:180px;border-radius:8px;" alt="UPI QR" />
+      <div style="font-size:13px;font-weight:500;color:#2A1F0E;margin-top:10px;">Scan with GPay, PhonePe or Paytm</div>
+      <div style="font-size:12px;color:#7A6A52;margin-top:4px;">UPI: 6352197977@ptyes</div>
+      <div style="font-size:14px;font-weight:500;color:#C9973A;margin-top:6px;">Amount: ₹100</div>
+    </div>
+
+    <!-- STEPS -->
+    <div style="text-align:left;background:#fbf4e8;border-radius:8px;padding:12px 16px;margin-bottom:1.25rem;">
+      <div style="font-size:12px;color:#2A1F0E;font-weight:500;margin-bottom:8px;">How to get your credits:</div>
+      <div style="font-size:12px;color:#7A6A52;line-height:2;">1. Scan QR and pay ₹100<br/>2. Take a screenshot of payment<br/>3. Send screenshot on WhatsApp<br/>4. Credits added within 30 mins ✓</div>
+    </div>
+
+    <!-- WHATSAPP BUTTON -->
+    <a href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9100%20for%20Drapely%20credits.%20My%20email%20is%20" onclick="appendEmail(this)" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;margin-bottom:10px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+      Send Payment Screenshot on WhatsApp
+    </a>
+    <div style="font-size:11px;color:#7A6A52;">Questions? WhatsApp us at +91 63521 97977</div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -329,7 +364,7 @@ var sb = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
 
-// Load user
+// Load user and credits
 sb.auth.getSession().then(function(r) {
   if (!r.data.session) { window.location.href = 'auth.html'; return; }
   var user = r.data.session.user;
@@ -339,7 +374,38 @@ sb.auth.getSession().then(function(r) {
   document.getElementById('user-name').textContent = name;
   document.getElementById('user-avatar').textContent = name.slice(0,2).toUpperCase();
   document.getElementById('topbar-sub').textContent = 'Welcome back, ' + name + '!';
+  loadCredits(user.id);
 });
+
+function loadCredits(userId) {
+  sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
+    if (r.data) {
+      document.getElementById('stat-credits').textContent = r.data.balance;
+    } else {
+      // First time user - insert 3 free credits
+      sb.from('credits').insert({ user_id: userId, balance: 3 }).then(function() {
+        document.getElementById('stat-credits').textContent = '3';
+      });
+    }
+  });
+}
+
+function showBuyCredits() {
+  var modal = document.getElementById('credits-modal');
+  modal.style.display = 'flex';
+}
+
+function hideBuyCredits() {
+  document.getElementById('credits-modal').style.display = 'none';
+}
+
+function appendEmail(el) {
+  sb.auth.getSession().then(function(r) {
+    if (r.data.session) {
+      el.href = el.href + encodeURIComponent(r.data.session.user.email);
+    }
+  });
+}
 
 // Sign out
 async function doSignOut() {
@@ -416,7 +482,14 @@ function startGenerate() {
   var suitFile = document.getElementById('suit-input').files[0];
   if (!suitFile) { showToast('⚠️ Please upload your suit photo first!'); goStep(0); return; }
 
-  // Show coming soon message — AI activates when Replicate is connected
+  // Check credits
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  if (credits <= 0) {
+    showToast('⚠️ No credits left! Buy more to generate photos.');
+    showBuyCredits();
+    return;
+  }
+
   showToast('✨ AI photoshoot activating soon! You will be notified when ready.');
 
   // Update stats to show activity
