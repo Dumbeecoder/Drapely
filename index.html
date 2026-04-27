@@ -10,22 +10,22 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --gold: #C9973A;
-      --gold-light: #F0D9A8;
-      --gold-pale: #FBF4E8;
-      --deep: #0F0A04;
-      --deep2: #1C1309;
-      --muted: #7A6A52;
-      --text: #2A1F0E;
-      --border: rgba(201,151,58,0.18);
-      --border-mid: rgba(201,151,58,0.35);
+      --gold: #E91E63;
+      --gold-light: #ffffff;
+      --gold-pale: #ffffff;
+      --deep: #000000;
+      --deep2: #000000;
+      --muted: #444444;
+      --text: #000000;
+      --border: rgba(233,30,99,0.2);
+      --border-mid: rgba(233,30,99,0.4);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       font-family: 'DM Sans', sans-serif;
-      background: #FDFAF5;
+      background: #ffffff;
       color: var(--text);
       overflow-x: hidden;
     }
@@ -33,7 +33,7 @@
     /* ── NAV ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(15,10,4,0.92);
+      background: rgba(0,0,0,0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
@@ -57,7 +57,7 @@
 
     .nav-links a {
       font-size: 13px;
-      color: rgba(240,217,168,0.6);
+      color: rgba(255,255,255,0.65);
       text-decoration: none;
       letter-spacing: 0.5px;
       transition: color 0.2s;
@@ -75,7 +75,7 @@
       transition: background 0.2s !important;
     }
 
-    .nav-cta:hover { background: #e0aa42 !important; color: var(--deep) !important; }
+    .nav-cta:hover { background: #c2185b !important; color: var(--deep) !important; }
 
     /* ── HERO ── */
     .hero {
@@ -94,7 +94,7 @@
     .hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,151,58,0.08) 0%, transparent 70%);
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(233,30,99,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -125,7 +125,7 @@
 
     .hero-sub {
       font-size: 16px;
-      color: rgba(240,217,168,0.55);
+      color: rgba(255,255,255,0.6);
       max-width: 520px;
       line-height: 1.8;
       margin-bottom: 3rem;
@@ -154,7 +154,7 @@
       display: inline-block;
     }
 
-    .btn-primary:hover { background: #e0aa42; transform: translateY(-1px); }
+    .btn-primary:hover { background: #c2185b; transform: translateY(-1px); }
 
     .btn-outline {
       padding: 14px 36px;
@@ -273,7 +273,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 48px;
       font-weight: 300;
-      color: rgba(201,151,58,0.2);
+      color: rgba(233,30,99,0.2);
       line-height: 1;
       margin-bottom: 1rem;
     }
@@ -312,7 +312,7 @@
       gap: 1px;
       max-width: 1100px;
       margin: 0 auto;
-      border: 1px solid rgba(201,151,58,0.15);
+      border: 1px solid rgba(233,30,99,0.2);
       border-radius: 16px;
       overflow: hidden;
     }
@@ -320,12 +320,12 @@
     .feat-card {
       background: rgba(255,255,255,0.03);
       padding: 2.5rem 2rem;
-      border-right: 1px solid rgba(201,151,58,0.12);
-      border-bottom: 1px solid rgba(201,151,58,0.12);
+      border-right: 1px solid rgba(233,30,99,0.12);
+      border-bottom: 1px solid rgba(233,30,99,0.12);
       transition: background 0.2s;
     }
 
-    .feat-card:hover { background: rgba(201,151,58,0.06); }
+    .feat-card:hover { background: rgba(233,30,99,0.06); }
 
     .feat-icon {
       font-size: 28px;
@@ -342,12 +342,12 @@
 
     .feat-card p {
       font-size: 14px;
-      color: rgba(240,217,168,0.45);
+      color: rgba(255,255,255,0.5);
       line-height: 1.7;
     }
 
     .features-bg .section-title { color: var(--gold-light); }
-    .features-bg .section-sub { color: rgba(240,217,168,0.45); }
+    .features-bg .section-sub { color: rgba(255,255,255,0.5); }
 
     /* ── PRICING ── */
     .pricing-grid {
@@ -427,7 +427,7 @@
       gap: 10px;
     }
 
-    .price-card.featured .price-features li { color: rgba(240,217,168,0.6); border-color: rgba(201,151,58,0.12); }
+    .price-card.featured .price-features li { color: rgba(255,255,255,0.65); border-color: rgba(233,30,99,0.12); }
 
     .price-features li::before {
       content: '';
@@ -538,7 +538,7 @@
 
     .footer-note {
       font-size: 12px;
-      color: rgba(240,217,168,0.3);
+      color: rgba(255,255,255,0.3);
       letter-spacing: 0.3px;
     }
 
@@ -600,7 +600,7 @@
   <section class="hero">
     <div class="hero-eyebrow">AI Photoshoot Studio for Indian Fashion</div>
     <h1 class="hero-title">
-      Your suits deserve<br/><em>photoshoot-level</em> photos
+      Your suits deserve<br/><em>professional-level</em> photos
     </h1>
     <p class="hero-sub">
       Upload your designer suit, choose a model, pick a background — and get professional photoshoot images in seconds. No studio. No photographer. No cost.
@@ -738,7 +738,7 @@
         <div class="price-badge">Coming soon</div>
         <div class="price-name">Pro plan</div>
         <div class="price-amount" style="color:var(--gold-light);">₹499</div>
-        <div class="price-period" style="color:rgba(240,217,168,0.45);">per month · billed monthly</div>
+        <div class="price-period" style="color:rgba(255,255,255,0.5);">per month · billed monthly</div>
         <ul class="price-features">
           <li>Unlimited photoshoots</li>
           <li>Priority AI queue</li>
