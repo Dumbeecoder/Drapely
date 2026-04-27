@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--error:#dc2626}
+    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--error:#dc2626;--success:#16a34a}
     html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--deep)}
     .page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
     .left{background:var(--deep);display:flex;flex-direction:column;justify-content:space-between;padding:2.5rem;border-right:1px solid var(--border)}
@@ -28,8 +28,8 @@
     .form-panel{display:none}
     .form-panel.active{display:block}
     .form-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text);margin-bottom:6px}
-    .form-sub{font-size:13px;color:var(--muted);margin-bottom:2rem;line-height:1.6}
-    .field{margin-bottom:16px}
+    .form-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+    .field{margin-bottom:14px}
     .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
     .field input{width:100%;padding:12px 16px;border:1px solid rgba(201,151,58,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:#fff;outline:none}
     .field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,151,58,0.1)}
@@ -38,36 +38,43 @@
     .field-error{font-size:12px;color:var(--error);margin-top:5px;display:none}
     .field-error.show{display:block}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .forgot{display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:16px}
+    .phone-wrap{display:flex}
+    .country-code{padding:12px 14px;border:1px solid rgba(201,151,58,0.25);border-right:none;border-radius:8px 0 0 8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fff;white-space:nowrap;display:flex;align-items:center;gap:6px;font-weight:500}
+    .phone-wrap input{border-radius:0 8px 8px 0;flex:1}
+    .forgot{display:flex;justify-content:flex-end;margin-top:-6px;margin-bottom:14px}
     .forgot a{font-size:12px;color:var(--gold);text-decoration:none}
-    .btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:1.5rem;transition:background 0.2s}
+    .btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:1rem;transition:background 0.2s}
     .btn:hover{background:#e0aa42}
     .btn:disabled{background:#d4b87a;cursor:not-allowed}
-    .divider{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
+    .btn-wa{width:100%;padding:13px;background:#25D366;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1rem;transition:background 0.2s}
+    .btn-wa:hover{background:#20bd5a}
+    .btn-wa:disabled{background:#7ed4a0;cursor:not-allowed}
+    .divider{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
     .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(201,151,58,0.2)}
     .divider span{font-size:12px;color:var(--muted)}
-    .wa-btn{width:100%;padding:13px;background:#fff;border:1px solid rgba(201,151,58,0.3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.5rem}
-    .wa-btn:hover{border-color:#25D366;background:#f0fff4}
-    .wa-icon{width:20px;height:20px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center}
     .terms{font-size:12px;color:var(--muted);text-align:center;line-height:1.8}
     .terms a{color:var(--gold);text-decoration:none}
+    .otp-panel{display:none;text-align:center;padding:0.5rem 0}
+    .otp-panel.show{display:block}
+    .otp-icon{font-size:48px;margin-bottom:1rem}
+    .otp-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--text);margin-bottom:6px}
+    .otp-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+    .otp-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:1.25rem}
+    .otp-input{width:46px;height:54px;text-align:center;font-size:20px;font-weight:500;border:1px solid rgba(201,151,58,0.25);border-radius:10px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;outline:none;transition:border-color 0.2s}
+    .otp-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,151,58,0.1)}
+    .resend-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:1.25rem;font-size:13px;color:var(--muted)}
+    .resend-btn{background:none;border:none;color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;padding:0}
+    .resend-btn:disabled{color:var(--muted);cursor:not-allowed}
     .success-box{display:none;text-align:center;padding:2rem 0}
     .success-box.show{display:block}
     .success-icon{width:64px;height:64px;background:rgba(22,163,74,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;border:1px solid rgba(22,163,74,0.2)}
-    .success-icon svg{width:28px;height:28px;color:#16a34a}
+    .success-icon svg{width:28px;height:28px;color:var(--success)}
     .success-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text);margin-bottom:8px}
     .success-msg{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:2rem}
-    .back-link{font-size:13px;color:var(--gold);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif}
+    .back-link{font-size:13px;color:var(--gold);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;display:block;margin:0 auto;margin-top:0.75rem}
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--deep);color:var(--gold-light);padding:12px 24px;border-radius:30px;font-size:13px;border:1px solid var(--border-mid);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);z-index:1000;white-space:nowrap}
     .toast.show{transform:translateX(-50%) translateY(0)}
-    @media(max-width:768px){
-      .page{grid-template-columns:1fr}
-      .left{display:none}
-      .right{padding:2rem 1.25rem;align-items:flex-start;padding-top:2.5rem}
-      .auth-box{max-width:100%}
-      .field-row{grid-template-columns:1fr}
-      .form-title{font-size:24px}
-    }
+    @media(max-width:768px){.page{grid-template-columns:1fr}.left{display:none}.right{padding:2rem 1.25rem;align-items:flex-start;padding-top:2.5rem}.auth-box{max-width:100%}.field-row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -84,71 +91,233 @@
         <li><div class="dot"></div>100% free during beta</li>
       </ul>
     </div>
-    <div class="left-footer">© 2025 Drapely · Surat, Gujarat</div>
+    <div class="left-footer">© 2025 Drapely · Made for Indian fashion · Surat, Gujarat</div>
   </div>
+
   <div class="right">
     <div class="auth-box">
       <div class="tabs" id="tabs">
         <div class="tab active" onclick="goTab('signin')">Sign in</div>
         <div class="tab" onclick="goTab('signup')">Create account</div>
       </div>
+
+      <!-- SIGN IN -->
       <div class="form-panel active" id="panel-signin">
         <div class="form-title">Welcome back</div>
-        <div class="form-sub">Sign in to your Drapely account.</div>
-        <div class="field"><label>Email</label><input type="email" id="si-email" placeholder="you@example.com"/><div class="field-error" id="e-si-email">Enter a valid email</div></div>
-        <div class="field"><label>Password</label><input type="password" id="si-pass" placeholder="Your password"/><div class="field-error" id="e-si-pass">Enter your password</div></div>
+        <div class="form-sub">Sign in with your WhatsApp number or email.</div>
+        <div class="field">
+          <label>WhatsApp number</label>
+          <div class="phone-wrap">
+            <div class="country-code">🇮🇳 +91</div>
+            <input type="tel" id="si-phone" placeholder="98765 43210" maxlength="10" />
+          </div>
+          <div class="field-error" id="e-si-phone">Enter a valid 10-digit Indian number</div>
+        </div>
+        <div id="recaptcha-si"></div>
+        <button class="btn-wa" id="si-wa-btn" onclick="sendOTP('signin')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+          Send OTP via WhatsApp
+        </button>
+        <div class="divider"><span>or sign in with email</span></div>
+        <div class="field"><label>Email</label><input type="email" id="si-email" placeholder="you@example.com" /><div class="field-error" id="e-si-email">Enter a valid email</div></div>
+        <div class="field"><label>Password</label><input type="password" id="si-pass" placeholder="Your password" /><div class="field-error" id="e-si-pass">Enter your password</div></div>
         <div class="forgot"><a href="#">Forgot password?</a></div>
         <button class="btn" id="si-btn" onclick="doSignIn()">Sign in to Drapely</button>
-        <div class="divider"><span>or</span></div>
-        <button class="wa-btn" onclick="toast('WhatsApp OTP coming soon!')">
-          <div class="wa-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg></div>
-          Continue with WhatsApp OTP
-        </button>
         <div class="terms">No account? <a href="#" onclick="goTab('signup')">Create one free</a></div>
       </div>
+
+      <!-- SIGN UP -->
       <div class="form-panel" id="panel-signup">
         <div class="form-title">Join Drapely free</div>
-        <div class="form-sub">No credit card needed during beta.</div>
-        <div class="field-row">
-          <div class="field"><label>First name</label><input type="text" id="su-fname" placeholder="Priya"/><div class="field-error" id="e-su-fname">Required</div></div>
-          <div class="field"><label>Last name</label><input type="text" id="su-lname" placeholder="Shah"/></div>
+        <div class="form-sub">Sign up with WhatsApp — fast and easy.</div>
+        <div class="field">
+          <label>WhatsApp number</label>
+          <div class="phone-wrap">
+            <div class="country-code">🇮🇳 +91</div>
+            <input type="tel" id="su-phone" placeholder="98765 43210" maxlength="10" />
+          </div>
+          <div class="field-error" id="e-su-phone">Enter a valid 10-digit Indian number</div>
         </div>
-        <div class="field"><label>Store name</label><input type="text" id="su-store" placeholder="Priya Boutique, Surat"/><div class="field-error" id="e-su-store">Required</div></div>
-        <div class="field"><label>WhatsApp number</label><input type="tel" id="su-phone" placeholder="+91 98765 43210"/><div class="field-error" id="e-su-phone">Required</div></div>
-        <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com"/><div class="field-error" id="e-su-email">Enter a valid email</div></div>
-        <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Min 8 characters"/><div class="field-error" id="e-su-pass">Min 8 characters required</div></div>
+        <div id="recaptcha-su"></div>
+        <button class="btn-wa" id="su-wa-btn" onclick="sendOTP('signup')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+          Continue with WhatsApp OTP
+        </button>
+        <div class="divider"><span>or sign up with email</span></div>
+        <div class="field-row">
+          <div class="field"><label>First name</label><input type="text" id="su-fname" placeholder="Priya" /><div class="field-error" id="e-su-fname">Required</div></div>
+          <div class="field"><label>Last name</label><input type="text" id="su-lname" placeholder="Shah" /></div>
+        </div>
+        <div class="field"><label>Store name</label><input type="text" id="su-store" placeholder="Priya Boutique, Surat" /><div class="field-error" id="e-su-store">Required</div></div>
+        <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com" /><div class="field-error" id="e-su-email">Enter a valid email</div></div>
+        <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Min 8 characters" /><div class="field-error" id="e-su-pass">Min 8 characters</div></div>
         <button class="btn" id="su-btn" onclick="doSignUp()">Create free account</button>
         <div class="terms">Have an account? <a href="#" onclick="goTab('signin')">Sign in</a></div>
       </div>
+
+      <!-- OTP PANEL -->
+      <div class="otp-panel" id="otp-panel">
+        <div class="otp-icon">💬</div>
+        <div class="otp-title">Enter OTP</div>
+        <div class="otp-sub" id="otp-sub">We sent a 6-digit code to your WhatsApp</div>
+        <div class="otp-inputs">
+          <input class="otp-input" id="o0" maxlength="1" inputmode="numeric" oninput="oi(0)" onkeydown="ok(event,0)" />
+          <input class="otp-input" id="o1" maxlength="1" inputmode="numeric" oninput="oi(1)" onkeydown="ok(event,1)" />
+          <input class="otp-input" id="o2" maxlength="1" inputmode="numeric" oninput="oi(2)" onkeydown="ok(event,2)" />
+          <input class="otp-input" id="o3" maxlength="1" inputmode="numeric" oninput="oi(3)" onkeydown="ok(event,3)" />
+          <input class="otp-input" id="o4" maxlength="1" inputmode="numeric" oninput="oi(4)" onkeydown="ok(event,4)" />
+          <input class="otp-input" id="o5" maxlength="1" inputmode="numeric" oninput="oi(5)" onkeydown="ok(event,5)" />
+        </div>
+        <div class="resend-row">Didn't get it? <button class="resend-btn" id="resend-btn" disabled onclick="resendOTP()">Resend in <span id="rtimer">30</span>s</button></div>
+        <button class="btn" id="verify-btn" onclick="verifyOTP()">Verify & Enter Studio</button>
+        <button class="back-link" onclick="backToForm()">← Change number</button>
+      </div>
+
+      <!-- SUCCESS -->
       <div class="success-box" id="success-box">
         <div class="success-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
-        <div class="success-title" id="success-title">Account created!</div>
-        <div class="success-msg" id="success-msg">Check your email to confirm, then sign in.</div>
-        <button class="back-link" onclick="goBack()">← Back to sign in</button>
+        <div class="success-title" id="success-title">You're in!</div>
+        <div class="success-msg" id="success-msg">Taking you to your studio...</div>
       </div>
     </div>
   </div>
 </div>
 <div class="toast" id="toast-el"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAR7WQVUrH3liRA52KcUOa1wV1P6pT0ndo",
+  authDomain:"drapely-88f86.firebaseapp.com",
+  projectId:"drapely-88f86",
+  storageBucket:"drapely-88f86.firebasestorage.app",
+  messagingSenderId:"29637011219",
+  appId:"1:29637011219:web:09b9bd79306affe54d1ce6"
+});
+var fbAuth = firebase.auth();
+
 var sb = window.supabase.createClient(
   'https://oqmoneclnirnhqpcdeqy.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
-var curTab = 'signin';
+
 sb.auth.getSession().then(function(r){ if(r.data.session) window.location.href='dashboard.html'; });
+
+var curTab='signin', confirmResult=null, rcVerifier=null, otpMode=null, rInterval=null;
+
 function goTab(t){
   curTab=t;
   document.querySelectorAll('.tab').forEach(function(el,i){ el.classList.toggle('active',(i===0&&t==='signin')||(i===1&&t==='signup')); });
   document.getElementById('panel-signin').classList.toggle('active',t==='signin');
   document.getElementById('panel-signup').classList.toggle('active',t==='signup');
+  document.getElementById('otp-panel').classList.remove('show');
   document.getElementById('success-box').classList.remove('show');
+  document.getElementById('tabs').style.display='';
 }
+
 function toast(msg){ var e=document.getElementById('toast-el'); e.textContent=msg; e.classList.add('show'); setTimeout(function(){ e.classList.remove('show'); },3500); }
 function clrErr(){ document.querySelectorAll('.field-error').forEach(function(e){ e.classList.remove('show'); }); document.querySelectorAll('input').forEach(function(i){ i.classList.remove('err'); }); }
-function shErr(fid,eid){ document.getElementById(fid).classList.add('err'); document.getElementById(eid).classList.add('show'); }
-function setBtn(id,on,lbl){ var b=document.getElementById(id); b.disabled=on; b.textContent=on?'Please wait...':lbl; }
+function shErr(fid,eid){ if(fid) document.getElementById(fid).classList.add('err'); if(eid) document.getElementById(eid).classList.add('show'); }
+function setBtn(id,on,lbl){ var b=document.getElementById(id); if(!b) return; b.disabled=on; b.childNodes[0].textContent=on?'Please wait..':lbl; }
+
+function oi(i){
+  var v=document.getElementById('o'+i).value;
+  if(v.length>=1&&i<5) document.getElementById('o'+(i+1)).focus();
+  var code=''; for(var j=0;j<6;j++) code+=document.getElementById('o'+j).value;
+  if(code.length===6) verifyOTP();
+}
+function ok(e,i){ if(e.key==='Backspace'&&!document.getElementById('o'+i).value&&i>0) document.getElementById('o'+(i-1)).focus(); }
+
+function startTimer(){
+  var s=30; document.getElementById('resend-btn').disabled=true;
+  clearInterval(rInterval);
+  rInterval=setInterval(function(){
+    s--; document.getElementById('rtimer').textContent=s;
+    if(s<=0){ clearInterval(rInterval); var b=document.getElementById('resend-btn'); b.disabled=false; b.textContent='Resend OTP'; }
+  },1000);
+}
+
+async function sendOTP(mode){
+  otpMode=mode;
+  var ph=document.getElementById(mode==='signin'?'si-phone':'su-phone').value.trim().replace(/\s/g,'');
+  var eid=mode==='signin'?'e-si-phone':'e-su-phone';
+  var pid=mode==='signin'?'si-phone':'su-phone';
+  if(!ph||ph.length!==10||!/^[6-9]\d{9}$/.test(ph)){ shErr(pid,eid); return; }
+  var full='+91'+ph;
+  var bid=mode==='signin'?'si-wa-btn':'su-wa-btn';
+  document.getElementById(bid).disabled=true;
+  document.getElementById(bid).childNodes[1].textContent=' Sending OTP...';
+  try{
+    var cid=mode==='signin'?'recaptcha-si':'recaptcha-su';
+    if(rcVerifier) try{ rcVerifier.clear(); }catch(e){}
+    rcVerifier=new firebase.auth.RecaptchaVerifier(cid,{size:'invisible',callback:function(){}});
+    confirmResult=await fbAuth.signInWithPhoneNumber(full,rcVerifier);
+    document.getElementById('panel-signin').classList.remove('active');
+    document.getElementById('panel-signup').classList.remove('active');
+    document.getElementById('tabs').style.display='none';
+    document.getElementById('otp-sub').textContent='We sent a 6-digit code to +91 '+ph+' on WhatsApp';
+    document.getElementById('otp-panel').classList.add('show');
+    document.getElementById('o0').focus();
+    startTimer();
+    toast('✓ OTP sent to +91 '+ph);
+  }catch(err){
+    document.getElementById(bid).disabled=false;
+    document.getElementById(bid).childNodes[1].textContent=mode==='signin'?'Send OTP via WhatsApp':'Continue with WhatsApp OTP';
+    toast('✗ '+(err.message||'Failed to send OTP'));
+  }
+}
+
+async function verifyOTP(){
+  var code=''; for(var i=0;i<6;i++) code+=document.getElementById('o'+i).value;
+  if(code.length<6){ toast('⚠️ Enter all 6 digits'); return; }
+  document.getElementById('verify-btn').disabled=true;
+  document.getElementById('verify-btn').textContent='Verifying...';
+  try{
+    var res=await confirmResult.confirm(code);
+    var phone=res.user.phoneNumber;
+    var fakeEmail=phone.replace('+','')+('@drapely.app');
+    var fakePass='drpl_'+phone.replace('+','')+'_2025';
+    var r=await sb.auth.signInWithPassword({email:fakeEmail,password:fakePass});
+    if(r.error){
+      var r2=await sb.auth.signUp({email:fakeEmail,password:fakePass,options:{data:{phone:phone,login_method:'whatsapp'}}});
+      if(r2.error) throw new Error(r2.error.message);
+    }
+    document.getElementById('otp-panel').classList.remove('show');
+    document.getElementById('success-box').classList.add('show');
+    document.getElementById('success-title').textContent='Verified! 🎉';
+    document.getElementById('success-msg').textContent='Welcome to Drapely. Taking you to your studio...';
+    setTimeout(function(){ window.location.href='dashboard.html'; },1500);
+  }catch(err){
+    document.getElementById('verify-btn').disabled=false;
+    document.getElementById('verify-btn').textContent='Verify & Enter Studio';
+    toast('✗ Wrong OTP. Try again.');
+    for(var j=0;j<6;j++) document.getElementById('o'+j).value='';
+    document.getElementById('o0').focus();
+  }
+}
+
+async function resendOTP(){
+  var mode=otpMode||'signin';
+  var ph=document.getElementById(mode==='signin'?'si-phone':'su-phone').value.trim().replace(/\s/g,'');
+  try{
+    if(rcVerifier) try{ rcVerifier.clear(); }catch(e){}
+    rcVerifier=new firebase.auth.RecaptchaVerifier('recaptcha-si',{size:'invisible'});
+    confirmResult=await fbAuth.signInWithPhoneNumber('+91'+ph,rcVerifier);
+    startTimer(); toast('✓ OTP resent!');
+  }catch(err){ toast('✗ Could not resend. Try again.'); }
+}
+
+function backToForm(){
+  document.getElementById('otp-panel').classList.remove('show');
+  document.getElementById('tabs').style.display='';
+  clearInterval(rInterval);
+  for(var i=0;i<6;i++) document.getElementById('o'+i).value='';
+  if(curTab==='signin') document.getElementById('panel-signin').classList.add('active');
+  else document.getElementById('panel-signup').classList.add('active');
+}
+
 async function doSignIn(){
   clrErr();
   var email=document.getElementById('si-email').value.trim();
@@ -157,44 +326,36 @@ async function doSignIn(){
   if(!email||!email.includes('@')){ shErr('si-email','e-si-email'); ok=false; }
   if(!pass){ shErr('si-pass','e-si-pass'); ok=false; }
   if(!ok) return;
-  setBtn('si-btn',true,'Sign in to Drapely');
+  document.getElementById('si-btn').disabled=true; document.getElementById('si-btn').textContent='Please wait...';
   var r=await sb.auth.signInWithPassword({email:email,password:pass});
-  setBtn('si-btn',false,'Sign in to Drapely');
+  document.getElementById('si-btn').disabled=false; document.getElementById('si-btn').textContent='Sign in to Drapely';
   if(r.error){ toast('✗ Wrong email or password'); return; }
-  toast('✓ Signed in! Going to your studio...');
+  toast('✓ Signed in!');
   setTimeout(function(){ window.location.href='dashboard.html'; },1200);
 }
+
 async function doSignUp(){
   clrErr();
   var fname=document.getElementById('su-fname').value.trim();
   var lname=document.getElementById('su-lname').value.trim();
   var store=document.getElementById('su-store').value.trim();
-  var phone=document.getElementById('su-phone').value.trim();
   var email=document.getElementById('su-email').value.trim();
   var pass=document.getElementById('su-pass').value;
   var ok=true;
   if(!fname){ shErr('su-fname','e-su-fname'); ok=false; }
   if(!store){ shErr('su-store','e-su-store'); ok=false; }
-  if(!phone){ shErr('su-phone','e-su-phone'); ok=false; }
   if(!email||!email.includes('@')){ shErr('su-email','e-su-email'); ok=false; }
   if(!pass||pass.length<8){ shErr('su-pass','e-su-pass'); ok=false; }
   if(!ok) return;
-  setBtn('su-btn',true,'Create free account');
-  var r=await sb.auth.signUp({email:email,password:pass,options:{data:{first_name:fname,last_name:lname,store_name:store,phone:phone}}});
-  setBtn('su-btn',false,'Create free account');
+  document.getElementById('su-btn').disabled=true; document.getElementById('su-btn').textContent='Please wait...';
+  var r=await sb.auth.signUp({email:email,password:pass,options:{data:{first_name:fname,last_name:lname,store_name:store,login_method:'email'}}});
+  document.getElementById('su-btn').disabled=false; document.getElementById('su-btn').textContent='Create free account';
   if(r.error){ toast('✗ '+r.error.message); return; }
   document.getElementById('panel-signup').style.display='none';
   document.getElementById('tabs').style.display='none';
-  var s=document.getElementById('success-box');
-  s.classList.add('show');
+  document.getElementById('success-box').classList.add('show');
   document.getElementById('success-title').textContent='Welcome, '+fname+'!';
   document.getElementById('success-msg').textContent='We sent a confirmation to '+email+'. Check your inbox then sign in.';
-}
-function goBack(){
-  document.getElementById('success-box').classList.remove('show');
-  document.getElementById('panel-signup').style.display='';
-  document.getElementById('tabs').style.display='';
-  goTab('signin');
 }
 </script>
 </body>
