@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drapely — Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--surface:#FDFAF5;--white:#fff;--error:#dc2626;--success:#16a34a}
+    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
+    .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
+    .sidebar-brand span{color:var(--gold)}
+    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(240,217,168,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+    .nav-item:hover{background:rgba(201,151,58,0.08);color:var(--gold-light)}
+    .nav-item.active{background:rgba(201,151,58,0.12);color:var(--gold-light)}
+    .nav-icon{width:16px;height:16px;flex-shrink:0}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,217,168,0.2);padding:12px 12px 4px;font-weight:500}
+    .sidebar-footer{padding:0 0.75rem;border-top:1px solid var(--border);padding-top:1rem}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(201,151,58,0.06);border:1px solid var(--border)}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--deep);flex-shrink:0}
+    .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-plan{font-size:10px;color:var(--gold)}
+    .main{margin-left:220px;min-height:100vh}
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text)}
+    .content{padding:2rem;max-width:700px}
+    .settings-section{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
+    .section-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .section-icon{width:32px;height:32px;background:var(--gold-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .section-icon svg{width:16px;height:16px;color:var(--gold)}
+    .section-title{font-size:14px;font-weight:500;color:var(--text)}
+    .section-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .section-body{padding:1.5rem}
+    .field{margin-bottom:16px}
+    .field:last-child{margin-bottom:0}
+    .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.3px}
+    .field input,.field select,.field textarea{width:100%;padding:11px 14px;border:1px solid rgba(201,151,58,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fff;outline:none;transition:border-color 0.2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,151,58,0.1)}
+    .field input:disabled{background:var(--surface);color:var(--muted);cursor:not-allowed}
+    .field textarea{resize:vertical;min-height:80px}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .save-btn{padding:10px 24px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
+    .save-btn:hover{background:#e0aa42}
+    .save-btn:disabled{background:#d4b87a;cursor:not-allowed}
+    .danger-btn{padding:10px 24px;background:#fff;color:var(--error);border:1px solid var(--error);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .danger-btn:hover{background:var(--error);color:#fff}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info{flex:1}
+    .toggle-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+    .toggle-desc{font-size:12px;color:var(--muted)}
+    .toggle{width:40px;height:22px;background:#ddd;border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;border:none}
+    .toggle.on{background:var(--gold)}
+    .toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+    .toggle.on::after{transform:translateX(18px)}
+    .plan-card{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:var(--gold-pale);border-bottom:1px solid var(--border)}
+    .plan-name{font-size:15px;font-weight:500;color:var(--text)}
+    .plan-desc{font-size:12px;color:var(--muted);margin-top:2px}
+    .plan-badge{padding:5px 14px;background:var(--gold);color:var(--deep);border-radius:20px;font-size:11px;font-weight:500}
+    .credits-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
+    .credits-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--text)}
+    .buy-btn{padding:9px 20px;background:var(--deep);color:var(--gold-light);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
+    .buy-btn:hover{background:#2e1f0d}
+    .avatar-large{width:72px;height:72px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:500;color:var(--deep);margin-bottom:1rem;cursor:pointer;transition:opacity 0.2s}
+    .avatar-large:hover{opacity:0.85}
+    .success-msg{font-size:12px;color:var(--success);margin-top:8px;display:none}
+    .success-msg.show{display:block}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--deep);color:var(--gold-light);padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid var(--border-mid);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}}
+    @media(max-width:600px){.content{padding:1rem}.field-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="index.html" class="sidebar-brand">Drape<span>ly</span></a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Studio</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+      New photoshoot
+    </a>
+    <a class="nav-item" href="gallery.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+      My gallery
+    </a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+      Share catalogue
+    </a>
+    <div class="nav-section-label" style="margin-top:8px;">Account</div>
+    <a class="nav-item active" href="settings.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Settings
+    </a>
+    <button class="nav-item" onclick="doSignOut()">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+      Sign out
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:baseline;gap:6px;">
+      <div class="topbar-title">Settings</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PROFILE -->
+    <div class="settings-section">
+      <div class="section-header">
+        <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
+        <div><div class="section-title">Profile</div><div class="section-sub">Your personal and store information</div></div>
+      </div>
+      <div class="section-body">
+        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;">
+          <div class="avatar-large" id="profile-avatar" onclick="showToast('Profile photo coming soon!')">?</div>
+          <div>
+            <div style="font-size:14px;font-weight:500;color:var(--text);" id="profile-name">Loading...</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="profile-email">Loading...</div>
+            <div style="font-size:11px;color:var(--gold);margin-top:4px;">Beta member</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>First name</label><input type="text" id="fname" placeholder="Priya" /></div>
+          <div class="field"><label>Last name</label><input type="text" id="lname" placeholder="Shah" /></div>
+        </div>
+        <div class="field"><label>Store / Business name</label><input type="text" id="store-name" placeholder="Priya Boutique, Surat" /></div>
+        <div class="field"><label>WhatsApp number</label><input type="tel" id="phone" placeholder="+91 98765 43210" /></div>
+        <div class="field"><label>Email address</label><input type="email" id="email" disabled /></div>
+        <div class="field"><label>Store description (optional)</label><textarea id="store-desc" placeholder="Tell customers about your store and the suits you make..."></textarea></div>
+        <button class="save-btn" id="save-profile-btn" onclick="saveProfile()">Save profile</button>
+        <div class="success-msg" id="profile-success">✓ Profile saved successfully!</div>
+      </div>
+    </div>
+
+    <!-- PLAN & CREDITS -->
+    <div class="settings-section">
+      <div class="section-header">
+        <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg></div>
+        <div><div class="section-title">Plan & Credits</div><div class="section-sub">Manage your credits and billing</div></div>
+      </div>
+      <div class="plan-card">
+        <div><div class="plan-name">Beta Plan</div><div class="plan-desc">Free access during beta period</div></div>
+        <div class="plan-badge">Active</div>
+      </div>
+      <div class="credits-row">
+        <div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Credits remaining</div>
+          <div class="credits-val" id="credits-val">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">₹10 per photo · ₹100 = 10 credits</div>
+        </div>
+        <button class="buy-btn" onclick="window.location.href='dashboard.html'">Buy Credits</button>
+      </div>
+      <div class="section-body">
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+          <strong style="color:var(--text);">How credits work:</strong><br/>
+          Each AI photoshoot costs 1 credit (₹10).<br/>
+          Buy ₹100 = get 10 credits via UPI.<br/>
+          Credits never expire during beta.
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="settings-section">
+      <div class="section-header">
+        <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg></div>
+        <div><div class="section-title">Notifications</div><div class="section-sub">Choose what you want to be notified about</div></div>
+      </div>
+      <div class="section-body">
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-label">WhatsApp updates</div><div class="toggle-desc">Get notified when your photos are ready</div></div>
+          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-label">New model alerts</div><div class="toggle-desc">Know when new models are added to Drapely</div></div>
+          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-label">Credit reminders</div><div class="toggle-desc">Alert when credits are running low</div></div>
+          <button class="toggle" onclick="this.classList.toggle('on')"></button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-label">Promotional offers</div><div class="toggle-desc">Special deals and discount offers</div></div>
+          <button class="toggle" onclick="this.classList.toggle('on')"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="settings-section">
+      <div class="section-header">
+        <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg></div>
+        <div><div class="section-title">Password</div><div class="section-sub">Change your account password</div></div>
+      </div>
+      <div class="section-body">
+        <div class="field"><label>New password</label><input type="password" id="new-pass" placeholder="Min 8 characters" /></div>
+        <div class="field"><label>Confirm new password</label><input type="password" id="confirm-pass" placeholder="Repeat password" /></div>
+        <button class="save-btn" onclick="changePassword()">Update password</button>
+        <div class="success-msg" id="pass-success">✓ Password updated!</div>
+      </div>
+    </div>
+
+    <!-- DANGER ZONE -->
+    <div class="settings-section" style="border-color:rgba(220,38,38,0.2);">
+      <div class="section-header" style="border-color:rgba(220,38,38,0.1);background:rgba(220,38,38,0.02);">
+        <div class="section-icon" style="background:rgba(220,38,38,0.08);"><svg fill="none" stroke="#dc2626" viewBox="0 0 24 24" stroke-width="1.5"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg></div>
+        <div><div class="section-title" style="color:var(--error);">Danger Zone</div><div class="section-sub">Irreversible account actions</div></div>
+      </div>
+      <div class="section-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Delete account</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Permanently delete your account and all data</div></div>
+          <button class="danger-btn" onclick="confirmDelete()">Delete account</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+var currentUser = null;
+
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  currentUser = r.data.session.user;
+  var meta = currentUser.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var fullname = (fname + ' ' + lname).trim();
+  var displayName = fullname.length > 1 ? fullname : currentUser.email.split('@')[0];
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
+
+  // Sidebar
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = initials;
+
+  // Profile section
+  document.getElementById('profile-avatar').textContent = initials;
+  document.getElementById('profile-name').textContent = displayName;
+  document.getElementById('profile-email').textContent = currentUser.email;
+
+  // Fill form fields
+  document.getElementById('fname').value = fname;
+  document.getElementById('lname').value = lname;
+  document.getElementById('store-name').value = meta.store_name || '';
+  document.getElementById('phone').value = meta.phone || '';
+  document.getElementById('email').value = currentUser.email;
+  document.getElementById('store-desc').value = meta.store_desc || '';
+
+  // Load credits
+  sb.from('credits').select('balance').eq('user_id', currentUser.id).single().then(function(r) {
+    document.getElementById('credits-val').textContent = r.data ? r.data.balance : '3';
+  });
+});
+
+async function saveProfile() {
+  var btn = document.getElementById('save-profile-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  var r = await sb.auth.updateUser({
+    data: {
+      first_name: document.getElementById('fname').value.trim(),
+      last_name: document.getElementById('lname').value.trim(),
+      store_name: document.getElementById('store-name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      store_desc: document.getElementById('store-desc').value.trim()
+    }
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Save profile';
+
+  if (r.error) {
+    showToast('✗ Error: ' + r.error.message);
+    return;
+  }
+
+  document.getElementById('profile-success').classList.add('show');
+  setTimeout(function(){ document.getElementById('profile-success').classList.remove('show'); }, 3000);
+
+  // Update display name
+  var fname = document.getElementById('fname').value.trim();
+  var lname = document.getElementById('lname').value.trim();
+  var fullname = (fname + ' ' + lname).trim();
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : fullname.slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = fullname || currentUser.email.split('@')[0];
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('profile-avatar').textContent = initials;
+  document.getElementById('profile-name').textContent = fullname;
+  showToast('✓ Profile saved!');
+}
+
+async function changePassword() {
+  var newPass = document.getElementById('new-pass').value;
+  var confirmPass = document.getElementById('confirm-pass').value;
+
+  if (!newPass || newPass.length < 8) { showToast('✗ Password must be at least 8 characters'); return; }
+  if (newPass !== confirmPass) { showToast('✗ Passwords do not match'); return; }
+
+  var r = await sb.auth.updateUser({ password: newPass });
+  if (r.error) { showToast('✗ ' + r.error.message); return; }
+
+  document.getElementById('new-pass').value = '';
+  document.getElementById('confirm-pass').value = '';
+  document.getElementById('pass-success').classList.add('show');
+  setTimeout(function(){ document.getElementById('pass-success').classList.remove('show'); }, 3000);
+  showToast('✓ Password updated!');
+}
+
+function confirmDelete() {
+  if (confirm('Are you sure? This will permanently delete your account and all your photos. This cannot be undone.')) {
+    showToast('Please contact support to delete your account.');
+  }
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+</script>
+</body>
+</html>
