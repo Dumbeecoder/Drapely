@@ -7,19 +7,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--surface:#FDFAF5;--white:#fff}
-    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh}
+    :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--surface: #ffffff;--white:#fff}
+    body{font-family:'DM Sans',sans-serif;background:#ffffff;color:var(--text);min-height:100vh}
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
     .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
     .sidebar-brand span{color:var(--gold)}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(240,217,168,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-    .nav-item:hover{background:rgba(201,151,58,0.08);color:var(--gold-light)}
-    .nav-item.active{background:rgba(201,151,58,0.12);color:var(--gold-light)}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.5);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+    .nav-item:hover{background:rgba(233,30,99,0.08);color:var(--gold-light)}
+    .nav-item.active{background:rgba(233,30,99,0.12);color:var(--gold-light)}
     .nav-icon{width:16px;height:16px;flex-shrink:0}
-    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,217,168,0.2);padding:12px 12px 4px;font-weight:500}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500}
     .sidebar-footer{padding:0 0.75rem;border-top:1px solid var(--border);padding-top:1rem}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(201,151,58,0.06);border:1px solid var(--border)}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.06);border:1px solid var(--border)}
     .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--deep);flex-shrink:0}
     .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-plan{font-size:10px;color:var(--gold)}
@@ -28,7 +28,7 @@
     .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text)}
     .topbar-sub{font-size:12px;color:var(--muted);margin-left:10px}
     .new-btn{padding:9px 20px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block}
-    .new-btn:hover{background:#e0aa42}
+    .new-btn:hover{background:#c2185b}
     .content{padding:2rem}
     .filters{display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
     .filter-left{display:flex;gap:8px;flex-wrap:wrap}
@@ -41,7 +41,7 @@
     .empty-sub{font-size:14px;line-height:1.7;margin-bottom:2rem}
     .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
     .gallery-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s}
-    .gallery-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(201,151,58,0.1)}
+    .gallery-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(233,30,99,0.1)}
     .gallery-img{width:100%;height:280px;object-fit:cover;display:block;cursor:pointer}
     .gallery-img-placeholder{width:100%;height:280px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:linear-gradient(160deg,#f8f3ea,#e8d4b0);color:var(--muted);font-size:13px;cursor:pointer}
     .gallery-card-body{padding:12px 14px}
@@ -51,11 +51,11 @@
     .action-btn{flex:1;padding:7px 0;border:1px solid var(--border-mid);border-radius:6px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.15s;text-align:center}
     .action-btn:hover{background:var(--gold);color:var(--deep);border-color:var(--gold)}
     .action-btn.primary{background:var(--gold);color:var(--deep);border-color:var(--gold)}
-    .viewer-modal{display:none;position:fixed;inset:0;background:rgba(15,10,4,0.92);z-index:500;align-items:center;justify-content:center}
+    .viewer-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:500;align-items:center;justify-content:center}
     .viewer-modal.open{display:flex}
     .viewer-inner{position:relative;max-width:90vw;max-height:90vh;text-align:center}
     .viewer-img{max-width:90vw;max-height:80vh;object-fit:contain;border-radius:8px;display:block}
-    .viewer-close{position:absolute;top:-40px;right:0;background:none;border:none;color:rgba(240,217,168,0.6);font-size:28px;cursor:pointer}
+    .viewer-close{position:absolute;top:-40px;right:0;background:none;border:none;color:rgba(255,255,255,0.65);font-size:28px;cursor:pointer}
     .viewer-actions{display:flex;gap:10px;margin-top:12px;justify-content:center}
     .viewer-btn{padding:9px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none}
     .viewer-btn.download{background:var(--gold);color:var(--deep)}
