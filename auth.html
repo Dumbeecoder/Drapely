@@ -113,7 +113,6 @@
           </div>
           <div class="field-error" id="e-si-phone">Enter a valid 10-digit Indian number</div>
         </div>
-        <div id="recaptcha-si"></div>
         <button class="btn-wa" id="si-wa-btn" onclick="sendOTP('signin')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
           Send OTP via WhatsApp
@@ -138,7 +137,6 @@
           </div>
           <div class="field-error" id="e-su-phone">Enter a valid 10-digit Indian number</div>
         </div>
-        <div id="recaptcha-su"></div>
         <button class="btn-wa" id="su-wa-btn" onclick="sendOTP('signup')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
           Continue with WhatsApp OTP
@@ -182,6 +180,7 @@
     </div>
   </div>
 </div>
+<div id="rc-container"></div>
 <div class="toast" id="toast-el"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -250,9 +249,11 @@ async function sendOTP(mode){
   document.getElementById(bid).disabled=true;
   document.getElementById(bid).childNodes[1].textContent=' Sending OTP...';
   try{
-    var cid=mode==='signin'?'recaptcha-si':'recaptcha-su';
-    if(rcVerifier) try{ rcVerifier.clear(); }catch(e){}
-    rcVerifier=new firebase.auth.RecaptchaVerifier(cid,{size:'invisible',callback:function(){}});
+    if(rcVerifier){ try{ rcVerifier.clear(); }catch(e){} rcVerifier=null; }
+    var container=document.getElementById('rc-container');
+    container.innerHTML='';
+    rcVerifier=new firebase.auth.RecaptchaVerifier('rc-container',{size:'invisible',callback:function(){}});
+    await rcVerifier.render();
     confirmResult=await fbAuth.signInWithPhoneNumber(full,rcVerifier);
     document.getElementById('panel-signin').classList.remove('active');
     document.getElementById('panel-signup').classList.remove('active');
@@ -303,7 +304,10 @@ async function resendOTP(){
   var ph=document.getElementById(mode==='signin'?'si-phone':'su-phone').value.trim().replace(/\s/g,'');
   try{
     if(rcVerifier) try{ rcVerifier.clear(); }catch(e){}
-    rcVerifier=new firebase.auth.RecaptchaVerifier('recaptcha-si',{size:'invisible'});
+    if(rcVerifier){ try{ rcVerifier.clear(); }catch(e){} rcVerifier=null; }
+    document.getElementById('rc-container').innerHTML='';
+    rcVerifier=new firebase.auth.RecaptchaVerifier('rc-container',{size:'invisible'});
+    await rcVerifier.render();
     confirmResult=await fbAuth.signInWithPhoneNumber('+91'+ph,rcVerifier);
     startTimer(); toast('✓ OTP resent!');
   }catch(err){ toast('✗ Could not resend. Try again.'); }
