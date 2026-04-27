@@ -7,19 +7,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#C9973A;--gold-light:#F0D9A8;--gold-pale:#FBF4E8;--deep:#0F0A04;--muted:#7A6A52;--text:#2A1F0E;--border:rgba(201,151,58,0.18);--border-mid:rgba(201,151,58,0.35);--surface:#FDFAF5;--white:#fff;--error:#dc2626;--success:#16a34a}
-    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh}
+    :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--surface: #ffffff;--white:#fff;--error:#dc2626;--success:#16a34a}
+    body{font-family:'DM Sans',sans-serif;background:#ffffff;color:var(--text);min-height:100vh}
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
     .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
     .sidebar-brand span{color:var(--gold)}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(240,217,168,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-    .nav-item:hover{background:rgba(201,151,58,0.08);color:var(--gold-light)}
-    .nav-item.active{background:rgba(201,151,58,0.12);color:var(--gold-light)}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.5);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+    .nav-item:hover{background:rgba(233,30,99,0.08);color:var(--gold-light)}
+    .nav-item.active{background:rgba(233,30,99,0.12);color:var(--gold-light)}
     .nav-icon{width:16px;height:16px;flex-shrink:0}
-    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,217,168,0.2);padding:12px 12px 4px;font-weight:500}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500}
     .sidebar-footer{padding:0 0.75rem;border-top:1px solid var(--border);padding-top:1rem}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(201,151,58,0.06);border:1px solid var(--border)}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.06);border:1px solid var(--border)}
     .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--deep);flex-shrink:0}
     .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-plan{font-size:10px;color:var(--gold)}
@@ -37,14 +37,14 @@
     .field{margin-bottom:16px}
     .field:last-child{margin-bottom:0}
     .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.3px}
-    .field input,.field select,.field textarea{width:100%;padding:11px 14px;border:1px solid rgba(201,151,58,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fff;outline:none;transition:border-color 0.2s}
-    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,151,58,0.1)}
-    .field input:disabled{background:var(--surface);color:var(--muted);cursor:not-allowed}
+    .field input,.field select,.field textarea{width:100%;padding:11px 14px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fff;outline:none;transition:border-color 0.2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(233,30,99,0.1)}
+    .field input:disabled{background:#ffffff;color:var(--muted);cursor:not-allowed}
     .field textarea{resize:vertical;min-height:80px}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .save-btn{padding:10px 24px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
-    .save-btn:hover{background:#e0aa42}
-    .save-btn:disabled{background:#d4b87a;cursor:not-allowed}
+    .save-btn:hover{background:#c2185b}
+    .save-btn:disabled{background:#f06292;cursor:not-allowed}
     .danger-btn{padding:10px 24px;background:#fff;color:var(--error);border:1px solid var(--error);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s}
     .danger-btn:hover{background:var(--error);color:#fff}
     .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
@@ -63,7 +63,7 @@
     .credits-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
     .credits-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--text)}
     .buy-btn{padding:9px 20px;background:var(--deep);color:var(--gold-light);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
-    .buy-btn:hover{background:#2e1f0d}
+    .buy-btn:hover{background:#111111}
     .avatar-large{width:72px;height:72px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:500;color:var(--deep);margin-bottom:1rem;cursor:pointer;transition:opacity 0.2s}
     .avatar-large:hover{opacity:0.85}
     .success-msg{font-size:12px;color:var(--success);margin-top:8px;display:none}
