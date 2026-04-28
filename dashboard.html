@@ -486,27 +486,141 @@ function selectVars(btn) {
   btn.classList.add('selected');
 }
 
-function startGenerate() {
+function compressImage(file) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var MAX = 768;
+        var w = img.width, h = img.height;
+        if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+        else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function startGenerate() {
   var suitFile = document.getElementById('suit-input').files[0];
   if (!suitFile) { showToast('⚠️ Please upload your suit photo first!'); goStep(0); return; }
 
-  // Check credits
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  if (credits <= 0) {
-    showToast('⚠️ No credits left! Buy more to generate photos.');
-    showBuyCredits();
-    return;
+  if (credits <= 0) { showToast('⚠️ No credits! Buy more to generate.'); showBuyCredits(); return; }
+
+  var progressWrap = document.getElementById('progress-wrap');
+  var progressFill = document.getElementById('progress-fill');
+  var progressLabel = document.getElementById('progress-label');
+  var progressPct = document.getElementById('progress-pct');
+  var studioBody = document.getElementById('studio-body');
+
+  studioBody.style.display = 'none';
+  progressWrap.classList.add('visible');
+  progressFill.style.width = '0%';
+  progressPct.textContent = '0%';
+  progressLabel.textContent = 'Compressing your suit photo...';
+
+  var progress = 0;
+  var msgs = ['Compressing your suit photo...','Sending to AI model...','Analysing garment details...','Compositing onto model...','Applying lighting...','Almost ready...'];
+  var interval = setInterval(function() {
+    if (progress < 88) {
+      progress += Math.random() * 5 + 1;
+      if (progress > 88) progress = 88;
+      progressFill.style.width = Math.round(progress) + '%';
+      progressPct.textContent = Math.round(progress) + '%';
+      progressLabel.textContent = msgs[Math.min(Math.floor(progress / 16), msgs.length - 1)];
+    }
+  }, 1000);
+
+  try {
+    var compressed = await compressImage(suitFile);
+    var count = getVarCount();
+    var results = [];
+
+    for (var i = 0; i < count; i++) {
+      progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
+      var response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex })
+      });
+      var data = await response.json();
+      if (data.error) {
+        clearInterval(interval);
+        progressWrap.classList.remove('visible');
+        studioBody.style.display = 'block';
+        showToast('✗ ' + String(data.error).substring(0, 100));
+        return;
+      }
+      if (data.output) {
+        var imgs = Array.isArray(data.output) ? data.output : [data.output];
+        results = results.concat(imgs);
+      }
+    }
+
+    clearInterval(interval);
+    progressFill.style.width = '100%';
+    progressPct.textContent = '100%';
+    progressLabel.textContent = '✨ Your photoshoot is ready!';
+
+    setTimeout(function() {
+      progressWrap.classList.remove('visible');
+      studioBody.style.display = 'block';
+      if (results.length > 0) {
+        showRealResults(results);
+        updateStats(results.length);
+        deductCredit();
+        showToast('✓ Photoshoot ready! Download your images.');
+      } else {
+        showToast('✗ No images returned. Please try again.');
+      }
+      goStep(0);
+    }, 600);
+
+  } catch(err) {
+    clearInterval(interval);
+    progressWrap.classList.remove('visible');
+    studioBody.style.display = 'block';
+    showToast('✗ ' + err.message);
   }
+}
 
-  showToast('✨ AI photoshoot activating soon! You will be notified when ready.');
-
-  // Update stats to show activity
-  document.getElementById('stat-shoots').textContent = parseInt(document.getElementById('stat-shoots').textContent || 0) + 1;
-  document.getElementById('stat-suits').textContent = parseInt(document.getElementById('stat-suits').textContent || 0) + 1;
-
-  // Show a preview placeholder in results
+function showRealResults(images) {
   var body = document.getElementById('results-body');
-  body.innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);"><div style="font-size:48px;margin-bottom:1rem;">🚀</div><div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:8px;">You\'re on the list!</div><div style="font-size:13px;line-height:1.7;">AI generation is activating. We will send you a WhatsApp message as soon as your photoshoot is ready.</div><div style="margin-top:1.5rem;padding:12px 20px;background:var(--gold-pale);border:1px solid var(--border-mid);border-radius:8px;font-size:12px;color:var(--muted);">Your suit has been saved ✓</div></div>';
+  var html = '<div class="results-grid">';
+  images.forEach(function(url, i) {
+    html += '<div class="result-item"><img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" onerror="this.parentNode.style.background='#fff0f5'" /><div class="result-actions"><button class="result-btn" onclick="showToast('Refine coming soon!')">Refine</button><button class="result-btn primary" onclick="downloadImg(\'' + url + '\',' + (i+1) + ')">Download</button></div></div>';
+  });
+  html += '</div><button class="new-shoot-btn" onclick="newShoot()">+ Start a new photoshoot</button>';
+  body.innerHTML = html;
+}
+
+function downloadImg(url, num) {
+  var a = document.createElement('a');
+  a.href = url; a.download = 'drapely-' + num + '.jpg'; a.target = '_blank';
+  a.click();
+  showToast('✓ Downloading image ' + num + '...');
+}
+
+function deductCredit() {
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) return;
+    var userId = r.data.session.user.id;
+    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
+      if (res.data) {
+        var newBal = Math.max(0, res.data.balance - 1);
+        sb.from('credits').update({ balance: newBal }).eq('user_id', userId).then(function() {
+          document.getElementById('stat-credits').textContent = newBal;
+        });
+      }
+    });
+  });
 }
 
 document.querySelectorAll('.enhance-item').forEach(function(item) {
