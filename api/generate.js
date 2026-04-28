@@ -17,17 +17,36 @@ export default async function handler(req, res) {
   ];
 
   try {
-    // Upload to Imgur
+    // Convert base64 to buffer and upload to Supabase
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
-    const imgurRes = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64Data, type: 'base64' })
-    });
-    const imgurData = await imgurRes.json();
-    if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
+    const buffer = Buffer.from(base64Data, 'base64');
+    const filename = 'suit-' + Date.now() + '.jpg';
 
-    // Create Replicate prediction — DON'T wait for it
+    // Upload to Supabase storage
+    const uploadRes = await fetch(
+      'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/suits/' + filename,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM',
+          'Content-Type': 'image/jpeg',
+          'x-upsert': 'true'
+        },
+        body: buffer
+      }
+    );
+
+    if (!uploadRes.ok) {
+      const errText = await uploadRes.text();
+      console.log('Supabase upload error:', errText);
+      return res.status(500).json({ error: 'Upload failed: ' + errText });
+    }
+
+    const garmentUrl = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/suits/' + filename;
+    console.log('Garment URL:', garmentUrl);
+    console.log('Human URL:', models[model_index || 0]);
+
+    // Create Replicate prediction
     const createRes = await fetch('https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions', {
       method: 'POST',
       headers: {
@@ -36,7 +55,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         input: {
-          garm_img: imgurData.data.link,
+          garm_img: garmentUrl,
           human_img: models[model_index || 0],
           garment_des: 'Indian designer suit',
           is_checked: true,
@@ -48,15 +67,19 @@ export default async function handler(req, res) {
     });
 
     const prediction = await createRes.json();
-    if (!prediction.id) return res.status(500).json({ error: prediction.error || 'Failed to start' });
+    console.log('Prediction:', prediction.id, prediction.status, prediction.error);
 
-    // Return prediction ID immediately — browser will poll
-    return res.status(200).json({ 
+    if (!prediction.id) {
+      return res.status(500).json({ error: prediction.error || 'Failed to start generation' });
+    }
+
+    return res.status(200).json({
       prediction_id: prediction.id,
       status: prediction.status
     });
 
   } catch (err) {
+    console.error('Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
