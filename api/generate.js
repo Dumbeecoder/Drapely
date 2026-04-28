@@ -19,26 +19,20 @@ export default async function handler(req, res) {
   const humanImg = models[model_index || 0];
 
   try {
-    // Upload garment to Imgur first
+    // Upload garment to Imgur
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
     const imgurRes = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Client-ID 546c25a59c58ad7',
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: base64Data, type: 'base64' })
     });
     const imgurData = await imgurRes.json();
-    if (!imgurData.success) {
-      return res.status(500).json({ error: 'Image upload failed: ' + (imgurData.data?.error || 'unknown') });
-    }
+    if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
     const garmentUrl = imgurData.data.link;
     console.log('Garment URL:', garmentUrl);
-    console.log('Human URL:', humanImg);
 
-    // Use run endpoint which waits for completion
-    const response = await fetch('https://api.replicate.com/v1/deployments/cuuupid/idm-vton/predictions', {
+    // Create prediction
+    const createRes = await fetch('https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}`,
@@ -51,74 +45,45 @@ export default async function handler(req, res) {
           garment_des: 'Indian designer suit',
           is_checked: true,
           is_checked_crop: false,
-          denoise_steps: 30,
+          denoise_steps: 20,
           seed: 42
         }
       })
     });
 
-    const prediction = await response.json();
-    console.log('Initial prediction:', prediction.id, prediction.status, prediction.error);
+    const prediction = await createRes.json();
+    console.log('Created prediction:', prediction.id, 'status:', prediction.status);
 
-    if (prediction.error || !prediction.id) {
-      // Try standard models endpoint as fallback
-      const res2 = await fetch('https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          input: {
-            garm_img: garmentUrl,
-            human_img: humanImg,
-            garment_des: 'Indian designer suit',
-            is_checked: true,
-            is_checked_crop: false,
-            denoise_steps: 30,
-            seed: 42
-          }
-        })
-      });
-      const p2 = await res2.json();
-      console.log('Fallback prediction:', p2.id, p2.status, p2.error);
-      if (p2.error) return res.status(500).json({ error: p2.error });
-      
-      // Poll this one
-      let result = p2;
-      let attempts = 0;
-      while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 50) {
-        await new Promise(r => setTimeout(r, 5000));
-        const poll = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
-          headers: { 'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}` }
-        });
-        result = await poll.json();
-        console.log('Poll', attempts, ':', result.status);
-        attempts++;
-      }
-      console.log('Final:', result.status, result.output);
-      if (result.status === 'failed') return res.status(500).json({ error: result.error || 'Failed' });
-      if (!result.output) return res.status(500).json({ error: 'No output returned' });
-      return res.status(200).json({ output: result.output });
-    }
+    if (!prediction.id) return res.status(500).json({ error: prediction.error || 'Failed to create prediction' });
+    if (prediction.status === 'succeeded') return res.status(200).json({ output: prediction.output });
 
-    // Poll the deployment prediction
+    // Poll — max 55 seconds total (Vercel limit is 60s on hobby)
+    const startTime = Date.now();
     let result = prediction;
-    let attempts = 0;
-    while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 50) {
-      await new Promise(r => setTimeout(r, 5000));
-      const poll = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
+
+    while (Date.now() - startTime < 55000) {
+      await new Promise(r => setTimeout(r, 3000));
+      const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
         headers: { 'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}` }
       });
-      result = await poll.json();
-      console.log('Poll', attempts, ':', result.status);
-      attempts++;
+      result = await pollRes.json();
+      console.log('Status:', result.status, 'time:', Math.round((Date.now()-startTime)/1000) + 's');
+
+      if (result.status === 'succeeded') {
+        console.log('Output:', result.output);
+        return res.status(200).json({ output: result.output });
+      }
+      if (result.status === 'failed') {
+        return res.status(500).json({ error: result.error || 'Generation failed' });
+      }
     }
 
-    console.log('Final:', result.status, result.output);
-    if (result.status === 'failed') return res.status(500).json({ error: result.error || 'Failed' });
-    if (!result.output) return res.status(500).json({ error: 'No output returned' });
-    return res.status(200).json({ output: result.output });
+    // Timed out — return prediction ID so client can poll
+    return res.status(202).json({ 
+      pending: true, 
+      prediction_id: result.id,
+      message: 'Still processing — use prediction_id to check status'
+    });
 
   } catch (err) {
     console.error('Error:', err.message);
