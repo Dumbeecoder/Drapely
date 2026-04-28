@@ -7,115 +7,129 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--surface: #ffffff;--white:#fff}
-    body{font-family:'DM Sans',sans-serif;background:#ffffff;color:var(--text);min-height:100vh}
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
-    .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
-    .sidebar-brand span{color:var(--gold)}
+    :root{
+      --pink:#E91E63;
+      --pink-light:#ff6b9d;
+      --pink-pale:#fff0f5;
+      --deep:#000000;
+      --muted:#555555;
+      --text:#000000;
+      --border:rgba(233,30,99,0.2);
+      --border-mid:rgba(233,30,99,0.4);
+      --surface:#ffffff;
+      --white:#ffffff;
+    }
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#000;border-right:1px solid rgba(233,30,99,0.2);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
+    .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
+    .sidebar-brand span{color:#E91E63}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.5);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-    .nav-item:hover{background:rgba(233,30,99,0.08);color:var(--gold-light)}
-    .nav-item.active{background:rgba(233,30,99,0.12);color:var(--gold-light)}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+    .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff}
+    .nav-item.active{background:rgba(233,30,99,0.15);color:#fff}
     .nav-icon{width:16px;height:16px;flex-shrink:0}
     .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500}
-    .sidebar-footer{padding:0 0.75rem;border-top:1px solid var(--border);padding-top:1rem}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.06);border:1px solid var(--border)}
-    .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--deep);flex-shrink:0}
-    .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .user-plan{font-size:10px;color:var(--gold)}
+    .sidebar-footer{padding:0 0.75rem;border-top:1px solid rgba(233,30,99,0.2);padding-top:1rem}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2)}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-plan{font-size:10px;color:#E91E63}
     .main{margin-left:220px;min-height:100vh}
-    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
-    .topbar-left{display:flex;align-items:baseline;gap:6px}
-    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text)}
-    .topbar-sub{font-size:12px;color:var(--muted)}
-    .beta-pill{padding:5px 14px;background:var(--gold-pale);border:1px solid var(--border-mid);border-radius:20px;font-size:11px;font-weight:500;color:var(--gold)}
+    .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
+    .topbar-sub{font-size:12px;color:#555;margin-left:10px}
+    .beta-pill{padding:5px 14px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;font-weight:500;color:#E91E63}
     .content{padding:2rem}
     .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem}
-    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem}
-    .stat-label{font-size:11px;color:var(--muted);letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
-    .stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);line-height:1;margin-bottom:4px}
-    .stat-note{font-size:11px;color:var(--gold)}
+    .stat-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1.25rem 1.5rem}
+    .stat-card.highlight{border-color:#E91E63}
+    .stat-label{font-size:11px;color:#555;letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
+    .stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#000;line-height:1;margin-bottom:4px}
+    .stat-note{font-size:11px;color:#E91E63}
     .studio-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
-    .studio-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-    .studio-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-    .studio-header h2{font-size:15px;font-weight:500;color:var(--text)}
-    .studio-header p{font-size:12px;color:var(--muted);margin-top:2px}
+    .studio-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
+    .studio-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .studio-header h2{font-size:15px;font-weight:500;color:#000}
+    .studio-header p{font-size:12px;color:#555;margin-top:2px}
     .step-pills{display:flex;gap:6px}
-    .step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:#ffffff;border:1px solid var(--border);color:var(--muted);transition:all 0.2s}
-    .step-pill.active{background:var(--gold);border-color:var(--gold);color:var(--deep)}
+    .step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:#f5f5f5;border:1px solid #ddd;color:#555;transition:all 0.2s}
+    .step-pill.active{background:#E91E63;border-color:#E91E63;color:#fff}
     .step-pill.done{background:#dcfce7;border-color:#86efac;color:#16a34a}
     .studio-body{padding:1.5rem}
     .step-panel{display:none}
     .step-panel.active{display:block}
-    .step-label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px}
-    .upload-zone{border:2px dashed var(--border-mid);border-radius:12px;background:var(--gold-pale);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
-    .upload-zone:hover{border-color:var(--gold);background:#ffffff}
-    .upload-zone.has-file{padding:0;border-style:solid;border-color:var(--gold)}
-    .upload-icon-wrap{width:52px;height:52px;background:rgba(233,30,99,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
-    .upload-icon-wrap svg{width:22px;height:22px;color:var(--gold)}
-    .upload-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
-    .upload-hint{font-size:12px;color:var(--muted)}
-    .upload-preview{width:100%;max-height:300px;object-fit:contain;display:none;border-radius:10px;padding:1rem;background:var(--gold-pale)}
+    .step-label{font-size:12px;font-weight:500;color:#555;margin-bottom:12px;letter-spacing:0.5px}
+    .upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+    .upload-zone:hover{border-color:#E91E63;background:#ffe0ec}
+    .upload-zone.has-file{padding:0;border-style:solid;border-color:#E91E63}
+    .upload-icon-wrap{width:52px;height:52px;background:rgba(233,30,99,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+    .upload-icon-wrap svg{width:22px;height:22px;color:#E91E63}
+    .upload-title{font-size:15px;font-weight:500;color:#000;margin-bottom:4px}
+    .upload-hint{font-size:12px;color:#555}
+    .upload-preview{width:100%;max-height:300px;object-fit:contain;display:none;border-radius:10px;padding:1rem;background:#fff0f5}
     .clear-file-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center}
     .models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
-    .model-card{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#ffffff}
-    .model-card:hover{border-color:var(--gold);transform:translateY(-1px)}
-    .model-card.selected{border-color:var(--gold);border-width:2px}
-    .model-avatar{height:200px;position:relative;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;background:var(--gold-pale)}
-    .model-avatar img{width:100%;height:100%;object-fit:contain;object-position:center top}
-    .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--gold);border-radius:50%;display:none;align-items:center;justify-content:center}
+    .model-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#f9f9f9}
+    .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
+    .model-card.selected{border-color:#E91E63;border-width:2px}
+    .model-avatar{height:110px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff0f5}
+    .model-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
+    .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center}
     .model-card.selected .model-check{display:flex}
-    .model-info{padding:8px;border-top:1px solid var(--border)}
-    .model-name{font-size:11px;font-weight:500;color:var(--text)}
-    .model-spec{font-size:10px;color:var(--muted)}
+    .model-info{padding:8px;border-top:1px solid rgba(233,30,99,0.15)}
+    .model-name{font-size:11px;font-weight:500;color:#000}
+    .model-spec{font-size:10px;color:#555}
     .pose-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
-    .pose-tag{padding:6px 14px;border:1px solid var(--border-mid);border-radius:20px;font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.15s;background:var(--white)}
-    .pose-tag:hover,.pose-tag.selected{background:var(--gold);border-color:var(--gold);color:var(--white)}
+    .pose-tag{padding:6px 14px;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:12px;color:#555;cursor:pointer;transition:all 0.15s;background:#fff}
+    .pose-tag:hover,.pose-tag.selected{background:#E91E63;border-color:#E91E63;color:#fff}
     .bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
-    .bg-card{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.15s}
-    .bg-card:hover{border-color:var(--gold);transform:translateY(-1px)}
-    .bg-card.selected{border-color:var(--gold);border-width:2px}
+    .bg-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.15s}
+    .bg-card:hover{border-color:#E91E63;transform:translateY(-1px)}
+    .bg-card.selected{border-color:#E91E63;border-width:2px}
     .bg-swatch{height:56px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
-    .bg-label{padding:5px 6px;font-size:10px;color:var(--muted);background:var(--white);border-top:1px solid var(--border)}
+    .bg-label{padding:5px 6px;font-size:10px;color:#555;background:#fff;border-top:1px solid rgba(233,30,99,0.15)}
     .enhance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
-    .enhance-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;background:var(--white);font-size:12px;color:var(--text)}
-    .enhance-item:hover,.enhance-item.on{border-color:var(--gold);background:var(--gold-pale)}
+    .enhance-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;transition:all 0.15s;background:#fff;font-size:12px;color:#000}
+    .enhance-item:hover,.enhance-item.on{border-color:#E91E63;background:#fff0f5}
     .enhance-item input{accent-color:#E91E63;width:13px;height:13px}
     .var-row{display:flex;gap:8px;margin-bottom:1.5rem}
-    .var-btn{flex:1;padding:9px;border:1px solid var(--border-mid);border-radius:8px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.15s}
-    .var-btn.selected{background:var(--gold);border-color:var(--gold);color:var(--deep)}
-    .generate-btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
+    .var-btn{flex:1;padding:9px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
+    .var-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+    .generate-btn{width:100%;padding:14px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
     .generate-btn:hover{background:#c2185b}
     .step-nav{display:flex;justify-content:space-between;margin-top:1.5rem;gap:10px}
-    .btn-back{padding:10px 20px;border:1px solid var(--border-mid);border-radius:8px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);cursor:pointer}
-    .btn-back:hover{border-color:var(--gold)}
-    .btn-next{padding:10px 24px;border:none;border-radius:8px;background:var(--deep);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--gold-light);cursor:pointer}
-    .btn-next:hover{background:#111111}
+    .btn-back{padding:10px 20px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:#555;cursor:pointer}
+    .btn-back:hover{border-color:#E91E63}
+    .btn-next{padding:10px 24px;border:none;border-radius:8px;background:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#fff;cursor:pointer}
+    .btn-next:hover{background:#222}
     .progress-wrap{display:none;padding:2rem 1.5rem;text-align:center}
     .progress-wrap.visible{display:block}
-    .progress-label-text{font-size:13px;color:var(--muted);margin-bottom:12px}
-    .progress-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px}
-    .progress-fill{height:100%;background:var(--gold);border-radius:3px;width:0%;transition:width 0.5s ease}
-    .progress-pct{font-size:12px;color:var(--gold)}
-    .results-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-    .results-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-    .results-header h2{font-size:15px;font-weight:500;color:var(--text)}
+    .progress-label-text{font-size:13px;color:#555;margin-bottom:12px}
+    .progress-track{height:5px;background:rgba(233,30,99,0.15);border-radius:3px;overflow:hidden;margin-bottom:8px}
+    .progress-fill{height:100%;background:#E91E63;border-radius:3px;width:0%;transition:width 0.5s ease}
+    .progress-pct{font-size:12px;color:#E91E63}
+    .results-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
+    .results-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .results-header h2{font-size:15px;font-weight:500;color:#000}
     .results-body{padding:1.5rem}
     .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
-    .result-item{border:1px solid var(--border);border-radius:10px;overflow:hidden}
-    .result-actions{display:flex;gap:6px;padding:8px;border-top:1px solid var(--border)}
-    .result-btn{flex:1;padding:6px 0;border:1px solid var(--border-mid);border-radius:6px;background:var(--white);font-size:11px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif}
-    .result-btn:hover,.result-btn.primary{background:var(--gold);color:var(--deep);border-color:var(--gold)}
-    .new-shoot-btn{width:100%;padding:11px;background:var(--deep);color:var(--gold-light);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:0.5rem}
-    .gallery-panel{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:20px}
-    .gallery-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-    .gallery-header h2{font-size:15px;font-weight:500;color:var(--text)}
-    .gallery-empty{padding:3rem;text-align:center;color:var(--muted);font-size:14px}
+    .result-item{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden}
+    .result-actions{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(233,30,99,0.15)}
+    .result-btn{flex:1;padding:6px 0;border:1px solid rgba(233,30,99,0.3);border-radius:6px;background:#fff;font-size:11px;color:#555;cursor:pointer;font-family:'DM Sans',sans-serif}
+    .result-btn:hover,.result-btn.primary{background:#E91E63;color:#fff;border-color:#E91E63}
+    .new-shoot-btn{width:100%;padding:11px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:0.5rem}
+    .gallery-panel{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-top:20px}
+    .gallery-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .gallery-header h2{font-size:15px;font-weight:500;color:#000}
+    .gallery-empty{padding:3rem;text-align:center;color:#555;font-size:14px}
     .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:1.5rem}
-    .gallery-item{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+    .gallery-item{border-radius:10px;overflow:hidden;border:1px solid rgba(233,30,99,0.15)}
     .gallery-item img{width:100%;height:200px;object-fit:cover;display:block}
-    .gallery-item-label{padding:6px 10px;font-size:11px;color:var(--muted)}
-    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--deep);color:var(--gold-light);padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid var(--border-mid);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+    .gallery-item-label{padding:6px 10px;font-size:11px;color:#555}
+    /* CREDITS MODAL */
+    #credits-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
+    #credits-modal-inner{background:#fff;border-radius:14px;padding:1.5rem;max-width:320px;width:100%;text-align:center;position:relative;max-height:90vh;overflow-y:auto}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
     .toast.show{transform:translateX(-50%) translateY(0)}
     @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.studio-grid{grid-template-columns:1fr}}
     @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.bg-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
@@ -135,7 +149,6 @@
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
       My gallery
     </a>
-
     <div class="nav-section-label" style="margin-top:8px;">Account</div>
     <a class="nav-item" href="settings.html">
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -156,7 +169,7 @@
 
 <div class="main">
   <div class="topbar">
-    <div class="topbar-left">
+    <div style="display:flex;align-items:baseline;gap:6px;">
       <div class="topbar-title">My Studio</div>
       <div class="topbar-sub" id="topbar-sub">Welcome back!</div>
     </div>
@@ -168,11 +181,7 @@
       <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
       <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
       <div class="stat-card"><div class="stat-label">Suits uploaded</div><div class="stat-val" id="stat-suits">0</div><div class="stat-note">Any hanger or flat photo</div></div>
-      <div class="stat-card" style="border-color:var(--gold);">
-        <div class="stat-label">Your credits</div>
-        <div class="stat-val" id="stat-credits" style="font-size:36px;">...</div>
-        <div class="stat-note"><button onclick="showBuyCredits()" style="background:none;border:none;color:var(--gold);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;">+ Buy more credits</button></div>
-      </div>
+      <div class="stat-card highlight"><div class="stat-label">Your credits</div><div class="stat-val" id="stat-credits">...</div><div class="stat-note"><button onclick="showBuyCredits()" style="background:none;border:none;color:#E91E63;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;">+ Buy more credits</button></div></div>
     </div>
 
     <div class="studio-grid">
@@ -188,7 +197,6 @@
         </div>
 
         <div class="studio-body" id="studio-body">
-
           <!-- STEP 1 -->
           <div class="step-panel active" id="step-0">
             <div class="step-label">STEP 1 — UPLOAD YOUR SUIT</div>
@@ -203,8 +211,8 @@
             </div>
             <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
             <div style="margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid var(--border-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#fff;outline:none;" /></div>
-              <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;">Suit type</div><select style="width:100%;padding:10px 14px;border:1px solid var(--border-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#fff;outline:none;"><option>Salwar Kameez</option><option>Anarkali</option><option>Patiala Suit</option><option>Sharara Set</option><option>Palazzo Set</option><option>Lehenga Choli</option><option>Other</option></select></div>
+              <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;" /></div>
+              <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Suit type</div><select style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;"><option>Salwar Kameez</option><option>Anarkali</option><option>Patiala Suit</option><option>Sharara Set</option><option>Palazzo Set</option><option>Lehenga Choli</option><option>Other</option></select></div>
             </div>
             <div class="step-nav"><div></div><button class="btn-next" onclick="goStep(1)">Choose Model →</button></div>
           </div>
@@ -212,7 +220,7 @@
           <!-- STEP 2 -->
           <div class="step-panel" id="step-1">
             <div class="step-label">STEP 2 — CHOOSE MODEL & POSE</div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Pose style</div>
+            <div style="font-size:12px;color:#555;margin-bottom:8px;">Pose style</div>
             <div class="pose-wrap">
               <div class="pose-tag selected" onclick="selectPose(this)">Standing front</div>
               <div class="pose-tag" onclick="selectPose(this)">3/4 turn</div>
@@ -221,32 +229,14 @@
               <div class="pose-tag" onclick="selectPose(this)">Sitting graceful</div>
               <div class="pose-tag" onclick="selectPose(this)">Full length</div>
             </div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select model</div>
+            <div style="font-size:12px;color:#555;margin-bottom:8px;">Select model</div>
             <div class="models-grid">
-              <div class="model-card selected" onclick="selectModel(this,0)">
-                <div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model1-removebg-preview.png" alt="Model 1" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
-                <div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit · Full length</div></div>
-              </div>
-              <div class="model-card" onclick="selectModel(this,1)">
-                <div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model2-removebg-preview.png" alt="Model 2" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
-                <div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">Slim fit · Standing</div></div>
-              </div>
-              <div class="model-card" onclick="selectModel(this,2)">
-                <div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model3-removebg-preview.png" alt="Model 3" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
-                <div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">Medium fit · Front pose</div></div>
-              </div>
-              <div class="model-card" onclick="selectModel(this,3)">
-                <div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model4-removebg-preview.png" alt="Model 4" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
-                <div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">Relaxed fit · Side pose</div></div>
-              </div>
-              <div class="model-card" onclick="selectModel(this,4)">
-                <div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model5-removebg-preview.png" alt="Model 5" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
-                <div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">Elegant fit · 3/4 pose</div></div>
-              </div>
-              <div class="model-card" style="border-style:dashed;" onclick="showToast('More models coming soon!')">
-                <div class="model-avatar" style="flex-direction:column;gap:6px;"><span style="font-size:28px;">+</span><span style="font-size:10px;color:var(--gold);font-family:'DM Sans',sans-serif;font-weight:500;">More soon</span></div>
-                <div class="model-info"><div class="model-name" style="color:var(--gold);">Coming soon</div><div class="model-spec">More models</div></div>
-              </div>
+              <div class="model-card selected" onclick="selectModel(this,0)"><div class="model-avatar"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=220&fit=crop&crop=top" alt="Priya" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">5'6" · Medium · Fair</div></div></div>
+              <div class="model-card" onclick="selectModel(this,1)"><div class="model-avatar"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=220&fit=crop&crop=top" alt="Anjali" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">5'7" · Slim · Dusky</div></div></div>
+              <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=220&fit=crop&crop=top" alt="Kavya" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">5'5" · Petite · Wheatish</div></div></div>
+              <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=220&fit=crop&crop=top" alt="Meera" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">5'8" · Athletic · Golden</div></div></div>
+              <div class="model-card" onclick="selectModel(this,4)"><div class="model-avatar"><img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&h=220&fit=crop&crop=top" alt="Simran" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">5'6" · Curvy · Deep</div></div></div>
+              <div class="model-card" style="border-style:dashed;" onclick="showToast('Custom model coming soon!')"><div class="model-avatar" style="flex-direction:column;gap:6px;"><span style="font-size:28px;">+</span><span style="font-size:10px;color:#E91E63;font-weight:500;">Upload yours</span></div><div class="model-info"><div class="model-name" style="color:#E91E63;">Your model</div><div class="model-spec">Coming soon</div></div></div>
             </div>
             <div class="step-nav"><button class="btn-back" onclick="goStep(0)">← Back</button><button class="btn-next" onclick="goStep(2)">Choose Background →</button></div>
           </div>
@@ -255,7 +245,7 @@
           <div class="step-panel" id="step-2">
             <div class="step-label">STEP 3 — SET THE BACKGROUND</div>
             <div class="bg-grid">
-              <div class="bg-card selected" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f5e6c8,#e8c97e);color:#000000;">Warm</div><div class="bg-label">Studio Warm</div></div>
+              <div class="bg-card selected" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f5e6c8,#e8c97e);color:#7a5c1e;">Warm</div><div class="bg-label">Studio Warm</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#c8d8f0,#8aa9d4);color:#1a3a5c;">Sky</div><div class="bg-label">Sky Blue</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#2d1a0e,#5c3a1e);color:#e8c07a;">Royal</div><div class="bg-label">Royal Dark</div></div>
               <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#e8f5e1,#b8dda0);color:#2d5a1e;">Garden</div><div class="bg-label">Botanical</div></div>
@@ -270,19 +260,19 @@
           <!-- STEP 4 -->
           <div class="step-panel" id="step-3">
             <div class="step-label">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
-            <div style="background:var(--gold-pale);border:1px solid var(--border-mid);border-radius:10px;padding:14px;margin-bottom:1.25rem;display:flex;gap:10px;flex-wrap:wrap;">
-              <div style="font-size:12px;color:var(--text);">🧣 Suit uploaded</div>
-              <div style="font-size:12px;color:var(--text);">👩🏽 Model selected</div>
-              <div style="font-size:12px;color:var(--text);">🎨 Background set</div>
+            <div style="background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:10px;padding:14px;margin-bottom:1.25rem;display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="font-size:12px;color:#000;">🧣 Suit uploaded</div>
+              <div style="font-size:12px;color:#000;">👩🏽 Model selected</div>
+              <div style="font-size:12px;color:#000;">🎨 Background set</div>
             </div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;">AI enhancements</div>
+            <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">AI enhancements</div>
             <div class="enhance-grid">
               <label class="enhance-item on"><input type="checkbox" checked /> Professional lighting</label>
               <label class="enhance-item on"><input type="checkbox" checked /> Dupatta styling</label>
               <label class="enhance-item on"><input type="checkbox" checked /> Jewellery suggestion</label>
               <label class="enhance-item"><input type="checkbox" /> Soft shadow effect</label>
             </div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;">Number of images</div>
+            <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">Number of images</div>
             <div class="var-row">
               <button class="var-btn selected" onclick="selectVars(this)">1 image</button>
               <button class="var-btn" onclick="selectVars(this)">2 images</button>
@@ -300,13 +290,14 @@
           <div class="progress-label-text" id="progress-label">Preparing...</div>
           <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
           <div class="progress-pct" id="progress-pct">0%</div>
+          <div style="font-size:11px;color:#555;margin-top:12px;">This takes 60–120 seconds. Please wait ☕</div>
         </div>
       </div>
 
       <div class="results-card">
-        <div class="results-header"><h2>Generated photos</h2><span style="font-size:12px;color:var(--muted);">Ready to download</span></div>
+        <div class="results-header"><h2>Generated photos</h2><span style="font-size:12px;color:#555;">Ready to download</span></div>
         <div class="results-body" id="results-body">
-          <div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);">
+          <div style="text-align:center;padding:2.5rem 1rem;color:#555;">
             <div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">✨</div>
             <div style="font-size:13px;line-height:1.7;">Your AI-generated photos will appear here after you click Generate</div>
           </div>
@@ -315,32 +306,28 @@
     </div>
 
     <div class="gallery-panel">
-      <div class="gallery-header"><h2>My photoshoot gallery</h2><span style="font-size:12px;color:var(--muted);">All your generated images</span></div>
+      <div class="gallery-header"><h2>My photoshoot gallery</h2><span style="font-size:12px;color:#555;">All your generated images</span></div>
       <div id="gallery-body"><div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photoshoots yet — generate your first one above!</div></div>
     </div>
   </div>
 </div>
 
-
 <!-- CREDITS MODAL -->
-<div id="credits-modal" onclick="handleModalClick(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem;">
-  <div id="credits-modal-inner" style="background:#fff;border-radius:14px;padding:1.5rem;max-width:320px;width:100%;text-align:center;position:relative;max-height:90vh;overflow-y:auto;">
+<div id="credits-modal" onclick="handleModalClick(event)">
+  <div id="credits-modal-inner">
     <button onclick="hideBuyCredits()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:#999;line-height:1;">✕</button>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#000000;margin-bottom:4px;">Buy Credits</div>
-    <div style="font-size:12px;color:#444444;margin-bottom:1.25rem;line-height:1.6;">₹100 = 10 photos · Pay via UPI<br/>Credits added within 30 minutes</div>
-    <div style="background:#f8f4ee;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#000;margin-bottom:4px;">Buy Credits</div>
+    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;line-height:1.6;">₹100 = 10 photos · Pay via UPI<br/>Credits added within 30 minutes</div>
+    <div style="background:#fff0f5;border-radius:10px;padding:1rem;margin-bottom:1rem;">
       <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=100%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;" alt="UPI QR" />
-      <div style="font-size:12px;font-weight:500;color:#000000;margin-top:8px;">GPay · PhonePe · Paytm</div>
-      <div style="font-size:11px;color:#444444;margin-top:3px;">6352197977@ptyes</div>
+      <div style="font-size:12px;font-weight:500;color:#000;margin-top:8px;">GPay · PhonePe · Paytm</div>
+      <div style="font-size:11px;color:#555;margin-top:3px;">6352197977@ptyes</div>
       <div style="font-size:13px;font-weight:500;color:#E91E63;margin-top:5px;">₹100</div>
     </div>
-    <div style="text-align:left;background:#fbf4e8;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:11px;color:#444444;line-height:1.9;">
-      1. Scan QR and pay ₹100<br/>
-      2. Screenshot the payment<br/>
-      3. Send on WhatsApp below<br/>
-      4. Credits added in 30 mins ✓
+    <div style="text-align:left;background:#fff0f5;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:11px;color:#555;line-height:1.9;">
+      1. Scan QR and pay ₹100<br/>2. Screenshot the payment<br/>3. Send on WhatsApp below<br/>4. Credits added in 30 mins ✓
     </div>
-    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9100%20for%20Drapely%20credits.%20My%20email%20is%20" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;">
+    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9100%20for%20Drapely%20credits." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
       Send Payment Screenshot
     </a>
@@ -356,7 +343,11 @@ var sb = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
 
-// Load user and credits
+var currentStep = 0;
+var selectedModelIndex = 0;
+var galleryImages = [];
+
+// Load user
 sb.auth.getSession().then(function(r) {
   if (!r.data.session) { window.location.href = 'auth.html'; return; }
   var user = r.data.session.user;
@@ -365,7 +356,7 @@ sb.auth.getSession().then(function(r) {
   var lname = (meta.last_name || '').trim();
   var fullname = (fname + ' ' + lname).trim();
   var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
-  var initials = fname && lname ? (fname[0] + lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
   document.getElementById('user-name').textContent = displayName;
   document.getElementById('user-avatar').textContent = initials;
   document.getElementById('topbar-sub').textContent = 'Welcome back, ' + (fname || displayName) + '!';
@@ -377,53 +368,16 @@ function loadCredits(userId) {
     if (r.data !== null && r.data !== undefined) {
       document.getElementById('stat-credits').textContent = r.data.balance;
     } else {
-      // No credits row yet - show 3 and try to create
       document.getElementById('stat-credits').textContent = '3';
-      sb.from('credits').upsert({ user_id: userId, balance: 3 }, { onConflict: 'user_id' }).then(function(res) {
-        if (res.error) {
-          console.log('Credits upsert error:', res.error.message);
-        }
-      });
+      sb.from('credits').upsert({ user_id: userId, balance: 3 }, { onConflict: 'user_id' });
     }
   });
 }
 
-function showBuyCredits() {
-  // Append user email to WhatsApp link
-  sb.auth.getSession().then(function(r) {
-    if (r.data.session) {
-      var email = r.data.session.user.email;
-      var base = 'https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9100%20for%20Drapely%20credits.%20My%20email%20is%20';
-      document.getElementById('wa-credits-link').href = base + encodeURIComponent(email);
-    }
-  });
-  var modal = document.getElementById('credits-modal');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function handleModalClick(e) {
-  if (e.target === document.getElementById('credits-modal')) {
-    hideBuyCredits();
-  }
-}
-
-function hideBuyCredits() {
-  document.getElementById('credits-modal').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-
-
-// Sign out
 async function doSignOut() {
   await sb.auth.signOut();
   window.location.href = 'auth.html';
 }
-
-var currentStep = 0;
-var selectedModelIndex = 0;
-var galleryImages = [];
 
 function showToast(msg) {
   var t = document.getElementById('toast');
@@ -486,6 +440,11 @@ function selectVars(btn) {
   btn.classList.add('selected');
 }
 
+function getVarCount() {
+  var s = document.querySelector('.var-btn.selected');
+  return s ? parseInt(s.textContent) : 1;
+}
+
 function compressImage(file) {
   return new Promise(function(resolve) {
     var reader = new FileReader();
@@ -509,10 +468,10 @@ function compressImage(file) {
 
 async function startGenerate() {
   var suitFile = document.getElementById('suit-input').files[0];
-  if (!suitFile) { showToast('⚠️ Please upload your suit photo first!'); goStep(0); return; }
+  if (!suitFile) { showToast('Please upload your suit photo first!'); goStep(0); return; }
 
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  if (credits <= 0) { showToast('⚠️ No credits! Buy more to generate.'); showBuyCredits(); return; }
+  if (credits <= 0) { showToast('No credits! Buy more to generate.'); showBuyCredits(); return; }
 
   var progressWrap = document.getElementById('progress-wrap');
   var progressFill = document.getElementById('progress-fill');
@@ -524,10 +483,9 @@ async function startGenerate() {
   progressWrap.classList.add('visible');
   progressFill.style.width = '0%';
   progressPct.textContent = '0%';
-  progressLabel.textContent = 'Compressing your suit photo...';
 
+  var msgs = ['Compressing suit photo...','Sending to AI model...','Analysing garment details...','Compositing onto model...','Applying lighting & effects...','Almost ready...'];
   var progress = 0;
-  var msgs = ['Compressing your suit photo...','Sending to AI model...','Analysing garment details...','Compositing onto model...','Applying lighting...','Almost ready...'];
   var interval = setInterval(function() {
     if (progress < 88) {
       progress += Math.random() * 5 + 1;
@@ -555,7 +513,7 @@ async function startGenerate() {
         clearInterval(interval);
         progressWrap.classList.remove('visible');
         studioBody.style.display = 'block';
-        showToast('✗ ' + String(data.error).substring(0, 100));
+        showToast('Error: ' + String(data.error).substring(0, 80));
         return;
       }
       if (data.output) {
@@ -567,18 +525,19 @@ async function startGenerate() {
     clearInterval(interval);
     progressFill.style.width = '100%';
     progressPct.textContent = '100%';
-    progressLabel.textContent = '✨ Your photoshoot is ready!';
+    progressLabel.textContent = 'Your photoshoot is ready!';
 
     setTimeout(function() {
       progressWrap.classList.remove('visible');
       studioBody.style.display = 'block';
       if (results.length > 0) {
         showRealResults(results);
+        addToGallery(results);
         updateStats(results.length);
         deductCredit();
-        showToast('✓ Photoshoot ready! Download your images.');
+        showToast('Photoshoot ready! Download your images.');
       } else {
-        showToast('✗ No images returned. Please try again.');
+        showToast('No images returned. Please try again.');
       }
       goStep(0);
     }, 600);
@@ -587,7 +546,7 @@ async function startGenerate() {
     clearInterval(interval);
     progressWrap.classList.remove('visible');
     studioBody.style.display = 'block';
-    showToast('✗ ' + err.message);
+    showToast('Error: ' + err.message);
   }
 }
 
@@ -595,7 +554,7 @@ function showRealResults(images) {
   var body = document.getElementById('results-body');
   var html = '<div class="results-grid">';
   images.forEach(function(url, i) {
-    html += '<div class="result-item"><img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" onerror="this.parentNode.style.background='#fff0f5'" /><div class="result-actions"><button class="result-btn" onclick="showToast('Refine coming soon!')">Refine</button><button class="result-btn primary" onclick="downloadImg(\'' + url + '\',' + (i+1) + ')">Download</button></div></div>';
+    html += '<div class="result-item"><img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" /><div class="result-actions"><button class="result-btn" onclick="showToast(\'Refine coming soon!\')">Refine</button><button class="result-btn primary" onclick="downloadImg(\'' + url + '\',' + (i+1) + ')">Download</button></div></div>';
   });
   html += '</div><button class="new-shoot-btn" onclick="newShoot()">+ Start a new photoshoot</button>';
   body.innerHTML = html;
@@ -605,7 +564,24 @@ function downloadImg(url, num) {
   var a = document.createElement('a');
   a.href = url; a.download = 'drapely-' + num + '.jpg'; a.target = '_blank';
   a.click();
-  showToast('✓ Downloading image ' + num + '...');
+  showToast('Downloading image ' + num + '...');
+}
+
+function addToGallery(images) {
+  galleryImages = images.concat(galleryImages);
+  var body = document.getElementById('gallery-body');
+  var html = '<div class="gallery-grid">';
+  galleryImages.forEach(function(url, i) {
+    html += '<div class="gallery-item"><img src="' + url + '" /><div class="gallery-item-label">Photoshoot ' + (galleryImages.length - i) + '</div></div>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function updateStats(imgCount) {
+  document.getElementById('stat-shoots').textContent = (parseInt(document.getElementById('stat-shoots').textContent) || 0) + 1;
+  document.getElementById('stat-images').textContent = (parseInt(document.getElementById('stat-images').textContent) || 0) + imgCount;
+  document.getElementById('stat-suits').textContent = (parseInt(document.getElementById('stat-suits').textContent) || 0) + 1;
 }
 
 function deductCredit() {
@@ -621,6 +597,34 @@ function deductCredit() {
       }
     });
   });
+}
+
+function newShoot() {
+  document.getElementById('results-body').innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:#555;"><div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">✨</div><div style="font-size:13px;line-height:1.7;">Your AI-generated photos will appear here after you click Generate</div></div>';
+  clearSuit({ stopPropagation: function(){} });
+  document.getElementById('suit-input').value = '';
+  goStep(0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showBuyCredits() {
+  sb.auth.getSession().then(function(r) {
+    if (r.data.session) {
+      var email = r.data.session.user.email;
+      document.getElementById('wa-credits-link').href = 'https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9100%20for%20Drapely%20credits.%20My%20email%20is%20' + encodeURIComponent(email);
+    }
+  });
+  document.getElementById('credits-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function hideBuyCredits() {
+  document.getElementById('credits-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+  if (e.target === document.getElementById('credits-modal')) hideBuyCredits();
 }
 
 document.querySelectorAll('.enhance-item').forEach(function(item) {
