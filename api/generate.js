@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM',
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
           'Content-Type': 'image/jpeg',
           'x-upsert': 'true'
         },
