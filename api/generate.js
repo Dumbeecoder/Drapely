@@ -9,11 +9,11 @@ export default async function handler(req, res) {
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model1-removebg-preview.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model2-removebg-preview.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model3-removebg-preview.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model4-removebg-preview.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model5-removebg-preview.png',
+    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=768&h=1024&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=768&h=1024&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=768&h=1024&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=768&h=1024&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=768&h=1024&fit=crop&crop=top',
   ];
 
   try {
