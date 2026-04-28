@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
   const models = [
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_1.jpg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_2.jpg,
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_2.jpg',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_3.jpg',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_4.jpg',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_5.jpg',
