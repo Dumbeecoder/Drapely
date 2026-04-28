@@ -19,6 +19,30 @@ export default async function handler(req, res) {
   const humanImg = models[model_index || 0];
 
   try {
+    // Upload garment image to Imgur to get a public URL
+    const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
+    
+    const imgurRes = await fetch('https://api.imgur.com/3/image', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Client-ID 546c25a59c58ad7',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ image: base64Data, type: 'base64' })
+    });
+    
+    const imgurData = await imgurRes.json();
+    console.log('Imgur upload:', imgurData.success, imgurData.data?.link);
+    
+    if (!imgurData.success) {
+      return res.status(500).json({ error: 'Failed to upload image: ' + imgurData.data?.error });
+    }
+    
+    const garmentUrl = imgurData.data.link;
+    console.log('Garment URL:', garmentUrl);
+    console.log('Human URL:', humanImg);
+
+    // Send to Replicate
     const response = await fetch('https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions', {
       method: 'POST',
       headers: {
@@ -28,7 +52,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         input: {
-          garm_img: garment_img,
+          garm_img: garmentUrl,
           human_img: humanImg,
           garment_des: 'Indian designer suit',
           is_checked: true,
@@ -40,29 +64,36 @@ export default async function handler(req, res) {
     });
 
     const prediction = await response.json();
-    console.log('Replicate response:', JSON.stringify(prediction).substring(0, 500));
+    console.log('Replicate status:', prediction.status, 'error:', prediction.error);
 
     if (prediction.error) {
       return res.status(500).json({ error: prediction.error });
     }
 
-    if (prediction.status !== 'succeeded') {
-      let result = prediction;
-      let attempts = 0;
-      while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 40) {
-        await new Promise(r => setTimeout(r, 4000));
-        const poll = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
-          headers: { 'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}` }
-        });
-        result = await poll.json();
-        console.log('Poll status:', result.status, 'attempt:', attempts);
-        attempts++;
-      }
-      if (result.status === 'failed') return res.status(500).json({ error: result.error || 'Generation failed' });
-      return res.status(200).json({ output: result.output });
+    // Poll for result
+    let result = prediction;
+    let attempts = 0;
+    while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 40) {
+      await new Promise(r => setTimeout(r, 4000));
+      const poll = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
+        headers: { 'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}` }
+      });
+      result = await poll.json();
+      console.log('Poll', attempts, ':', result.status);
+      attempts++;
     }
 
-    return res.status(200).json({ output: prediction.output });
+    console.log('Final status:', result.status, 'output:', result.output);
+
+    if (result.status === 'failed') {
+      return res.status(500).json({ error: result.error || 'Generation failed' });
+    }
+
+    if (!result.output) {
+      return res.status(500).json({ error: 'No image generated. Try again.' });
+    }
+
+    return res.status(200).json({ output: result.output });
 
   } catch (err) {
     console.error('Error:', err.message);
