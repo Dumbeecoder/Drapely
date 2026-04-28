@@ -518,17 +518,15 @@ async function startGenerate() {
         return;
       }
 
-      // Poll Replicate directly until done
+     // Poll through our API to avoid CORS
       var predId = data.prediction_id;
       var pollResult = null;
       var pollAttempts = 0;
-      while (pollAttempts < 60) {
-        await new Promise(function(r){ setTimeout(r, 4000); });
-        var pollRes = await fetch('https://api.replicate.com/v1/predictions/' + predId, {
-          headers: { 'Authorization': 'Bearer ' + 'r8_c7zmsH5FS54FqMyWCSzJipO3FCUjbv80MQSOm' }
-        });
+      while (pollAttempts < 30) {
+        await new Promise(function(r){ setTimeout(r, 5000); });
+        var pollRes = await fetch('/api/poll?id=' + predId);
         pollResult = await pollRes.json();
-        progressLabel.textContent = 'AI working... (' + Math.round((pollAttempts+1)*4) + 's)';
+        progressLabel.textContent = 'AI working... (' + Math.round((pollAttempts+1)*5) + 's)';
         if (pollResult.status === 'succeeded') break;
         if (pollResult.status === 'failed') {
           clearInterval(interval);
