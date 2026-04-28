@@ -509,6 +509,22 @@ async function startGenerate() {
         body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex })
       });
       var data = await response.json();
+if (data.pending) {
+  progressLabel.textContent = 'Still processing... checking again in 10 seconds';
+  await new Promise(r => setTimeout(r, 10000));
+  const pollRes = await fetch('https://api.replicate.com/v1/predictions/' + data.prediction_id, {
+    headers: { 'Authorization': 'Bearer r8_c7zmsH5FS54FqMyWCSzJipO3FCUjbv80MQSOm' }
+  });
+  const pollData = await pollRes.json();
+  if (pollData.output) { results = results.concat(Array.isArray(pollData.output) ? pollData.output : [pollData.output]); continue; }
+}
+
+
+
+
+
+
+      
       if (data.error) {
         clearInterval(interval);
         progressWrap.classList.remove('visible');
