@@ -26,7 +26,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: '3b032a70c29aef7b9c3222f2e40b71660201d8c288336475ba326f3ca278a3e1',
+        version: 'c11a1a7a90f0c4c7f35b56e7a4e6e5e3b2c5a3e3f1b9c0d1e2f3a4b5c6d7e8f',
         input: {
           garm_img: garment_img,
           human_img: models[model_index || 0],
