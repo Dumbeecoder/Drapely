@@ -17,36 +17,11 @@ export default async function handler(req, res) {
   ];
 
   try {
-    // Convert base64 to buffer and upload to Supabase
-    const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
-    const filename = 'suit-' + Date.now() + '.jpg';
+    console.log('Starting generation, model_index:', model_index);
+    console.log('Garment img size:', garment_img.length);
+    console.log('Human img:', models[model_index || 0]);
 
-    // Upload to Supabase storage
-    const uploadRes = await fetch(
-      'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/suits/' + filename,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
-          'Content-Type': 'image/jpeg',
-          'x-upsert': 'true'
-        },
-        body: buffer
-      }
-    );
-
-    if (!uploadRes.ok) {
-      const errText = await uploadRes.text();
-      console.log('Supabase upload error:', errText);
-      return res.status(500).json({ error: 'Upload failed: ' + errText });
-    }
-
-    const garmentUrl = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/suits/' + filename;
-    console.log('Garment URL:', garmentUrl);
-    console.log('Human URL:', models[model_index || 0]);
-
-    // Create Replicate prediction
+    // Send base64 directly to Replicate
     const createRes = await fetch('https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions', {
       method: 'POST',
       headers: {
@@ -55,7 +30,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         input: {
-          garm_img: garmentUrl,
+          garm_img: garment_img,
           human_img: models[model_index || 0],
           garment_des: 'Indian designer suit',
           is_checked: true,
@@ -67,10 +42,13 @@ export default async function handler(req, res) {
     });
 
     const prediction = await createRes.json();
-    console.log('Prediction:', prediction.id, prediction.status, prediction.error);
+    console.log('Replicate response:', JSON.stringify(prediction).substring(0, 300));
 
     if (!prediction.id) {
-      return res.status(500).json({ error: prediction.error || 'Failed to start generation' });
+      return res.status(500).json({ 
+        error: prediction.error || prediction.detail || 'Failed to start — check Replicate API key',
+        debug: JSON.stringify(prediction).substring(0, 200)
+      });
     }
 
     return res.status(200).json({
@@ -79,7 +57,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('Error:', err.message);
+    console.error('Catch error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
