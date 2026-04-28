@@ -17,18 +17,16 @@ export default async function handler(req, res) {
   ];
 
   try {
-    console.log('Starting generation, model_index:', model_index);
-    console.log('Garment img size:', garment_img.length);
-    console.log('Human img:', models[model_index || 0]);
+    console.log('Starting, model:', model_index, 'img size:', garment_img.length);
 
-    // Send base64 directly to Replicate
-    const createRes = await fetch('https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions', {
+    const createRes = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        version: '3b032a70c29aef7b9c3222f2e40b71660201d8c288336475ba326f3ca278a3e1',
         input: {
           garm_img: garment_img,
           human_img: models[model_index || 0],
@@ -42,12 +40,12 @@ export default async function handler(req, res) {
     });
 
     const prediction = await createRes.json();
-    console.log('Replicate response:', JSON.stringify(prediction).substring(0, 300));
+    console.log('Prediction created:', prediction.id, 'status:', prediction.status, 'error:', prediction.error);
 
     if (!prediction.id) {
-      return res.status(500).json({ 
-        error: prediction.error || prediction.detail || 'Failed to start — check Replicate API key',
-        debug: JSON.stringify(prediction).substring(0, 200)
+      return res.status(500).json({
+        error: prediction.error || prediction.detail || 'Failed to create prediction',
+        debug: JSON.stringify(prediction).substring(0, 300)
       });
     }
 
@@ -57,7 +55,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('Catch error:', err.message);
+    console.error('Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
