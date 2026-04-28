@@ -9,17 +9,16 @@ export default async function handler(req, res) {
   if (!garment_img) return res.status(400).json({ error: 'Missing suit image' });
 
   const models = [
-    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=768&q=80',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=768&q=80',
-    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=768&q=80',
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=768&q=80',
-    'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=768&q=80',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model1-removebg-preview.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model2-removebg-preview.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model3-removebg-preview.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model4-removebg-preview.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/model5-removebg-preview.png',
   ];
 
   const humanImg = models[model_index || 0];
 
   try {
-    // Start prediction
     const response = await fetch('https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions', {
       method: 'POST',
       headers: {
@@ -41,35 +40,32 @@ export default async function handler(req, res) {
     });
 
     const prediction = await response.json();
+    console.log('Replicate response:', JSON.stringify(prediction).substring(0, 500));
 
     if (prediction.error) {
       return res.status(500).json({ error: prediction.error });
     }
 
-    // If still processing, poll for result
     if (prediction.status !== 'succeeded') {
-      let attempts = 0;
       let result = prediction;
-
-      while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 30) {
-        await new Promise(r => setTimeout(r, 3000));
+      let attempts = 0;
+      while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 40) {
+        await new Promise(r => setTimeout(r, 4000));
         const poll = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
           headers: { 'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}` }
         });
         result = await poll.json();
+        console.log('Poll status:', result.status, 'attempt:', attempts);
         attempts++;
       }
-
-      if (result.status === 'failed') {
-        return res.status(500).json({ error: result.error || 'Generation failed' });
-      }
-
+      if (result.status === 'failed') return res.status(500).json({ error: result.error || 'Generation failed' });
       return res.status(200).json({ output: result.output });
     }
 
     return res.status(200).json({ output: prediction.output });
 
   } catch (err) {
+    console.error('Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
