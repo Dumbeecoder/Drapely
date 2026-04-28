@@ -129,6 +129,29 @@
     /* CREDITS MODAL */
     #credits-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
     #credits-modal-inner{background:#fff;border-radius:14px;padding:1.5rem;max-width:320px;width:100%;text-align:center;position:relative;max-height:90vh;overflow-y:auto}
+    .studio-tab{padding:14px 24px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+    .studio-tab.active{color:#E91E63;border-bottom-color:#E91E63}
+    .studio-tab:hover{color:#E91E63}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .video-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-bottom:20px}
+    .video-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .video-header h2{font-size:15px;font-weight:500;color:#000}
+    .video-header p{font-size:12px;color:#555;margin-top:2px}
+    .video-body{padding:1.5rem}
+    .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .prompt-input{width:100%;padding:12px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;resize:vertical;min-height:80px}
+    .prompt-input:focus{border-color:#E91E63}
+    .duration-row{display:flex;gap:8px;margin-bottom:1rem}
+    .dur-btn{flex:1;padding:8px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
+    .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+    .video-generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:1rem}
+    .video-generate-btn:hover{background:linear-gradient(135deg,#c2185b,#ad1457)}
+    .video-result{background:#000;border-radius:10px;overflow:hidden;aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;padding:1rem}
+    .video-result video{width:100%;height:100%;object-fit:contain}
+    .video-progress{display:none;text-align:center;padding:2rem}
+    .video-progress.visible{display:block}
+    .credit-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;color:#E91E63;font-weight:500}
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
     .toast.show{transform:translateX(-50%) translateY(0)}
     @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.studio-grid{grid-template-columns:1fr}}
@@ -176,7 +199,14 @@
     <div class="beta-pill">✦ Beta — Free access</div>
   </div>
 
+  <!-- STUDIO TABS -->
+  <div style="background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;display:flex;gap:0;">
+    <button class="studio-tab active" id="tab-photo" onclick="switchTab('photo')">📸 Photo Studio</button>
+    <button class="studio-tab" id="tab-video" onclick="switchTab('video')">🎬 Video Studio</button>
+  </div>
+
   <div class="content">
+    <div class="tab-content active" id="content-photo">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
       <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
@@ -309,7 +339,88 @@
       <div class="gallery-header"><h2>My photoshoot gallery</h2><span style="font-size:12px;color:#555;">All your generated images</span></div>
       <div id="gallery-body"><div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photoshoots yet — generate your first one above!</div></div>
     </div>
-  </div>
+    </div><!-- end photo tab -->
+
+    <!-- VIDEO STUDIO TAB -->
+    <div class="tab-content" id="content-video">
+      <div class="video-card">
+        <div class="video-header">
+          <div><h2>🎬 AI Video Studio</h2><p>Generate a model walking and showing your suit — perfect for WhatsApp & Instagram</p></div>
+          <span class="credit-badge">5 credits per video</span>
+        </div>
+        <div class="video-body">
+          <div class="video-grid">
+            <div>
+              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 1 — UPLOAD YOUR SUIT</div>
+              <div class="upload-zone" id="v-upload-zone" onclick="document.getElementById('v-suit-input').click()" style="margin-bottom:1rem;">
+                <div id="v-upload-empty">
+                  <div class="upload-icon-wrap"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
+                  <div class="upload-title" style="font-size:13px;">Upload suit photo</div>
+                  <div class="upload-hint">JPG or PNG</div>
+                </div>
+                <img id="v-suit-preview" class="upload-preview" />
+              </div>
+              <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
+
+              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 2 — DESCRIBE THE VIDEO</div>
+              <textarea class="prompt-input" id="v-prompt" placeholder="Indian woman walking gracefully on a white background showing a beautiful floral salwar kameez suit, full body, professional fashion video, slow motion"></textarea>
+
+              <div style="font-size:12px;color:#555;margin-bottom:8px;margin-top:1rem;font-weight:500;">STEP 3 — VIDEO LENGTH</div>
+              <div class="duration-row">
+                <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec</button>
+                <button class="dur-btn" onclick="selectDur(this,'10')">10 sec</button>
+              </div>
+
+              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 4 — VIDEO STYLE</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
+                <div class="pose-tag selected" onclick="selectStyle(this)" style="text-align:center;">🚶 Walking</div>
+                <div class="pose-tag" onclick="selectStyle(this)" style="text-align:center;">🔄 Spinning</div>
+                <div class="pose-tag" onclick="selectStyle(this)" style="text-align:center;">💃 Posing</div>
+                <div class="pose-tag" onclick="selectStyle(this)" style="text-align:center;">🎭 Runway</div>
+              </div>
+
+              <div id="v-progress" class="video-progress">
+                <div style="font-size:13px;color:#555;margin-bottom:12px;" id="v-progress-label">Generating your fashion video...</div>
+                <div class="progress-track"><div class="progress-fill" id="v-progress-fill" style="width:0%;"></div></div>
+                <div class="progress-pct" id="v-progress-pct">0%</div>
+                <div style="font-size:11px;color:#555;margin-top:8px;">Videos take 2-3 minutes ☕</div>
+              </div>
+
+              <button class="video-generate-btn" onclick="startVideoGenerate()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/></svg>
+                Generate Fashion Video — 5 Credits
+              </button>
+            </div>
+
+            <div>
+              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">GENERATED VIDEO</div>
+              <div class="video-result" id="v-result">
+                <div>
+                  <div style="font-size:32px;margin-bottom:8px;">🎬</div>
+                  <div>Your fashion video will appear here</div>
+                  <div style="font-size:11px;margin-top:4px;color:#333;">Takes 2-3 minutes</div>
+                </div>
+              </div>
+              <div style="margin-top:10px;display:none;" id="v-download-wrap">
+                <button onclick="downloadVideo()" style="width:100%;padding:11px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">⬇ Download Video</button>
+                <button onclick="shareVideoWA()" style="width:100%;padding:11px;background:#25D366;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:8px;">💬 Share on WhatsApp</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEO GALLERY -->
+      <div class="video-card">
+        <div class="video-header"><div><h2>My video gallery</h2><p>All your generated fashion videos</p></div></div>
+        <div id="v-gallery" style="padding:2rem;text-align:center;color:#555;">
+          <div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">🎬</div>
+          <div style="font-size:13px;">No videos yet — generate your first fashion video above!</div>
+        </div>
+      </div>
+    </div><!-- end video tab -->
+
+  </div><!-- end content -->
 </div>
 
 <!-- CREDITS MODAL -->
@@ -503,7 +614,6 @@ async function startGenerate() {
 
     for (var i = 0; i < count; i++) {
       progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
-      // Start generation
       var response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -517,29 +627,8 @@ async function startGenerate() {
         showToast('Error: ' + String(data.error).substring(0, 80));
         return;
       }
-
-     // Poll through our API to avoid CORS
-      var predId = data.prediction_id;
-      var pollResult = null;
-      var pollAttempts = 0;
-      while (pollAttempts < 30) {
-        await new Promise(function(r){ setTimeout(r, 5000); });
-        var pollRes = await fetch('/api/poll?id=' + predId);
-        pollResult = await pollRes.json();
-        progressLabel.textContent = 'AI working... (' + Math.round((pollAttempts+1)*5) + 's)';
-        if (pollResult.status === 'succeeded') break;
-        if (pollResult.status === 'failed') {
-          clearInterval(interval);
-          progressWrap.classList.remove('visible');
-          studioBody.style.display = 'block';
-          showToast('Generation failed. Try again.');
-          return;
-        }
-        pollAttempts++;
-      }
-
-      if (pollResult && pollResult.output) {
-        var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
+      if (data.output) {
+        var imgs = Array.isArray(data.output) ? data.output : [data.output];
         results = results.concat(imgs);
       }
     }
@@ -652,6 +741,125 @@ function handleModalClick(e) {
 document.querySelectorAll('.enhance-item').forEach(function(item) {
   item.addEventListener('click', function(){ item.classList.toggle('on'); });
 });
+
+// VIDEO STUDIO
+var currentVideoUrl = null;
+var selectedDuration = '5';
+var selectedVideoStyle = 'Walking';
+
+function switchTab(tab) {
+  document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('content-' + tab).classList.add('active');
+}
+
+function loadVideoSuit(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('v-suit-preview').src = ev.target.result;
+    document.getElementById('v-suit-preview').style.display = 'block';
+    document.getElementById('v-upload-empty').style.display = 'none';
+    document.getElementById('v-upload-zone').classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
+
+function selectDur(btn, dur) {
+  document.querySelectorAll('.dur-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  selectedDuration = dur;
+}
+
+function selectStyle(tag) {
+  document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
+  tag.classList.add('selected');
+  selectedVideoStyle = tag.textContent.trim().replace(/^./, '').trim();
+}
+
+async function startVideoGenerate() {
+  var suitFile = document.getElementById('v-suit-input').files[0];
+  if (!suitFile) { showToast('Please upload your suit photo first!'); return; }
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  if (credits < 5) { showToast('Need 5 credits for video! Buy more.'); showBuyCredits(); return; }
+  var prompt = document.getElementById('v-prompt').value.trim() || 'Indian woman walking gracefully showing a beautiful Indian designer suit, full body, professional fashion video';
+  var styleMap = {'Walking':'walking gracefully on runway','Spinning':'spinning around showing the full outfit','Posing':'posing elegantly','Runway':'walking on fashion show runway'};
+  var fullPrompt = 'Indian fashion model ' + (styleMap[selectedVideoStyle] || 'walking') + ', wearing suit: ' + prompt + ', cinematic 4K professional fashion video';
+  document.getElementById('v-progress').classList.add('visible');
+  document.getElementById('v-download-wrap').style.display = 'none';
+  document.getElementById('v-result').innerHTML = '<div style="text-align:center;color:#555;"><div style="font-size:32px;margin-bottom:8px;">⏳</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;">Takes 2-3 minutes</div></div>';
+  var progress = 0;
+  var vInterval = setInterval(function() {
+    if (progress < 90) { progress += Math.random() * 2 + 0.5; if (progress > 90) progress = 90; document.getElementById('v-progress-fill').style.width = Math.round(progress) + '%'; document.getElementById('v-progress-pct').textContent = Math.round(progress) + '%'; }
+  }, 2000);
+  try {
+    var reader = new FileReader();
+    var imgData = await new Promise(function(resolve) { reader.onload = function(e){ resolve(e.target.result); }; reader.readAsDataURL(suitFile); });
+    var response = await fetch('/api/video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: fullPrompt, image: imgData, duration: parseInt(selectedDuration) })
+    });
+    var data = await response.json();
+    if (data.error) { clearInterval(vInterval); document.getElementById('v-progress').classList.remove('visible'); showToast('Error: ' + data.error.substring(0, 80)); return; }
+    var predId = data.prediction_id;
+    var pollResult = null;
+    var attempts = 0;
+    while (attempts < 60) {
+      await new Promise(function(r){ setTimeout(r, 5000); });
+      var pollRes = await fetch('/api/poll?id=' + predId);
+      pollResult = await pollRes.json();
+      document.getElementById('v-progress-label').textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
+      if (pollResult.status === 'succeeded') break;
+      if (pollResult.status === 'failed') { clearInterval(vInterval); document.getElementById('v-progress').classList.remove('visible'); showToast('Video failed. Try again.'); return; }
+      attempts++;
+    }
+    clearInterval(vInterval);
+    document.getElementById('v-progress-fill').style.width = '100%';
+    document.getElementById('v-progress-pct').textContent = '100%';
+    setTimeout(function() {
+      document.getElementById('v-progress').classList.remove('visible');
+      var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
+      if (videoUrl) {
+        currentVideoUrl = videoUrl;
+        document.getElementById('v-result').innerHTML = '<video controls autoplay loop style="width:100%;height:100%;object-fit:contain;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        document.getElementById('v-download-wrap').style.display = 'block';
+        document.getElementById('v-gallery').innerHTML = '<div style="padding:1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;"><div><video src="' + videoUrl + '" style="width:100%;height:200px;object-fit:cover;border-radius:8px;border:1px solid rgba(233,30,99,0.2);" controls></video></div></div>';
+        deductVideoCredits();
+        showToast('Your fashion video is ready!');
+      } else { showToast('No video returned. Try again.'); }
+    }, 500);
+  } catch(err) { clearInterval(vInterval); document.getElementById('v-progress').classList.remove('visible'); showToast('Error: ' + err.message); }
+}
+
+function downloadVideo() {
+  if (!currentVideoUrl) return;
+  var a = document.createElement('a'); a.href = currentVideoUrl; a.download = 'drapely-fashion-video.mp4'; a.target = '_blank'; a.click();
+  showToast('Downloading video...');
+}
+
+function shareVideoWA() {
+  if (!currentVideoUrl) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video! ' + currentVideoUrl), '_blank');
+}
+
+function deductVideoCredits() {
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) return;
+    var userId = r.data.session.user.id;
+    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
+      if (res.data) {
+        var newBal = Math.max(0, res.data.balance - 5);
+        sb.from('credits').update({ balance: newBal }).eq('user_id', userId).then(function() {
+          document.getElementById('stat-credits').textContent = newBal;
+        });
+      }
+    });
+  });
+}
+
 </script>
 </body>
 </html>
