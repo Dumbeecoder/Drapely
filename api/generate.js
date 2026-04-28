@@ -33,8 +33,8 @@ export default async function handler(req, res) {
           garment_des: 'Indian designer suit',
           is_checked: true,
           is_checked_crop: false,
-          denoise_steps: 20,
-          seed: 42
+          denoise_steps: 40,
+          seed: Math.floor(Math.random() * 1000),
         }
       })
     });
