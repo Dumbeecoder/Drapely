@@ -503,6 +503,7 @@ async function startGenerate() {
 
     for (var i = 0; i < count; i++) {
       progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
+      // Start generation
       var response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -516,8 +517,31 @@ async function startGenerate() {
         showToast('Error: ' + String(data.error).substring(0, 80));
         return;
       }
-      if (data.output) {
-        var imgs = Array.isArray(data.output) ? data.output : [data.output];
+
+      // Poll Replicate directly until done
+      var predId = data.prediction_id;
+      var pollResult = null;
+      var pollAttempts = 0;
+      while (pollAttempts < 60) {
+        await new Promise(function(r){ setTimeout(r, 4000); });
+        var pollRes = await fetch('https://api.replicate.com/v1/predictions/' + predId, {
+          headers: { 'Authorization': 'Bearer ' + 'r8_c7zmsH5FS54FqMyWCSzJipO3FCUjbv80MQSOm' }
+        });
+        pollResult = await pollRes.json();
+        progressLabel.textContent = 'AI working... (' + Math.round((pollAttempts+1)*4) + 's)';
+        if (pollResult.status === 'succeeded') break;
+        if (pollResult.status === 'failed') {
+          clearInterval(interval);
+          progressWrap.classList.remove('visible');
+          studioBody.style.display = 'block';
+          showToast('Generation failed. Try again.');
+          return;
+        }
+        pollAttempts++;
+      }
+
+      if (pollResult && pollResult.output) {
+        var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
         results = results.concat(imgs);
       }
     }
