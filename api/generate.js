@@ -9,11 +9,11 @@ export default async function handler(req, res) {
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_1.jpg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_2.jpg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_3.jpg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_4.jpg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_5.jpg',
+    'https://images.unsplash.com/photo-1617019114583-affb34d1b3cd?w=512&h=768&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=512&h=768&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=512&h=768&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=512&h=768&fit=crop&crop=top',
+    'https://images.unsplash.com/photo-1601288496920-b6154fe3626a?w=512&h=768&fit=crop&crop=top',
   ];
 
   try {
