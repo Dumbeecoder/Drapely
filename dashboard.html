@@ -414,7 +414,7 @@
                 <div style="font-size:11px;font-weight:500;color:#000;">Studio</div>
               </div>
             </div>
-            <input type="hidden" id="photo-prompt-val" value="" />
+            <input type="hidden" id="photo-prompt-val" value="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" data-bg="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" />
             <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
           </div>
 
@@ -647,6 +647,27 @@ var presetPrompts = [
 ];
 var selectedPresetIndex = 0;
 
+var selectedPosePrompt = 'standing straight facing forward, confident pose';
+
+function selectPoseCard(el, posePrompt) {
+  document.querySelectorAll('#pose-selector .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedPosePrompt = posePrompt;
+  showToast('Pose: ' + el.querySelector('div:nth-child(2)').textContent);
+}
+
+function selectScene(el, scenePrompt) {
+  document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  var promptEl = document.getElementById('photo-prompt-val');
+  if (promptEl) {
+    promptEl.value = scenePrompt;
+    promptEl.setAttribute('data-bg', scenePrompt);
+    console.log('Scene selected:', scenePrompt.substring(0, 60));
+  }
+  showToast('Scene: ' + el.querySelector('div:nth-child(2)').textContent);
+}
+
 function selectPhotoPrompt(el, val) {
   document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
   el.classList.add('selected');
@@ -697,7 +718,7 @@ function buildPhotoPrompt() {
 
   // Build final prompt — Fashn.ai product-to-model ignores garment type
   // Only background, pose and mood affect the output
-  var parts = ['Indian woman', poseDesc];
+  var parts = ['Indian woman', selectedPosePrompt || poseDesc];
   if (stylePrompt) parts.push(stylePrompt);
   if (bgPrompt) parts.push(bgPrompt);
   parts.push('professional fashion photography, high quality, full outfit visible');
