@@ -1096,18 +1096,19 @@ function renderVideoGallery() {
   var vbody = document.getElementById('video-gallery-body');
   if (!vbody) return;
   if (videoGallery.length === 0) {
-    vbody.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">🎬</div>No videos yet — generate in Video Studio!</div>';
+    vbody.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">\u{1F3AC}</div>No videos yet!</div>';
     return;
   }
   var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;padding:1rem;">';
-  videoGallery.forEach(function(url, i) {
+  for (var i = 0; i < videoGallery.length; i++) {
+    var url = videoGallery[i];
     html += '<div style="border:1px solid rgba(233,30,99,0.15);border-radius:12px;overflow:hidden;background:#fff;">';
     html += '<video src="' + url + '" style="width:100%;height:220px;object-fit:cover;display:block;" controls playsinline></video>';
     html += '<div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">';
     html += '<span style="font-size:11px;color:#555;font-weight:500;">Video ' + (i+1) + '</span>';
-    html += '<button onclick="window.open(this.dataset.url,'_blank')" data-url="' + url + '" style="background:#E91E63;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Save</button>';
+    html += '<a href="' + url + '" download="video-' + (i+1) + '.mp4" target="_blank" style="background:#E91E63;color:#fff;border-radius:6px;padding:4px 10px;font-size:11px;text-decoration:none;">Save</a>';
     html += '</div></div>';
-  });
+  }
   html += '</div>';
   vbody.innerHTML = html;
 }
