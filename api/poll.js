@@ -14,11 +14,31 @@ export default async function handler(req, res) {
       }
     });
 
-    const data = await response.json();
-    console.log('Fashn poll:', id, data.status, data.error || '');
+    const text = await response.text();
+    console.log('Fashn poll raw response:', text.substring(0, 800));
 
-    // Normalise so dashboard works with both 'completed' and 'succeeded'
-    if (data.status === 'completed') data.status = 'succeeded';
+    let data;
+    try { data = JSON.parse(text); }
+    catch(e) { return res.status(500).json({ error: 'Bad JSON: ' + text.substring(0, 200) }); }
+
+    console.log('Status:', data.status);
+    console.log('Output:', JSON.stringify(data.output));
+    console.log('Error:', data.error);
+
+    // Fashn.ai uses 'completed' — normalise to 'succeeded' for dashboard
+    if (data.status === 'completed') {
+      data.status = 'succeeded';
+    }
+
+    // Extract output — Fashn.ai returns array of URLs
+    // Make sure output is properly set
+    if (data.status === 'succeeded' && data.output) {
+      if (Array.isArray(data.output)) {
+        console.log('Output URLs:', data.output);
+      } else if (typeof data.output === 'string') {
+        data.output = [data.output];
+      }
+    }
 
     return res.status(200).json(data);
 
