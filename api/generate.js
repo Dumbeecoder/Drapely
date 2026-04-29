@@ -18,24 +18,20 @@ export default async function handler(req, res) {
 
   try {
     const humanImg = models[model_index || 0];
-    console.log('API Key:', process.env.FASHN_API_KEY ? 'exists (' + process.env.FASHN_API_KEY.substring(0,8) + '...)' : 'MISSING');
-    console.log('Model:', humanImg);
-    console.log('Garment size:', garment_img.length);
+    console.log('API Key prefix:', process.env.FASHN_API_KEY?.substring(0, 10));
+    console.log('Model img:', humanImg);
+    console.log('Garment img size:', garment_img.length);
 
-    // Fashn.ai valid categories: tops, bottoms, one-piece
-    // For Indian suits - use tops (covers the kameez top part)
-    const body = {
-      model_image: humanImg,
-      garment_image: garment_img,
-      category: 'tops',
-      mode: 'balanced',
-      garment_photo_type: 'auto',
-      nsfw_filter: true,
-      cover_feet: false,
-      adjust_hands: false,
-      restore_background: false,
-      restore_clothes: false,
-      flat_lay: false,
+    // Correct Fashn.ai request format — model_name + inputs wrapper
+    const requestBody = {
+      model_name: 'tryon-v1.6',
+      inputs: {
+        model_image: humanImg,
+        garment_image: garment_img,
+        category: 'auto',
+        mode: 'balanced',
+        garment_photo_type: 'auto',
+      }
     };
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
@@ -44,12 +40,12 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.FASHN_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(requestBody)
     });
 
-    console.log('HTTP status:', response.status);
+    console.log('HTTP Status:', response.status);
     const text = await response.text();
-    console.log('Full Fashn response:', text.substring(0, 800));
+    console.log('Fashn response:', text.substring(0, 600));
 
     let data;
     try { data = JSON.parse(text); }
@@ -57,13 +53,15 @@ export default async function handler(req, res) {
 
     if (data.error) {
       const errMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : String(data.error);
+      console.log('Fashn error:', errMsg);
       return res.status(500).json({ error: errMsg });
     }
 
     if (!data.id) {
-      return res.status(500).json({ error: 'No ID: ' + JSON.stringify(data).substring(0, 300) });
+      return res.status(500).json({ error: 'No ID returned: ' + JSON.stringify(data).substring(0, 300) });
     }
 
+    console.log('Success! Prediction ID:', data.id);
     return res.status(200).json({ prediction_id: data.id, status: data.status });
 
   } catch (err) {
