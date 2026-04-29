@@ -336,15 +336,85 @@
           <div class="step-panel" id="step-2">
             <div class="step-label">STEP 3 — SET THE BACKGROUND</div>
             <div class="bg-grid">
-              <div class="bg-card selected" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f5e6c8,#e8c97e);color:#7a5c1e;">Warm</div><div class="bg-label">Studio Warm</div></div>
-              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#c8d8f0,#8aa9d4);color:#1a3a5c;">Sky</div><div class="bg-label">Sky Blue</div></div>
-              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#2d1a0e,#5c3a1e);color:#e8c07a;">Royal</div><div class="bg-label">Royal Dark</div></div>
-              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#e8f5e1,#b8dda0);color:#2d5a1e;">Garden</div><div class="bg-label">Botanical</div></div>
-              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#f0e8d8,#d4c4a8);color:#5a4a2e;">Haveli</div><div class="bg-label">Heritage</div></div>
-              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#fce4ec,#f48fb1);color:#880e4f;">Rose</div><div class="bg-label">Floral Pink</div></div>
-              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#7f7fd5;">Night</div><div class="bg-label">Evening Glam</div></div>
-              <div class="bg-card" onclick="selectBg(this)"><div class="bg-swatch" style="background:#f8f8f8;color:#bbb;">White</div><div class="bg-label">Clean White</div></div>
+              <div class="bg-card selected" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1545639578-c4e22b8f4f75?w=200&h=120&fit=crop') center/cover;">
+                  <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🏰</span>
+                </div>
+                <div class="bg-label">Royal Palace</div>
+              </div>
+              <div class="bg-card" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1519741497674-611481863552?w=200&h=120&fit=crop') center/cover;">
+                  <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">💍</span>
+                </div>
+                <div class="bg-label">Wedding Decor</div>
+              </div>
+              <div class="bg-card" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1601158935942-52255782d322?w=200&h=120&fit=crop') center/cover;">
+                  <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🌸</span>
+                </div>
+                <div class="bg-label">Rose Garden</div>
+              </div>
+              <div class="bg-card" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=200&h=120&fit=crop') center/cover;">
+                  <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🕌</span>
+                </div>
+                <div class="bg-label">Taj Mahal</div>
+              </div>
+              <div class="bg-card" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=120&fit=crop') center/cover;">
+                  <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🪔</span>
+                </div>
+                <div class="bg-label">Festive Lights</div>
+              </div>
+              <div class="bg-card" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=120&fit=crop') center/cover;">
+                  <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🌅</span>
+                </div>
+                <div class="bg-label">Golden Sunset</div>
+              </div>
+              <div class="bg-card" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:linear-gradient(135deg,#fce4ec,#f48fb1);color:#880e4f;">
+                  <span style="font-size:18px;">🌷</span>
+                </div>
+                <div class="bg-label">Floral Pink</div>
+              </div>
+              <div class="bg-card" onclick="selectBg(this)">
+                <div class="bg-swatch" style="background:#f8f8f8;color:#bbb;">
+                  <span style="font-size:18px;">⬜</span>
+                </div>
+                <div class="bg-label">Clean White</div>
+              </div>
             </div>
+
+            <!-- PHOTO PROMPTS -->
+            <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">AI ENHANCEMENT PROMPT (optional)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
+              <div class="prompt-preset" onclick="selectPhotoPrompt(this,'Royal Indian model in palace, dramatic lighting, editorial fashion')" style="padding:8px;">
+                <div style="font-size:14px;">🏰</div>
+                <div style="font-size:11px;font-weight:500;color:#000;">Royal</div>
+              </div>
+              <div class="prompt-preset" onclick="selectPhotoPrompt(this,'Bridal look, wedding jewellery, soft golden bokeh background')" style="padding:8px;">
+                <div style="font-size:14px;">💍</div>
+                <div style="font-size:11px;font-weight:500;color:#000;">Bridal</div>
+              </div>
+              <div class="prompt-preset" onclick="selectPhotoPrompt(this,'Festive Diwali glow, warm diya lights, celebration mood')" style="padding:8px;">
+                <div style="font-size:14px;">🪔</div>
+                <div style="font-size:11px;font-weight:500;color:#000;">Festive</div>
+              </div>
+              <div class="prompt-preset" onclick="selectPhotoPrompt(this,'Natural outdoor, golden hour sunlight, flowers around')" style="padding:8px;">
+                <div style="font-size:14px;">🌸</div>
+                <div style="font-size:11px;font-weight:500;color:#000;">Garden</div>
+              </div>
+              <div class="prompt-preset" onclick="selectPhotoPrompt(this,'Heritage haveli, Rajasthani arch, warm terracotta tones')" style="padding:8px;">
+                <div style="font-size:14px;">🕌</div>
+                <div style="font-size:11px;font-weight:500;color:#000;">Heritage</div>
+              </div>
+              <div class="prompt-preset" onclick="selectPhotoPrompt(this,'Professional studio, clean background, fashion magazine')" style="padding:8px;">
+                <div style="font-size:14px;">📸</div>
+                <div style="font-size:11px;font-weight:500;color:#000;">Studio</div>
+              </div>
+            </div>
+            <input type="hidden" id="photo-prompt-val" value="" />
             <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
           </div>
 
@@ -576,6 +646,13 @@ var presetPrompts = [
   ''
 ];
 var selectedPresetIndex = 0;
+
+function selectPhotoPrompt(el, val) {
+  document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  document.getElementById('photo-prompt-val').value = val;
+  showToast('✓ Style: ' + el.querySelector('div:nth-child(2)').textContent);
+}
 
 function selectPrompt(el, idx) {
   document.querySelectorAll('.prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
