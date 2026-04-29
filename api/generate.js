@@ -53,9 +53,14 @@ export default async function handler(req, res) {
       output_format: 'jpeg',
     };
 
-    // Only add prompt for background styling (not person description when model_image is set)
+    // Add background/style prompt
     if (prompt && prompt.trim()) {
       inputs.prompt = prompt.trim();
+      console.log('Using prompt:', prompt.trim().substring(0, 100));
+    } else {
+      // Default prompt for Indian fashion
+      inputs.prompt = 'professional Indian fashion photography, full body, elegant pose';
+      console.log('Using default prompt');
     }
 
     const requestBody = {
