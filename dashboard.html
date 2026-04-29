@@ -794,6 +794,24 @@ sb.auth.getSession().then(function(r) {
   loadGalleryFromDB(user.id);
 });
 
+function switchGalleryTab(tab) {
+  var photosBtn = document.getElementById('gtab-photos');
+  var videosBtn = document.getElementById('gtab-videos');
+  var photosDiv = document.getElementById('gallery-body');
+  var videosDiv = document.getElementById('video-gallery-body');
+  if (tab === 'photos') {
+    if (photosBtn) { photosBtn.style.background = '#E91E63'; photosBtn.style.color = '#fff'; }
+    if (videosBtn) { videosBtn.style.background = '#fff'; videosBtn.style.color = '#555'; }
+    if (photosDiv) photosDiv.style.display = 'block';
+    if (videosDiv) videosDiv.style.display = 'none';
+  } else {
+    if (videosBtn) { videosBtn.style.background = '#E91E63'; videosBtn.style.color = '#fff'; }
+    if (photosBtn) { photosBtn.style.background = '#fff'; photosBtn.style.color = '#555'; }
+    if (videosDiv) videosDiv.style.display = 'block';
+    if (photosDiv) photosDiv.style.display = 'none';
+  }
+}
+
 function loadGalleryFromDB(userId) {
   sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', {ascending: false}).limit(50).then(function(r) {
     if (!r.data || r.data.length === 0) return;
@@ -1118,6 +1136,60 @@ function renderVideoGallery() {
   html += '</div>';
   vbody.innerHTML = html;
 }
+
+// VIDEO UPLOAD
+function loadVideoSuit(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('v-suit-preview');
+    var empty = document.getElementById('v-upload-empty');
+    var zone = document.getElementById('v-upload-zone');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
+
+function selectDur(btn, dur) {
+  document.querySelectorAll('.dur-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  selectedDuration = dur;
+}
+
+function downloadVideo() {
+  if (!currentVideoUrl) return;
+  var a = document.createElement('a');
+  a.href = currentVideoUrl;
+  a.download = 'drapely-video.mp4';
+  a.target = '_blank';
+  a.click();
+  showToast('Downloading video...');
+}
+
+function shareVideoWA() {
+  if (!currentVideoUrl) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video! ' + currentVideoUrl), '_blank');
+}
+
+function deductVideoCredits() {
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) return;
+    var userId = r.data.session.user.id;
+    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
+      if (res.data) {
+        var newBal = Math.max(0, res.data.balance - 5);
+        sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', userId).then(function() {
+          var el = document.getElementById('stat-credits');
+          if (el) el.textContent = newBal;
+        });
+      }
+    });
+  });
+}
+
 async function startVideoGenerate() {
   var suitFile = document.getElementById('v-suit-input').files[0];
   if (!suitFile) { showToast('Please upload your suit photo first!'); return; }
@@ -1193,6 +1265,7 @@ async function startVideoGenerate() {
         // Save to gallery arrays and Supabase
         videoGallery.unshift(videoUrl);
         renderVideoGallery();
+        switchGalleryTab('videos');
 
         sb.auth.getSession().then(function(r) {
           if (!r.data.session) return;
