@@ -673,6 +673,47 @@ function selectPrompt(el, idx) {
   }
 }
 
+// Build prompt from all user selections
+function buildPhotoPrompt() {
+  // Get suit type
+  var suitType = 'Indian designer suit';
+  var suitSelect = document.querySelector('#step-0 select');
+  if (suitSelect) suitType = suitSelect.value;
+
+  // Get selected pose
+  var poseTag = document.querySelector('.pose-tag.selected');
+  var pose = poseTag ? poseTag.textContent.trim() : 'standing front';
+
+  // Pose map to natural language
+  var poseMap = {
+    'Standing front': 'standing straight facing forward',
+    '3/4 turn': 'standing in a 3/4 turn pose',
+    'Side profile': 'standing in side profile pose',
+    'Walking pose': 'walking pose mid stride',
+    'Sitting graceful': 'sitting gracefully',
+    'Full length': 'full length standing pose'
+  };
+  var poseDesc = poseMap[pose] || pose;
+
+  // Get background prompt
+  var bgPrompt = document.getElementById('photo-prompt-val') ? document.getElementById('photo-prompt-val').value : '';
+
+  // Get style prompt
+  var stylePrompt = document.getElementById('photo-prompt-val') ? document.getElementById('photo-prompt-val').getAttribute('data-style') || '' : '';
+
+  // Build full prompt
+  var parts = [];
+  parts.push('Indian fashion model wearing a ' + suitType);
+  parts.push(poseDesc);
+  if (stylePrompt) parts.push(stylePrompt);
+  if (bgPrompt && bgPrompt !== stylePrompt) parts.push(bgPrompt);
+  parts.push('full body, professional fashion photography, high quality');
+
+  var finalPrompt = parts.join(', ');
+  console.log('Final photo prompt:', finalPrompt);
+  return finalPrompt;
+}
+
 // TAB SWITCHING - defined early so mobile nav can use it
 function switchTab(tab) {
   document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -892,7 +933,11 @@ async function startGenerate() {
       var response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex, prompt: document.getElementById('photo-prompt-val') ? document.getElementById('photo-prompt-val').value : '' })
+        body: JSON.stringify({
+          garment_img: compressed,
+          model_index: selectedModelIndex,
+          prompt: buildPhotoPrompt()
+        })
       });
       var data = await response.json();
       if (data.error) {
