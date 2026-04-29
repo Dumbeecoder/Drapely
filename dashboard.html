@@ -271,7 +271,7 @@
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
       <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
-      <div class="stat-card"><div class="stat-label">Suits uploaded</div><div class="stat-val" id="stat-suits">0</div><div class="stat-note">Any hanger or flat photo</div></div>
+      <div class="stat-card"><div class="stat-label">Videos generated</div><div class="stat-val" id="stat-suits">0</div><div class="stat-note">Generated in Video Studio</div></div>
       <div class="stat-card highlight"><div class="stat-label">Your credits</div><div class="stat-val" id="stat-credits">...</div><div class="stat-note"><button onclick="showBuyCredits()" style="background:none;border:none;color:#E91E63;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;">+ Buy more credits</button></div></div>
     </div>
 
@@ -743,6 +743,13 @@ function buildPhotoPrompt() {
 }
 
 // TAB SWITCHING - defined early so mobile nav can use it
+// Auto open video tab if coming from gallery
+if (sessionStorage.getItem('openTab') === 'video') {
+  sessionStorage.removeItem('openTab');
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function(){ switchTab('video'); }, 300);
+  });
+}
 function switchTab(tab) {
   document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
   document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
@@ -867,6 +874,8 @@ function loadGalleryFromDB(userId) {
       var statImages = document.getElementById('stat-images');
       if (statShoots) statShoots.textContent = photos.length;
       if (statImages) statImages.textContent = photos.length;
+      var statVideos = document.getElementById('stat-suits');
+      if (statVideos) statVideos.textContent = videos.length;
       renderGallery();
       renderVideoGallery();
   });
@@ -1302,7 +1311,7 @@ async function startVideoGenerate() {
         document.getElementById('v-result').innerHTML = '<video controls autoplay loop style="width:100%;height:100%;object-fit:contain;"><source src="' + videoUrl + '" type="video/mp4"></video>';
         document.getElementById('v-download-wrap').style.display = 'block';
 
-        // Save to gallery arrays and Supabase
+        // Save video to gallery and Supabase
         videoGallery.unshift(videoUrl);
         renderVideoGallery();
         switchGalleryTab('videos');
@@ -1316,6 +1325,9 @@ async function startVideoGenerate() {
             suit_type: 'Video',
             image_count: 1,
             media_type: 'video'
+          }).then(function(res) {
+            if (res.error) console.log('Video save error:', res.error.message);
+            else console.log('Video saved to DB!');
           });
         });
 
