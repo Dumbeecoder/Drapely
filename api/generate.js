@@ -9,53 +9,46 @@ export default async function handler(req, res) {
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
-    'https://images.unsplash.com/photo-1617019114583-affb34d1b3cd?w=512&h=768&fit=crop&crop=top',
-    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=512&h=768&fit=crop&crop=top',
-    'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=512&h=768&fit=crop&crop=top',
-    'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=512&h=768&fit=crop&crop=top',
-    'https://images.unsplash.com/photo-1601288496920-b6154fe3626a?w=512&h=768&fit=crop&crop=top',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_1.jpg',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_2.jpg',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_3.jpg',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_4.jpg',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/alok_model_5.jpg',
   ];
 
   try {
-    console.log('Starting, model:', model_index, 'img size:', garment_img.length);
+    const humanImg = models[model_index || 0];
+    console.log('Fashn photo - model:', model_index, 'human:', humanImg);
 
-    const createRes = await fetch('https://api.replicate.com/v1/predictions', {
+    const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.REPLICATE_API_TOKEN}`,
+        'Authorization': `Bearer ${process.env.FASHN_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: 'c11a1a7a90f0c4c7f35b56e7a4e6e5e3b2c5a3e3f1b9c0d1e2f3a4b5c6d7e8f',
-        input: {
-          garm_img: garment_img,
-          human_img: models[model_index || 0],
-          garment_des: 'Indian designer suit',
-          is_checked: true,
-          is_checked_crop: false,
-          denoise_steps: 20,
-          seed: Math.floor(Math.random() * 1000),
+        model_name: 'tryon-v1.6',
+        inputs: {
+          model_image: humanImg,
+          garment_image: garment_img,
+          category: 'tops',
+          mode: 'balanced',
+          garment_photo_type: 'auto',
+          nsfw_filter: true,
         }
       })
     });
 
-    const prediction = await createRes.json();
-    console.log('Prediction created:', prediction.id, 'status:', prediction.status, 'error:', prediction.error);
+    const data = await response.json();
+    console.log('Fashn response:', JSON.stringify(data).substring(0, 300));
 
-    if (!prediction.id) {
-      return res.status(500).json({
-        error: prediction.error || prediction.detail || 'Failed to create prediction',
-        debug: JSON.stringify(prediction).substring(0, 300)
-      });
-    }
+    if (data.error) return res.status(500).json({ error: typeof data.error === 'object' ? JSON.stringify(data.error) : data.error });
+    if (!data.id) return res.status(500).json({ error: 'No prediction ID returned', debug: JSON.stringify(data).substring(0, 200) });
 
-    return res.status(200).json({
-      prediction_id: prediction.id,
-      status: prediction.status
-    });
+    return res.status(200).json({ prediction_id: data.id, status: data.status });
 
   } catch (err) {
-    console.error('Error:', err.message);
+    console.error('Generate error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
