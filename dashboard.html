@@ -140,6 +140,9 @@
     .video-header p{font-size:12px;color:#555;margin-top:2px}
     .video-body{padding:1.5rem}
     .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .prompt-preset{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .prompt-preset:hover{border-color:#E91E63;background:#fff0f5;}
+    .prompt-preset.selected{border-color:#E91E63;border-width:2px;background:#fff0f5;}
     .prompt-input{width:100%;padding:12px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;resize:vertical;min-height:80px}
     .prompt-input:focus{border-color:#E91E63}
     .duration-row{display:flex;gap:8px;margin-bottom:1rem}
@@ -420,8 +423,65 @@
               </div>
               <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
 
-              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 2 — DESCRIBE THE VIDEO</div>
-              <textarea class="prompt-input" id="v-prompt" placeholder="Indian woman walking gracefully on a white background showing a beautiful floral salwar kameez suit, full body, professional fashion video, slow motion"></textarea>
+              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 2 — CHOOSE A SCENE</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;" id="prompt-presets">
+                <div class="prompt-preset selected" onclick="selectPrompt(this,0)">
+                  <div style="font-size:18px;margin-bottom:4px;">🏰</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Royal Palace</div>
+                  <div style="font-size:10px;color:#555;">Grand corridors</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,1)">
+                  <div style="font-size:18px;margin-bottom:4px;">💍</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Wedding Mandap</div>
+                  <div style="font-size:10px;color:#555;">Floral & golden</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,2)">
+                  <div style="font-size:18px;margin-bottom:4px;">🪔</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Diwali Festive</div>
+                  <div style="font-size:10px;color:#555;">Diyas & sparkles</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,3)">
+                  <div style="font-size:18px;margin-bottom:4px;">🕌</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Heritage Haveli</div>
+                  <div style="font-size:10px;color:#555;">Rajasthani palace</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,4)">
+                  <div style="font-size:18px;margin-bottom:4px;">🌸</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Blooming Garden</div>
+                  <div style="font-size:10px;color:#555;">Golden hour flowers</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,5)">
+                  <div style="font-size:18px;margin-bottom:4px;">✨</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Grand Ballroom</div>
+                  <div style="font-size:10px;color:#555;">Crystal chandeliers</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,6)">
+                  <div style="font-size:18px;margin-bottom:4px;">🌅</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Sunset Beach</div>
+                  <div style="font-size:10px;color:#555;">Golden waves</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,7)">
+                  <div style="font-size:18px;margin-bottom:4px;">🌹</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Palace Staircase</div>
+                  <div style="font-size:10px;color:#555;">Rose petals & marble</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,8)">
+                  <div style="font-size:18px;margin-bottom:4px;">🌃</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Rooftop Night</div>
+                  <div style="font-size:10px;color:#555;">City lights glow</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,9)">
+                  <div style="font-size:18px;margin-bottom:4px;">🛕</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Temple Festival</div>
+                  <div style="font-size:10px;color:#555;">Flowers & diyas</div>
+                </div>
+                <div class="prompt-preset" onclick="selectPrompt(this,10)" style="grid-column:1/-1;">
+                  <div style="font-size:18px;margin-bottom:4px;">✏️</div>
+                  <div style="font-size:12px;font-weight:500;color:#000;">Custom Scene</div>
+                  <div style="font-size:10px;color:#555;">Write your own description</div>
+                </div>
+              </div>
+              <textarea class="prompt-input" id="v-prompt" placeholder="Your prompt will appear here..." style="display:none;margin-top:8px;" rows="3"></textarea>
 
               <div style="font-size:12px;color:#555;margin-bottom:8px;margin-top:1rem;font-weight:500;">STEP 3 — VIDEO LENGTH</div>
               <div class="duration-row">
@@ -429,13 +489,7 @@
                 <button class="dur-btn" onclick="selectDur(this,'10')">10 sec</button>
               </div>
 
-              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 4 — VIDEO STYLE</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
-                <div class="pose-tag selected" onclick="selectStyle(this)" style="text-align:center;">🚶 Walking</div>
-                <div class="pose-tag" onclick="selectStyle(this)" style="text-align:center;">🔄 Spinning</div>
-                <div class="pose-tag" onclick="selectStyle(this)" style="text-align:center;">💃 Posing</div>
-                <div class="pose-tag" onclick="selectStyle(this)" style="text-align:center;">🎭 Runway</div>
-              </div>
+
 
               <div id="v-progress" class="video-progress">
                 <div style="font-size:13px;color:#555;margin-bottom:12px;" id="v-progress-label">Generating your fashion video...</div>
@@ -507,6 +561,38 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
+// PRESET PROMPTS
+var presetPrompts = [
+  'Graceful Indian woman walking slowly on a grand royal palace corridor, wearing a stunning embroidered Indian salwar kameez suit, golden chandeliers, marble floors, warm royal lighting, full body, slow motion, cinematic 4K fashion video',
+  'Beautiful Indian bride walking in a lavish wedding mandap decorated with marigold flowers and golden drapes, wearing an exquisite Indian designer suit with heavy embroidery, full body, dreamy soft lighting, cinematic slow motion',
+  'Elegant Indian woman twirling gracefully in a festive Diwali setting, sparkling diyas and fairy lights in background, wearing a gorgeous embroidered Indian suit with dupatta flowing, full body, warm golden bokeh, cinematic 4K',
+  'Indian woman walking through a stunning haveli courtyard with carved arches and rose petals on floor, wearing a royal Indian designer suit, soft warm sunlight, full body, slow motion, heritage rajasthani palace background',
+  'Beautiful Indian model posing in a lush blooming garden with pink and white flowers, wearing an elegant floral Indian suit, golden hour sunlight, full body, slow graceful movement, cinematic fashion video 4K',
+  'Graceful Indian woman doing a slow 360 degree spin in a grand ballroom with crystal chandeliers and golden walls, wearing a heavily embroidered Indian designer suit, full body, magical sparkle lighting, cinematic slow motion',
+  'Indian woman walking on a beach at sunset, golden hour light, wearing a flowing Indian suit with dupatta blowing in breeze, full body, slow motion waves in background, warm orange and pink sky, cinematic 4K',
+  'Elegant Indian woman descending a grand marble staircase in a palace, wearing a royal embroidered Indian suit, surrounded by rose petals, warm yellow lighting, full body, slow graceful movement, cinematic fashion video',
+  'Beautiful Indian model at a rooftop terrace during blue hour, city lights glowing in background, wearing a stunning embroidered Indian designer suit, full body, elegant slow movement, premium fashion video 4K',
+  'Indian woman walking through a stunning temple entrance decorated with flowers and diyas, wearing a traditional embroidered Indian suit in bright colours, full body, warm festive lighting, cinematic slow motion video',
+  ''
+];
+var selectedPresetIndex = 0;
+
+function selectPrompt(el, idx) {
+  document.querySelectorAll('.prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedPresetIndex = idx;
+  var textarea = document.getElementById('v-prompt');
+  if (idx === 10) {
+    textarea.style.display = 'block';
+    textarea.value = '';
+    textarea.focus();
+    textarea.placeholder = 'Describe the video you want — e.g. Indian model walking on beach in a floral suit...';
+  } else {
+    textarea.style.display = 'none';
+    textarea.value = presetPrompts[idx];
+  }
+}
+
 // TAB SWITCHING - defined early so mobile nav can use it
 function switchTab(tab) {
   document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -925,7 +1011,13 @@ async function startVideoGenerate() {
   if (!suitFile) { showToast('Please upload your suit photo first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
   if (credits < 5) { showToast('Need 5 credits for video! Buy more.'); showBuyCredits(); return; }
-  var prompt = document.getElementById('v-prompt').value.trim() || 'Indian woman walking gracefully showing a beautiful Indian designer suit, full body, professional fashion video';
+  var prompt = '';
+  if (selectedPresetIndex === 5) {
+    prompt = document.getElementById('v-prompt').value.trim();
+    if (!prompt) { showToast('Please write your custom prompt!'); return; }
+  } else {
+    prompt = presetPrompts[selectedPresetIndex];
+  }
   var styleMap = {'Walking':'walking gracefully on runway','Spinning':'spinning around showing the full outfit','Posing':'posing elegantly','Runway':'walking on fashion show runway'};
   var fullPrompt = 'Indian fashion model ' + (styleMap[selectedVideoStyle] || 'walking') + ', wearing suit: ' + prompt + ', cinematic 4K professional fashion video';
   document.getElementById('v-progress').classList.add('visible');
