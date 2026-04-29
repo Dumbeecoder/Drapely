@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   if (!image) return res.status(400).json({ error: 'Missing image' });
 
   try {
-    console.log('Starting Fashn.ai video, duration:', duration);
+    console.log('Fashn video - duration:', duration);
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -29,10 +29,10 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    console.log('Fashn video response:', JSON.stringify(data).substring(0, 200));
+    console.log('Fashn video response:', JSON.stringify(data).substring(0, 300));
 
-    if (data.error) return res.status(500).json({ error: data.error });
-    if (!data.id) return res.status(500).json({ error: 'No prediction ID', debug: JSON.stringify(data) });
+    if (data.error) return res.status(500).json({ error: typeof data.error === 'object' ? JSON.stringify(data.error) : data.error });
+    if (!data.id) return res.status(500).json({ error: 'No prediction ID returned', debug: JSON.stringify(data).substring(0, 200) });
 
     return res.status(200).json({ prediction_id: data.id, status: data.status });
 
