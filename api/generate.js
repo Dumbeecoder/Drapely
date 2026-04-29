@@ -18,7 +18,25 @@ export default async function handler(req, res) {
 
   try {
     const humanImg = models[model_index || 0];
-    console.log('Fashn photo - model:', model_index, 'human:', humanImg);
+    console.log('API Key:', process.env.FASHN_API_KEY ? 'exists (' + process.env.FASHN_API_KEY.substring(0,8) + '...)' : 'MISSING');
+    console.log('Model:', humanImg);
+    console.log('Garment size:', garment_img.length);
+
+    // Fashn.ai valid categories: tops, bottoms, one-piece
+    // For Indian suits - use tops (covers the kameez top part)
+    const body = {
+      model_image: humanImg,
+      garment_image: garment_img,
+      category: 'tops',
+      mode: 'balanced',
+      garment_photo_type: 'auto',
+      nsfw_filter: true,
+      cover_feet: false,
+      adjust_hands: false,
+      restore_background: false,
+      restore_clothes: false,
+      flat_lay: false,
+    };
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -26,29 +44,30 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.FASHN_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model_name: 'tryon-v1.6',
-        inputs: {
-          model_image: humanImg,
-          garment_image: garment_img,
-          category: 'tops',
-          mode: 'balanced',
-          garment_photo_type: 'auto',
-          nsfw_filter: true,
-        }
-      })
+      body: JSON.stringify(body)
     });
 
-    const data = await response.json();
-    console.log('Fashn response:', JSON.stringify(data).substring(0, 300));
+    console.log('HTTP status:', response.status);
+    const text = await response.text();
+    console.log('Full Fashn response:', text.substring(0, 800));
 
-    if (data.error) return res.status(500).json({ error: typeof data.error === 'object' ? JSON.stringify(data.error) : data.error });
-    if (!data.id) return res.status(500).json({ error: 'No prediction ID returned', debug: JSON.stringify(data).substring(0, 200) });
+    let data;
+    try { data = JSON.parse(text); }
+    catch(e) { return res.status(500).json({ error: 'Bad JSON: ' + text.substring(0, 200) }); }
+
+    if (data.error) {
+      const errMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : String(data.error);
+      return res.status(500).json({ error: errMsg });
+    }
+
+    if (!data.id) {
+      return res.status(500).json({ error: 'No ID: ' + JSON.stringify(data).substring(0, 300) });
+    }
 
     return res.status(200).json({ prediction_id: data.id, status: data.status });
 
   } catch (err) {
-    console.error('Generate error:', err.message);
+    console.error('Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
