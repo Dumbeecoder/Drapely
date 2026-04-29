@@ -171,7 +171,7 @@
     .mobile-user-plan{font-size:10px;color:#E91E63;}
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
     .toast.show{transform:translateX(-50%) translateY(0)}
-    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.studio-grid{grid-template-columns:1fr}.burger{display:flex;}.topbar{padding-left:60px;}}
+    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.studio-grid{grid-template-columns:1fr}.video-grid{grid-template-columns:1fr}.burger{display:flex !important;}.topbar{padding-left:60px;}}
     @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.bg-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
   </style>
 </head>
@@ -507,6 +507,30 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
+// TAB SWITCHING - defined early so mobile nav can use it
+function switchTab(tab) {
+  document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+  var tabEl = document.getElementById('tab-' + tab);
+  var contentEl = document.getElementById('content-' + tab);
+  if(tabEl) tabEl.classList.add('active');
+  if(contentEl) contentEl.classList.add('active');
+  // Update mobile nav active state
+  document.querySelectorAll('.mobile-nav-item').forEach(function(el){ el.classList.remove('active'); });
+}
+
+function openMobileNav() {
+  document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 var sb = window.supabase.createClient(
   'https://oqmoneclnirnhqpcdeqy.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
@@ -855,30 +879,13 @@ document.querySelectorAll('.enhance-item').forEach(function(item) {
   item.addEventListener('click', function(){ item.classList.toggle('on'); });
 });
 
-// MOBILE NAV
-function openMobileNav() {
-  document.getElementById('mobile-nav').classList.add('open');
-  document.getElementById('mobile-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeMobileNav() {
-  document.getElementById('mobile-nav').classList.remove('open');
-  document.getElementById('mobile-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
 // VIDEO STUDIO
 var currentVideoUrl = null;
 var videoGallery = [];
 var selectedDuration = '5';
 var selectedVideoStyle = 'Walking';
 
-function switchTab(tab) {
-  document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('content-' + tab).classList.add('active');
-}
+
 
 function loadVideoSuit(e) {
   var file = e.target.files[0];
