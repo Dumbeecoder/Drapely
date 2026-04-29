@@ -810,7 +810,11 @@ function renderGallery() {
     html += '<div style="font-size:12px;font-weight:500;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">Photos</div>';
     html += '<div class="gallery-grid">';
     galleryImages.forEach(function(url, i) {
-      html += '<div class="gallery-item"><img src="' + url + '" /><div class="gallery-item-label" style="display:flex;justify-content:space-between;align-items:center;">Photo ' + (i+1) + '<button onclick="downloadImg('' + url + '',' + (i+1) + ')" style="background:#E91E63;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;">DL</button></div></div>';
+      html += '<div class="gallery-item"><img src="' + url + '" />';
+      html += '<div class="gallery-item-label" style="display:flex;justify-content:space-between;align-items:center;">';
+      html += 'Photo ' + (i+1);
+      html += '<button onclick="window.open(this.dataset.url,\'_blank\')" data-url="' + url + '" style="background:#E91E63;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;">DL</button>';
+      html += '</div></div>';
     });
     html += '</div>';
   }
@@ -818,7 +822,11 @@ function renderGallery() {
     html += '<div style="font-size:12px;font-weight:500;color:#555;margin:16px 0 10px;text-transform:uppercase;letter-spacing:0.5px;">Videos</div>';
     html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">';
     videoGallery.forEach(function(url, i) {
-      html += '<div style="border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;"><video src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" controls></video><div style="padding:6px 10px;font-size:11px;color:#555;display:flex;justify-content:space-between;align-items:center;">Video ' + (i+1) + '<a href="' + url + '" download="drapely-video-' + (i+1) + '.mp4" style="background:#E91E63;color:#fff;border-radius:4px;padding:2px 8px;font-size:10px;text-decoration:none;">DL</a></div></div>';
+      html += '<div style="border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;">';
+      html += '<video src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" controls></video>';
+      html += '<div style="padding:6px 10px;font-size:11px;color:#555;display:flex;justify-content:space-between;align-items:center;">Video ' + (i+1);
+      html += '<button onclick="window.open(this.dataset.url,\'_blank\')" data-url="' + url + '" style="background:#E91E63;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;">DL</button>';
+      html += '</div></div>';
     });
     html += '</div>';
   }
