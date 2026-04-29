@@ -891,8 +891,37 @@ async function startGenerate() {
         showToast('Error: ' + String(data.error).substring(0, 80));
         return;
       }
-      if (data.output) {
-        var imgs = Array.isArray(data.output) ? data.output : [data.output];
+
+      // Poll for result via our api/poll endpoint
+      var predId = data.prediction_id;
+      if (!predId) {
+        clearInterval(interval);
+        progressWrap.classList.remove('visible');
+        studioBody.style.display = 'block';
+        showToast('No prediction ID returned');
+        return;
+      }
+
+      var pollResult = null;
+      var pollAttempts = 0;
+      while (pollAttempts < 60) {
+        await new Promise(function(r){ setTimeout(r, 3000); });
+        var pollRes = await fetch('/api/poll?id=' + predId);
+        pollResult = await pollRes.json();
+        progressLabel.textContent = 'AI generating... (' + Math.round((pollAttempts+1)*3) + 's)';
+        if (pollResult.status === 'succeeded') break;
+        if (pollResult.status === 'failed') {
+          clearInterval(interval);
+          progressWrap.classList.remove('visible');
+          studioBody.style.display = 'block';
+          showToast('Generation failed: ' + (pollResult.error || 'Try again'));
+          return;
+        }
+        pollAttempts++;
+      }
+
+      if (pollResult && pollResult.output && pollResult.output.length > 0) {
+        var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
         results = results.concat(imgs);
       }
     }
