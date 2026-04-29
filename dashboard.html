@@ -336,49 +336,49 @@
           <div class="step-panel" id="step-2">
             <div class="step-label">STEP 3 — SET THE BACKGROUND</div>
             <div class="bg-grid">
-              <div class="bg-card selected" onclick="selectBg(this)">
+              <div class="bg-card selected" onclick="selectBg(this)" data-prompt="grand royal Indian palace background with golden chandeliers and marble floors">
                 <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1545639578-c4e22b8f4f75?w=200&h=120&fit=crop') center/cover;">
                   <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🏰</span>
                 </div>
                 <div class="bg-label">Royal Palace</div>
               </div>
-              <div class="bg-card" onclick="selectBg(this)">
+              <div class="bg-card" onclick="selectBg(this)" data-prompt="Indian wedding mandap background with marigold flowers and golden drapes">
                 <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1519741497674-611481863552?w=200&h=120&fit=crop') center/cover;">
                   <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">💍</span>
                 </div>
                 <div class="bg-label">Wedding Decor</div>
               </div>
-              <div class="bg-card" onclick="selectBg(this)">
+              <div class="bg-card" onclick="selectBg(this)" data-prompt="lush rose garden background with soft pink flowers and golden hour light">
                 <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1601158935942-52255782d322?w=200&h=120&fit=crop') center/cover;">
                   <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🌸</span>
                 </div>
                 <div class="bg-label">Rose Garden</div>
               </div>
-              <div class="bg-card" onclick="selectBg(this)">
+              <div class="bg-card" onclick="selectBg(this)" data-prompt="iconic Taj Mahal monument background with soft morning light">
                 <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=200&h=120&fit=crop') center/cover;">
                   <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🕌</span>
                 </div>
                 <div class="bg-label">Taj Mahal</div>
               </div>
-              <div class="bg-card" onclick="selectBg(this)">
+              <div class="bg-card" onclick="selectBg(this)" data-prompt="festive Diwali background with warm diyas and fairy lights bokeh">
                 <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=120&fit=crop') center/cover;">
                   <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🪔</span>
                 </div>
                 <div class="bg-label">Festive Lights</div>
               </div>
-              <div class="bg-card" onclick="selectBg(this)">
+              <div class="bg-card" onclick="selectBg(this)" data-prompt="beautiful golden sunset sky background with warm orange tones">
                 <div class="bg-swatch" style="background:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=120&fit=crop') center/cover;">
                   <span style="background:rgba(0,0,0,0.3);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;">🌅</span>
                 </div>
                 <div class="bg-label">Golden Sunset</div>
               </div>
-              <div class="bg-card" onclick="selectBg(this)">
+              <div class="bg-card" onclick="selectBg(this)" data-prompt="soft floral pink studio background">
                 <div class="bg-swatch" style="background:linear-gradient(135deg,#fce4ec,#f48fb1);color:#880e4f;">
                   <span style="font-size:18px;">🌷</span>
                 </div>
                 <div class="bg-label">Floral Pink</div>
               </div>
-              <div class="bg-card" onclick="selectBg(this)">
+              <div class="bg-card" onclick="selectBg(this)" data-prompt="clean white studio background professional fashion">
                 <div class="bg-swatch" style="background:#f8f8f8;color:#bbb;">
                   <span style="font-size:18px;">⬜</span>
                 </div>
@@ -650,7 +650,10 @@ var selectedPresetIndex = 0;
 function selectPhotoPrompt(el, val) {
   document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
   el.classList.add('selected');
-  document.getElementById('photo-prompt-val').value = val;
+  var promptEl = document.getElementById('photo-prompt-val');
+  promptEl.setAttribute('data-style', val);
+  var bgPrompt = promptEl.getAttribute('data-bg') || '';
+  promptEl.value = (val + ' ' + bgPrompt).trim();
   showToast('✓ Style: ' + el.querySelector('div:nth-child(2)').textContent);
 }
 
@@ -808,6 +811,16 @@ function selectPose(tag) {
 function selectBg(card) {
   document.querySelectorAll('.bg-card').forEach(function(c){ c.classList.remove('selected'); });
   card.classList.add('selected');
+  // Store background prompt for API
+  var promptEl = document.getElementById('photo-prompt-val');
+  if (promptEl && card.dataset.prompt) {
+    var existing = promptEl.value;
+    // Keep style prompt, update background
+    var bgPrompt = card.dataset.prompt;
+    promptEl.setAttribute('data-bg', bgPrompt);
+    var stylePrompt = promptEl.getAttribute('data-style') || '';
+    promptEl.value = (stylePrompt + ' ' + bgPrompt).trim();
+  }
 }
 
 function selectVars(btn) {
@@ -881,7 +894,7 @@ async function startGenerate() {
       var response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex })
+        body: JSON.stringify({ garment_img: compressed, model_index: selectedModelIndex, prompt: document.getElementById('photo-prompt-val') ? document.getElementById('photo-prompt-val').value : '' })
       });
       var data = await response.json();
       if (data.error) {
