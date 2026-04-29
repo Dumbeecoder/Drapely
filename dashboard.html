@@ -303,7 +303,7 @@
             <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
             <div style="margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;" /></div>
-              <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Suit type</div><select style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;"><option>Salwar Kameez</option><option>Anarkali</option><option>Patiala Suit</option><option>Sharara Set</option><option>Palazzo Set</option><option>Lehenga Choli</option><option>Other</option></select></div>
+              <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Suit type <span style="font-weight:300;color:#aaa;">(for records)</span></div><select style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;"><option>Salwar Kameez</option><option>Anarkali</option><option>Patiala Suit</option><option>Sharara Set</option><option>Palazzo Set</option><option>Lehenga Choli</option><option>Other</option></select></div>
             </div>
             <div class="step-nav"><div></div><button class="btn-next" onclick="goStep(1)">Choose Model →</button></div>
           </div>
@@ -675,39 +675,32 @@ function selectPrompt(el, idx) {
 
 // Build prompt from all user selections
 function buildPhotoPrompt() {
-  // Get suit type
-  var suitType = 'Indian designer suit';
-  var suitSelect = document.querySelector('#step-0 select');
-  if (suitSelect) suitType = suitSelect.value;
-
   // Get selected pose
   var poseTag = document.querySelector('.pose-tag.selected');
-  var pose = poseTag ? poseTag.textContent.trim() : 'standing front';
+  var pose = poseTag ? poseTag.textContent.trim() : 'Standing front';
 
   // Pose map to natural language
   var poseMap = {
-    'Standing front': 'standing straight facing forward',
-    '3/4 turn': 'standing in a 3/4 turn pose',
-    'Side profile': 'standing in side profile pose',
-    'Walking pose': 'walking pose mid stride',
-    'Sitting graceful': 'sitting gracefully',
+    'Standing front': 'standing straight facing forward, full body',
+    '3/4 turn': 'standing in elegant 3/4 turn, full body',
+    'Side profile': 'side profile pose, full body',
+    'Walking pose': 'graceful walking pose, full body',
+    'Sitting graceful': 'sitting gracefully, full body',
     'Full length': 'full length standing pose'
   };
-  var poseDesc = poseMap[pose] || pose;
+  var poseDesc = poseMap[pose] || 'standing straight, full body';
 
   // Get background prompt
-  var bgPrompt = document.getElementById('photo-prompt-val') ? document.getElementById('photo-prompt-val').value : '';
+  var bgEl = document.getElementById('photo-prompt-val');
+  var bgPrompt = bgEl ? (bgEl.getAttribute('data-bg') || '') : '';
+  var stylePrompt = bgEl ? (bgEl.getAttribute('data-style') || '') : '';
 
-  // Get style prompt
-  var stylePrompt = document.getElementById('photo-prompt-val') ? document.getElementById('photo-prompt-val').getAttribute('data-style') || '' : '';
-
-  // Build full prompt
-  var parts = [];
-  parts.push('Indian fashion model wearing a ' + suitType);
-  parts.push(poseDesc);
+  // Build final prompt — Fashn.ai product-to-model ignores garment type
+  // Only background, pose and mood affect the output
+  var parts = ['Indian woman', poseDesc];
   if (stylePrompt) parts.push(stylePrompt);
-  if (bgPrompt && bgPrompt !== stylePrompt) parts.push(bgPrompt);
-  parts.push('full body, professional fashion photography, high quality');
+  if (bgPrompt) parts.push(bgPrompt);
+  parts.push('professional fashion photography, high quality, full outfit visible');
 
   var finalPrompt = parts.join(', ');
   console.log('Final photo prompt:', finalPrompt);
