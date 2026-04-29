@@ -797,14 +797,20 @@ sb.auth.getSession().then(function(r) {
 function loadGalleryFromDB(userId) {
   sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', {ascending: false}).limit(50).then(function(r) {
     if (!r.data || r.data.length === 0) return;
-    var photos = r.data.filter(function(i){ return i.media_type !== 'video'; });
-    var videos = r.data.filter(function(i){ return i.media_type === 'video'; });
+    var photos = r.data.filter(function(i){
+      // A record is a video if media_type is 'video' OR url ends in .mp4
+      return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4'));
+    });
+    var videos = r.data.filter(function(i){
+      return i.media_type === 'video' || (i.image_url && i.image_url.includes('.mp4'));
+    });
     photos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
     videos.forEach(function(item){ if(item.image_url) videoGallery.push(item.image_url); });
     renderGallery();
     renderVideoGallery();
-    document.getElementById('stat-shoots').textContent = photos.length;
-    document.getElementById('stat-images').textContent = photos.length;
+    if (document.getElementById('stat-shoots')) document.getElementById('stat-shoots').textContent = photos.length;
+    if (document.getElementById('stat-images')) document.getElementById('stat-images').textContent = photos.length;
+    console.log('Loaded:', photos.length, 'photos,', videos.length, 'videos');
   });
 }
 
@@ -1112,6 +1118,122 @@ function renderVideoGallery() {
   html += '</div>';
   vbody.innerHTML = html;
 }
+async function startVideoGenerate() {
+  var suitFile = document.getElementById('v-suit-input').files[0];
+  if (!suitFile) { showToast('Please upload your suit photo first!'); return; }
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  if (credits < 5) { showToast('Need 5 credits for video! Buy more.'); showBuyCredits(); return; }
+
+  var prompt = presetPrompts[selectedPresetIndex] || '';
+  document.getElementById('v-progress').classList.add('visible');
+  document.getElementById('v-download-wrap').style.display = 'none';
+  document.getElementById('v-result').innerHTML = '<div style="text-align:center;color:#555;padding:2rem;"><div style="font-size:32px;margin-bottom:8px;">⏳</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;">Takes 2-3 minutes</div></div>';
+
+  var progress = 0;
+  var vInterval = setInterval(function() {
+    if (progress < 90) {
+      progress += Math.random() * 2 + 0.5;
+      if (progress > 90) progress = 90;
+      document.getElementById('v-progress-fill').style.width = Math.round(progress) + '%';
+      document.getElementById('v-progress-pct').textContent = Math.round(progress) + '%';
+    }
+  }, 2000);
+
+  try {
+    var reader = new FileReader();
+    var imgData = await new Promise(function(resolve) {
+      reader.onload = function(e){ resolve(e.target.result); };
+      reader.readAsDataURL(suitFile);
+    });
+
+    var response = await fetch('/api/video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt })
+    });
+
+    var data = await response.json();
+    if (data.error) {
+      clearInterval(vInterval);
+      document.getElementById('v-progress').classList.remove('visible');
+      showToast('Error: ' + data.error.substring(0, 80));
+      return;
+    }
+
+    var predId = data.prediction_id;
+    var pollResult = null;
+    var attempts = 0;
+    while (attempts < 60) {
+      await new Promise(function(r){ setTimeout(r, 5000); });
+      var pollRes = await fetch('/api/poll?id=' + predId);
+      pollResult = await pollRes.json();
+      document.getElementById('v-progress-label').textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
+      if (pollResult.status === 'succeeded') break;
+      if (pollResult.status === 'failed') {
+        clearInterval(vInterval);
+        document.getElementById('v-progress').classList.remove('visible');
+        showToast('Video failed. Try again.');
+        return;
+      }
+      attempts++;
+    }
+
+    clearInterval(vInterval);
+    document.getElementById('v-progress-fill').style.width = '100%';
+    document.getElementById('v-progress-pct').textContent = '100%';
+
+    setTimeout(function() {
+      document.getElementById('v-progress').classList.remove('visible');
+      var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
+      if (videoUrl) {
+        currentVideoUrl = videoUrl;
+        document.getElementById('v-result').innerHTML = '<video controls autoplay loop style="width:100%;height:100%;object-fit:contain;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        document.getElementById('v-download-wrap').style.display = 'block';
+
+        // Save to gallery arrays and Supabase
+        videoGallery.unshift(videoUrl);
+        renderVideoGallery();
+
+        sb.auth.getSession().then(function(r) {
+          if (!r.data.session) return;
+          sb.from('photoshoots').insert({
+            user_id: r.data.session.user.id,
+            image_url: videoUrl,
+            collection_name: 'AI Fashion Video',
+            suit_type: 'Video',
+            image_count: 1,
+            media_type: 'video'
+          });
+        });
+
+        // Deduct 5 credits
+        sb.auth.getSession().then(function(r) {
+          if (!r.data.session) return;
+          var userId = r.data.session.user.id;
+          sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
+            if (res.data) {
+              var newBal = Math.max(0, res.data.balance - 5);
+              sb.from('credits').update({ balance: newBal }).eq('user_id', userId).then(function() {
+                document.getElementById('stat-credits').textContent = newBal;
+              });
+            }
+          });
+        });
+
+        showToast('Your fashion video is ready!');
+      } else {
+        showToast('No video returned. Try again.');
+      }
+    }, 500);
+
+  } catch(err) {
+    clearInterval(vInterval);
+    document.getElementById('v-progress').classList.remove('visible');
+    showToast('Error: ' + err.message);
+  }
+}
+
+
 </script>
 </body>
 </html>
