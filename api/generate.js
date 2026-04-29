@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { garment_img, model_index } = req.body;
+  const { garment_img, model_index, prompt } = req.body;
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
@@ -18,33 +18,31 @@ export default async function handler(req, res) {
 
   try {
     const humanImg = models[model_index || 0];
-    console.log('API Key prefix:', process.env.FASHN_API_KEY?.substring(0, 10));
-    console.log('Model img:', humanImg);
-    console.log('Garment img size:', garment_img.length);
+    console.log('API Key:', process.env.FASHN_API_KEY?.substring(0, 12));
+    console.log('Model:', humanImg);
+    console.log('Garment size:', garment_img.length);
+    console.log('Prompt:', prompt || 'none');
 
-    // Correct Fashn.ai request format — model_name + inputs wrapper
-    const { prompt } = req.body;
+    // Only use confirmed valid Fashn.ai v1.6 params
+    const inputs = {
+      model_image: humanImg,
+      garment_image: garment_img,
+      category: 'one-pieces',
+      mode: 'balanced',
+      garment_photo_type: 'auto',
+    };
+
+    // Only add prompt if provided
+    if (prompt && prompt.trim()) {
+      inputs.prompt = prompt.trim();
+    }
 
     const requestBody = {
       model_name: 'tryon-v1.6',
-      inputs: {
-        model_image: humanImg,
-        garment_image: garment_img,
-        category: 'one-pieces',
-        mode: 'quality',
-        garment_photo_type: 'auto',
-        restore_background: true,
-        cover_feet: true,
-        adjust_hands: true,
-        restore_clothes: false,
-        long_top: true,
-      }
+      inputs: inputs
     };
 
-    // Add prompt if provided (for background/style)
-    if (prompt) {
-      requestBody.inputs.prompt = prompt;
-    }
+    console.log('Request body keys:', Object.keys(inputs));
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -65,15 +63,14 @@ export default async function handler(req, res) {
 
     if (data.error) {
       const errMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : String(data.error);
-      console.log('Fashn error:', errMsg);
       return res.status(500).json({ error: errMsg });
     }
 
     if (!data.id) {
-      return res.status(500).json({ error: 'No ID returned: ' + JSON.stringify(data).substring(0, 300) });
+      return res.status(500).json({ error: 'No ID: ' + JSON.stringify(data).substring(0, 300) });
     }
 
-    console.log('Success! Prediction ID:', data.id);
+    console.log('Prediction created:', data.id);
     return res.status(200).json({ prediction_id: data.id, status: data.status });
 
   } catch (err) {
