@@ -473,9 +473,16 @@
       </div>
     </div>
 
-    <div class="gallery-panel">
-      <div class="gallery-header"><h2>My photoshoot gallery</h2><span style="font-size:12px;color:#555;">All your generated images</span></div>
-      <div id="gallery-body"><div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photoshoots yet — generate your first one above!</div></div>
+    <!-- PHOTO GALLERY -->
+    <div class="gallery-panel" style="margin-top:20px;">
+      <div class="gallery-header"><h2>📷 Photo Gallery</h2><span style="font-size:12px;color:#555;">All generated photos</span></div>
+      <div id="gallery-body"><div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photos yet — generate your first one above!</div></div>
+    </div>
+
+    <!-- VIDEO GALLERY -->
+    <div class="gallery-panel" style="margin-top:16px;">
+      <div class="gallery-header"><h2>🎬 Video Gallery</h2><span style="font-size:12px;color:#555;">All generated videos</span></div>
+      <div id="video-gallery-body"><div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">🎬</div>No videos yet — generate your first one in Video Studio!</div></div>
     </div>
     </div><!-- end photo tab -->
 
@@ -788,18 +795,16 @@ sb.auth.getSession().then(function(r) {
 });
 
 function loadGalleryFromDB(userId) {
-  sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', {ascending: false}).limit(20).then(function(r) {
+  sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', {ascending: false}).limit(50).then(function(r) {
     if (!r.data || r.data.length === 0) return;
-    r.data.forEach(function(item) {
-      if (item.media_type === 'video') {
-        videoGallery.push(item.image_url);
-      } else {
-        galleryImages.push(item.image_url);
-      }
-    });
+    var photos = r.data.filter(function(i){ return i.media_type !== 'video'; });
+    var videos = r.data.filter(function(i){ return i.media_type === 'video'; });
+    photos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
+    videos.forEach(function(item){ if(item.image_url) videoGallery.push(item.image_url); });
     renderGallery();
-    document.getElementById('stat-shoots').textContent = r.data.filter(function(i){ return i.media_type !== 'video'; }).length;
-    document.getElementById('stat-images').textContent = r.data.filter(function(i){ return i.media_type !== 'video'; }).length;
+    renderVideoGallery();
+    document.getElementById('stat-shoots').textContent = photos.length;
+    document.getElementById('stat-images').textContent = photos.length;
   });
 }
 
@@ -1070,233 +1075,39 @@ function addToGallery(images) {
 
 function renderGallery() {
   var body = document.getElementById('gallery-body');
-  if (galleryImages.length === 0 && videoGallery.length === 0) {
-    body.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photoshoots yet — generate your first one above!</div>';
-    return;
-  }
-  var html = '<div style="padding:1rem;">';
-  if (galleryImages.length > 0) {
-    html += '<div style="font-size:12px;font-weight:500;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">Photos</div>';
-    html += '<div class="gallery-grid">';
+  if (!body) return;
+  if (galleryImages.length === 0) {
+    body.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photos yet!</div>';
+  } else {
+    var html = '<div class="gallery-grid" style="padding:1rem;">';
     galleryImages.forEach(function(url, i) {
       html += '<div class="gallery-item"><img src="' + url + '" />';
-      html += '<div class="gallery-item-label" style="display:flex;justify-content:space-between;align-items:center;">';
-      html += 'Photo ' + (i+1);
-      html += '<button onclick="window.open(this.dataset.url,\'_blank\')" data-url="' + url + '" style="background:#E91E63;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;">DL</button>';
+      html += '<div class="gallery-item-label" style="display:flex;justify-content:space-between;align-items:center;"><span>Photo ' + (i+1) + '</span>';
+      html += '<button onclick="window.open(this.dataset.url,'_blank')" data-url="' + url + '" style="background:#E91E63;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;">↓</button>';
       html += '</div></div>';
     });
     html += '</div>';
+    body.innerHTML = html;
   }
-  if (videoGallery.length > 0) {
-    html += '<div style="font-size:12px;font-weight:500;color:#555;margin:16px 0 10px;text-transform:uppercase;letter-spacing:0.5px;">Videos</div>';
-    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">';
-    videoGallery.forEach(function(url, i) {
-      html += '<div style="border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;">';
-      html += '<video src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" controls></video>';
-      html += '<div style="padding:6px 10px;font-size:11px;color:#555;display:flex;justify-content:space-between;align-items:center;">Video ' + (i+1);
-      html += '<button onclick="window.open(this.dataset.url,\'_blank\')" data-url="' + url + '" style="background:#E91E63;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;">DL</button>';
-      html += '</div></div>';
-    });
-    html += '</div>';
+  renderVideoGallery();
+}
+
+function renderVideoGallery() {
+  var vbody = document.getElementById('video-gallery-body');
+  if (!vbody) return;
+  if (videoGallery.length === 0) {
+    vbody.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">🎬</div>No videos yet — generate in Video Studio!</div>';
+    return;
   }
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;padding:1rem;">';
+  videoGallery.forEach(function(url, i) {
+    html += '<div style="border:1px solid rgba(233,30,99,0.15);border-radius:12px;overflow:hidden;background:#fff;">';
+    html += '<video src="' + url + '" style="width:100%;height:220px;object-fit:cover;display:block;" controls playsinline></video>';
+    html += '<div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">';
+    html += '<span style="font-size:11px;color:#555;font-weight:500;">Video ' + (i+1) + '</span>';
+    html += '<button onclick="window.open(this.dataset.url,'_blank')" data-url="' + url + '" style="background:#E91E63;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Save</button>';
+    html += '</div></div>';
+  });
   html += '</div>';
-  body.innerHTML = html;
+  vbody.innerHTML = html;
 }
-
-function updateStats(imgCount) {
-  document.getElementById('stat-shoots').textContent = (parseInt(document.getElementById('stat-shoots').textContent) || 0) + 1;
-  document.getElementById('stat-images').textContent = (parseInt(document.getElementById('stat-images').textContent) || 0) + imgCount;
-  document.getElementById('stat-suits').textContent = (parseInt(document.getElementById('stat-suits').textContent) || 0) + 1;
-}
-
-function deductCredit() {
-  sb.auth.getSession().then(function(r) {
-    if (!r.data.session) return;
-    var userId = r.data.session.user.id;
-    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
-      if (res.data) {
-        var newBal = Math.max(0, res.data.balance - 1);
-        sb.from('credits').update({ balance: newBal }).eq('user_id', userId).then(function() {
-          document.getElementById('stat-credits').textContent = newBal;
-        });
-      }
-    });
-  });
-}
-
-function newShoot() {
-  document.getElementById('results-body').innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:#555;"><div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">✨</div><div style="font-size:13px;line-height:1.7;">Your AI-generated photos will appear here after you click Generate</div></div>';
-  clearSuit({ stopPropagation: function(){} });
-  document.getElementById('suit-input').value = '';
-  goStep(0);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function showBuyCredits() {
-  sb.auth.getSession().then(function(r) {
-    if (r.data.session) {
-      var email = r.data.session.user.email;
-      document.getElementById('wa-credits-link').href = 'https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9100%20for%20Drapely%20credits.%20My%20email%20is%20' + encodeURIComponent(email);
-    }
-  });
-  document.getElementById('credits-modal').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function hideBuyCredits() {
-  document.getElementById('credits-modal').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function handleModalClick(e) {
-  if (e.target === document.getElementById('credits-modal')) hideBuyCredits();
-}
-
-document.querySelectorAll('.enhance-item').forEach(function(item) {
-  item.addEventListener('click', function(){ item.classList.toggle('on'); });
-});
-
-// VIDEO STUDIO
-var currentVideoUrl = null;
-var videoGallery = [];
-var selectedDuration = '5';
-var selectedVideoStyle = 'Walking';
-
-
-
-function loadVideoSuit(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    document.getElementById('v-suit-preview').src = ev.target.result;
-    document.getElementById('v-suit-preview').style.display = 'block';
-    document.getElementById('v-upload-empty').style.display = 'none';
-    document.getElementById('v-upload-zone').classList.add('has-file');
-  };
-  reader.readAsDataURL(file);
-}
-
-function selectDur(btn, dur) {
-  document.querySelectorAll('.dur-btn').forEach(function(b){ b.classList.remove('selected'); });
-  btn.classList.add('selected');
-  selectedDuration = dur;
-}
-
-function selectStyle(tag) {
-  document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
-  tag.classList.add('selected');
-  selectedVideoStyle = tag.textContent.trim().replace(/^./, '').trim();
-}
-
-async function startVideoGenerate() {
-  var suitFile = document.getElementById('v-suit-input').files[0];
-  if (!suitFile) { showToast('Please upload your suit photo first!'); return; }
-  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  if (credits < 5) { showToast('Need 5 credits for video! Buy more.'); showBuyCredits(); return; }
-  var prompt = '';
-  if (selectedPresetIndex === 5) {
-    prompt = document.getElementById('v-prompt').value.trim();
-    if (!prompt) { showToast('Please write your custom prompt!'); return; }
-  } else {
-    prompt = presetPrompts[selectedPresetIndex];
-  }
-  var styleMap = {'Walking':'walking gracefully on runway','Spinning':'spinning around showing the full outfit','Posing':'posing elegantly','Runway':'walking on fashion show runway'};
-  var fullPrompt = 'Indian fashion model ' + (styleMap[selectedVideoStyle] || 'walking') + ', wearing suit: ' + prompt + ', cinematic 4K professional fashion video';
-  document.getElementById('v-progress').classList.add('visible');
-  document.getElementById('v-download-wrap').style.display = 'none';
-  document.getElementById('v-result').innerHTML = '<div style="text-align:center;color:#555;"><div style="font-size:32px;margin-bottom:8px;">⏳</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;">Takes 2-3 minutes</div></div>';
-  var progress = 0;
-  var vInterval = setInterval(function() {
-    if (progress < 90) { progress += Math.random() * 2 + 0.5; if (progress > 90) progress = 90; document.getElementById('v-progress-fill').style.width = Math.round(progress) + '%'; document.getElementById('v-progress-pct').textContent = Math.round(progress) + '%'; }
-  }, 2000);
-  try {
-    var reader = new FileReader();
-    var imgData = await new Promise(function(resolve) { reader.onload = function(e){ resolve(e.target.result); }; reader.readAsDataURL(suitFile); });
-    var response = await fetch('/api/video', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: fullPrompt, image: imgData, duration: parseInt(selectedDuration) })
-    });
-    var data = await response.json();
-    if (data.error) { clearInterval(vInterval); document.getElementById('v-progress').classList.remove('visible'); showToast('Error: ' + data.error.substring(0, 80)); return; }
-    var predId = data.prediction_id;
-    var pollResult = null;
-    var attempts = 0;
-    while (attempts < 60) {
-      await new Promise(function(r){ setTimeout(r, 5000); });
-      var pollRes = await fetch('/api/poll?id=' + predId);
-      pollResult = await pollRes.json();
-      document.getElementById('v-progress-label').textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
-      if (pollResult.status === 'succeeded') break;
-      if (pollResult.status === 'failed') { clearInterval(vInterval); document.getElementById('v-progress').classList.remove('visible'); showToast('Video failed. Try again.'); return; }
-      attempts++;
-    }
-    clearInterval(vInterval);
-    document.getElementById('v-progress-fill').style.width = '100%';
-    document.getElementById('v-progress-pct').textContent = '100%';
-    setTimeout(function() {
-      document.getElementById('v-progress').classList.remove('visible');
-      var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
-      if (videoUrl) {
-        currentVideoUrl = videoUrl;
-        document.getElementById('v-result').innerHTML = '<video controls autoplay loop style="width:100%;height:100%;object-fit:contain;"><source src="' + videoUrl + '" type="video/mp4"></video>';
-        document.getElementById('v-download-wrap').style.display = 'block';
-        videoGallery.unshift(videoUrl);
-        renderGallery();
-        // Show video in the v-gallery section too
-        var vg = document.getElementById('v-gallery');
-        if (vg) {
-          vg.innerHTML = '<div style="padding:1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">' +
-            videoGallery.map(function(u,i){
-              return '<div><video src="' + u + '" style="width:100%;height:200px;object-fit:cover;border-radius:8px;border:1px solid rgba(233,30,99,0.2);" controls></video><div style="font-size:11px;color:#555;padding:4px;">Video ' + (i+1) + '</div></div>';
-            }).join('') + '</div>';
-        }
-        // Save video to Supabase
-        sb.auth.getSession().then(function(r) {
-          if (!r.data.session) return;
-          sb.from('photoshoots').insert({
-            user_id: r.data.session.user.id,
-            image_url: videoUrl,
-            collection_name: 'AI Fashion Video',
-            suit_type: 'Video',
-            image_count: 1,
-            media_type: 'video'
-          });
-        });
-        deductVideoCredits();
-        showToast('Your fashion video is ready!');
-      } else { showToast('No video returned. Try again.'); }
-    }, 500);
-  } catch(err) { clearInterval(vInterval); document.getElementById('v-progress').classList.remove('visible'); showToast('Error: ' + err.message); }
-}
-
-function downloadVideo() {
-  if (!currentVideoUrl) return;
-  var a = document.createElement('a'); a.href = currentVideoUrl; a.download = 'drapely-fashion-video.mp4'; a.target = '_blank'; a.click();
-  showToast('Downloading video...');
-}
-
-function shareVideoWA() {
-  if (!currentVideoUrl) return;
-  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video! ' + currentVideoUrl), '_blank');
-}
-
-function deductVideoCredits() {
-  sb.auth.getSession().then(function(r) {
-    if (!r.data.session) return;
-    var userId = r.data.session.user.id;
-    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
-      if (res.data) {
-        var newBal = Math.max(0, res.data.balance - 5);
-        sb.from('credits').update({ balance: newBal }).eq('user_id', userId).then(function() {
-          document.getElementById('stat-credits').textContent = newBal;
-        });
-      }
-    });
-  });
-}
-
-</script>
-</body>
-</html>
