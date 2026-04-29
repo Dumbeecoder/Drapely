@@ -23,16 +23,28 @@ export default async function handler(req, res) {
     console.log('Garment img size:', garment_img.length);
 
     // Correct Fashn.ai request format — model_name + inputs wrapper
+    const { prompt } = req.body;
+
     const requestBody = {
       model_name: 'tryon-v1.6',
       inputs: {
         model_image: humanImg,
         garment_image: garment_img,
-        category: 'auto',
-        mode: 'balanced',
+        category: 'one-pieces',
+        mode: 'quality',
         garment_photo_type: 'auto',
+        restore_background: true,
+        cover_feet: true,
+        adjust_hands: true,
+        restore_clothes: false,
+        long_top: true,
       }
     };
+
+    // Add prompt if provided (for background/style)
+    if (prompt) {
+      requestBody.inputs.prompt = prompt;
+    }
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
