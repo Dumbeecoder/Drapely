@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { garment_img, model_index } = req.body;
+  const { garment_img, model_index, prompt } = req.body;
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
@@ -19,10 +19,10 @@ export default async function handler(req, res) {
   try {
     const humanImg = models[model_index || 0];
 
-    // Upload garment to Imgur (reliable public URL, Fashn.ai accepts it)
+    // Upload garment to Imgur for a clean public URL
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
+    console.log('Uploading garment to Imgur...');
 
-    console.log('Uploading to Imgur...');
     const imgurRes = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
       headers: {
@@ -33,8 +33,6 @@ export default async function handler(req, res) {
     });
 
     const imgurData = await imgurRes.json();
-    console.log('Imgur success:', imgurData.success, 'Link:', imgurData.data?.link);
-
     if (!imgurData.success) {
       return res.status(500).json({ error: 'Image upload failed: ' + (imgurData.data?.error || 'unknown') });
     }
@@ -43,13 +41,27 @@ export default async function handler(req, res) {
     console.log('Garment URL:', garmentUrl);
     console.log('Model URL:', humanImg);
 
-    const requestBody = {
-      model_name: 'tryon-v1.6',
-      inputs: {
-        model_image: humanImg,
-        garment_image: garmentUrl,
-      }
+    // Use product-to-model — same as Fashn.ai Studio
+    // This takes a flat product photo and puts it on a model
+    const inputs = {
+      product_image: garmentUrl,
+      model_image: humanImg,
+      mode: '4k',
     };
+
+    // Add prompt for background/style if provided
+    if (prompt && prompt.trim()) {
+      inputs.prompt = 'Indian woman, full body, ' + prompt.trim();
+    } else {
+      inputs.prompt = 'Indian woman, full body, studio background, professional fashion photo';
+    }
+
+    const requestBody = {
+      model_name: 'product-to-model',
+      inputs: inputs
+    };
+
+    console.log('Sending product-to-model request...');
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -70,6 +82,7 @@ export default async function handler(req, res) {
 
     if (data.error) {
       const errMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : String(data.error);
+      console.log('Fashn error:', errMsg);
       return res.status(500).json({ error: errMsg });
     }
 
