@@ -845,22 +845,41 @@ function switchGalleryTab(tab) {
 }
 
 function loadGalleryFromDB(userId) {
-  sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', {ascending: false}).limit(50).then(function(r) {
-    if (!r.data || r.data.length === 0) return;
-    var photos = r.data.filter(function(i){
-      // A record is a video if media_type is 'video' OR url ends in .mp4
-      return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4'));
-    });
-    var videos = r.data.filter(function(i){
-      return i.media_type === 'video' || (i.image_url && i.image_url.includes('.mp4'));
-    });
-    photos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
-    videos.forEach(function(item){ if(item.image_url) videoGallery.push(item.image_url); });
-    renderGallery();
-    renderVideoGallery();
-    if (document.getElementById('stat-shoots')) document.getElementById('stat-shoots').textContent = photos.length;
-    if (document.getElementById('stat-images')) document.getElementById('stat-images').textContent = photos.length;
-    console.log('Loaded:', photos.length, 'photos,', videos.length, 'videos');
+  console.log('loadGalleryFromDB called for:', userId);
+  sb.from('photoshoots')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', {ascending: false})
+    .limit(100)
+    .then(function(r) {
+      console.log('DB result - error:', r.error, 'count:', r.data ? r.data.length : 0);
+      if (r.error) { console.log('DB error:', r.error.message); return; }
+
+      var allData = r.data || [];
+      var photos = allData.filter(function(i){
+        return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4'));
+      });
+      var videos = allData.filter(function(i){
+        return i.media_type === 'video' || (i.image_url && i.image_url.includes('.mp4'));
+      });
+
+      console.log('Photos:', photos.length, 'Videos:', videos.length);
+
+      // Reset arrays
+      galleryImages = [];
+      videoGallery = [];
+      photos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
+      videos.forEach(function(item){ if(item.image_url) videoGallery.push(item.image_url); });
+
+      // Update counters
+      var statShoots = document.getElementById('stat-shoots');
+      var statImages = document.getElementById('stat-images');
+      if (statShoots) statShoots.textContent = photos.length;
+      if (statImages) statImages.textContent = photos.length;
+
+      // Render galleries
+      renderGallery();
+      renderVideoGallery();
   });
 }
 
