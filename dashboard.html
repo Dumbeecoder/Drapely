@@ -811,15 +811,13 @@ function selectPose(tag) {
 function selectBg(card) {
   document.querySelectorAll('.bg-card').forEach(function(c){ c.classList.remove('selected'); });
   card.classList.add('selected');
-  // Store background prompt for API
   var promptEl = document.getElementById('photo-prompt-val');
   if (promptEl && card.dataset.prompt) {
-    var existing = promptEl.value;
-    // Keep style prompt, update background
     var bgPrompt = card.dataset.prompt;
     promptEl.setAttribute('data-bg', bgPrompt);
     var stylePrompt = promptEl.getAttribute('data-style') || '';
-    promptEl.value = (stylePrompt + ' ' + bgPrompt).trim();
+    promptEl.value = (stylePrompt ? stylePrompt + ', ' : '') + bgPrompt;
+    console.log('Photo prompt set to:', promptEl.value);
   }
 }
 
