@@ -138,6 +138,7 @@
     </div>
 
     <div id="gallery-container"></div>
+    <div id="video-section-container" style="margin-top:2rem;"></div>
   </div>
 </div>
 
@@ -230,9 +231,12 @@ function renderVideoSection(videos) {
   html += '</div>';
   section.innerHTML = html;
 
-  // Append after main gallery
-  var main = document.querySelector('.main') || document.body;
-  main.appendChild(section);
+  // Use permanent video container
+  var vsContainer = document.getElementById('video-section-container');
+  if (vsContainer) {
+    vsContainer.innerHTML = '';
+    vsContainer.appendChild(section);
+  }
 }
 
 function showEmptyState() {
