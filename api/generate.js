@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   try {
     const humanImg = models[model_index || 0];
 
-    // Upload to Imgur for clean public URL
+    // Upload garment to Imgur for clean public URL
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
     console.log('Uploading to Imgur...');
 
@@ -41,19 +41,29 @@ export default async function handler(req, res) {
     console.log('Garment URL:', garmentUrl);
     console.log('Model URL:', humanImg);
 
-    // product-to-model: field is 'image' for product, 'model_image' for person
+    // Exact field names from Fashn.ai docs:
+    // product_image = the garment/product
+    // model_image = person to wear it (cannot combine with image_prompt)
+    // prompt = styling instructions only (not pose when model_image is provided)
     const inputs = {
-      image: garmentUrl,
+      product_image: garmentUrl,
       model_image: humanImg,
-      prompt: prompt || 'Indian woman, full body, professional fashion photo, studio background',
+      resolution: '1k',
+      generation_mode: 'balanced',
+      output_format: 'jpeg',
     };
+
+    // Only add prompt for background styling (not person description when model_image is set)
+    if (prompt && prompt.trim()) {
+      inputs.prompt = prompt.trim();
+    }
 
     const requestBody = {
       model_name: 'product-to-model',
       inputs: inputs
     };
 
-    console.log('Sending to Fashn.ai product-to-model...');
+    console.log('Inputs:', JSON.stringify(inputs).substring(0, 200));
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
