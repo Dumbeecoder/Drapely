@@ -193,11 +193,46 @@ function loadGallery(userId) {
       showEmptyState();
       return;
     }
-    allImages = r.data;
-    document.getElementById('total-shoots').textContent = r.data.length;
-    document.getElementById('total-images').textContent = r.data.reduce(function(a,b){ return a + (b.image_count || 1); }, 0);
-    renderGallery(allImages);
+    var photos = r.data.filter(function(i){ return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4')); });
+    var videos = r.data.filter(function(i){ return i.media_type === 'video' || (i.image_url && i.image_url.includes('.mp4')); });
+    allImages = photos;
+    document.getElementById('total-shoots').textContent = photos.length;
+    document.getElementById('total-images').textContent = photos.reduce(function(a,b){ return a + (b.image_count || 1); }, 0);
+    renderGallery(photos);
+    renderVideoSection(videos);
   });
+}
+
+function renderVideoSection(videos) {
+  // Remove existing video section if any
+  var existing = document.getElementById('video-section');
+  if (existing) existing.remove();
+  if (!videos || videos.length === 0) return;
+
+  var section = document.createElement('div');
+  section.id = 'video-section';
+  section.style.cssText = 'margin-top:2rem;';
+
+  var html = '<h2 style="font-size:18px;font-weight:500;color:#000;margin-bottom:1rem;padding:0 1.5rem;">🎬 My Videos <span style="font-size:13px;color:#555;font-weight:400;">(' + videos.length + ')</span></h2>';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:0 1.5rem 2rem;">';
+  videos.forEach(function(item, i) {
+    var date = new Date(item.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+    html += '<div style="background:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(233,30,99,0.12);box-shadow:0 2px 8px rgba(0,0,0,0.06);">';
+    html += '<video src="' + item.image_url + '" style="width:100%;height:240px;object-fit:cover;display:block;" controls playsinline></video>';
+    html += '<div style="padding:12px 14px;">';
+    html += '<div style="font-size:13px;font-weight:500;color:#000;margin-bottom:2px;">AI Fashion Video</div>';
+    html += '<div style="font-size:11px;color:#555;">' + date + '</div>';
+    html += '<div style="margin-top:10px;display:flex;gap:8px;">';
+    html += '<a href="' + item.image_url + '" target="_blank" style="flex:1;padding:7px;background:#E91E63;color:#fff;border-radius:8px;font-size:12px;text-align:center;text-decoration:none;font-family:DM Sans,sans-serif;">↓ Download</a>';
+    html += '<button onclick="window.open('https://wa.me/?text=' + encodeURIComponent('Check out this fashion video! ' + item.image_url + ''), '_blank')" style="flex:1;padding:7px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">WhatsApp</button>';
+    html += '</div></div></div>';
+  });
+  html += '</div>';
+  section.innerHTML = html;
+
+  // Append after main gallery
+  var main = document.querySelector('.main') || document.body;
+  main.appendChild(section);
 }
 
 function showEmptyState() {
