@@ -19,9 +19,9 @@ export default async function handler(req, res) {
   try {
     const humanImg = models[model_index || 0];
 
-    // Upload garment to Imgur for a clean public URL
+    // Upload to Imgur for clean public URL
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
-    console.log('Uploading garment to Imgur...');
+    console.log('Uploading to Imgur...');
 
     const imgurRes = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
@@ -41,27 +41,19 @@ export default async function handler(req, res) {
     console.log('Garment URL:', garmentUrl);
     console.log('Model URL:', humanImg);
 
-    // Use product-to-model — same as Fashn.ai Studio
-    // This takes a flat product photo and puts it on a model
+    // product-to-model: field is 'image' for product, 'model_image' for person
     const inputs = {
-      product_image: garmentUrl,
+      image: garmentUrl,
       model_image: humanImg,
-      mode: '4k',
+      prompt: prompt || 'Indian woman, full body, professional fashion photo, studio background',
     };
-
-    // Add prompt for background/style if provided
-    if (prompt && prompt.trim()) {
-      inputs.prompt = 'Indian woman, full body, ' + prompt.trim();
-    } else {
-      inputs.prompt = 'Indian woman, full body, studio background, professional fashion photo';
-    }
 
     const requestBody = {
       model_name: 'product-to-model',
       inputs: inputs
     };
 
-    console.log('Sending product-to-model request...');
+    console.log('Sending to Fashn.ai product-to-model...');
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -72,7 +64,7 @@ export default async function handler(req, res) {
       body: JSON.stringify(requestBody)
     });
 
-    console.log('Fashn HTTP Status:', response.status);
+    console.log('HTTP Status:', response.status);
     const text = await response.text();
     console.log('Fashn response:', text.substring(0, 800));
 
@@ -82,7 +74,6 @@ export default async function handler(req, res) {
 
     if (data.error) {
       const errMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : String(data.error);
-      console.log('Fashn error:', errMsg);
       return res.status(500).json({ error: errMsg });
     }
 
