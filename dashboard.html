@@ -837,6 +837,20 @@ function updateStats(count) {
   });
 }
 
+function showBuyCredits() {
+  var modal = document.getElementById('credits-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function hideBuyCredits() {
+  var modal = document.getElementById('credits-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function handleModalClick(e) {
+  if (e.target.id === 'credits-modal') hideBuyCredits();
+}
+
 function switchGalleryTab(tab) {
   var photosBtn = document.getElementById('gtab-photos');
   var videosBtn = document.getElementById('gtab-videos');
