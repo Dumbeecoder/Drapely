@@ -72,8 +72,8 @@
     .model-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#f9f9f9}
     .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
     .model-card.selected{border-color:#E91E63;border-width:2px}
-    .model-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;}
-    .model-avatar{height:220px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f8f8f8}
+    .model-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;}
+    .model-avatar{height:160px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f8f8f8}
     .model-avatar img{width:100%;height:100%;object-fit:contain;object-position:top center}
     .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center}
     .model-card.selected .model-check{display:flex}
@@ -337,11 +337,24 @@
           <div class="step-panel" id="step-1">
             <div class="step-label">STEP 2 — CHOOSE YOUR MODEL</div>
             <div class="model-grid">
-              <div class="model-card" onclick="selectModel(this,0)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" style="width:auto;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit · Full length</div></div></div>
-              <div class="model-card selected" onclick="selectModel(this,1)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" style="width:auto;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">Slim fit · Standing</div></div></div>
-              <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" style="width:auto;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">Curvy fit · Front pose</div></div></div>
-              <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" style="width:auto;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">Elegant fit · 3/4 pose</div></div></div>
-              <div class="model-card" style="border-style:dashed;" onclick="showToast('Upload coming soon!')"><div class="model-avatar"><div style="font-size:24px;">+</div></div><div class="model-info"><div class="model-name" style="color:#E91E63;">Your model</div><div class="model-spec">Coming soon</div></div></div>
+              <div class="model-card" onclick="selectModel(this,0)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" style="width:100%;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit · Full length</div></div></div>
+              <div class="model-card selected" onclick="selectModel(this,1)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" style="width:100%;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">Slim fit · Standing</div></div></div>
+              <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" style="width:100%;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">Curvy fit · Front pose</div></div></div>
+              <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" style="width:100%;height:100%;object-fit:contain;border-radius:0;" /></div><div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">Elegant fit · 3/4 pose</div></div></div>
+              <div class="model-card" style="border-style:dashed;" onclick="document.getElementById('custom-model-input').click()">
+                <div class="model-avatar" id="custom-model-avatar" style="background:#fff0f5;">
+                  <div id="custom-model-empty" style="text-align:center;">
+                    <div style="font-size:22px;color:#E91E63;">+</div>
+                    <div style="font-size:10px;color:#E91E63;font-weight:500;margin-top:4px;">Upload</div>
+                  </div>
+                  <img id="custom-model-preview" style="width:100%;height:100%;object-fit:contain;display:none;" />
+                </div>
+                <div class="model-info">
+                  <div class="model-name" style="color:#E91E63;">Your model</div>
+                  <div class="model-spec">Upload your own</div>
+                </div>
+              </div>
+              <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
             </div>
             <div class="step-nav"><button class="btn-back" onclick="goStep(0)">← Back</button><button class="btn-next" onclick="goStep(2)">Choose Background →</button></div>
           </div>
@@ -1090,7 +1103,8 @@ async function startGenerate() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           garment_img: compressed,
-          model_index: selectedModelIndex,
+          model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
+          custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
           prompt: buildPhotoPrompt(),
           garment_type: selectedGarmentType
         })
@@ -1211,6 +1225,28 @@ function showRealResults(images) {
 // LOGO FUNCTIONS
 // GARMENT TYPE
 var selectedGarmentType = 'suit';
+
+function loadCustomModel(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('custom-model-preview');
+    var empty = document.getElementById('custom-model-empty');
+    var card = document.getElementById('custom-model-input').previousElementSibling;
+    preview.src = ev.target.result;
+    preview.style.display = 'block';
+    empty.style.display = 'none';
+    // Select this custom model card
+    document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+    card.classList.add('selected');
+    // Store custom model data URL for API
+    window._customModelUrl = ev.target.result;
+    selectedModelIndex = 99; // flag for custom
+    showToast('Custom model uploaded!');
+  };
+  reader.readAsDataURL(file);
+}
 
 function selectGarmentType(type) {
   selectedGarmentType = type;
