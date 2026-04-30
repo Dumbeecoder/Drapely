@@ -1134,12 +1134,13 @@ async function startGenerate() {
       progressWrap.classList.remove('visible');
       studioBody.style.display = 'block';
       if (results.length > 0) {
-        // Overlay logo if uploaded, then save and show
+        // Save original URLs to gallery/Supabase FIRST
+        addToGallery(results);
+        updateStats(results.length);
+        deductCredit();
+        // Then overlay logo for display only
         overlayLogoOnImages(results).then(function(finalImages) {
           showRealResults(finalImages);
-          addToGallery(finalImages);
-          updateStats(finalImages.length);
-          deductCredit();
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         });
@@ -1241,7 +1242,7 @@ function selectLogoPos(btn, pos) {
 function overlayLogoOnImages(imageUrls) {
   if (!logoDataUrl) return Promise.resolve(imageUrls);
   var logoImg = new Image();
-  logoImg.crossOrigin = 'anonymous';
+  // No crossOrigin on logo since it's base64
   return new Promise(function(resolve) {
     logoImg.onload = function() {
       var promises = imageUrls.map(function(url) {
@@ -1249,30 +1250,33 @@ function overlayLogoOnImages(imageUrls) {
           var photo = new Image();
           photo.crossOrigin = 'anonymous';
           photo.onload = function() {
-            var canvas = document.createElement('canvas');
-            canvas.width = photo.width;
-            canvas.height = photo.height;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(photo, 0, 0);
-
-            // Logo size = 15% of image width
-            var logoW = photo.width * 0.15;
-            var logoH = (logoImg.height / logoImg.width) * logoW;
-            var pad = photo.width * 0.03;
-
-            var x, y;
-            if (logoPosition === 'top-left')      { x = pad; y = pad; }
-            else if (logoPosition === 'top-center') { x = (photo.width - logoW) / 2; y = pad; }
-            else if (logoPosition === 'top-right')  { x = photo.width - logoW - pad; y = pad; }
-            else if (logoPosition === 'bottom-left') { x = pad; y = photo.height - logoH - pad; }
-            else if (logoPosition === 'bottom-center') { x = (photo.width - logoW) / 2; y = photo.height - logoH - pad; }
-            else { x = photo.width - logoW - pad; y = photo.height - logoH - pad; } // bottom-right
-
-            ctx.drawImage(logoImg, x, y, logoW, logoH);
-            res(canvas.toDataURL('image/jpeg', 0.92));
+            try {
+              var canvas = document.createElement('canvas');
+              canvas.width = photo.naturalWidth || photo.width;
+              canvas.height = photo.naturalHeight || photo.height;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(photo, 0, 0);
+              var logoW = canvas.width * 0.15;
+              var logoH = (logoImg.height / logoImg.width) * logoW;
+              var pad = canvas.width * 0.03;
+              var x, y;
+              if (logoPosition === 'top-left')         { x = pad; y = pad; }
+              else if (logoPosition === 'top-center')  { x = (canvas.width - logoW)/2; y = pad; }
+              else if (logoPosition === 'top-right')   { x = canvas.width - logoW - pad; y = pad; }
+              else if (logoPosition === 'bottom-left') { x = pad; y = canvas.height - logoH - pad; }
+              else if (logoPosition === 'bottom-center') { x = (canvas.width - logoW)/2; y = canvas.height - logoH - pad; }
+              else                                     { x = canvas.width - logoW - pad; y = canvas.height - logoH - pad; }
+              ctx.drawImage(logoImg, x, y, logoW, logoH);
+              var out = canvas.toDataURL('image/jpeg', 0.92);
+              res(out);
+            } catch(e) {
+              // CORS blocked canvas - return original URL
+              res(url);
+            }
           };
           photo.onerror = function() { res(url); };
-          photo.src = url;
+          // Add cache buster to help with CORS
+          photo.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
         });
       });
       Promise.all(promises).then(resolve);
