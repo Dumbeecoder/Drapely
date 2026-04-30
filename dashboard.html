@@ -1134,18 +1134,19 @@ async function startGenerate() {
       progressWrap.classList.remove('visible');
       studioBody.style.display = 'block';
       if (results.length > 0) {
-        // Overlay logo if uploaded
+        // Overlay logo if uploaded, then save and show
         overlayLogoOnImages(results).then(function(finalImages) {
           showRealResults(finalImages);
           addToGallery(finalImages);
           updateStats(finalImages.length);
           deductCredit();
           showToast('Photoshoot ready! Download your images.');
+          goStep(0);
         });
       } else {
         showToast('No images returned. Please try again.');
+        goStep(0);
       }
-      goStep(0);
     }, 600);
 
   } catch(err) {
