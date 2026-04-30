@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Studio — Drapely</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
+    .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
+    .brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .brand span{color:#E91E63;}
+    .nav-section{padding:1.25rem 0.75rem 0.5rem;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 1rem;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;margin:2px 0.5rem;transition:all 0.15s;cursor:pointer;border:none;background:none;width:calc(100% - 1rem);text-align:left;font-family:'DM Sans',sans-serif;}
+    .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .nav-item.active{color:#E91E63;}
+    .nav-icon{width:16px;height:16px;flex-shrink:0;}
+    .nav-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
+    .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
+    .user-av{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:12px;font-weight:500;color:#fff;}
+    .user-plan{font-size:10px;color:#E91E63;}
+    .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
+    .topbar h1{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:1px;}
+    .credit-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#fff;border:1px solid rgba(233,30,99,0.2);border-radius:20px;font-size:13px;}
+    .credit-val{color:#E91E63;font-weight:500;}
+    /* BULK UPLOAD ZONE */
+    .bulk-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;padding:2rem;margin-bottom:1.5rem;}
+    .bulk-card-title{font-size:15px;font-weight:500;margin-bottom:4px;}
+    .bulk-card-sub{font-size:12px;color:#555;margin-bottom:1.5rem;}
+    .bulk-upload-zone{border:2px dashed rgba(233,30,99,0.3);border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;transition:all 0.2s;background:#fff;}
+    .bulk-upload-zone:hover{border-color:#E91E63;background:#fff0f5;}
+    .bulk-upload-zone.dragover{border-color:#E91E63;background:#fff0f5;}
+    .upload-icon{font-size:40px;margin-bottom:12px;}
+    .upload-title{font-size:15px;font-weight:500;margin-bottom:4px;}
+    .upload-hint{font-size:12px;color:#555;}
+    .upload-hint span{color:#E91E63;font-weight:500;}
+    /* SETTINGS */
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
+    .setting-group{display:flex;flex-direction:column;gap:6px;}
+    .setting-label{font-size:12px;color:#555;font-weight:500;}
+    .setting-select{width:100%;padding:10px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;}
+    .setting-select:focus{border-color:#E91E63;}
+    /* MODEL PICKER */
+    .model-row{display:flex;gap:8px;margin-bottom:1.5rem;}
+    .model-chip{padding:8px 14px;border:1.5px solid rgba(233,30,99,0.2);border-radius:20px;font-size:12px;font-weight:500;color:#555;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+    .model-chip.selected{background:#E91E63;border-color:#E91E63;color:#fff;}
+    /* QUEUE */
+    .queue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem;}
+    .queue-item{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;background:#fff;position:relative;}
+    .queue-img{width:100%;height:140px;object-fit:cover;display:block;}
+    .queue-status{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+    .queue-status.pending{background:#fff;color:#555;border:1px solid #ddd;}
+    .queue-status.processing{background:#ff9800;color:#fff;}
+    .queue-status.done{background:#4caf50;color:#fff;}
+    .queue-status.error{background:#f44336;color:#fff;}
+    .queue-label{padding:6px 8px;font-size:10px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    /* RESULTS */
+    .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+    .result-card{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;background:#fff;}
+    .result-img{width:100%;height:180px;object-fit:cover;display:block;}
+    .result-actions{display:flex;gap:6px;padding:8px;}
+    .result-btn{flex:1;padding:7px;border:1px solid rgba(233,30,99,0.3);border-radius:6px;background:#fff;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:#555;cursor:pointer;text-align:center;text-decoration:none;}
+    .result-btn.primary{background:#E91E63;border-color:#E91E63;color:#fff;}
+    /* BUTTONS */
+    .generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+    .generate-btn:disabled{background:#ccc;cursor:not-allowed;}
+    .export-btn{padding:10px 24px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    /* PROGRESS */
+    .progress-bar{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:12px 0;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.3s;}
+    .progress-text{font-size:12px;color:#555;text-align:center;}
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.settings-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="index.html" class="brand">Drape<span>ly</span></a>
+  <div class="nav-section">STUDIO</div>
+  <a href="dashboard.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+    New photoshoot
+  </a>
+  <a href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+    New video
+  </a>
+  <a href="bulk.html" class="nav-item active">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"/></svg>
+    Bulk Studio
+  </a>
+  <a href="gallery.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
+    My gallery
+  </a>
+  <div class="nav-section">ACCOUNT</div>
+  <a href="settings.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    Settings
+  </a>
+  <a href="#" onclick="doSignOut()" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+    Sign out
+  </a>
+  <div class="nav-footer">
+    <div class="user-pill">
+      <div class="user-av" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <h1>⚡ Bulk Studio</h1>
+      <div style="font-size:13px;color:#555;margin-top:4px;">Upload multiple suits — generate all at once — export as ZIP</div>
+    </div>
+    <div class="credit-badge">
+      <span>Credits:</span>
+      <span class="credit-val" id="stat-credits">—</span>
+      <span style="font-size:11px;color:#555;">(<span id="cost-preview">0</span> needed)</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: UPLOAD -->
+  <div class="bulk-card">
+    <div class="bulk-card-title">Step 1 — Upload your suit photos</div>
+    <div class="bulk-card-sub">Upload multiple suit photos at once. Each photo = 1 credit.</div>
+
+    <div class="bulk-upload-zone" id="bulk-upload-zone" onclick="document.getElementById('bulk-input').click()">
+      <div class="upload-icon">📦</div>
+      <div class="upload-title">Click or drag & drop your suits</div>
+      <div class="upload-hint">Upload <span>multiple JPG/PNG</span> files at once · Max 20 photos</div>
+    </div>
+    <input type="file" id="bulk-input" accept="image/*" multiple style="display:none;" onchange="handleBulkUpload(event)" />
+
+    <div id="queue-wrap" style="display:none;margin-top:1.5rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:500;color:#555;"><span id="queue-count">0</span> photos uploaded</div>
+        <button onclick="clearQueue()" style="background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">Clear all</button>
+      </div>
+      <div class="queue-grid" id="queue-grid"></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: SETTINGS -->
+  <div class="bulk-card">
+    <div class="bulk-card-title">Step 2 — Choose settings</div>
+    <div class="bulk-card-sub">These settings apply to all photos in this batch.</div>
+
+    <div class="settings-grid">
+      <div class="setting-group">
+        <div class="setting-label">GARMENT TYPE</div>
+        <select class="setting-select" id="bulk-garment">
+          <option value="suit">👗 Salwar Suit</option>
+          <option value="saree">🥻 Saree</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">SCENE / BACKGROUND</div>
+        <select class="setting-select" id="bulk-scene">
+          <option value="grand royal Indian palace with golden chandeliers and marble floors">🏰 Royal Palace</option>
+          <option value="Indian wedding mandap decorated with marigold flowers and golden drapes">💍 Wedding Mandap</option>
+          <option value="festive Diwali celebration with glowing diyas and warm fairy lights bokeh">🪔 Diwali Festive</option>
+          <option value="heritage Rajasthani haveli with carved stone arches and warm terracotta tones">🕌 Heritage Haveli</option>
+          <option value="lush blooming rose garden with soft pink flowers and golden hour sunlight">🌸 Rose Garden</option>
+          <option value="beautiful golden sunset sky with warm orange tones and soft bokeh">🌅 Golden Sunset</option>
+          <option value="iconic Taj Mahal monument background with soft morning light">🕍 Taj Mahal</option>
+          <option value="grand crystal chandelier ballroom with golden walls and elegant lighting">✨ Grand Ballroom</option>
+          <option value="rooftop at night with sparkling city lights and blue hour sky">🌃 City Rooftop</option>
+          <option value="clean white professional studio background with soft even lighting">📸 Clean Studio</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">MODEL</div>
+        <select class="setting-select" id="bulk-model">
+          <option value="0">Priya S. — Straight fit</option>
+          <option value="1">Anjali M. — Slim fit</option>
+          <option value="2">Kavya R. — Curvy fit</option>
+          <option value="3">Simran K. — Elegant fit</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">POSE</div>
+        <select class="setting-select" id="bulk-pose">
+          <option value="standing straight facing forward, confident pose">🧍‍♀️ Standing front</option>
+          <option value="graceful walking pose mid stride">🚶‍♀️ Walking</option>
+          <option value="elegant 3/4 turn pose, looking over shoulder">💃 3/4 Turn</option>
+          <option value="hand on hip confident fashion model pose">👸 Fashion pose</option>
+          <option value="sitting gracefully on steps, elegant seated pose">🪑 Sitting</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- LOGO OPTION -->
+    <div style="border-top:1px solid rgba(233,30,99,0.1);padding-top:1rem;margin-top:0.5rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:500;color:#555;">BRAND LOGO (optional — applied to all photos)</div>
+        <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 12px;font-size:11px;color:#E91E63;font-weight:500;">
+          Upload Logo
+          <input type="file" id="bulk-logo-input" accept="image/*" style="display:none;" onchange="loadBulkLogo(event)" />
+        </label>
+      </div>
+      <div id="bulk-logo-preview" style="display:none;display:flex;align-items:center;gap:10px;">
+        <img id="bulk-logo-img" style="height:36px;object-fit:contain;border:1px solid rgba(233,30,99,0.15);border-radius:4px;padding:4px;" />
+        <select class="setting-select" id="bulk-logo-pos" style="width:160px;">
+          <option value="bottom-right">↘ Bottom Right</option>
+          <option value="bottom-left">↙ Bottom Left</option>
+          <option value="top-right">↗ Top Right</option>
+          <option value="top-left">↖ Top Left</option>
+          <option value="top-center">↑ Top Center</option>
+          <option value="bottom-center">↓ Bottom Center</option>
+        </select>
+        <button onclick="removeBulkLogo()" style="background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">✕ Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: GENERATE -->
+  <div class="bulk-card">
+    <div class="bulk-card-title">Step 3 — Generate & Export</div>
+    <div class="bulk-card-sub">All photos will be processed one by one. You can export all as ZIP when done.</div>
+
+    <div id="bulk-progress-wrap" style="display:none;margin-bottom:1.5rem;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;" id="bulk-progress-label">Processing...</div>
+      <div class="progress-bar"><div class="progress-fill" id="bulk-progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="bulk-progress-text">0 / 0 done</div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button class="generate-btn" id="bulk-generate-btn" onclick="startBulkGenerate()" style="flex:1;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+        Generate All — <span id="generate-count">0</span> photos
+      </button>
+      <button class="export-btn" id="export-btn" onclick="exportAllAsZip()" style="display:none;">⬇ Export ZIP</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="bulk-results-wrap" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+      <div style="font-size:15px;font-weight:500;">Generated Photos <span id="results-count" style="font-size:13px;color:#555;font-weight:400;"></span></div>
+      <button class="export-btn" onclick="exportAllAsZip()">⬇ Export all as ZIP</button>
+    </div>
+    <div class="results-grid" id="bulk-results-grid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+var bulkQueue = []; // {file, dataUrl, name}
+var bulkResults = []; // {name, url}
+var bulkLogoUrl = null;
+var currentUserId = null;
+
+// AUTH
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
+  currentUserId = user.id;
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = displayName.slice(0,2).toUpperCase();
+  loadCredits(user.id);
+});
+
+function loadCredits(userId) {
+  sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
+    document.getElementById('stat-credits').textContent = r.data ? r.data.balance : '—';
+  });
+}
+
+// DRAG AND DROP
+var zone = document.getElementById('bulk-upload-zone');
+zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('dragover'); });
+zone.addEventListener('dragleave', function(){ zone.classList.remove('dragover'); });
+zone.addEventListener('drop', function(e){
+  e.preventDefault();
+  zone.classList.remove('dragover');
+  var files = Array.from(e.dataTransfer.files).filter(function(f){ return f.type.startsWith('image/'); });
+  processFiles(files);
+});
+
+function handleBulkUpload(e) {
+  var files = Array.from(e.target.files);
+  processFiles(files);
+  e.target.value = '';
+}
+
+function processFiles(files) {
+  if (bulkQueue.length + files.length > 20) {
+    showToast('Max 20 photos allowed!');
+    files = files.slice(0, 20 - bulkQueue.length);
+  }
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      bulkQueue.push({ file: file, dataUrl: ev.target.result, name: file.name, status: 'pending', result: null });
+      renderQueue();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderQueue() {
+  var grid = document.getElementById('queue-grid');
+  var wrap = document.getElementById('queue-wrap');
+  var count = document.getElementById('queue-count');
+  var genCount = document.getElementById('generate-count');
+  var costPreview = document.getElementById('cost-preview');
+
+  count.textContent = bulkQueue.length;
+  genCount.textContent = bulkQueue.length;
+  costPreview.textContent = bulkQueue.length;
+  wrap.style.display = bulkQueue.length > 0 ? 'block' : 'none';
+
+  grid.innerHTML = '';
+  bulkQueue.forEach(function(item, i) {
+    var div = document.createElement('div');
+    div.className = 'queue-item';
+    var statusMap = {pending:'⏳', processing:'⚙️', done:'✓', error:'✕'};
+    div.innerHTML = '<img class="queue-img" src="' + item.dataUrl + '" />' +
+      '<div class="queue-status ' + item.status + '">' + statusMap[item.status] + '</div>' +
+      '<div class="queue-label">' + item.name + '</div>';
+    grid.appendChild(div);
+  });
+}
+
+function clearQueue() {
+  bulkQueue = [];
+  renderQueue();
+  document.getElementById('queue-wrap').style.display = 'none';
+}
+
+function loadBulkLogo(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    bulkLogoUrl = ev.target.result;
+    document.getElementById('bulk-logo-img').src = bulkLogoUrl;
+    document.getElementById('bulk-logo-preview').style.display = 'flex';
+    showToast('Logo uploaded!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeBulkLogo() {
+  bulkLogoUrl = null;
+  document.getElementById('bulk-logo-input').value = '';
+  document.getElementById('bulk-logo-preview').style.display = 'none';
+}
+
+// COMPRESS IMAGE
+function compressImage(dataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var MAX = 512;
+      var w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h*MAX/w); w = MAX; } }
+      else { if (h > MAX) { w = Math.round(w*MAX/h); h = MAX; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.src = dataUrl;
+  });
+}
+
+// OVERLAY LOGO
+function overlayLogo(imageUrl, logoDataUrl, position) {
+  if (!logoDataUrl) return Promise.resolve(imageUrl);
+  return new Promise(function(resolve) {
+    var logo = new Image();
+    logo.onload = function() {
+      var photo = new Image();
+      photo.crossOrigin = 'anonymous';
+      photo.onload = function() {
+        try {
+          var canvas = document.createElement('canvas');
+          canvas.width = photo.naturalWidth;
+          canvas.height = photo.naturalHeight;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(photo, 0, 0);
+          var lw = canvas.width * 0.15;
+          var lh = (logo.height/logo.width) * lw;
+          var pad = canvas.width * 0.03;
+          var x, y;
+          if (position === 'top-left') { x=pad; y=pad; }
+          else if (position === 'top-center') { x=(canvas.width-lw)/2; y=pad; }
+          else if (position === 'top-right') { x=canvas.width-lw-pad; y=pad; }
+          else if (position === 'bottom-left') { x=pad; y=canvas.height-lh-pad; }
+          else if (position === 'bottom-center') { x=(canvas.width-lw)/2; y=canvas.height-lh-pad; }
+          else { x=canvas.width-lw-pad; y=canvas.height-lh-pad; }
+          ctx.drawImage(logo, x, y, lw, lh);
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
+        } catch(e) { resolve(imageUrl); }
+      };
+      photo.onerror = function(){ resolve(imageUrl); };
+      photo.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+    };
+    logo.onerror = function(){ resolve(imageUrl); };
+    logo.src = logoDataUrl;
+  });
+}
+
+// MAIN GENERATION
+async function startBulkGenerate() {
+  if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
+
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  if (credits < bulkQueue.length) {
+    showToast('Not enough credits! Need ' + bulkQueue.length + ', have ' + credits);
+    return;
+  }
+
+  var btn = document.getElementById('bulk-generate-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  var progressWrap = document.getElementById('bulk-progress-wrap');
+  var progressFill = document.getElementById('bulk-progress-fill');
+  var progressText = document.getElementById('bulk-progress-text');
+  var progressLabel = document.getElementById('bulk-progress-label');
+  progressWrap.style.display = 'block';
+
+  bulkResults = [];
+  document.getElementById('bulk-results-wrap').style.display = 'none';
+  document.getElementById('export-btn').style.display = 'none';
+
+  var modelIndex = parseInt(document.getElementById('bulk-model').value);
+  var scene = document.getElementById('bulk-scene').value;
+  var pose = document.getElementById('bulk-pose').value;
+  var garmentType = document.getElementById('bulk-garment').value;
+  var logoPos = document.getElementById('bulk-logo-pos') ? document.getElementById('bulk-logo-pos').value : 'bottom-right';
+
+  var garmentDesc = garmentType === 'saree'
+    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+  var prompt = garmentDesc + ', ' + pose + ', ' + scene + ', professional Indian fashion photography, high quality';
+
+  for (var i = 0; i < bulkQueue.length; i++) {
+    bulkQueue[i].status = 'processing';
+    renderQueue();
+    progressLabel.textContent = 'Processing ' + (i+1) + ' of ' + bulkQueue.length + ': ' + bulkQueue[i].name;
+    progressText.textContent = i + ' / ' + bulkQueue.length + ' done';
+    progressFill.style.width = Math.round((i / bulkQueue.length) * 100) + '%';
+
+    try {
+      var compressed = await compressImage(bulkQueue[i].dataUrl);
+
+      var response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          garment_img: compressed,
+          model_index: modelIndex,
+          prompt: prompt,
+          garment_type: garmentType
+        })
+      });
+
+      var data = await response.json();
+      if (data.error) { bulkQueue[i].status = 'error'; renderQueue(); continue; }
+
+      // Poll for result
+      var predId = data.prediction_id;
+      var pollResult = null;
+      var attempts = 0;
+      while (attempts < 60) {
+        await new Promise(function(r){ setTimeout(r, 3000); });
+        var pollRes = await fetch('/api/poll?id=' + predId);
+        pollResult = await pollRes.json();
+        if (pollResult.status === 'succeeded') break;
+        if (pollResult.status === 'failed') break;
+        attempts++;
+      }
+
+      if (pollResult && pollResult.output && pollResult.output.length > 0) {
+        var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
+
+        // Overlay logo if set
+        var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
+
+        bulkQueue[i].status = 'done';
+        bulkQueue[i].result = finalUrl;
+        bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: imgUrl });
+
+        // Save to Supabase
+        if (currentUserId) {
+          sb.from('photoshoots').insert({
+            user_id: currentUserId,
+            image_url: imgUrl,
+            collection_name: 'Bulk Photoshoot',
+            suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit',
+            image_count: 1,
+            media_type: 'photo'
+          });
+          // Deduct 1 credit
+          sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
+            if (res.data) {
+              sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
+            }
+          });
+        }
+      } else {
+        bulkQueue[i].status = 'error';
+      }
+      renderQueue();
+
+    } catch(err) {
+      bulkQueue[i].status = 'error';
+      renderQueue();
+    }
+  }
+
+  // Done
+  progressFill.style.width = '100%';
+  progressText.textContent = bulkResults.length + ' / ' + bulkQueue.length + ' done';
+  progressLabel.textContent = '✅ All done! ' + bulkResults.length + ' photos generated.';
+
+  btn.disabled = false;
+  btn.innerHTML = '⚡ Generate All — <span id="generate-count">' + bulkQueue.length + '</span> photos';
+
+  // Show results
+  if (bulkResults.length > 0) {
+    renderResults();
+    document.getElementById('export-btn').style.display = 'block';
+    loadCredits(currentUserId);
+  }
+
+  showToast('✅ ' + bulkResults.length + ' photos generated!');
+}
+
+function renderResults() {
+  var wrap = document.getElementById('bulk-results-wrap');
+  var grid = document.getElementById('bulk-results-grid');
+  var count = document.getElementById('results-count');
+  wrap.style.display = 'block';
+  count.textContent = '(' + bulkResults.length + ' photos)';
+  grid.innerHTML = '';
+  bulkResults.forEach(function(item, i) {
+    var card = document.createElement('div');
+    card.className = 'result-card';
+    var img = document.createElement('img');
+    img.className = 'result-img';
+    img.src = item.url;
+    card.appendChild(img);
+    var actions = document.createElement('div');
+    actions.className = 'result-actions';
+    var dl = document.createElement('a');
+    dl.href = item.url;
+    dl.target = '_blank';
+    dl.className = 'result-btn primary';
+    dl.textContent = '↓ Download';
+    dl.style.textDecoration = 'none';
+    dl.style.textAlign = 'center';
+    actions.appendChild(dl);
+    card.appendChild(actions);
+    grid.appendChild(card);
+  });
+}
+
+async function exportAllAsZip() {
+  if (bulkResults.length === 0) { showToast('No results to export!'); return; }
+  showToast('Creating ZIP... please wait');
+
+  var zip = new JSZip();
+  var folder = zip.folder('drapely-bulk');
+
+  for (var i = 0; i < bulkResults.length; i++) {
+    var item = bulkResults[i];
+    try {
+      var res = await fetch(item.original || item.url);
+      var blob = await res.blob();
+      folder.file(item.name, blob);
+    } catch(e) {
+      console.log('Skip:', item.name);
+    }
+  }
+
+  var content = await zip.generateAsync({ type: 'blob' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(content);
+  a.download = 'drapely-bulk-' + Date.now() + '.zip';
+  a.click();
+  showToast('ZIP downloaded!');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+</script>
+</body>
+</html>
