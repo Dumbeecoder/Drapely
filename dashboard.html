@@ -307,26 +307,21 @@
             <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
             <div style="margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;" /></div>
-              <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Suit type <span style="font-weight:300;color:#aaa;">(for records)</span></div><select style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;"><option>Salwar Kameez</option><option>Anarkali</option><option>Patiala Suit</option><option>Sharara Set</option><option>Palazzo Set</option><option>Lehenga Choli</option><option>Other</option></select></div>
-            </div>
-            <div class="step-nav"><div></div><button class="btn-next" onclick="goStep(1)">Choose Model →</button></div>
-          </div>
-
-          <!-- STEP 2 -->
-          <div class="step-panel" id="step-1">
-            <div class="step-label">STEP 2 — CHOOSE MODEL & POSE</div>
-            <div style="font-size:12px;color:#555;margin-bottom:8px;">Pose style</div>
-            <div class="pose-wrap">
-              <div class="pose-tag selected" onclick="selectPose(this)">Standing front</div>
-              <div class="pose-tag" onclick="selectPose(this)">3/4 turn</div>
-              <div class="pose-tag" onclick="selectPose(this)">Side profile</div>
-              <div class="pose-tag" onclick="selectPose(this)">Walking pose</div>
-              <div class="pose-tag" onclick="selectPose(this)">Sitting graceful</div>
-              <div class="pose-tag" onclick="selectPose(this)">Full length</div>
-            </div>
-            <div style="font-size:12px;color:#555;margin-bottom:8px;">Select model</div>
-            <div class="models-grid">
-              <div class="model-card selected" onclick="selectModel(this,0)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" alt="Model 1" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit · Full length</div></div></div>
+              <div>
+  <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">GARMENT TYPE</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+    <div id="gtype-suit" onclick="selectGarmentType('suit')" style="border:2px solid #E91E63;border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:#fff0f5;">
+      <div style="font-size:24px;margin-bottom:4px;">👗</div>
+      <div style="font-size:13px;font-weight:500;color:#000;">Salwar Suit</div>
+      <div style="font-size:10px;color:#555;margin-top:2px;">Kurta, Anarkali, Palazzo</div>
+    </div>
+    <div id="gtype-saree" onclick="selectGarmentType('saree')" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:#fff;">
+      <div style="font-size:24px;margin-bottom:4px;">🥻</div>
+      <div style="font-size:13px;font-weight:500;color:#000;">Saree</div>
+      <div style="font-size:10px;color:#555;margin-top:2px;">Silk, Chiffon, Cotton</div>
+    </div>
+  </div>
+</div><div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit · Full length</div></div></div>
               <div class="model-card" onclick="selectModel(this,1)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" alt="Model 2" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">Slim fit · Standing</div></div></div>
               <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" alt="Model 3" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">Medium fit · Front pose</div></div></div>
               <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" alt="Model 4" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">Relaxed fit · Side pose</div></div></div>
@@ -760,12 +755,15 @@ function buildPhotoPrompt() {
   var bgPrompt = bgEl ? (bgEl.getAttribute('data-bg') || '') : '';
   var stylePrompt = bgEl ? (bgEl.getAttribute('data-style') || '') : '';
 
-  // Build final prompt — Fashn.ai product-to-model ignores garment type
-  // Only background, pose and mood affect the output
-  var parts = ['Indian woman', selectedPosePrompt || poseDesc];
+  // Build garment-specific prompt
+  var garmentDesc = selectedGarmentType === 'saree'
+    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+
+  var parts = [garmentDesc, selectedPosePrompt || poseDesc];
   if (stylePrompt) parts.push(stylePrompt);
   if (bgPrompt) parts.push(bgPrompt);
-  parts.push('professional fashion photography, high quality, full outfit visible');
+  parts.push('professional Indian fashion photography, high quality, full outfit visible');
 
   var finalPrompt = parts.join(', ');
   console.log('Final photo prompt:', finalPrompt);
@@ -1079,7 +1077,8 @@ async function startGenerate() {
         body: JSON.stringify({
           garment_img: compressed,
           model_index: selectedModelIndex,
-          prompt: buildPhotoPrompt()
+          prompt: buildPhotoPrompt(),
+          garment_type: selectedGarmentType
         })
       });
       var data = await response.json();
@@ -1196,6 +1195,26 @@ function showRealResults(images) {
 }
 
 // LOGO FUNCTIONS
+// GARMENT TYPE
+var selectedGarmentType = 'suit';
+
+function selectGarmentType(type) {
+  selectedGarmentType = type;
+  var suitEl = document.getElementById('gtype-suit');
+  var sareeEl = document.getElementById('gtype-saree');
+  if (type === 'suit') {
+    suitEl.style.border = '2px solid #E91E63';
+    suitEl.style.background = '#fff0f5';
+    sareeEl.style.border = '1.5px solid rgba(233,30,99,0.2)';
+    sareeEl.style.background = '#fff';
+  } else {
+    sareeEl.style.border = '2px solid #E91E63';
+    sareeEl.style.background = '#fff0f5';
+    suitEl.style.border = '1.5px solid rgba(233,30,99,0.2)';
+    suitEl.style.background = '#fff';
+  }
+}
+
 var logoDataUrl = null;
 var logoPosition = 'top-center';
 
