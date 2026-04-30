@@ -1129,17 +1129,39 @@ async function startGenerate() {
 
 function showRealResults(images) {
   var body = document.getElementById('results-body');
-  var html = '<div class="results-grid">';
+  if (!body) return;
+  body.innerHTML = '';
+  var grid = document.createElement('div');
+  grid.className = 'results-grid';
   images.forEach(function(url, i) {
-    html += '<div class="result-item">';
-    html += '<img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;border-radius:10px 10px 0 0;" />';
-    html += '<div class="result-actions">';
-    html += '<button class="result-btn primary" onclick="downloadImg('' + url + '',' + (i+1) + ')">↓ Download</button>';
-    html += '<button class="result-btn" style="background:#000;color:#fff;border-color:#000;" onclick="convertToVideo('' + url + '')">🎬 Make Video</button>';
-    html += '</div></div>';
+    var item = document.createElement('div');
+    item.className = 'result-item';
+    var img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;border-radius:10px 10px 0 0;';
+    var actions = document.createElement('div');
+    actions.className = 'result-actions';
+    var dlBtn = document.createElement('button');
+    dlBtn.className = 'result-btn primary';
+    dlBtn.textContent = '↓ Download';
+    dlBtn.onclick = (function(u, n){ return function(){ downloadImg(u, n); }; })(url, i+1);
+    var vidBtn = document.createElement('button');
+    vidBtn.className = 'result-btn';
+    vidBtn.style.cssText = 'background:#000;color:#fff;border-color:#000;';
+    vidBtn.textContent = '🎬 Make Video';
+    vidBtn.onclick = (function(u){ return function(){ convertToVideo(u); }; })(url);
+    actions.appendChild(dlBtn);
+    actions.appendChild(vidBtn);
+    item.appendChild(img);
+    item.appendChild(actions);
+    grid.appendChild(item);
   });
-  html += '</div><button class="new-shoot-btn" onclick="newShoot()">+ Start a new photoshoot</button>';
-  body.innerHTML = html;
+  body.appendChild(grid);
+  var newBtn = document.createElement('button');
+  newBtn.className = 'new-shoot-btn';
+  newBtn.textContent = '+ Start a new photoshoot';
+  newBtn.onclick = newShoot;
+  body.appendChild(newBtn);
 }
 
 function convertToVideo(imageUrl) {
