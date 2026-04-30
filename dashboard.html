@@ -1436,37 +1436,77 @@ function renderGallery() {
 function renderVideoGallery() {
   var emptyHtml = '<div style="padding:2rem;text-align:center;color:#555;"><div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">🎬</div><div style="font-size:13px;">No videos yet — generate your first fashion video above!</div></div>';
 
+  var vbody = document.getElementById('video-gallery-body');
+  var vg = document.getElementById('v-gallery');
+
   if (videoGallery.length === 0) {
-    var vbody = document.getElementById('video-gallery-body');
     if (vbody) vbody.innerHTML = emptyHtml;
-    var vg = document.getElementById('v-gallery');
     if (vg) vg.innerHTML = emptyHtml;
     return;
   }
 
-  // Match gallery.html video card exactly
-  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:1rem;">';
-  for (var i = 0; i < videoGallery.length; i++) {
-    var url = videoGallery[i];
-    html += '<div style="background:#fff;border-radius:10px;overflow:hidden;border:1px solid rgba(233,30,99,0.1);box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
-    html += '<video src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;background:#000;" controls playsinline preload="metadata"></video>';
-    html += '<div style="padding:10px 12px;">';
-    html += '<div style="font-size:13px;font-weight:500;margin-bottom:2px;">AI Fashion Video</div>';
-    html += '<div style="font-size:11px;color:#555;margin-bottom:8px;">Generated</div>';
-    html += '<div style="display:flex;gap:6px;">';
-    html += '<a href="' + url + '" target="_blank" style="flex:1;padding:6px;background:#E91E63;color:#fff;border-radius:6px;font-size:11px;font-weight:500;text-decoration:none;text-align:center;">↓ Download</a>';
-    html += '<button onclick="window.open('https://wa.me/?text=' + encodeURIComponent('Check this AI fashion video! ' + url + ''), '_blank')" style="flex:1;padding:6px;background:#fff;border:1px solid rgba(233,30,99,0.3);color:#555;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;">💬 Share</button>';
-    html += '</div></div></div>';
-  }
-  html += '</div>';
+  // Build grid using createElement to avoid quote issues
+  function buildVideoGrid() {
+    var grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:1rem;';
+    for (var i = 0; i < videoGallery.length; i++) {
+      var url = videoGallery[i];
+      var card = document.createElement('div');
+      card.style.cssText = 'background:#fff;border-radius:10px;overflow:hidden;border:1px solid rgba(233,30,99,0.1);box-shadow:0 2px 8px rgba(0,0,0,0.05);';
 
-  var vbody = document.getElementById('video-gallery-body');
-  if (vbody) vbody.innerHTML = html;
-  var vg = document.getElementById('v-gallery');
-  if (vg) vg.innerHTML = html;
+      var vid = document.createElement('video');
+      vid.src = url;
+      vid.controls = true;
+      vid.setAttribute('playsinline', '');
+      vid.setAttribute('preload', 'metadata');
+      vid.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;background:#000;';
+      card.appendChild(vid);
+
+      var body = document.createElement('div');
+      body.style.cssText = 'padding:10px 12px;';
+
+      var title = document.createElement('div');
+      title.style.cssText = 'font-size:13px;font-weight:500;margin-bottom:2px;';
+      title.textContent = 'AI Fashion Video';
+      body.appendChild(title);
+
+      var meta = document.createElement('div');
+      meta.style.cssText = 'font-size:11px;color:#555;margin-bottom:8px;';
+      meta.textContent = 'Generated';
+      body.appendChild(meta);
+
+      var actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:6px;';
+
+      var dlBtn = document.createElement('a');
+      dlBtn.href = url;
+      dlBtn.target = '_blank';
+      dlBtn.style.cssText = 'flex:1;padding:6px;background:#E91E63;color:#fff;border-radius:6px;font-size:11px;font-weight:500;text-decoration:none;text-align:center;';
+      dlBtn.textContent = '↓ Download';
+      actions.appendChild(dlBtn);
+
+      var shareBtn = document.createElement('button');
+      shareBtn.style.cssText = 'flex:1;padding:6px;background:#fff;border:1px solid rgba(233,30,99,0.3);color:#555;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;';
+      shareBtn.textContent = '💬 Share';
+      shareBtn.onclick = (function(u) {
+        return function() {
+          window.open('https://wa.me/?text=' + encodeURIComponent('Check this AI fashion video! ' + u), '_blank');
+        };
+      })(url);
+      actions.appendChild(shareBtn);
+
+      body.appendChild(actions);
+      card.appendChild(body);
+      grid.appendChild(card);
+    }
+    return grid;
+  }
+
+  if (vbody) { vbody.innerHTML = ''; vbody.appendChild(buildVideoGrid()); }
+  if (vg) { vg.innerHTML = ''; vg.appendChild(buildVideoGrid()); }
 }
 
-// VIDEO UPLOAD
+
 function loadVideoSuit(e) {
   var file = e.target.files[0];
   if (!file) return;
