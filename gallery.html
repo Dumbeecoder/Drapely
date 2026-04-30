@@ -3,102 +3,102 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Drapely — My Gallery</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <title>My Gallery — Drapely</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh}
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#000;border-right:1px solid rgba(233,30,99,0.2);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
-    .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
-    .sidebar-brand span{color:#E91E63}
-    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-    .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff}
-    .nav-item.active{background:rgba(233,30,99,0.15);color:#fff}
-    .nav-icon{width:16px;height:16px;flex-shrink:0}
-    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500}
-    .sidebar-footer{padding:0 0.75rem;border-top:1px solid rgba(233,30,99,0.2);padding-top:1rem}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2)}
-    .user-avatar{width:30px;height:30px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
-    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .user-plan{font-size:10px;color:#E91E63}
-    .main{margin-left:220px;min-height:100vh}
-    .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
-    .topbar-left{display:flex;align-items:baseline;gap:6px}
-    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
-    .topbar-sub{font-size:12px;color:#555}
-    .new-btn{padding:8px 18px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-    .content{padding:2rem}
-    .stats-bar{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:14px;padding:1.25rem 2rem;margin-bottom:1.75rem;display:flex;align-items:center}
-    .stat-item{flex:1;text-align:center}
-    .stat-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:#000;line-height:1;margin-bottom:3px}
-    .stat-lbl{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.5px}
-    .stat-divider{width:1px;height:40px;background:rgba(233,30,99,0.15)}
-    .filter-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
-    .filter-pills{display:flex;gap:8px;flex-wrap:wrap}
-    .filter-pill{padding:6px 16px;border:1.5px solid rgba(233,30,99,0.25);border-radius:20px;font-size:12px;color:#555;cursor:pointer;background:#fff;font-family:'DM Sans',sans-serif;transition:all 0.15s}
-    .filter-pill.active{background:#E91E63;border-color:#E91E63;color:#fff}
-    .sort-select{padding:7px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#555;background:#fff;cursor:pointer;outline:none}
-    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-bottom:2rem}
-    .gallery-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(233,30,99,0.12);box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:transform 0.2s,box-shadow 0.2s}
-    .gallery-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(233,30,99,0.12)}
-    .gallery-img{width:100%;height:300px;object-fit:cover;display:block;cursor:pointer}
-    .gallery-card-body{padding:12px 14px}
-    .gallery-card-title{font-size:13px;font-weight:500;color:#000;margin-bottom:3px}
-    .gallery-card-meta{font-size:11px;color:#555}
-    .gallery-card-actions{padding:8px 14px 14px;display:flex;gap:8px}
-    .action-btn{flex:1;padding:8px 0;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#555;cursor:pointer;transition:all 0.15s;text-align:center;text-decoration:none;display:block}
-    .action-btn:hover,.action-btn.primary{background:#E91E63;color:#fff;border-color:#E91E63}
-    .empty-state{text-align:center;padding:4rem 2rem;color:#555;background:#fff;border-radius:16px;border:1px solid rgba(233,30,99,0.12)}
-    .section-heading{font-size:18px;font-weight:500;color:#000;margin:2rem 0 1rem;display:flex;align-items:center;gap:10px}
-    .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:2rem}
-    .video-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(233,30,99,0.12);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-    .video-el{width:100%;height:240px;object-fit:cover;display:block}
-    .video-card-body{padding:10px 14px 14px}
-    .video-card-title{font-size:13px;font-weight:500;color:#000;margin-bottom:3px}
-    .video-card-meta{font-size:11px;color:#555;margin-bottom:10px}
-    .video-card-actions{display:flex;gap:8px}
-    .viewer-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;align-items:center;justify-content:center;padding:1rem}
-    .viewer-modal.open{display:flex}
-    .viewer-img{max-width:90vw;max-height:85vh;border-radius:8px;object-fit:contain}
-    .viewer-close{position:fixed;top:1rem;right:1.5rem;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;z-index:201;line-height:1}
-    .viewer-dl{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);padding:10px 28px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
-    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
-    .toast.show{transform:translateX(-50%) translateY(0)}
-    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.gallery-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}.stats-bar{padding:1rem}.stat-val{font-size:24px}}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
+    /* SIDEBAR */
+    .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
+    .brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .brand span{color:#E91E63;}
+    .nav-section{padding:1.25rem 0.75rem 0.5rem;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 1rem;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;margin:2px 0.5rem;transition:all 0.15s;}
+    .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .nav-item.active{color:#E91E63;}
+    .nav-icon{width:16px;height:16px;flex-shrink:0;}
+    .nav-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
+    .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
+    .user-av{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .user-plan{font-size:10px;color:#E91E63;}
+    /* MAIN */
+    .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
+    .topbar h1{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:1px;}
+    .new-btn{padding:10px 20px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block;}
+    /* STATS */
+    .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:14px;margin-bottom:1.5rem;overflow:hidden;}
+    .stat-item{padding:1.25rem 1.5rem;text-align:center;border-right:1px solid rgba(233,30,99,0.1);}
+    .stat-item:last-child{border-right:none;}
+    .stat-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;line-height:1;}
+    .stat-lbl{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+    /* TABS */
+    .tab-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+    .tab-pills{display:flex;gap:8px;}
+    .tab-pill{padding:8px 20px;border-radius:20px;border:1.5px solid rgba(233,30,99,0.3);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;transition:all 0.15s;}
+    .tab-pill.active{background:#E91E63;border-color:#E91E63;color:#fff;}
+    /* GALLERY GRID */
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+    .gallery-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(233,30,99,0.1);box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:transform 0.15s;}
+    .gallery-card:hover{transform:translateY(-2px);}
+    .gallery-img{width:100%;height:320px;object-fit:cover;display:block;cursor:pointer;}
+    .gallery-card-body{padding:12px 14px;}
+    .gallery-card-title{font-size:13px;font-weight:500;color:#000;margin-bottom:2px;}
+    .gallery-card-meta{font-size:11px;color:#555;}
+    .gallery-card-actions{display:flex;gap:8px;padding:0 14px 12px;}
+    .action-btn{flex:1;padding:8px;border:1.5px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#555;cursor:pointer;text-align:center;}
+    .action-btn.primary{background:#E91E63;border-color:#E91E63;color:#fff;}
+    /* VIDEO GRID */
+    .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+    .video-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(233,30,99,0.1);box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    .video-el{width:100%;height:280px;object-fit:cover;display:block;}
+    .video-card-body{padding:12px 14px;}
+    .video-card-title{font-size:13px;font-weight:500;}
+    .video-card-meta{font-size:11px;color:#555;margin-bottom:10px;}
+    .video-card-actions{display:flex;gap:8px;}
+    /* EMPTY */
+    .empty-state{text-align:center;padding:4rem 2rem;color:#555;}
+    /* VIEWER */
+    .viewer-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;align-items:center;justify-content:center;}
+    .viewer-modal.open{display:flex;}
+    .viewer-img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;}
+    .viewer-close{position:fixed;top:20px;right:24px;color:#fff;font-size:28px;cursor:pointer;background:none;border:none;}
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.stats-bar{grid-template-columns:1fr 1fr}.gallery-grid{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <a href="index.html" class="sidebar-brand">Drape<span>ly</span></a>
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Studio</div>
-    <a class="nav-item" href="dashboard.html">
-      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-      New photoshoot
-    </a>
-    <a class="nav-item" href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')">
-      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
-      New video
-    </a>
-    <a class="nav-item active" href="gallery.html">
-      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
-      My gallery
-    </a>
-    <div class="nav-section-label" style="margin-top:8px;">Account</div>
-    <a class="nav-item" href="settings.html">
-      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      Settings
-    </a>
-    <button class="nav-item" onclick="doSignOut()">
-      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
-      Sign out
-    </button>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="user-chip">
-      <div class="user-avatar" id="user-avatar">?</div>
+  <a href="index.html" class="brand">Drape<span>ly</span></a>
+  <div class="nav-section">STUDIO</div>
+  <a href="dashboard.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+    New photoshoot
+  </a>
+  <a href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+    New video
+  </a>
+  <a href="gallery.html" class="nav-item active">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
+    My gallery
+  </a>
+  <div class="nav-section">ACCOUNT</div>
+  <a href="settings.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    Settings
+  </a>
+  <a href="#" onclick="doSignOut()" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+    Sign out
+  </a>
+  <div class="nav-footer">
+    <div class="user-pill">
+      <div class="user-av" id="user-avatar">?</div>
       <div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div>
     </div>
   </div>
@@ -106,50 +106,37 @@
 
 <div class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-title">My Gallery</div>
-      <div class="topbar-sub" id="topbar-sub"></div>
-    </div>
+    <h1>My Gallery <span id="topbar-sub" style="font-size:16px;color:#555;font-family:'DM Sans',sans-serif;font-weight:300;"></span></h1>
     <a href="dashboard.html" class="new-btn">+ New Photoshoot</a>
   </div>
 
-  <div class="content">
-    <div class="stats-bar">
-      <div class="stat-item"><div class="stat-val" id="total-shoots">—</div><div class="stat-lbl">Photoshoots</div></div>
-      <div class="stat-divider"></div>
-      <div class="stat-item"><div class="stat-val" id="total-images">—</div><div class="stat-lbl">Images</div></div>
-      <div class="stat-divider"></div>
-      <div class="stat-item"><div class="stat-val" id="total-credits">—</div><div class="stat-lbl">Credits left</div></div>
-      <div class="stat-divider"></div>
-      <div class="stat-item"><div class="stat-val" id="total-videos">—</div><div class="stat-lbl">Videos Generated</div></div>
-    </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val" id="total-shoots">—</div><div class="stat-lbl">Photoshoots</div></div>
+    <div class="stat-item"><div class="stat-val" id="total-images">—</div><div class="stat-lbl">Images</div></div>
+    <div class="stat-item"><div class="stat-val" id="total-credits">—</div><div class="stat-lbl">Credits Left</div></div>
+    <div class="stat-item"><div class="stat-val" id="total-videos">—</div><div class="stat-lbl">Videos Generated</div></div>
+  </div>
 
-    <div class="filter-bar">
-      <div class="filter-pills">
-        <button class="filter-pill active" id="tab-photos-btn" onclick="showGalleryTab('photos',this)">📷 Photos</button>
-        <button class="filter-pill" id="tab-videos-btn" onclick="showGalleryTab('videos',this)">🎬 Videos</button>
-      </div>
-      <select class="sort-select" onchange="sortBy(this.value)" id="sort-select">
-        <option value="newest">Newest first</option>
-        <option value="oldest">Oldest first</option>
-      </select>
+  <div class="tab-bar">
+    <div class="tab-pills">
+      <button class="tab-pill active" id="pill-photos" onclick="showTab('photos')">📷 Photos</button>
+      <button class="tab-pill" id="pill-videos" onclick="showTab('videos')">🎬 Videos</button>
     </div>
+  </div>
 
-    <!-- PHOTOS -->
-    <div id="gallery-container"></div>
+  <div id="photos-section">
+    <div id="gallery-container"><div class="empty-state"><div style="font-size:48px;opacity:0.3;margin-bottom:1rem;">📷</div><div>Loading your photos...</div></div></div>
+  </div>
 
-    <!-- VIDEOS — separate section below photos -->
-    <div id="video-section" style="display:none;">
-      <div class="section-heading">🎬 My Videos <span id="video-count" style="font-size:13px;font-weight:400;color:#555;"></span></div>
-      <div class="video-grid" id="video-container"></div>
-    </div>
+  <div id="videos-section" style="display:none;">
+    <div id="video-container"><div class="empty-state"><div style="font-size:48px;opacity:0.3;margin-bottom:1rem;">🎬</div><div>Loading your videos...</div></div></div>
   </div>
 </div>
 
-<div class="viewer-modal" id="viewer-modal">
-  <button class="viewer-close" onclick="closeViewer()">×</button>
-  <img class="viewer-img" id="viewer-img" src="" alt="" />
-  <button class="viewer-dl" id="viewer-dl-btn">↓ Download</button>
+<!-- VIEWER -->
+<div class="viewer-modal" id="viewer-modal" onclick="closeViewer()">
+  <button class="viewer-close" onclick="closeViewer()">✕</button>
+  <img class="viewer-img" id="viewer-img" src="" />
 </div>
 
 <div class="toast" id="toast"></div>
@@ -163,91 +150,66 @@ var sb = window.supabase.createClient(
 
 var allPhotos = [];
 var allVideos = [];
+var currentTab = 'photos';
 
-// Auth check and load
-function initGallery() {
-  sb.auth.getSession().then(function(r) {
-    if (!r.data.session) {
-      // Retry once after 1 second in case session is still loading
-      setTimeout(function() {
-        sb.auth.getSession().then(function(r2) {
-          if (!r2.data.session) { window.location.href = 'auth.html'; return; }
-          setupGallery(r2.data.session.user);
-        });
-      }, 1000);
-      return;
-    }
-    setupGallery(r.data.session.user);
-  });
-}
-
-function setupGallery(user) {
+// INIT
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
   var meta = user.user_metadata || {};
   var fname = (meta.first_name || '').trim();
   var lname = (meta.last_name || '').trim();
   var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
-  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
-  var nameEl = document.getElementById('user-name');
-  var avatarEl = document.getElementById('user-avatar');
-  var subEl = document.getElementById('topbar-sub');
-  if (nameEl) nameEl.textContent = displayName;
-  if (avatarEl) avatarEl.textContent = initials;
-  if (subEl) subEl.textContent = displayName + "'s photos";
+  var initials = displayName.slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('topbar-sub').textContent = displayName + "'s photos";
   loadCredits(user.id);
   loadGallery(user.id);
-}
-
-initGallery();
+});
 
 function loadCredits(userId) {
   sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
-    document.getElementById('total-credits').textContent = r.data ? r.data.balance : '0';
+    document.getElementById('total-credits').textContent = r.data ? r.data.balance : '—';
   });
 }
 
 function loadGallery(userId) {
   sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', {ascending: false}).then(function(r) {
-    if (r.error) { console.log('Load error:', r.error.message); return; }
-    if (!r.data || r.data.length === 0) {
-      document.getElementById('total-shoots').textContent = '0';
-      document.getElementById('total-images').textContent = '0';
-      document.getElementById('total-videos').textContent = '0';
-      document.getElementById('gallery-container').innerHTML = '<div class="empty-state"><div style="font-size:48px;margin-bottom:1rem;opacity:0.4;">📷</div><div style="font-size:16px;font-weight:500;color:#000;margin-bottom:6px;">No photos yet</div><div style="font-size:13px;color:#555;margin-bottom:1.5rem;">Generate your first AI photoshoot!</div><a href="dashboard.html" class="new-btn">Start a photoshoot</a></div>';
-      return;
-    }
+    if (r.error) { console.log('Error:', r.error.message); return; }
+    var data = r.data || [];
 
-    // ONLY use media_type and suit_type — never URL pattern (cdn.fashn is used for both photos and videos)
-    allVideos = r.data.filter(function(i) {
-      return i.media_type === 'video' || i.suit_type === 'Video';
-    });
-    allPhotos = r.data.filter(function(i) {
-      return i.media_type !== 'video' && i.suit_type !== 'Video';
-    });
-
+    allPhotos = data.filter(function(i){ return i.media_type !== 'video' && i.suit_type !== 'Video'; });
+    allVideos = data.filter(function(i){ return i.media_type === 'video' || i.suit_type === 'Video'; });
 
     document.getElementById('total-shoots').textContent = allPhotos.length;
-    document.getElementById('total-images').textContent = allPhotos.reduce(function(a,b){ return a+(b.image_count||1); }, 0);
+    document.getElementById('total-images').textContent = allPhotos.length;
     document.getElementById('total-videos').textContent = allVideos.length;
 
     renderPhotos(allPhotos);
-    // Only render videos if on video tab, otherwise just update count
-    var videoBtn = document.getElementById('tab-videos-btn');
-    if (videoBtn && videoBtn.classList.contains('active')) {
-      renderVideos(allVideos);
-    }
+    if (currentTab === 'videos') renderVideos(allVideos);
   });
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-pill').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('pill-' + tab).classList.add('active');
+  document.getElementById('photos-section').style.display = tab === 'photos' ? 'block' : 'none';
+  document.getElementById('videos-section').style.display = tab === 'videos' ? 'block' : 'none';
+  if (tab === 'videos') renderVideos(allVideos);
 }
 
 function renderPhotos(photos) {
   var container = document.getElementById('gallery-container');
   if (!photos || photos.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div style="font-size:48px;opacity:0.4;margin-bottom:1rem;">📷</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;">No photos found</div></div>';
+    container.innerHTML = '<div class="empty-state"><div style="font-size:48px;opacity:0.3;margin-bottom:1rem;">📷</div><div style="font-size:15px;font-weight:500;margin-bottom:8px;">No photos yet</div><div style="font-size:13px;color:#555;margin-bottom:1.5rem;">Generate your first AI photoshoot!</div><a href="dashboard.html" class="new-btn">Start a photoshoot</a></div>';
     return;
   }
   var grid = document.createElement('div');
   grid.className = 'gallery-grid';
   photos.forEach(function(item, i) {
-    var date = new Date(item.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+    var date = new Date(item.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
     var url = item.image_url || '';
     var card = document.createElement('div');
     card.className = 'gallery-card';
@@ -255,14 +217,13 @@ function renderPhotos(photos) {
     var img = document.createElement('img');
     img.className = 'gallery-img';
     img.src = url;
-    img.alt = 'AI Photoshoot';
+    img.loading = 'lazy';
     img.onclick = (function(u){ return function(){ openViewer(u); }; })(url);
-    img.onerror = function(){ this.style.display='none'; };
     card.appendChild(img);
 
     var body = document.createElement('div');
     body.className = 'gallery-card-body';
-    body.innerHTML = '<div class="gallery-card-title">' + (item.collection_name || 'AI Photoshoot') + '</div><div class="gallery-card-meta">' + (item.suit_type || 'Designer Suit') + ' · ' + date + '</div>';
+    body.innerHTML = '<div class="gallery-card-title">' + (item.collection_name || 'AI Photoshoot') + '</div><div class="gallery-card-meta">' + date + '</div>';
     card.appendChild(body);
 
     var actions = document.createElement('div');
@@ -276,7 +237,7 @@ function renderPhotos(photos) {
     var dlBtn = document.createElement('button');
     dlBtn.className = 'action-btn primary';
     dlBtn.textContent = 'Download';
-    dlBtn.onclick = (function(u,n){ return function(){ downloadImage(u,n); }; })(url, i+1);
+    dlBtn.onclick = (function(u, n){ return function(){ downloadImage(u, n); }; })(url, i+1);
 
     actions.appendChild(viewBtn);
     actions.appendChild(dlBtn);
@@ -288,18 +249,15 @@ function renderPhotos(photos) {
 }
 
 function renderVideos(videos) {
-  var section = document.getElementById('video-section');
   var container = document.getElementById('video-container');
   if (!videos || videos.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div style="font-size:48px;opacity:0.4;margin-bottom:1rem;">🎬</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;">No videos yet</div><div style="font-size:13px;color:#555;margin-bottom:1.5rem;">Generate your first AI fashion video!</div><a href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')" class="new-btn">Create a video</a></div>';
+    container.innerHTML = '<div class="empty-state"><div style="font-size:48px;opacity:0.3;margin-bottom:1rem;">🎬</div><div style="font-size:15px;font-weight:500;margin-bottom:8px;">No videos yet</div><div style="font-size:13px;color:#555;margin-bottom:1.5rem;">Generate your first AI fashion video!</div><a href="dashboard.html" onclick="sessionStorage.setItem(\'openTab\',\'video\')" class="new-btn">Create a video</a></div>';
     return;
   }
-  section.style.display = 'block';
-  document.getElementById('video-count').textContent = '(' + videos.length + ')';
-  container.innerHTML = '';
-
-  videos.forEach(function(item) {
-    var date = new Date(item.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+  var grid = document.createElement('div');
+  grid.className = 'video-grid';
+  videos.forEach(function(item, i) {
+    var date = new Date(item.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
     var url = item.image_url || '';
     var card = document.createElement('div');
     card.className = 'video-card';
@@ -309,99 +267,55 @@ function renderVideos(videos) {
     vid.src = url;
     vid.controls = true;
     vid.setAttribute('playsinline', '');
+    vid.setAttribute('preload', 'metadata');
     card.appendChild(vid);
 
     var body = document.createElement('div');
     body.className = 'video-card-body';
+    body.innerHTML = '<div class="video-card-title">AI Fashion Video</div><div class="video-card-meta">' + date + '</div>';
 
-    var title = document.createElement('div');
-    title.className = 'video-card-title';
-    title.textContent = 'AI Fashion Video';
-
-    var meta = document.createElement('div');
-    meta.className = 'video-card-meta';
-    meta.textContent = date;
-
-    var btns = document.createElement('div');
-    btns.className = 'video-card-actions';
+    var actions = document.createElement('div');
+    actions.className = 'video-card-actions';
 
     var dlA = document.createElement('a');
     dlA.href = url;
     dlA.target = '_blank';
     dlA.className = 'action-btn primary';
-    dlA.textContent = 'Download';
-    dlA.style.cssText = 'text-decoration:none;text-align:center;padding:8px 0;';
+    dlA.textContent = '↓ Download';
+    dlA.style.textDecoration = 'none';
+    dlA.style.textAlign = 'center';
 
     var waBtn = document.createElement('button');
     waBtn.className = 'action-btn';
-    waBtn.textContent = 'WhatsApp';
-    waBtn.style.cssText = 'background:#25D366;color:#fff;border-color:#25D366;';
+    waBtn.textContent = '💬 Share';
     waBtn.onclick = (function(u){ return function(){
       window.open('https://wa.me/?text=' + encodeURIComponent('Check this AI fashion video from Drapely! ' + u), '_blank');
     }; })(url);
 
-    btns.appendChild(dlA);
-    btns.appendChild(waBtn);
-    body.appendChild(title);
-    body.appendChild(meta);
-    body.appendChild(btns);
+    actions.appendChild(dlA);
+    actions.appendChild(waBtn);
+    body.appendChild(actions);
     card.appendChild(body);
-    container.appendChild(card);
+    grid.appendChild(card);
   });
-}
-
-function showGalleryTab(tab, btn) {
-  // Update pills
-  document.querySelectorAll('.filter-pill').forEach(function(p){ p.classList.remove('active'); });
-  btn.classList.add('active');
-
-  var photoSection = document.getElementById('gallery-container');
-  var videoSection = document.getElementById('video-section');
-  var sortSelect = document.getElementById('sort-select');
-
-  if (tab === 'photos') {
-    if (photoSection) photoSection.style.display = 'block';
-    if (videoSection) videoSection.style.display = 'none';
-    if (sortSelect) sortSelect.style.display = 'block';
-  } else {
-    if (photoSection) photoSection.style.display = 'none';
-    if (videoSection) { videoSection.style.display = 'block'; }
-    if (sortSelect) sortSelect.style.display = 'none';
-    // Render videos if not already rendered
-    if (allVideos && allVideos.length > 0) renderVideos(allVideos);
-  }
-}
-
-function filterBy(type, btn) {
-  document.querySelectorAll('.filter-pill').forEach(function(p){ p.classList.remove('active'); });
-  btn.classList.add('active');
-  renderPhotos(type === 'all' ? allPhotos : allPhotos.filter(function(i){ return (i.suit_type||'').toLowerCase().includes(type.toLowerCase()); }));
-}
-
-function sortBy(order) {
-  var sorted = allPhotos.slice().sort(function(a,b){ return order === 'oldest' ? new Date(a.created_at)-new Date(b.created_at) : new Date(b.created_at)-new Date(a.created_at); });
-  renderPhotos(sorted);
+  container.innerHTML = '';
+  container.appendChild(grid);
 }
 
 function openViewer(url) {
   document.getElementById('viewer-img').src = url;
   document.getElementById('viewer-modal').classList.add('open');
-  document.getElementById('viewer-dl-btn').onclick = function(){ downloadImage(url, 1); };
-  document.body.style.overflow = 'hidden';
 }
 
 function closeViewer() {
   document.getElementById('viewer-modal').classList.remove('open');
-  document.body.style.overflow = '';
 }
-
-document.getElementById('viewer-modal').onclick = function(e) {
-  if (e.target === this) closeViewer();
-};
 
 function downloadImage(url, num) {
   var a = document.createElement('a');
-  a.href = url; a.download = 'drapely-' + num + '.jpg'; a.target = '_blank';
+  a.href = url;
+  a.target = '_blank';
+  a.download = 'drapely-photo-' + num + '.jpg';
   a.click();
   showToast('Downloading...');
 }
