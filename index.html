@@ -8,788 +8,413 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --gold: #E91E63;
-      --gold-light: #ffffff;
-      --gold-pale: #ffffff;
-      --deep: #000000;
-      --deep2: #000000;
-      --muted: #444444;
-      --text: #000000;
-      --border: rgba(233,30,99,0.2);
-      --border-mid: rgba(233,30,99,0.4);
+      --pink: #E91E63;
+      --pink-dark: #c2185b;
+      --black: #000;
+      --white: #fff;
+      --cream: #fdf8f4;
+      --gray: #555;
+      --light: #f9f4f0;
     }
-
     html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--black); overflow-x: hidden; }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: #ffffff;
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(0,0,0,0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2.5rem;
-      height: 64px;
-    }
-
-    .nav-brand {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 24px;
-      font-weight: 300;
-      color: var(--gold-light);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-
-    .nav-brand span { color: var(--gold); }
-
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 4rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .nav-brand { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; text-decoration: none; color: var(--black); }
+    .nav-brand span { color: var(--pink); }
     .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 13px; font-weight: 400; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--black); }
+    .nav-cta { padding: 10px 24px; background: var(--black); color: var(--white); border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500; transition: background 0.2s; }
+    .nav-cta:hover { background: var(--pink); }
 
-    .nav-links a {
-      font-size: 13px;
-      color: rgba(255,255,255,0.65);
-      text-decoration: none;
-      letter-spacing: 0.5px;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--gold-light); }
-
-    .nav-cta {
-      padding: 9px 22px;
-      background: var(--gold);
-      color: var(--deep) !important;
-      border-radius: 6px;
-      font-weight: 500 !important;
-      letter-spacing: 0.3px !important;
-      transition: background 0.2s !important;
-    }
-
-    .nav-cta:hover { background: #c2185b !important; color: var(--deep) !important; }
-
-    /* ── HERO ── */
-    .hero {
-      min-height: 100vh;
-      background: var(--deep);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 5rem;
-      position: relative;
-      overflow: hidden;
-    }
-
+    /* HERO */
+    .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 8rem 4rem 4rem; }
+    
+    /* Beautiful Indian-themed gradient mesh background */
     .hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(233,30,99,0.08) 0%, transparent 70%);
-      pointer-events: none;
+      background: 
+        radial-gradient(ellipse 80% 60% at 20% 50%, rgba(233,30,99,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(255,152,0,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 60% 80%, rgba(233,30,99,0.05) 0%, transparent 60%),
+        linear-gradient(135deg, #fdf8f4 0%, #fff9f5 40%, #fef0f5 100%);
+      z-index: 0;
     }
-
-    .hero-eyebrow {
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1.5rem;
-      font-weight: 500;
-    }
-
-    .hero-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(42px, 7vw, 82px);
-      font-weight: 300;
-      color: var(--gold-light);
-      line-height: 1.1;
-      letter-spacing: -0.5px;
-      margin-bottom: 1rem;
-      max-width: 780px;
-    }
-
-    .hero-title em {
-      font-style: italic;
-      color: var(--gold);
-    }
-
-    .hero-sub {
-      font-size: 16px;
-      color: rgba(255,255,255,0.6);
-      max-width: 520px;
-      line-height: 1.8;
-      margin-bottom: 3rem;
-      font-weight: 300;
-    }
-
-    .hero-btns {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .btn-primary {
-      padding: 14px 36px;
-      background: var(--gold);
-      color: var(--deep);
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s, transform 0.15s;
-      display: inline-block;
-    }
-
-    .btn-primary:hover { background: #c2185b; transform: translateY(-1px); }
-
-    .btn-outline {
-      padding: 14px 36px;
-      background: transparent;
-      color: var(--gold-light);
-      border: 1px solid var(--border-mid);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 400;
-      cursor: pointer;
-      text-decoration: none;
-      transition: border-color 0.2s, color 0.2s;
-      display: inline-block;
-    }
-
-    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-
-    .hero-badge {
-      margin-top: 3rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      font-size: 12px;
-      color: rgba(240,217,168,0.5);
-      letter-spacing: 0.5px;
-    }
-
-    .hero-badge span {
-      width: 6px; height: 6px;
-      background: #4ade80;
-      border-radius: 50%;
-      display: inline-block;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    /* ── STRIP ── */
-    .strip {
-      background: var(--gold);
-      padding: 14px 2rem;
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      flex-wrap: wrap;
-    }
-
-    .strip-item {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--deep);
-      letter-spacing: 0.3px;
-    }
-
-    /* ── HOW IT WORKS ── */
-    section { padding: 6rem 2rem; }
-
-    .section-eyebrow {
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gold);
-      font-weight: 500;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(32px, 4vw, 52px);
-      font-weight: 300;
-      color: var(--text);
-      text-align: center;
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-
-    .section-sub {
-      font-size: 15px;
-      color: var(--muted);
-      text-align: center;
-      max-width: 500px;
-      margin: 0 auto 4rem;
-      line-height: 1.8;
-    }
-
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 2px;
-      max-width: 1000px;
-      margin: 0 auto;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .step-card {
-      background: #fff;
-      padding: 2.5rem 2rem;
-      border-right: 1px solid var(--border);
-      transition: background 0.2s;
-    }
-
-    .step-card:last-child { border-right: none; }
-    .step-card:hover { background: var(--gold-pale); }
-
-    .step-num-badge {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 48px;
-      font-weight: 300;
-      color: rgba(233,30,99,0.2);
-      line-height: 1;
-      margin-bottom: 1rem;
-    }
-
-    .step-icon {
-      width: 44px; height: 44px;
-      background: var(--gold-pale);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-    }
-
-    .step-icon svg { width: 20px; height: 20px; color: var(--gold); }
-
-    .step-card h3 {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-
-    .step-card p {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    /* ── FEATURES ── */
-    .features-bg { background: var(--deep); }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1px;
-      max-width: 1100px;
-      margin: 0 auto;
-      border: 1px solid rgba(233,30,99,0.2);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .feat-card {
-      background: rgba(255,255,255,0.03);
-      padding: 2.5rem 2rem;
-      border-right: 1px solid rgba(233,30,99,0.12);
-      border-bottom: 1px solid rgba(233,30,99,0.12);
-      transition: background 0.2s;
-    }
-
-    .feat-card:hover { background: rgba(233,30,99,0.06); }
-
-    .feat-icon {
-      font-size: 28px;
-      margin-bottom: 1.25rem;
-      display: block;
-    }
-
-    .feat-card h3 {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--gold-light);
-      margin-bottom: 0.5rem;
-    }
-
-    .feat-card p {
-      font-size: 14px;
-      color: rgba(255,255,255,0.5);
-      line-height: 1.7;
-    }
-
-    .features-bg .section-title { color: var(--gold-light); }
-    .features-bg .section-sub { color: rgba(255,255,255,0.5); }
-
-    /* ── PRICING ── */
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .price-card {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem 2rem;
-      background: #fff;
-      position: relative;
-    }
-
-    .price-card.featured {
-      border-color: var(--gold);
-      background: var(--deep);
-    }
-
-    .price-badge {
-      position: absolute;
-      top: -12px; left: 50%;
-      transform: translateX(-50%);
-      background: var(--gold);
-      color: var(--deep);
-      font-size: 11px;
-      font-weight: 500;
-      padding: 4px 14px;
-      border-radius: 20px;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
-
-    .price-name {
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-      font-weight: 500;
-    }
-
-    .price-card.featured .price-name { color: var(--gold); }
-
-    .price-amount {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 52px;
-      font-weight: 300;
-      color: var(--text);
-      line-height: 1;
-      margin-bottom: 0.5rem;
-    }
-
-    .price-card.featured .price-amount { color: var(--gold-light); }
-
-    .price-period {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 2rem;
-    }
-
-    .price-card.featured .price-period { color: rgba(240,217,168,0.5); }
-
-    .price-features { list-style: none; margin-bottom: 2rem; }
-
-    .price-features li {
-      font-size: 14px;
-      color: var(--muted);
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .price-card.featured .price-features li { color: rgba(255,255,255,0.65); border-color: rgba(233,30,99,0.12); }
-
-    .price-features li::before {
+    /* Decorative pattern */
+    .hero::after {
       content: '';
-      width: 16px; height: 16px;
-      background: var(--gold-pale);
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5 6.5-7' stroke='%23C9973A' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: center;
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(233,30,99,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
     }
 
-    /* ── BETA BANNER ── */
-    .beta-banner {
-      background: var(--gold);
-      border-radius: 16px;
-      padding: 3rem;
-      max-width: 700px;
-      margin: 0 auto;
-      text-align: center;
-    }
+    .hero-content { position: relative; z-index: 1; max-width: 700px; text-align: center; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(233,30,99,0.08); border: 1px solid rgba(233,30,99,0.2); border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--pink); letter-spacing: 0.5px; margin-bottom: 1.5rem; }
+    .hero-eyebrow::before { content: '✦'; }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 8vw, 80px); font-weight: 300; line-height: 1.05; letter-spacing: -1px; margin-bottom: 1.5rem; color: var(--black); }
+    .hero-title em { font-style: italic; color: var(--pink); }
+    .hero-title strong { font-weight: 500; }
+    .hero-sub { font-size: 17px; font-weight: 300; color: var(--gray); line-height: 1.7; max-width: 540px; margin: 0 auto 2.5rem; }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-primary { padding: 14px 32px; background: var(--pink); color: var(--white); border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.2s; box-shadow: 0 4px 20px rgba(233,30,99,0.3); }
+    .btn-primary:hover { background: var(--pink-dark); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(233,30,99,0.4); }
+    .btn-outline { padding: 14px 32px; border: 1.5px solid rgba(0,0,0,0.15); color: var(--black); border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 400; transition: all 0.2s; background: rgba(255,255,255,0.8); }
+    .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
+    .hero-stats { display: flex; gap: 2.5rem; justify-content: center; }
+    .hero-stat { text-align: center; }
+    .hero-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; color: var(--black); }
+    .hero-stat-label { font-size: 11px; color: var(--gray); letter-spacing: 0.5px; margin-top: 2px; }
+    .hero-stat-divider { width: 1px; background: rgba(0,0,0,0.1); }
 
-    .beta-banner h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 36px;
-      font-weight: 300;
-      color: var(--deep);
-      margin-bottom: 0.75rem;
-    }
+    /* HERO IMAGES */
+    .hero-images { position: absolute; right: -20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; z-index: 1; opacity: 0.9; }
+    .hero-img-card { width: 160px; height: 200px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); border: 2px solid rgba(255,255,255,0.8); }
+    .hero-img-card img { width: 100%; height: 100%; object-fit: cover; }
 
-    .beta-banner p {
-      font-size: 15px;
-      color: rgba(15,10,4,0.65);
-      margin-bottom: 2rem;
-      line-height: 1.7;
-    }
+    /* STRIP */
+    .strip { background: var(--black); padding: 14px 0; display: flex; justify-content: center; gap: 3rem; overflow: hidden; }
+    .strip-item { color: rgba(255,255,255,0.7); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap; }
+    .strip-item::before { content: '✦ '; color: var(--pink); }
 
-    .signup-form {
-      display: flex;
-      gap: 10px;
-      max-width: 440px;
-      margin: 0 auto;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+    /* HOW IT WORKS */
+    section { padding: 6rem 4rem; }
+    .section-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--pink); font-weight: 500; margin-bottom: 1rem; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 52px); font-weight: 300; line-height: 1.1; margin-bottom: 1rem; }
+    .section-sub { font-size: 15px; color: var(--gray); max-width: 500px; line-height: 1.7; }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 4rem; }
+    .step { text-align: center; position: relative; }
+    .step::after { content: '→'; position: absolute; right: -1rem; top: 2rem; font-size: 20px; color: rgba(233,30,99,0.3); }
+    .step:last-child::after { display: none; }
+    .step-num { width: 56px; height: 56px; border-radius: 50%; background: rgba(233,30,99,0.08); border: 1.5px solid rgba(233,30,99,0.2); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 1.25rem; }
+    .step-title { font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+    .step-desc { font-size: 13px; color: var(--gray); line-height: 1.6; }
 
-    .signup-form input {
-      flex: 1;
-      min-width: 200px;
-      padding: 13px 18px;
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      background: rgba(255,255,255,0.9);
-      color: var(--deep);
-      outline: none;
-    }
+    /* BEFORE AFTER */
+    .ba-section { background: var(--light); border-radius: 24px; margin: 0 2rem; padding: 5rem 4rem; }
+    .ba-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 3rem; align-items: center; }
+    .ba-card { border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: relative; }
+    .ba-card img { width: 100%; height: 280px; object-fit: cover; display: block; }
+    .ba-label { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+    .ba-arrow { text-align: center; font-size: 40px; color: var(--pink); }
 
-    .signup-form input::placeholder { color: rgba(15,10,4,0.4); }
-    .signup-form input:focus { background: #fff; }
+    /* PRICING */
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 4rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+    .pricing-card { background: var(--white); border: 1.5px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 2rem; text-align: center; transition: all 0.2s; position: relative; }
+    .pricing-card:hover { border-color: var(--pink); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(233,30,99,0.1); }
+    .pricing-card.featured { border-color: var(--pink); border-width: 2px; background: linear-gradient(135deg, #fff0f5, #fff); }
+    .pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--pink); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 14px; border-radius: 20px; white-space: nowrap; }
+    .pricing-icon { font-size: 32px; margin-bottom: 1rem; }
+    .pricing-name { font-size: 14px; font-weight: 500; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .pricing-price { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--black); line-height: 1; }
+    .pricing-price span { font-size: 18px; color: var(--gray); }
+    .pricing-desc { font-size: 13px; color: var(--gray); margin: 0.75rem 0 1.25rem; line-height: 1.5; }
+    .pricing-features { list-style: none; text-align: left; margin-bottom: 1.5rem; }
+    .pricing-features li { font-size: 12px; color: var(--gray); padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .pricing-features li::before { content: '✓ '; color: var(--pink); font-weight: 600; }
+    .pricing-btn { display: block; width: 100%; padding: 12px; background: var(--black); color: var(--white); border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500; transition: background 0.2s; text-align: center; }
+    .pricing-btn:hover { background: var(--pink); }
+    .pricing-card.featured .pricing-btn { background: var(--pink); }
+    .pricing-card.featured .pricing-btn:hover { background: var(--pink-dark); }
 
-    .signup-form button {
-      padding: 13px 28px;
-      background: var(--deep);
-      color: var(--gold-light);
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-    }
+    /* CREDIT PACKS */
+    .packs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 700px; margin: 2rem auto 0; }
+    .pack { background: var(--white); border: 1.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 1.25rem; text-align: center; }
+    .pack.best { border-color: var(--pink); border-width: 2px; }
+    .pack-price { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; color: var(--pink); }
+    .pack-credits { font-size: 13px; font-weight: 500; color: var(--black); margin: 4px 0; }
+    .pack-desc { font-size: 11px; color: var(--gray); }
+    .pack-tag { font-size: 10px; background: var(--pink); color: #fff; border-radius: 10px; padding: 2px 8px; display: inline-block; margin-top: 6px; }
 
-    .signup-form button:hover { background: var(--deep2); }
+    /* FEATURES */
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 4rem; }
+    .feature { padding: 2rem; border: 1px solid rgba(0,0,0,0.06); border-radius: 14px; transition: all 0.2s; background: var(--white); }
+    .feature:hover { border-color: rgba(233,30,99,0.2); box-shadow: 0 4px 20px rgba(233,30,99,0.06); }
+    .feature-icon { font-size: 28px; margin-bottom: 1rem; }
+    .feature-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+    .feature-desc { font-size: 13px; color: var(--gray); line-height: 1.6; }
 
-    .form-note {
-      font-size: 12px;
-      color: rgba(15,10,4,0.5);
-      margin-top: 0.75rem;
-    }
+    /* CTA SECTION */
+    .cta-section { background: var(--black); margin: 0; padding: 6rem 4rem; text-align: center; position: relative; overflow: hidden; }
+    .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(233,30,99,0.15), transparent 70%); }
+    .cta-section * { position: relative; z-index: 1; }
+    .cta-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 6vw, 64px); font-weight: 300; color: var(--white); line-height: 1.1; margin-bottom: 1rem; }
+    .cta-title em { color: var(--pink); font-style: italic; }
+    .cta-sub { font-size: 15px; color: rgba(255,255,255,0.6); margin-bottom: 2.5rem; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .cta-btns .btn-primary { font-size: 16px; padding: 16px 40px; }
+    .cta-btns .btn-outline { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); font-size: 15px; }
+    .cta-btns .btn-outline:hover { color: var(--white); border-color: var(--pink); }
 
-    /* ── FOOTER ── */
-    footer {
-      background: var(--deep);
-      border-top: 1px solid var(--border);
-      padding: 3rem 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+    /* FOOTER */
+    footer { padding: 3rem 4rem; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(0,0,0,0.06); }
+    .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; text-decoration: none; color: var(--black); }
+    .footer-brand span { color: var(--pink); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 12px; color: var(--gray); text-decoration: none; }
+    .footer-links a:hover { color: var(--pink); }
+    .footer-wa { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #25D366; color: #fff; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 500; }
 
-    .footer-brand {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px;
-      font-weight: 300;
-      color: var(--gold-light);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    .footer-note {
-      font-size: 12px;
-      color: rgba(255,255,255,0.3);
-      letter-spacing: 0.3px;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      nav { padding: 0 1.25rem; height: 56px; }
-      .nav-links a:not(.nav-cta) { display: none; }
-      .nav-cta { padding: 8px 16px; font-size: 13px; }
-      .hero { padding: 6rem 1.25rem 3.5rem; }
-      .hero-eyebrow { font-size: 10px; letter-spacing: 2px; margin-bottom: 1rem; }
-      .hero-title { font-size: 36px; }
-      .hero-sub { font-size: 14px; margin-bottom: 2rem; }
-      .hero-btns { flex-direction: column; gap: 10px; width: 100%; }
-      .btn-primary, .btn-outline { width: 100%; text-align: center; padding: 14px 20px; font-size: 14px; }
-      .strip { flex-direction: column; gap: 0; padding: 0; }
-      .strip-item { padding: 8px 1.25rem; border-bottom: 1px solid rgba(15,10,4,0.1); font-size: 12px; }
-      section { padding: 3.5rem 1.25rem; }
-      .section-title { font-size: 28px; }
-      .section-sub { font-size: 13px; margin-bottom: 2rem; }
-      .steps-grid { grid-template-columns: 1fr; border-radius: 12px; }
-      .step-card { border-right: none; border-bottom: 1px solid var(--border); padding: 1.75rem 1.25rem; }
-      .step-card:last-child { border-bottom: none; }
-      .features-grid { grid-template-columns: 1fr; border-radius: 12px; }
-      .feat-card { border-right: none; padding: 1.75rem 1.25rem; }
+    /* MOBILE */
+    @media(max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 6rem 1.5rem 3rem; }
+      .hero-images { display: none; }
+      .hero-stats { gap: 1.5rem; }
+      section { padding: 4rem 1.5rem; }
+      .ba-section { margin: 0 1rem; padding: 3rem 1.5rem; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .step::after { display: none; }
+      .ba-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; }
-      .price-card { padding: 2rem 1.5rem; }
-      .price-amount { font-size: 44px; }
-      .beta-banner { padding: 2rem 1.25rem; border-radius: 12px; }
-      .beta-banner h2 { font-size: 26px; }
-      .signup-form { flex-direction: column; gap: 10px; }
-      .signup-form input, .signup-form button { width: 100%; min-width: unset; }
-      footer { flex-direction: column; text-align: center; padding: 2rem 1.25rem; gap: 0.5rem; }
+      .packs-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .strip { gap: 2rem; padding: 12px 1rem; flex-wrap: wrap; }
+      .cta-section { padding: 4rem 1.5rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
     }
-    .wa-float {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
-      width: 54px; height: 54px; background: #25D366;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 20px rgba(37,211,102,0.4); z-index: 200;
-      text-decoration: none; transition: transform 0.2s;
-    }
-    .wa-float:hover { transform: scale(1.08); }
-    .wa-float svg { width: 28px; height: 28px; fill: white; }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <a href="index.html" class="nav-brand">Drape<span>ly</span></a>
-    <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-      <a href="auth.html" class="nav-cta">Get free access</a>
-    </div>
-  </nav>
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-brand">Drape<span>ly</span></a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#features">Features</a>
+    <a href="https://wa.me/916352197977" target="_blank">WhatsApp</a>
+  </div>
+  <a href="auth.html" class="nav-cta">Sign In / Sign Up</a>
+</nav>
 
-  <!-- HERO -->
-  <section class="hero">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
     <div class="hero-eyebrow">AI Photoshoot Studio for Indian Fashion</div>
     <h1 class="hero-title">
-      Your suits deserve<br/><em>professional-level</em> photos
+      Your suits deserve<br/>
+      <em>professional-level</em><br/>
+      <strong>photos & videos</strong>
     </h1>
     <p class="hero-sub">
-      Upload your designer suit, choose a model, pick a background — and get professional photoshoot images in seconds. No studio. No photographer. No cost.
+      Upload your designer suit, choose a model, pick a background — get professional photoshoot images in seconds. No studio. No photographer.
     </p>
     <div class="hero-btns">
-      <a href="auth.html" class="btn-primary">Start free — no card needed</a>
+      <a href="auth.html" class="btn-primary">Sign In / Sign Up — Free</a>
       <a href="#how" class="btn-outline">See how it works</a>
     </div>
-    <div class="hero-badge">
-      <span></span>
-      Beta is open — free for suit sellers in Surat
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val">₹25</div>
+        <div class="hero-stat-label">Per photo</div>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">60s</div>
+        <div class="hero-stat-label">Generation time</div>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">3 free</div>
+        <div class="hero-stat-label">On signup</div>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">AI</div>
+        <div class="hero-stat-label">Powered</div>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- STRIP -->
-  <div class="strip">
-    <div class="strip-item">✦ 100% free during beta</div>
-    <div class="strip-item">✦ No photographer needed</div>
-    <div class="strip-item">✦ Results in under 60 seconds</div>
-    <div class="strip-item">✦ Made for Indian fashion</div>
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item">No photographer needed</div>
+  <div class="strip-item">Royal palace backgrounds</div>
+  <div class="strip-item">Indian AI models</div>
+  <div class="strip-item">Results in 60 seconds</div>
+  <div class="strip-item">Generate videos too</div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-eyebrow">How it works</div>
+  <h2 class="section-title">From hanger to model<br/>in 4 simple steps</h2>
+  <p class="section-sub">No photography skills needed. Just upload your suit and let AI do the rest.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">📸</div>
+      <div class="step-title">Upload your suit</div>
+      <div class="step-desc">Take any photo of your suit — hanger, flat lay, or mannequin</div>
+    </div>
+    <div class="step">
+      <div class="step-num">👗</div>
+      <div class="step-title">Choose a model</div>
+      <div class="step-desc">Pick from Indian AI models — various skin tones and poses</div>
+    </div>
+    <div class="step">
+      <div class="step-num">🏰</div>
+      <div class="step-title">Pick a scene</div>
+      <div class="step-desc">Royal Palace, Wedding Mandap, Diwali, Taj Mahal and more</div>
+    </div>
+    <div class="step">
+      <div class="step-num">✨</div>
+      <div class="step-title">Download & share</div>
+      <div class="step-desc">Get your professional photo in under 60 seconds. Share on WhatsApp instantly</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="background: var(--light); border-radius: 24px; margin: 0 2rem;">
+  <div class="section-eyebrow">Features</div>
+  <h2 class="section-title">Everything you need<br/>to sell more suits</h2>
+  <div class="features-grid">
+    <div class="feature">
+      <div class="feature-icon">🎬</div>
+      <div class="feature-title">AI Fashion Videos</div>
+      <div class="feature-desc">Generate 5–10 second videos of models wearing your suits. Perfect for Instagram Reels and WhatsApp Status.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Bulk Studio</div>
+      <div class="feature-desc">Upload 20 suits at once and generate all photos in one go. Export everything as a ZIP file.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🏷️</div>
+      <div class="feature-title">Brand Logo</div>
+      <div class="feature-desc">Add your brand logo to every photo automatically. Choose position — top, bottom, left, right.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🏰</div>
+      <div class="feature-title">10 Royal Backgrounds</div>
+      <div class="feature-desc">Royal Palace, Wedding Mandap, Diwali, Heritage Haveli, Taj Mahal, Rose Garden and more.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🥻</div>
+      <div class="feature-title">Saree & Suits</div>
+      <div class="feature-desc">Works perfectly for both salwar suits and sarees. AI detects garment type automatically.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">Works on Mobile</div>
+      <div class="feature-desc">Full mobile experience. Generate photos and videos directly from your phone — no laptop needed.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="text-align: center;">
+  <div class="section-eyebrow">Pricing</div>
+  <h2 class="section-title">Simple, honest pricing</h2>
+  <p class="section-sub" style="margin: 0 auto 1rem;">₹25 per credit. Each credit = 1 photo or part of a video. Start with 3 free credits on signup.</p>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-icon">📷</div>
+      <div class="pricing-name">Photo</div>
+      <div class="pricing-price">₹25<span>/photo</span></div>
+      <div class="pricing-desc">Professional AI photoshoot with Indian model and your choice of background</div>
+      <ul class="pricing-features">
+        <li>1 credit per photo</li>
+        <li>10 background scenes</li>
+        <li>4 Indian AI models</li>
+        <li>6 pose options</li>
+        <li>Brand logo option</li>
+      </ul>
+      <a href="auth.html" class="pricing-btn">Generate photos</a>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="pricing-badge">Most Popular</div>
+      <div class="pricing-icon">🎬</div>
+      <div class="pricing-name">Video</div>
+      <div class="pricing-price">₹50<span>/video</span></div>
+      <div class="pricing-desc">5-second AI fashion video of model wearing your suit in a royal setting</div>
+      <ul class="pricing-features">
+        <li>2 credits per 5s video</li>
+        <li>4 credits per 10s video</li>
+        <li>10 cinematic scenes</li>
+        <li>Walking, spinning poses</li>
+        <li>Download & share</li>
+      </ul>
+      <a href="auth.html" class="pricing-btn">Generate videos</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-icon">⚡</div>
+      <div class="pricing-name">Bulk</div>
+      <div class="pricing-price">₹25<span>/photo</span></div>
+      <div class="pricing-desc">Upload and process up to 20 suits at once. Export all as ZIP.</div>
+      <ul class="pricing-features">
+        <li>20 suits at once</li>
+        <li>Same ₹25/photo rate</li>
+        <li>One-click ZIP export</li>
+        <li>Brand logo on all</li>
+        <li>Save hours of work</li>
+      </ul>
+      <a href="auth.html" class="pricing-btn">Bulk generate</a>
+    </div>
   </div>
 
-  <!-- HOW IT WORKS -->
-  <section id="how">
-    <div class="section-eyebrow">How it works</div>
-    <h2 class="section-title">From suit to photoshoot<br/>in 3 simple steps</h2>
-    <p class="section-sub">No design skills needed. No expensive equipment. Just your suit and your phone camera.</p>
-
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num-badge">01</div>
-        <div class="step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-            <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-          </svg>
-        </div>
-        <h3>Upload your suit</h3>
-        <p>Take a clear photo of your suit on a hanger or flat. Upload it to Drapely — takes 10 seconds.</p>
+  <!-- CREDIT PACKS -->
+  <div style="margin-top: 3rem;">
+    <div style="font-size: 13px; color: var(--gray); margin-bottom: 1.5rem;">Buy credits via UPI — added within 30 minutes</div>
+    <div class="packs-grid">
+      <div class="pack">
+        <div class="pack-price">₹250</div>
+        <div class="pack-credits">10 credits</div>
+        <div class="pack-desc">10 photos or 5 videos</div>
       </div>
-      <div class="step-card">
-        <div class="step-num-badge">02</div>
-        <div class="step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-            <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
-          </svg>
-        </div>
-        <h3>Choose your model & pose</h3>
-        <p>Pick from our collection of models with different skin tones, heights, and body types. Select a pose.</p>
+      <div class="pack best">
+        <div class="pack-price">₹500</div>
+        <div class="pack-credits">20 credits</div>
+        <div class="pack-desc">20 photos or 10 videos</div>
+        <div class="pack-tag">Popular</div>
       </div>
-      <div class="step-card">
-        <div class="step-num-badge">03</div>
-        <div class="step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-            <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
-          </svg>
-        </div>
-        <h3>Get professional photos</h3>
-        <p>Our AI generates photoshoot-quality images in under 60 seconds. Download in HD and share anywhere.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num-badge">04</div>
-        <div class="step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-            <path d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
-          </svg>
-        </div>
-        <h3>Showcase & share</h3>
-        <p>Use photos for WhatsApp catalogues, Instagram, your website, or print. Impress every customer.</p>
+      <div class="pack">
+        <div class="pack-price">₹1000</div>
+        <div class="pack-credits">40 credits</div>
+        <div class="pack-desc">40 photos or 20 videos</div>
+        <div class="pack-tag">Best value</div>
       </div>
     </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="features-bg" id="features">
-    <div class="section-eyebrow">Features</div>
-    <h2 class="section-title">Everything a suit seller needs</h2>
-    <p class="section-sub">Built specifically for Indian designer suit makers and boutiques.</p>
-
-    <div class="features-grid">
-      <div class="feat-card">
-        <span class="feat-icon">👗</span>
-        <h3>Virtual try-on AI</h3>
-        <p>Our AI drapes your exact suit onto the model — preserving embroidery, colors, and fabric details perfectly.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon">👩🏽</span>
-        <h3>Diverse model library</h3>
-        <p>Choose from models with different skin tones, heights, and body types — representing real Indian women.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon">🌅</span>
-        <h3>Stunning backgrounds</h3>
-        <p>Studio warm, heritage havelis, botanical gardens, night glamour — or upload your own background.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon">⚡</span>
-        <h3>60-second results</h3>
-        <p>No waiting days for a photographer. Get 4 professional images in under a minute, any time of day.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon">📱</span>
-        <h3>WhatsApp-ready exports</h3>
-        <p>Images sized perfectly for WhatsApp catalogues, Instagram posts, Instagram stories, and website banners.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon">🔒</span>
-        <h3>Your photos, your brand</h3>
-        <p>Add your store name as a watermark. All images are yours — no Drapely branding on your exports.</p>
-      </div>
+    <div style="margin-top: 1rem; font-size: 12px; color: var(--gray);">
+      📱 Pay via GPay · PhonePe · Paytm to <strong>6352197977@ptyes</strong> · WhatsApp screenshot to get credits
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- PRICING -->
-  <section id="pricing">
-    <div class="section-eyebrow">Pricing</div>
-    <h2 class="section-title">Free now. Affordable forever.</h2>
-    <p class="section-sub">Completely free during our beta. Paid plans launch later — at prices every suit seller can afford.</p>
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">Start your first<br/><em>AI photoshoot</em> today</h2>
+  <p class="cta-sub">3 free credits on signup. No card needed. Results in 60 seconds.</p>
+  <div class="cta-btns">
+    <a href="auth.html" class="btn-primary">Sign In / Sign Up — Free</a>
+    <a href="https://wa.me/916352197977" target="_blank" class="btn-outline">💬 WhatsApp us</a>
+  </div>
+</section>
 
-    <div class="pricing-grid">
-      <div class="price-card">
-        <div class="price-name">Beta (now)</div>
-        <div class="price-amount">Free</div>
-        <div class="price-period">during beta · no card needed</div>
-        <ul class="price-features">
-          <li>Unlimited AI photoshoots</li>
-          <li>All models & backgrounds</li>
-          <li>HD image downloads</li>
-          <li>WhatsApp & Instagram export</li>
-          <li>Personal image gallery</li>
-        </ul>
-        <a href="auth.html" class="btn-primary" style="display:block; text-align:center; width:100%;">Get free access</a>
-      </div>
-
-      <div class="price-card featured">
-        <div class="price-badge">Coming soon</div>
-        <div class="price-name">Pro plan</div>
-        <div class="price-amount" style="color:var(--gold-light);">₹499</div>
-        <div class="price-period" style="color:rgba(255,255,255,0.5);">per month · billed monthly</div>
-        <ul class="price-features">
-          <li>Unlimited photoshoots</li>
-          <li>Priority AI queue</li>
-          <li>Custom watermark & logo</li>
-          <li>Bulk generation (10 suits at once)</li>
-          <li>All future features included</li>
-        </ul>
-        <a href="auth.html" class="btn-outline" style="display:block; text-align:center; width:100%;">Join waitlist</a>
-      </div>
-
-      <div class="price-card">
-        <div class="price-name">Basic plan</div>
-        <div class="price-amount">₹199</div>
-        <div class="price-period">per month · coming soon</div>
-        <ul class="price-features">
-          <li>50 photoshoots per month</li>
-          <li>All models & backgrounds</li>
-          <li>HD image downloads</li>
-          <li>WhatsApp & Instagram export</li>
-          <li>Email support</li>
-        </ul>
-        <a href="auth.html" class="btn-outline" style="display:block; text-align:center; width:100%;">Join waitlist</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- BETA SIGNUP -->
-  <section id="signup" style="background: var(--gold-pale);">
-    <div class="beta-banner">
-      <h2>Join Drapely Beta — It's Free</h2>
-      <p>We're inviting suit sellers in Surat to try Drapely for free. Enter your WhatsApp number and we'll send you access directly.</p>
-      <div class="signup-form">
-        <input type="tel" placeholder="Your WhatsApp number" />
-        <button type="button">Get free access</button>
-      </div>
-      <p class="form-note">No spam. We'll only send your login link. 🇮🇳 Made for Indian fashion sellers.</p>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-brand">Drapely</div>
-    <div class="footer-note">© 2025 Drapely · Made with love for Indian fashion · Surat, Gujarat</div>
-  </footer>
-
-  <!-- WHATSAPP FLOAT -->
-  <a class="wa-float" href="https://wa.me/916352197977?text=Hi!%20I%20want%20to%20try%20Drapely%20AI%20photoshoot%20for%20my%20suits!" target="_blank" title="Chat on WhatsApp">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-    </svg>
+<!-- FOOTER -->
+<footer>
+  <a href="index.html" class="footer-brand">Drape<span>ly</span></a>
+  <div class="footer-links">
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="auth.html">Sign In</a>
+    <a href="auth.html">Sign Up</a>
+  </div>
+  <a href="https://wa.me/916352197977" target="_blank" class="footer-wa">
+    💬 WhatsApp Support
   </a>
+</footer>
 
 </body>
 </html>
