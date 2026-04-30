@@ -140,7 +140,7 @@
     .video-header h2{font-size:15px;font-weight:500;color:#000}
     .video-header p{font-size:12px;color:#555;margin-top:2px}
     .video-body{padding:1.5rem}
-    .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .video-grid{display:grid;grid-template-columns:1fr;gap:16px}
     .prompt-preset{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
     .prompt-preset:hover{border-color:#E91E63;background:#fff0f5;}
     .prompt-preset.selected{border-color:#E91E63;border-width:2px;background:#fff0f5;}
@@ -151,8 +151,8 @@
     .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
     .video-generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:1rem}
     .video-generate-btn:hover{background:linear-gradient(135deg,#c2185b,#ad1457)}
-    .video-result{background:#000;border-radius:10px;overflow:hidden;height:200px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;padding:1rem}
-    .video-result video{width:100%;height:100%;object-fit:contain}
+    .video-result{background:#f5f5f5;border-radius:10px;overflow:hidden;min-height:80px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;padding:1rem}
+    .video-result video{width:100%;height:100%;object-fit:cover}
     .video-progress{display:none;text-align:center;padding:2rem}
     .video-progress.visible{display:block}
     .credit-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;color:#E91E63;font-weight:500}
@@ -1588,7 +1588,7 @@ async function startVideoGenerate() {
       var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
       if (videoUrl) {
         currentVideoUrl = videoUrl;
-        document.getElementById('v-result').innerHTML = '<video controls autoplay loop style="width:100%;height:200px;object-fit:cover;display:block;border-radius:10px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        document.getElementById('v-result').innerHTML = '<video controls autoplay style="width:100%;height:200px;object-fit:cover;display:block;border-radius:10px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
         document.getElementById('v-download-wrap').style.display = 'block';
 
         // Save video to gallery and Supabase
