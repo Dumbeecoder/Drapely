@@ -1434,13 +1434,17 @@ function renderGallery() {
 }
 
 function renderVideoGallery() {
-  var vbody = document.getElementById('video-gallery-body');
-  if (!vbody) return;
+  var emptyHtml = '<div style="padding:2rem;text-align:center;color:#555;"><div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">🎬</div><div style="font-size:13px;">No videos yet — generate your first fashion video above!</div></div>';
+
   if (videoGallery.length === 0) {
-    vbody.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">\u{1F3AC}</div>No videos yet!</div>';
+    var vbody = document.getElementById('video-gallery-body');
+    if (vbody) vbody.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">🎬</div>No videos yet!</div>';
+    var vg = document.getElementById('v-gallery');
+    if (vg) vg.innerHTML = emptyHtml;
     return;
   }
-  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;padding:1rem;">';
+
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;padding:1rem;">';
   for (var i = 0; i < videoGallery.length; i++) {
     var url = videoGallery[i];
     html += '<div style="border:1px solid rgba(233,30,99,0.15);border-radius:12px;overflow:hidden;background:#fff;">';
@@ -1451,7 +1455,12 @@ function renderVideoGallery() {
     html += '</div></div>';
   }
   html += '</div>';
-  vbody.innerHTML = html;
+
+  // Update both containers
+  var vbody = document.getElementById('video-gallery-body');
+  if (vbody) vbody.innerHTML = html;
+  var vg = document.getElementById('v-gallery');
+  if (vg) vg.innerHTML = html;
 }
 
 // VIDEO UPLOAD
