@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { garment_img, model_index, prompt, garment_type } = req.body;
+  const { garment_img, model_index, prompt, garment_type, custom_model } = req.body;
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
@@ -17,9 +17,7 @@ export default async function handler(req, res) {
   ];
 
   try {
-    const humanImg = models[model_index || 0];
-
-    // Upload garment to Imgur for clean public URL
+    // Upload garment to Imgur
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
     const imgurRes = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
@@ -30,13 +28,30 @@ export default async function handler(req, res) {
     if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
     const garmentUrl = imgurData.data.link;
 
-    // Build garment-specific prompt
-    const isSaree = garment_type === 'saree';
-    const garmentPrompt = isSaree
-      ? 'Indian woman wearing an elegant saree with pallu draped gracefully, traditional look, full length'
-      : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+    // Use custom model if provided, else use preset
+    let humanImg;
+    if (custom_model && custom_model.startsWith('data:')) {
+      // Upload custom model to Imgur too
+      const customBase64 = custom_model.replace(/^data:image\/\w+;base64,/, '');
+      const customImgurRes = await fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: customBase64, type: 'base64' })
+      });
+      const customImgurData = await customImgurRes.json();
+      humanImg = customImgurData.success ? customImgurData.data.link : models[0];
+      console.log('Using custom model:', humanImg);
+    } else {
+      humanImg = models[model_index || 0];
+      console.log('Using preset model:', model_index);
+    }
 
-    const finalPrompt = [garmentPrompt, prompt || ''].filter(Boolean).join(', ');
+    // Build prompt
+    const isSaree = garment_type === 'saree';
+    const garmentDesc = isSaree
+      ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+      : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+    const finalPrompt = [garmentDesc, prompt || ''].filter(Boolean).join(', ');
 
     const requestBody = {
       model_name: 'product-to-model',
@@ -49,8 +64,6 @@ export default async function handler(req, res) {
         prompt: finalPrompt,
       }
     };
-
-    console.log('Garment type:', garment_type, 'Prompt:', finalPrompt.substring(0, 80));
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
