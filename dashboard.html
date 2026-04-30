@@ -229,10 +229,10 @@
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
       New photoshoot
     </a>
-    <a class="nav-item" onclick="switchTab('video');this.closest('.sidebar') && window.scrollTo(0,0);" style="cursor:pointer;">
+    <button class="nav-item" onclick="switchTab('video');window.scrollTo(0,0);" style="cursor:pointer;background:none;border:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;">
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
       New video
-    </a>
+    </button>
     <a class="nav-item" href="gallery.html">
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
       My gallery
@@ -305,15 +305,6 @@
               <button class="clear-file-btn" id="clear-btn" onclick="clearSuit(event)">✕</button>
             </div>
             <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
-            <div style="margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;" /></div>
-              <div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit · Full length</div></div></div>
-              <div class="model-card" onclick="selectModel(this,1)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" alt="Model 2" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">Slim fit · Standing</div></div></div>
-              <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" alt="Model 3" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">Medium fit · Front pose</div></div></div>
-              <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" alt="Model 4" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">Relaxed fit · Side pose</div></div></div>
-              <div class="model-card" onclick="selectModel(this,4)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" alt="Model 5" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">Elegant fit · 3/4 pose</div></div></div>
-              <div class="model-card" style="border-style:dashed;" onclick="showToast('Custom model coming soon!')"><div class="model-avatar" style="flex-direction:column;gap:6px;"><span style="font-size:28px;">+</span><span style="font-size:10px;color:#E91E63;font-weight:500;">Upload yours</span></div><div class="model-info"><div class="model-name" style="color:#E91E63;">Your model</div><div class="model-spec">Coming soon</div></div></div>
-            </div>
             <div style="margin-bottom:1rem;">
               <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">GARMENT TYPE</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -328,6 +319,16 @@
                   <div style="font-size:10px;color:#555;">Silk, Chiffon, Cotton</div>
                 </div>
               </div>
+            <div style="margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div><div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">Collection name</div><input type="text" placeholder="e.g. Festive 2025" style="width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;" /></div>
+              <div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit · Full length</div></div></div>
+              <div class="model-card" onclick="selectModel(this,1)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" alt="Model 2" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">Slim fit · Standing</div></div></div>
+              <div class="model-card" onclick="selectModel(this,2)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" alt="Model 3" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">Medium fit · Front pose</div></div></div>
+              <div class="model-card" onclick="selectModel(this,3)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" alt="Model 4" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Meera D.</div><div class="model-spec">Relaxed fit · Side pose</div></div></div>
+              <div class="model-card" onclick="selectModel(this,4)"><div class="model-avatar" style="background:#f8f8f8;"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" alt="Model 5" /><div class="model-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div></div><div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">Elegant fit · 3/4 pose</div></div></div>
+              <div class="model-card" style="border-style:dashed;" onclick="showToast('Custom model coming soon!')"><div class="model-avatar" style="flex-direction:column;gap:6px;"><span style="font-size:28px;">+</span><span style="font-size:10px;color:#E91E63;font-weight:500;">Upload yours</span></div><div class="model-info"><div class="model-name" style="color:#E91E63;">Your model</div><div class="model-spec">Coming soon</div></div></div>
+            </div>
+            
             </div>
             <div class="step-nav"><button class="btn-back" onclick="goStep(0)">← Back</button><button class="btn-next" onclick="goStep(2)">Choose Background →</button></div>
           </div>
