@@ -165,20 +165,39 @@ var allPhotos = [];
 var allVideos = [];
 
 // Auth check and load
-sb.auth.getSession().then(function(r) {
-  if (!r.data.session) { window.location.href = 'auth.html'; return; }
-  var user = r.data.session.user;
+function initGallery() {
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) {
+      // Retry once after 1 second in case session is still loading
+      setTimeout(function() {
+        sb.auth.getSession().then(function(r2) {
+          if (!r2.data.session) { window.location.href = 'auth.html'; return; }
+          setupGallery(r2.data.session.user);
+        });
+      }, 1000);
+      return;
+    }
+    setupGallery(r.data.session.user);
+  });
+}
+
+function setupGallery(user) {
   var meta = user.user_metadata || {};
   var fname = (meta.first_name || '').trim();
   var lname = (meta.last_name || '').trim();
   var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
   var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
-  document.getElementById('user-name').textContent = displayName;
-  document.getElementById('user-avatar').textContent = initials;
-  document.getElementById('topbar-sub').textContent = displayName + "'s photos";
+  var nameEl = document.getElementById('user-name');
+  var avatarEl = document.getElementById('user-avatar');
+  var subEl = document.getElementById('topbar-sub');
+  if (nameEl) nameEl.textContent = displayName;
+  if (avatarEl) avatarEl.textContent = initials;
+  if (subEl) subEl.textContent = displayName + "'s photos";
   loadCredits(user.id);
   loadGallery(user.id);
-});
+}
+
+initGallery();
 
 function loadCredits(userId) {
   sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
@@ -211,7 +230,11 @@ function loadGallery(userId) {
     document.getElementById('total-videos').textContent = allVideos.length;
 
     renderPhotos(allPhotos);
-    renderVideos(allVideos);
+    // Only render videos if on video tab, otherwise just update count
+    var videoBtn = document.getElementById('tab-videos-btn');
+    if (videoBtn && videoBtn.classList.contains('active')) {
+      renderVideos(allVideos);
+    }
   });
 }
 
