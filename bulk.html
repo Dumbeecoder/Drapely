@@ -487,17 +487,21 @@ async function startBulkGenerate() {
       var predId = data.prediction_id;
       var pollResult = null;
       var attempts = 0;
-      while (attempts < 60) {
-        await new Promise(function(r){ setTimeout(r, 3000); });
-        var pollRes = await fetch('/api/poll?id=' + predId);
-        pollResult = await pollRes.json();
-        if (pollResult.status === 'succeeded') break;
-        if (pollResult.status === 'failed') break;
+      while (attempts < 80) {
+        await new Promise(function(r){ setTimeout(r, 4000); });
+        try {
+          var pollRes = await fetch('/api/poll?id=' + predId + '&t=' + Date.now());
+          pollResult = await pollRes.json();
+          progressLabel.textContent = 'Processing ' + (i+1) + '/' + bulkQueue.length + ': ' + bulkQueue[i].name + ' (' + Math.round((attempts+1)*4) + 's)';
+          if (pollResult.status === 'succeeded' || pollResult.status === 'completed') break;
+          if (pollResult.status === 'failed') { console.log('Failed:', pollResult.error); break; }
+        } catch(pe) { console.log('Poll error:', pe.message); }
         attempts++;
       }
 
-      if (pollResult && pollResult.output && pollResult.output.length > 0) {
+      if (pollResult && pollResult.output) {
         var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
+        if (!imgUrl) { bulkQueue[i].status = 'error'; renderQueue(); continue; }
 
         // Overlay logo if set
         var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
@@ -505,6 +509,7 @@ async function startBulkGenerate() {
         bulkQueue[i].status = 'done';
         bulkQueue[i].result = finalUrl;
         bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: imgUrl });
+        console.log('Generated:', imgUrl);
 
         // Save to Supabase
         if (currentUserId) {
