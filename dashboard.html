@@ -1131,10 +1131,43 @@ function showRealResults(images) {
   var body = document.getElementById('results-body');
   var html = '<div class="results-grid">';
   images.forEach(function(url, i) {
-    html += '<div class="result-item"><img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;" /><div class="result-actions"><button class="result-btn" onclick="showToast(\'Refine coming soon!\')">Refine</button><button class="result-btn primary" onclick="downloadImg(\'' + url + '\',' + (i+1) + ')">Download</button></div></div>';
+    html += '<div class="result-item">';
+    html += '<img src="' + url + '" style="width:100%;height:200px;object-fit:cover;display:block;border-radius:10px 10px 0 0;" />';
+    html += '<div class="result-actions">';
+    html += '<button class="result-btn primary" onclick="downloadImg('' + url + '',' + (i+1) + ')">↓ Download</button>';
+    html += '<button class="result-btn" style="background:#000;color:#fff;border-color:#000;" onclick="convertToVideo('' + url + '')">🎬 Make Video</button>';
+    html += '</div></div>';
   });
   html += '</div><button class="new-shoot-btn" onclick="newShoot()">+ Start a new photoshoot</button>';
   body.innerHTML = html;
+}
+
+function convertToVideo(imageUrl) {
+  // Switch to video tab
+  switchTab('video');
+
+  // Wait for tab to render then auto-fill the image
+  setTimeout(function() {
+    // Set preview image in video upload zone
+    var preview = document.getElementById('v-suit-preview');
+    var empty = document.getElementById('v-upload-empty');
+    var zone = document.getElementById('v-upload-zone');
+
+    if (preview) {
+      preview.src = imageUrl;
+      preview.style.display = 'block';
+    }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+
+    // Store the URL so video generation uses it directly
+    window._videoFromPhotoUrl = imageUrl;
+
+    showToast('Photo loaded! Choose a scene and generate your video 🎬');
+
+    // Scroll to top
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }, 300);
 }
 
 function downloadImg(url, num) {
@@ -1258,8 +1291,11 @@ function deductVideoCredits() {
 }
 
 async function startVideoGenerate() {
+  // Check if coming from photo generation
   var suitFile = document.getElementById('v-suit-input').files[0];
-  if (!suitFile) { showToast('Please upload your suit photo first!'); return; }
+  var fromPhotoUrl = window._videoFromPhotoUrl || null;
+
+  if (!suitFile && !fromPhotoUrl) { showToast('Please upload your suit photo first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
   if (credits < 5) { showToast('Need 5 credits for video! Buy more.'); showBuyCredits(); return; }
 
