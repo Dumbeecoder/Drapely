@@ -450,6 +450,32 @@
               <button class="var-btn" onclick="selectVars(this)">2 images</button>
               <button class="var-btn" onclick="selectVars(this)">4 images</button>
             </div>
+            <!-- LOGO UPLOAD -->
+            <div style="border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:14px;margin-bottom:1rem;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="font-size:12px;font-weight:500;color:#555;">ADD YOUR BRAND LOGO <span style="font-weight:300;color:#aaa;">(optional)</span></div>
+                <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 12px;font-size:11px;color:#E91E63;font-weight:500;">
+                  Upload Logo
+                  <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(event)" />
+                </label>
+              </div>
+              <div id="logo-preview-wrap" style="display:none;margin-bottom:10px;">
+                <img id="logo-preview" style="height:40px;object-fit:contain;border-radius:4px;border:1px solid rgba(233,30,99,0.15);padding:4px;" />
+                <button onclick="removeLogo()" style="margin-left:8px;background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">✕ Remove</button>
+              </div>
+              <div id="logo-position-wrap" style="display:none;">
+                <div style="font-size:11px;color:#555;margin-bottom:8px;">LOGO POSITION</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↖ Top Left</button>
+                  <button class="logo-pos-btn selected" onclick="selectLogoPos(this,'top-center')" style="padding:8px 4px;border:1px solid #E91E63;border-radius:6px;background:#fff0f5;font-size:10px;cursor:pointer;color:#E91E63;font-weight:500;">↑ Top Center</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↗ Top Right</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↙ Bottom Left</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-center')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↓ Bottom Center</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↘ Bottom Right</button>
+                </div>
+              </div>
+            </div>
+
             <button class="generate-btn" onclick="startGenerate()">
               <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
               Generate AI Photoshoot
@@ -1108,11 +1134,14 @@ async function startGenerate() {
       progressWrap.classList.remove('visible');
       studioBody.style.display = 'block';
       if (results.length > 0) {
-        showRealResults(results);
-        addToGallery(results);
-        updateStats(results.length);
-        deductCredit();
-        showToast('Photoshoot ready! Download your images.');
+        // Overlay logo if uploaded
+        overlayLogoOnImages(results).then(function(finalImages) {
+          showRealResults(finalImages);
+          addToGallery(finalImages);
+          updateStats(finalImages.length);
+          deductCredit();
+          showToast('Photoshoot ready! Download your images.');
+        });
       } else {
         showToast('No images returned. Please try again.');
       }
@@ -1162,6 +1191,94 @@ function showRealResults(images) {
   newBtn.textContent = '+ Start a new photoshoot';
   newBtn.onclick = newShoot;
   body.appendChild(newBtn);
+}
+
+// LOGO FUNCTIONS
+var logoDataUrl = null;
+var logoPosition = 'top-center';
+
+function loadLogo(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    logoDataUrl = ev.target.result;
+    var preview = document.getElementById('logo-preview');
+    var previewWrap = document.getElementById('logo-preview-wrap');
+    var posWrap = document.getElementById('logo-position-wrap');
+    if (preview) preview.src = logoDataUrl;
+    if (previewWrap) previewWrap.style.display = 'flex';
+    if (posWrap) posWrap.style.display = 'block';
+    showToast('Logo uploaded! Choose position below.');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo() {
+  logoDataUrl = null;
+  document.getElementById('logo-input').value = '';
+  document.getElementById('logo-preview-wrap').style.display = 'none';
+  document.getElementById('logo-position-wrap').style.display = 'none';
+  showToast('Logo removed');
+}
+
+function selectLogoPos(btn, pos) {
+  document.querySelectorAll('.logo-pos-btn').forEach(function(b) {
+    b.style.border = '1px solid rgba(233,30,99,0.2)';
+    b.style.background = '#fff';
+    b.style.color = '#555';
+    b.style.fontWeight = 'normal';
+  });
+  btn.style.border = '1px solid #E91E63';
+  btn.style.background = '#fff0f5';
+  btn.style.color = '#E91E63';
+  btn.style.fontWeight = '500';
+  logoPosition = pos;
+  showToast('Logo position: ' + pos.replace('-', ' '));
+}
+
+function overlayLogoOnImages(imageUrls) {
+  if (!logoDataUrl) return Promise.resolve(imageUrls);
+  var logoImg = new Image();
+  logoImg.crossOrigin = 'anonymous';
+  return new Promise(function(resolve) {
+    logoImg.onload = function() {
+      var promises = imageUrls.map(function(url) {
+        return new Promise(function(res) {
+          var photo = new Image();
+          photo.crossOrigin = 'anonymous';
+          photo.onload = function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = photo.width;
+            canvas.height = photo.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(photo, 0, 0);
+
+            // Logo size = 15% of image width
+            var logoW = photo.width * 0.15;
+            var logoH = (logoImg.height / logoImg.width) * logoW;
+            var pad = photo.width * 0.03;
+
+            var x, y;
+            if (logoPosition === 'top-left')      { x = pad; y = pad; }
+            else if (logoPosition === 'top-center') { x = (photo.width - logoW) / 2; y = pad; }
+            else if (logoPosition === 'top-right')  { x = photo.width - logoW - pad; y = pad; }
+            else if (logoPosition === 'bottom-left') { x = pad; y = photo.height - logoH - pad; }
+            else if (logoPosition === 'bottom-center') { x = (photo.width - logoW) / 2; y = photo.height - logoH - pad; }
+            else { x = photo.width - logoW - pad; y = photo.height - logoH - pad; } // bottom-right
+
+            ctx.drawImage(logoImg, x, y, logoW, logoH);
+            res(canvas.toDataURL('image/jpeg', 0.92));
+          };
+          photo.onerror = function() { res(url); };
+          photo.src = url;
+        });
+      });
+      Promise.all(promises).then(resolve);
+    };
+    logoImg.onerror = function() { resolve(imageUrls); };
+    logoImg.src = logoDataUrl;
+  });
 }
 
 function convertToVideo(imageUrl) {
