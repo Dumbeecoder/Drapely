@@ -327,10 +327,10 @@ function renderQueue() {
   var genCount = document.getElementById('generate-count');
   var costPreview = document.getElementById('cost-preview');
 
-  count.textContent = bulkQueue.length;
-  genCount.textContent = bulkQueue.length;
-  costPreview.textContent = bulkQueue.length;
-  wrap.style.display = bulkQueue.length > 0 ? 'block' : 'none';
+  if (count) count.textContent = bulkQueue.length;
+  if (genCount) genCount.textContent = bulkQueue.length;
+  if (costPreview) costPreview.textContent = bulkQueue.length;
+  if (wrap) wrap.style.display = bulkQueue.length > 0 ? 'block' : 'none';
 
   grid.innerHTML = '';
   bulkQueue.forEach(function(item, i) {
@@ -545,7 +545,7 @@ async function startBulkGenerate() {
   progressLabel.textContent = '✅ All done! ' + bulkResults.length + ' photos generated.';
 
   btn.disabled = false;
-  btn.innerHTML = '⚡ Generate All — <span id="generate-count">' + bulkQueue.length + '</span> photos';
+  btn.textContent = '⚡ Generate All — ' + bulkQueue.length + ' photos';
 
   // Show results
   if (bulkResults.length > 0) {
