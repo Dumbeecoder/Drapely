@@ -199,19 +199,14 @@ function loadGallery(userId) {
       return;
     }
 
-    // Log all records to debug
-    console.log('Total records:', r.data.length);
-    r.data.forEach(function(i){ console.log('Record:', i.media_type, i.suit_type, i.image_url ? i.image_url.substring(0,60) : 'no url'); });
-
+    // ONLY use media_type and suit_type — never URL pattern (cdn.fashn is used for both photos and videos)
     allVideos = r.data.filter(function(i) {
-      return i.media_type === 'video' || i.suit_type === 'Video' ||
-             (i.image_url && (i.image_url.includes('.mp4') || i.image_url.includes('video') || i.image_url.includes('cdn.fashn')));
+      return i.media_type === 'video' || i.suit_type === 'Video';
     });
     allPhotos = r.data.filter(function(i) {
-      return allVideos.indexOf(i) === -1;
+      return i.media_type !== 'video' && i.suit_type !== 'Video';
     });
 
-    console.log('Photos:', allPhotos.length, 'Videos:', allVideos.length);
 
     document.getElementById('total-shoots').textContent = allPhotos.length;
     document.getElementById('total-images').textContent = allPhotos.reduce(function(a,b){ return a+(b.image_count||1); }, 0);
