@@ -536,7 +536,7 @@
       <div class="video-card">
         <div class="video-header">
           <div><h2>🎬 AI Video Studio</h2><p>Generate a model walking and showing your suit — perfect for WhatsApp & Instagram</p></div>
-          <span class="credit-badge">₹60 per video (5s) · ₹100 for 10s</span>
+          <span class="credit-badge">₹50 for 5s · ₹100 for 10s</span>
         </div>
         <div class="video-body">
           <div class="video-grid">
@@ -629,7 +629,7 @@
 
               <button class="video-generate-btn" onclick="startVideoGenerate()">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/></svg>
-                Generate Fashion Video — ₹60
+                Generate Fashion Video — ₹50 (5s) · ₹100 (10s)
               </button>
             </div>
 
@@ -1594,7 +1594,7 @@ async function startVideoGenerate() {
   if (!suitFile && !fromPhotoUrl) { showToast('Please upload your suit photo first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
   var vidCost = selectedDuration === '10' ? 4 : 2;
-  if (credits < vidCost) { showToast('Need ' + vidCost + ' credits for this video! Buy more.'); showBuyCredits(); return; }
+  if (credits < vidCost) { showToast('Need ' + vidCost + ' credits (₹' + (vidCost*25) + ') for this video!'); showBuyCredits(); return; }
 
   var prompt = presetPrompts[selectedPresetIndex] || '';
   document.getElementById('v-progress').classList.add('visible');
