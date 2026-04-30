@@ -281,7 +281,7 @@
       <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
       <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
       <div class="stat-card"><div class="stat-label">Videos generated</div><div class="stat-val" id="stat-suits">0</div><div class="stat-note">Generated in Video Studio</div></div>
-      <div class="stat-card highlight"><div class="stat-label">Your credits</div><div class="stat-val" id="stat-credits">...</div><div class="stat-note"><button onclick="showBuyCredits()" style="background:none;border:none;color:#E91E63;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;">+ Buy more credits</button></div></div>
+      <div class="stat-card highlight"><div class="stat-label">Your credits</div><div class="stat-val" id="stat-credits">...</div><div class="stat-note"><button onclick="showBuyCredits()" style="background:none;border:none;color:#E91E63;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;">₹25/photo · ₹60/video</button></div></div>
     </div>
 
     <div class="studio-grid">
@@ -504,7 +504,7 @@
 
             <button class="generate-btn" onclick="startGenerate()">
               <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              Generate AI Photoshoot
+              Generate AI Photoshoot — ₹25
             </button>
             <div class="step-nav" style="margin-top:1rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
           </div>
@@ -536,7 +536,7 @@
       <div class="video-card">
         <div class="video-header">
           <div><h2>🎬 AI Video Studio</h2><p>Generate a model walking and showing your suit — perfect for WhatsApp & Instagram</p></div>
-          <span class="credit-badge">5 credits per video</span>
+          <span class="credit-badge">₹60 per video (5s) · ₹100 for 10s</span>
         </div>
         <div class="video-body">
           <div class="video-grid">
@@ -629,7 +629,7 @@
 
               <button class="video-generate-btn" onclick="startVideoGenerate()">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/></svg>
-                Generate Fashion Video — 5 Credits
+                Generate Fashion Video — ₹60
               </button>
             </div>
 
@@ -662,17 +662,37 @@
   <div id="credits-modal-inner">
     <button onclick="hideBuyCredits()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:#999;line-height:1;">✕</button>
     <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#000;margin-bottom:4px;">Buy Credits</div>
-    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;line-height:1.6;">₹100 = 10 photos · Pay via UPI<br/>Credits added within 30 minutes</div>
+    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;line-height:1.6;">Choose a pack · Pay via UPI · Credits added in 30 mins</div>
+    
+    <!-- PACKS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;">
+      <div onclick="selectPack(250,10)" id="pack-250" style="border:2px solid #E91E63;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff0f5;">
+        <div style="font-size:16px;font-weight:500;color:#E91E63;">₹250</div>
+        <div style="font-size:10px;color:#555;margin-top:2px;">10 credits</div>
+        <div style="font-size:9px;color:#E91E63;margin-top:2px;">= 10 photos</div>
+      </div>
+      <div onclick="selectPack(500,20)" id="pack-500" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;">
+        <div style="font-size:16px;font-weight:500;color:#000;">₹500</div>
+        <div style="font-size:10px;color:#555;margin-top:2px;">20 credits</div>
+        <div style="font-size:9px;color:#555;margin-top:2px;">= 20 photos</div>
+      </div>
+      <div onclick="selectPack(1000,40)" id="pack-1000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;">
+        <div style="font-size:16px;font-weight:500;color:#000;">₹1000</div>
+        <div style="font-size:10px;color:#555;margin-top:2px;">40 credits</div>
+        <div style="font-size:9px;color:#28a745;margin-top:2px;">Best value!</div>
+      </div>
+    </div>
+
     <div style="background:#fff0f5;border-radius:10px;padding:1rem;margin-bottom:1rem;">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=100%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;" alt="UPI QR" />
+      <img id="credits-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=250%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;" alt="UPI QR" />
       <div style="font-size:12px;font-weight:500;color:#000;margin-top:8px;">GPay · PhonePe · Paytm</div>
       <div style="font-size:11px;color:#555;margin-top:3px;">6352197977@ptyes</div>
-      <div style="font-size:13px;font-weight:500;color:#E91E63;margin-top:5px;">₹100</div>
+      <div style="font-size:14px;font-weight:600;color:#E91E63;margin-top:5px;" id="credits-amount">₹250</div>
     </div>
     <div style="text-align:left;background:#fff0f5;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:11px;color:#555;line-height:1.9;">
-      1. Scan QR and pay ₹100<br/>2. Screenshot the payment<br/>3. Send on WhatsApp below<br/>4. Credits added in 30 mins ✓
+      1. Choose a pack above<br/>2. Scan QR and pay<br/>3. Screenshot the payment<br/>4. Send on WhatsApp below<br/>5. Credits added in 30 mins ✓
     </div>
-    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9100%20for%20Drapely%20credits." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;">
+    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9250%20for%20Drapely%20credits." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
       Send Payment Screenshot
     </a>
@@ -872,6 +892,29 @@ function updateStats(count) {
       if (el2) el2.textContent = photos.length;
     });
   });
+}
+
+function selectPack(amount, credits) {
+  // Update all pack borders
+  ['250','500','1000'].forEach(function(p) {
+    var el = document.getElementById('pack-' + p);
+    if (el) {
+      el.style.border = '1.5px solid rgba(233,30,99,0.2)';
+      el.style.background = '#fff';
+    }
+  });
+  // Highlight selected
+  var sel = document.getElementById('pack-' + amount);
+  if (sel) { sel.style.border = '2px solid #E91E63'; sel.style.background = '#fff0f5'; }
+  // Update QR code
+  var qr = document.getElementById('credits-qr');
+  if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=' + amount + '%26cu=INR%26tn=Drapely+Credits';
+  // Update amount display
+  var amtEl = document.getElementById('credits-amount');
+  if (amtEl) amtEl.textContent = '₹' + amount;
+  // Update WhatsApp link
+  var wa = document.getElementById('wa-credits-link');
+  if (wa) wa.href = 'https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9' + amount + '%20for%20Drapely%20' + credits + '%20credits.';
 }
 
 function showBuyCredits() {
@@ -1526,12 +1569,14 @@ function shareVideoWA() {
 }
 
 function deductVideoCredits() {
+  var dur = selectedDuration || '5';
+  var cost = dur === '10' ? 4 : 2; // 5s = 2 credits (₹60), 10s = 4 credits (₹100)
   sb.auth.getSession().then(function(r) {
     if (!r.data.session) return;
     var userId = r.data.session.user.id;
     sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
       if (res.data) {
-        var newBal = Math.max(0, res.data.balance - 5);
+        var newBal = Math.max(0, res.data.balance - cost);
         sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', userId).then(function() {
           var el = document.getElementById('stat-credits');
           if (el) el.textContent = newBal;
@@ -1548,7 +1593,8 @@ async function startVideoGenerate() {
 
   if (!suitFile && !fromPhotoUrl) { showToast('Please upload your suit photo first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  if (credits < 5) { showToast('Need 5 credits for video! Buy more.'); showBuyCredits(); return; }
+  var vidCost = selectedDuration === '10' ? 4 : 2;
+  if (credits < vidCost) { showToast('Need ' + vidCost + ' credits for this video! Buy more.'); showBuyCredits(); return; }
 
   var prompt = presetPrompts[selectedPresetIndex] || '';
   document.getElementById('v-progress').classList.add('visible');
