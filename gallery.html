@@ -126,12 +126,10 @@
 
     <div class="filter-bar">
       <div class="filter-pills">
-        <button class="filter-pill active" onclick="filterBy('all',this)">All</button>
-        <button class="filter-pill" onclick="filterBy('Salwar Kameez',this)">Salwar Kameez</button>
-        <button class="filter-pill" onclick="filterBy('Anarkali',this)">Anarkali</button>
-        <button class="filter-pill" onclick="filterBy('Lehenga',this)">Lehenga</button>
+        <button class="filter-pill active" id="tab-photos-btn" onclick="showGalleryTab('photos',this)">📷 Photos</button>
+        <button class="filter-pill" id="tab-videos-btn" onclick="showGalleryTab('videos',this)">🎬 Videos</button>
       </div>
-      <select class="sort-select" onchange="sortBy(this.value)">
+      <select class="sort-select" onchange="sortBy(this.value)" id="sort-select">
         <option value="newest">Newest first</option>
         <option value="oldest">Oldest first</option>
       </select>
@@ -269,7 +267,10 @@ function renderPhotos(photos) {
 function renderVideos(videos) {
   var section = document.getElementById('video-section');
   var container = document.getElementById('video-container');
-  if (!videos || videos.length === 0) { section.style.display = 'none'; return; }
+  if (!videos || videos.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div style="font-size:48px;opacity:0.4;margin-bottom:1rem;">🎬</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;">No videos yet</div><div style="font-size:13px;color:#555;margin-bottom:1.5rem;">Generate your first AI fashion video!</div><a href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')" class="new-btn">Create a video</a></div>';
+    return;
+  }
   section.style.display = 'block';
   document.getElementById('video-count').textContent = '(' + videos.length + ')';
   container.innerHTML = '';
@@ -324,6 +325,28 @@ function renderVideos(videos) {
     card.appendChild(body);
     container.appendChild(card);
   });
+}
+
+function showGalleryTab(tab, btn) {
+  // Update pills
+  document.querySelectorAll('.filter-pill').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+
+  var photoSection = document.getElementById('gallery-container');
+  var videoSection = document.getElementById('video-section');
+  var sortSelect = document.getElementById('sort-select');
+
+  if (tab === 'photos') {
+    if (photoSection) photoSection.style.display = 'block';
+    if (videoSection) videoSection.style.display = 'none';
+    if (sortSelect) sortSelect.style.display = 'block';
+  } else {
+    if (photoSection) photoSection.style.display = 'none';
+    if (videoSection) { videoSection.style.display = 'block'; }
+    if (sortSelect) sortSelect.style.display = 'none';
+    // Render videos if not already rendered
+    if (allVideos && allVideos.length > 0) renderVideos(allVideos);
+  }
 }
 
 function filterBy(type, btn) {
