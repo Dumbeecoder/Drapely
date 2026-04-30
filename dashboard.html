@@ -151,7 +151,7 @@
     .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
     .video-generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:1rem}
     .video-generate-btn:hover{background:linear-gradient(135deg,#c2185b,#ad1457)}
-    .video-result{background:#000;border-radius:10px;overflow:hidden;aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;padding:1rem}
+    .video-result{background:#000;border-radius:10px;overflow:hidden;height:200px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;padding:1rem}
     .video-result video{width:100%;height:100%;object-fit:contain}
     .video-progress{display:none;text-align:center;padding:2rem}
     .video-progress.visible{display:block}
@@ -1588,7 +1588,7 @@ async function startVideoGenerate() {
       var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
       if (videoUrl) {
         currentVideoUrl = videoUrl;
-        document.getElementById('v-result').innerHTML = '<video controls autoplay loop style="width:100%;height:100%;object-fit:contain;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        document.getElementById('v-result').innerHTML = '<video controls autoplay loop style="width:100%;height:200px;object-fit:cover;display:block;border-radius:10px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
         document.getElementById('v-download-wrap').style.display = 'block';
 
         // Save video to gallery and Supabase
