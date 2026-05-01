@@ -472,3 +472,214 @@ function overlayLogo(imageUrl, logoDataUrl, position) {
     logo.src = logoDataUrl;
   });
 }
+
+
+
+async function startBulkGenerate() {
+  if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
+
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  if (credits < bulkQueue.length) {
+    showToast('Need ' + bulkQueue.length + ' credits, you have ' + credits);
+    return;
+  }
+
+  var btn = document.getElementById('bulk-generate-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  var progressWrap = document.getElementById('bulk-progress-wrap');
+  var progressFill = document.getElementById('bulk-progress-fill');
+  var progressText = document.getElementById('bulk-progress-text');
+  var progressLabel = document.getElementById('bulk-progress-label');
+  var statusMsg = document.getElementById('bulk-status-msg');
+  progressWrap.style.display = 'block';
+
+  bulkResults = [];
+  document.getElementById('bulk-results-wrap').style.display = 'none';
+  document.getElementById('export-btn').style.display = 'none';
+
+  var modelIndex = parseInt(document.getElementById('bulk-model').value);
+  var scene = document.getElementById('bulk-scene').value;
+  var pose = document.getElementById('bulk-pose').value;
+  var garmentType = document.getElementById('bulk-garment').value;
+  var logoPos = document.getElementById('bulk-logo-pos') ? document.getElementById('bulk-logo-pos').value : 'bottom-right';
+
+  var garmentDesc = garmentType === 'saree'
+    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+  var prompt = garmentDesc + ', ' + pose + ', ' + scene + ', professional Indian fashion photography, high quality';
+
+  for (var i = 0; i < bulkQueue.length; i++) {
+    bulkQueue[i].status = 'processing';
+    renderQueue();
+    progressLabel.textContent = 'Processing ' + (i+1) + ' of ' + bulkQueue.length + ': ' + bulkQueue[i].name;
+    progressText.textContent = i + ' / ' + bulkQueue.length + ' done';
+    progressFill.style.width = Math.round((i / bulkQueue.length) * 100) + '%';
+
+    try {
+      var compressed = await compressImage(bulkQueue[i].dataUrl);
+
+      var response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          garment_img: compressed,
+          model_index: modelIndex,
+          prompt: prompt,
+          garment_type: garmentType
+        })
+      });
+
+      var data = await response.json();
+      console.log('Generate:', data.prediction_id || data.error);
+
+      if (data.error || !data.prediction_id) {
+        bulkQueue[i].status = 'error';
+        renderQueue();
+        if (statusMsg) statusMsg.textContent = '❌ Error: ' + (data.error || 'No prediction ID');
+        continue;
+      }
+
+      // Poll for result
+      var predId = data.prediction_id;
+      var pollResult = null;
+      var attempts = 0;
+      while (attempts < 80) {
+        await new Promise(function(r){ setTimeout(r, 4000); });
+        try {
+          var pollRes = await fetch('/api/poll?id=' + predId + '&t=' + Date.now());
+          pollResult = await pollRes.json();
+          progressLabel.textContent = 'Processing ' + (i+1) + '/' + bulkQueue.length + ': ' + bulkQueue[i].name;
+          if (statusMsg) statusMsg.textContent = 'AI generating... ' + Math.round((attempts+1)*4) + 's';
+          if (pollResult.status === 'succeeded' || pollResult.status === 'completed') break;
+          if (pollResult.status === 'failed') break;
+        } catch(pe) { console.log('Poll error:', pe.message); }
+        attempts++;
+      }
+
+      if (pollResult && pollResult.output) {
+        var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
+        if (!imgUrl) { bulkQueue[i].status = 'error'; renderQueue(); continue; }
+
+        var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
+
+        bulkQueue[i].status = 'done';
+        bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: imgUrl });
+
+        // Save to gallery
+        if (currentUserId) {
+          sb.from('photoshoots').insert({
+            user_id: currentUserId,
+            image_url: imgUrl,
+            collection_name: 'Bulk Photoshoot',
+            suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit',
+            image_count: 1,
+            media_type: 'photo'
+          }).then(function(r){ if(r.error) console.log('Save error:', r.error.message); });
+
+          // Deduct 1 credit
+          sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
+            if (res.data) sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
+          });
+        }
+      } else {
+        bulkQueue[i].status = 'error';
+      }
+      renderQueue();
+
+    } catch(err) {
+      bulkQueue[i].status = 'error';
+      renderQueue();
+      if (statusMsg) statusMsg.textContent = '❌ Error: ' + err.message;
+    }
+  }
+
+  progressFill.style.width = '100%';
+  progressText.textContent = bulkResults.length + ' / ' + bulkQueue.length + ' done';
+  progressLabel.textContent = '✅ Done! ' + bulkResults.length + ' of ' + bulkQueue.length + ' photos generated.';
+  if (statusMsg) statusMsg.textContent = bulkResults.length < bulkQueue.length ? (bulkQueue.length - bulkResults.length) + ' failed.' : 'All ready!';
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate All — ' + bulkQueue.length + ' photos';
+
+  if (bulkResults.length > 0) {
+    renderResults();
+    document.getElementById('export-btn').style.display = 'block';
+    loadCredits(currentUserId);
+  }
+
+  showToast('✅ ' + bulkResults.length + ' photos generated!');
+}
+
+function renderResults() {
+  var wrap = document.getElementById('bulk-results-wrap');
+  var grid = document.getElementById('bulk-results-grid');
+  var count = document.getElementById('results-count');
+  wrap.style.display = 'block';
+  count.textContent = '(' + bulkResults.length + ' photos)';
+  grid.innerHTML = '';
+  bulkResults.forEach(function(item) {
+    var card = document.createElement('div');
+    card.className = 'result-card';
+    var img = document.createElement('img');
+    img.className = 'result-img';
+    img.src = item.original || item.url;
+    card.appendChild(img);
+    var actions = document.createElement('div');
+    actions.className = 'result-actions';
+    var view = document.createElement('a');
+    view.href = item.original || item.url;
+    view.target = '_blank';
+    view.className = 'result-btn primary';
+    view.textContent = '↓ Open & Save';
+    view.style.textDecoration = 'none';
+    view.style.textAlign = 'center';
+    var share = document.createElement('button');
+    share.className = 'result-btn';
+    share.textContent = '💬';
+    share.onclick = (function(u){ return function(){
+      window.open('https://wa.me/?text=' + encodeURIComponent('AI Fashion Photo! ' + u), '_blank');
+    }; })(item.original || item.url);
+    actions.appendChild(view);
+    actions.appendChild(share);
+    card.appendChild(actions);
+    grid.appendChild(card);
+  });
+}
+
+async function exportAllAsZip() {
+  if (bulkResults.length === 0) { showToast('No results to export!'); return; }
+  showToast('Opening all images...');
+  bulkResults.forEach(function(item) {
+    window.open(item.original || item.url, '_blank');
+  });
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+function openMobileNav() {
+  document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+</script>
+</body>
+</html>
