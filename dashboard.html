@@ -1337,52 +1337,62 @@ function selectLogoPos(btn, pos) {
   showToast('Logo position: ' + pos.replace('-', ' '));
 }
 
+async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
+  if (!logoDataUrl) return imageUrl;
+  try {
+    // Fetch image via server proxy to bypass CORS
+    var proxyRes = await fetch('/api/watermark', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: imageUrl })
+    });
+    var proxyData = await proxyRes.json();
+    if (!proxyData.dataUrl) return imageUrl;
+
+    // Now overlay logo on canvas - no CORS issue since it's base64
+    var logo = new Image();
+    return new Promise(function(resolve) {
+      logo.onload = function() {
+        var photo = new Image();
+        photo.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = photo.naturalWidth;
+          canvas.height = photo.naturalHeight;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(photo, 0, 0);
+          var lw = canvas.width * 0.15;
+          var lh = (logo.height / logo.width) * lw;
+          var pad = canvas.width * 0.03;
+          var x = canvas.width - lw - pad;
+          var y = canvas.height - lh - pad;
+          if (position === 'top-left')      { x=pad; y=pad; }
+          if (position === 'top-center')    { x=(canvas.width-lw)/2; y=pad; }
+          if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
+          if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
+          if (position === 'bottom-center') { x=(canvas.width-lw)/2; y=canvas.height-lh-pad; }
+          ctx.drawImage(logo, x, y, lw, lh);
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
+        };
+        photo.onerror = function() { resolve(imageUrl); };
+        photo.src = proxyData.dataUrl;
+      };
+      logo.onerror = function() { resolve(imageUrl); };
+      logo.src = logoDataUrl;
+    });
+  } catch(e) {
+    console.log('Logo overlay error:', e.message);
+    return imageUrl;
+  }
+}
+
 function overlayLogoOnImages(imageUrls) {
   if (!logoDataUrl) return Promise.resolve(imageUrls);
-  var logoImg = new Image();
-  // No crossOrigin on logo since it's base64
-  return new Promise(function(resolve) {
-    logoImg.onload = function() {
-      var promises = imageUrls.map(function(url) {
-        return new Promise(function(res) {
-          var photo = new Image();
-          photo.crossOrigin = 'anonymous';
-          photo.onload = function() {
-            try {
-              var canvas = document.createElement('canvas');
-              canvas.width = photo.naturalWidth || photo.width;
-              canvas.height = photo.naturalHeight || photo.height;
-              var ctx = canvas.getContext('2d');
-              ctx.drawImage(photo, 0, 0);
-              var logoW = canvas.width * 0.15;
-              var logoH = (logoImg.height / logoImg.width) * logoW;
-              var pad = canvas.width * 0.03;
-              var x, y;
-              if (logoPosition === 'top-left')         { x = pad; y = pad; }
-              else if (logoPosition === 'top-center')  { x = (canvas.width - logoW)/2; y = pad; }
-              else if (logoPosition === 'top-right')   { x = canvas.width - logoW - pad; y = pad; }
-              else if (logoPosition === 'bottom-left') { x = pad; y = canvas.height - logoH - pad; }
-              else if (logoPosition === 'bottom-center') { x = (canvas.width - logoW)/2; y = canvas.height - logoH - pad; }
-              else                                     { x = canvas.width - logoW - pad; y = canvas.height - logoH - pad; }
-              ctx.drawImage(logoImg, x, y, logoW, logoH);
-              var out = canvas.toDataURL('image/jpeg', 0.92);
-              res(out);
-            } catch(e) {
-              // CORS blocked canvas - return original URL
-              res(url);
-            }
-          };
-          photo.onerror = function() { res(url); };
-          // Add cache buster to help with CORS
-          photo.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
-        });
-      });
-      Promise.all(promises).then(resolve);
-    };
-    logoImg.onerror = function() { resolve(imageUrls); };
-    logoImg.src = logoDataUrl;
-  });
+  var pos = logoPosition || 'bottom-right';
+  return Promise.all(imageUrls.map(function(url) {
+    return overlayLogoOnImage(url, logoDataUrl, pos);
+  }));
 }
+
 
 function convertToVideo(imageUrl) {
   // Switch to video tab
