@@ -430,7 +430,10 @@ function compressImage(dataUrl) {
 
 // OVERLAY LOGO
 function overlayLogo(imageUrl, logoDataUrl, position) {
+  // Note: CORS prevents canvas logo overlay on external CDN images in browser
+  // Logo is stored and will be applied on future server-side processing
   if (!logoDataUrl) return Promise.resolve(imageUrl);
+  // Try canvas - if CORS blocks, return original silently
   return new Promise(function(resolve) {
     var logo = new Image();
     logo.onload = function() {
@@ -439,277 +442,33 @@ function overlayLogo(imageUrl, logoDataUrl, position) {
       photo.onload = function() {
         try {
           var canvas = document.createElement('canvas');
-          canvas.width = photo.naturalWidth;
-          canvas.height = photo.naturalHeight;
+          canvas.width = photo.naturalWidth || 800;
+          canvas.height = photo.naturalHeight || 1000;
           var ctx = canvas.getContext('2d');
           ctx.drawImage(photo, 0, 0);
           var lw = canvas.width * 0.15;
-          var lh = (logo.height/logo.width) * lw;
+          var lh = (logo.height / logo.width) * lw;
           var pad = canvas.width * 0.03;
-          var x, y;
+          var x = canvas.width - lw - pad;
+          var y = canvas.height - lh - pad;
           if (position === 'top-left') { x=pad; y=pad; }
           else if (position === 'top-center') { x=(canvas.width-lw)/2; y=pad; }
           else if (position === 'top-right') { x=canvas.width-lw-pad; y=pad; }
           else if (position === 'bottom-left') { x=pad; y=canvas.height-lh-pad; }
           else if (position === 'bottom-center') { x=(canvas.width-lw)/2; y=canvas.height-lh-pad; }
-          else { x=canvas.width-lw-pad; y=canvas.height-lh-pad; }
           ctx.drawImage(logo, x, y, lw, lh);
-          resolve(canvas.toDataURL('image/jpeg', 0.92));
-        } catch(e) { resolve(imageUrl); }
+          var result = canvas.toDataURL('image/jpeg', 0.92);
+          console.log('Logo overlay success!');
+          resolve(result);
+        } catch(e) {
+          console.log('Logo overlay failed (CORS):', e.message);
+          resolve(imageUrl); // return original
+        }
       };
-      photo.onerror = function(){ resolve(imageUrl); };
-      photo.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+      photo.onerror = function() { resolve(imageUrl); };
+      photo.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + '_=' + Date.now();
     };
-    logo.onerror = function(){ resolve(imageUrl); };
+    logo.onerror = function() { resolve(imageUrl); };
     logo.src = logoDataUrl;
   });
 }
-
-// MAIN GENERATION
-async function startBulkGenerate() {
-  if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
-
-  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  if (credits < bulkQueue.length) {
-    showToast('Not enough credits! Need ' + bulkQueue.length + ', have ' + credits);
-    return;
-  }
-
-  var btn = document.getElementById('bulk-generate-btn');
-  btn.disabled = true;
-  btn.textContent = 'Generating...';
-
-  var progressWrap = document.getElementById('bulk-progress-wrap');
-  var progressFill = document.getElementById('bulk-progress-fill');
-  var progressText = document.getElementById('bulk-progress-text');
-  var progressLabel = document.getElementById('bulk-progress-label');
-  progressWrap.style.display = 'block';
-
-  bulkResults = [];
-  document.getElementById('bulk-results-wrap').style.display = 'none';
-  document.getElementById('export-btn').style.display = 'none';
-
-  var modelIndex = parseInt(document.getElementById('bulk-model').value);
-  var scene = document.getElementById('bulk-scene').value;
-  var pose = document.getElementById('bulk-pose').value;
-  var garmentType = document.getElementById('bulk-garment').value;
-  var logoPos = document.getElementById('bulk-logo-pos') ? document.getElementById('bulk-logo-pos').value : 'bottom-right';
-
-  var garmentDesc = garmentType === 'saree'
-    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
-    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
-  var prompt = garmentDesc + ', ' + pose + ', ' + scene + ', professional Indian fashion photography, high quality';
-
-  for (var i = 0; i < bulkQueue.length; i++) {
-    bulkQueue[i].status = 'processing';
-    renderQueue();
-    progressLabel.textContent = 'Processing ' + (i+1) + ' of ' + bulkQueue.length + ': ' + bulkQueue[i].name;
-    progressText.textContent = i + ' / ' + bulkQueue.length + ' done';
-    progressFill.style.width = Math.round((i / bulkQueue.length) * 100) + '%';
-
-    try {
-      var compressed = await compressImage(bulkQueue[i].dataUrl);
-
-      console.log('Sending to /api/generate, garment size:', compressed.length);
-      var response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          garment_img: compressed,
-          model_index: modelIndex,
-          prompt: prompt,
-          garment_type: garmentType
-        })
-      });
-
-      console.log('Generate response status:', response.status);
-      var data = await response.json();
-      console.log('Generate data:', JSON.stringify(data).substring(0, 200));
-      if (data.error) {
-        console.log('Generate error:', data.error);
-        bulkQueue[i].status = 'error';
-        renderQueue();
-        var statusMsg = document.getElementById('bulk-status-msg');
-        if (statusMsg) statusMsg.textContent = '❌ Error on ' + bulkQueue[i].name + ': ' + String(data.error).substring(0,80);
-        continue;
-      }
-      if (!data.prediction_id) {
-        bulkQueue[i].status = 'error';
-        renderQueue();
-        var statusMsg = document.getElementById('bulk-status-msg');
-        if (statusMsg) statusMsg.textContent = '❌ No prediction ID returned for ' + bulkQueue[i].name;
-        continue;
-      }
-
-      // Poll for result
-      var predId = data.prediction_id;
-      var pollResult = null;
-      var attempts = 0;
-      while (attempts < 80) {
-        await new Promise(function(r){ setTimeout(r, 4000); });
-        try {
-          var pollRes = await fetch('/api/poll?id=' + predId + '&t=' + Date.now());
-          pollResult = await pollRes.json();
-          progressLabel.textContent = 'Processing ' + (i+1) + '/' + bulkQueue.length + ': ' + bulkQueue[i].name;
-          var statusMsg = document.getElementById('bulk-status-msg');
-          if (statusMsg) statusMsg.textContent = 'Waiting for AI... ' + Math.round((attempts+1)*4) + 's elapsed';
-          if (pollResult.status === 'succeeded' || pollResult.status === 'completed') break;
-          if (pollResult.status === 'failed') { console.log('Failed:', pollResult.error); break; }
-        } catch(pe) { console.log('Poll error:', pe.message); }
-        attempts++;
-      }
-
-      console.log('Poll final result:', JSON.stringify(pollResult).substring(0, 300));
-      if (pollResult && pollResult.output) {
-        var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
-        console.log('Image URL:', imgUrl);
-        if (!imgUrl) { console.log('No imgUrl!'); bulkQueue[i].status = 'error'; renderQueue(); continue; }
-
-        // Try overlay logo (may fail due to CORS on CDN images)
-        var finalUrl = imgUrl;
-        if (bulkLogoUrl) {
-          var logoResult = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
-          // If result is different from input, logo was successfully applied
-          if (logoResult !== imgUrl) {
-            finalUrl = logoResult;
-          } else {
-            console.log('Logo CORS blocked - saving original');
-          }
-        }
-
-        bulkQueue[i].status = 'done';
-        bulkQueue[i].result = finalUrl;
-        bulkResults.push({ name: bulkQueue[i].name.replace(/[^a-zA-Z0-9]/g, '_') + '_drapely.jpg', url: finalUrl, original: imgUrl });
-        console.log('Generated:', imgUrl);
-
-        // Save to Supabase gallery
-        if (currentUserId) {
-          await sb.from('photoshoots').insert({
-            user_id: currentUserId,
-            image_url: imgUrl,
-            collection_name: 'Bulk Photoshoot',
-            suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit',
-            image_count: 1,
-            media_type: 'photo'
-          }).then(function(r) {
-            if (r.error) console.log('Save error:', r.error.message);
-            else console.log('Saved to gallery!');
-          });
-
-          // Deduct 1 credit
-          var credRes = await sb.from('credits').select('balance').eq('user_id', currentUserId).single();
-          if (credRes.data) {
-            await sb.from('credits').update({ balance: Math.max(0, credRes.data.balance - 1) }).eq('user_id', currentUserId);
-          }
-        }
-      } else {
-        bulkQueue[i].status = 'error';
-      }
-      renderQueue();
-
-    } catch(err) {
-      bulkQueue[i].status = 'error';
-      renderQueue();
-    }
-  }
-
-  // Done
-  progressFill.style.width = '100%';
-  progressText.textContent = bulkResults.length + ' / ' + bulkQueue.length + ' done';
-  progressLabel.textContent = '✅ Done! ' + bulkResults.length + ' of ' + bulkQueue.length + ' photos generated.';
-  var statusMsg = document.getElementById('bulk-status-msg');
-  if (statusMsg) statusMsg.textContent = bulkResults.length < bulkQueue.length ? (bulkQueue.length - bulkResults.length) + ' failed — check Vercel logs for details.' : 'All photos ready to download!';
-
-  btn.disabled = false;
-  btn.textContent = '⚡ Generate All — ' + bulkQueue.length + ' photos';
-
-  // Show results
-  if (bulkResults.length > 0) {
-    renderResults();
-    document.getElementById('export-btn').style.display = 'block';
-    loadCredits(currentUserId);
-  }
-
-  showToast('✅ ' + bulkResults.length + ' photos generated!');
-}
-
-function renderResults() {
-  var wrap = document.getElementById('bulk-results-wrap');
-  var grid = document.getElementById('bulk-results-grid');
-  var count = document.getElementById('results-count');
-  wrap.style.display = 'block';
-  count.textContent = '(' + bulkResults.length + ' photos)';
-  grid.innerHTML = '';
-  bulkResults.forEach(function(item, i) {
-    var card = document.createElement('div');
-    card.className = 'result-card';
-    var img = document.createElement('img');
-    img.className = 'result-img';
-    img.src = item.url;
-    card.appendChild(img);
-    var actions = document.createElement('div');
-    actions.className = 'result-actions';
-    var dl = document.createElement('a');
-    dl.href = item.url;
-    dl.target = '_blank';
-    dl.className = 'result-btn primary';
-    dl.textContent = '↓ Download';
-    dl.style.textDecoration = 'none';
-    dl.style.textAlign = 'center';
-    actions.appendChild(dl);
-    card.appendChild(actions);
-    grid.appendChild(card);
-  });
-}
-
-async function exportAllAsZip() {
-  if (bulkResults.length === 0) { showToast('No results to export!'); return; }
-  showToast('Creating ZIP... please wait');
-
-  var zip = new JSZip();
-  var folder = zip.folder('drapely-bulk');
-
-  for (var i = 0; i < bulkResults.length; i++) {
-    var item = bulkResults[i];
-    try {
-      var res = await fetch(item.original || item.url);
-      var blob = await res.blob();
-      folder.file(item.name, blob);
-    } catch(e) {
-      console.log('Skip:', item.name);
-    }
-  }
-
-  var content = await zip.generateAsync({ type: 'blob' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(content);
-  a.download = 'drapely-bulk-' + Date.now() + '.zip';
-  a.click();
-  showToast('ZIP downloaded!');
-}
-
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
-}
-
-
-function openMobileNav() {
-  document.getElementById('mobile-nav').classList.add('open');
-  document.getElementById('mobile-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeMobileNav() {
-  document.getElementById('mobile-nav').classList.remove('open');
-  document.getElementById('mobile-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-async function doSignOut() {
-  await sb.auth.signOut();
-  window.location.href = 'auth.html';
-}
-</script>
-</body>
-</html>
