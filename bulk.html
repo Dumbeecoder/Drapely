@@ -433,12 +433,14 @@ async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
   if (!logoDataUrl) return imageUrl;
   try {
     // Fetch image via server proxy to bypass CORS
+    console.log('Calling /api/watermark for:', imageUrl.substring(0, 60));
     var proxyRes = await fetch('/api/watermark', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image_url: imageUrl })
     });
     var proxyData = await proxyRes.json();
+    console.log('Watermark response:', proxyData.dataUrl ? 'got base64 (' + proxyData.dataUrl.length + ' chars)' : 'error: ' + proxyData.error);
     if (!proxyData.dataUrl) return imageUrl;
 
     // Now overlay logo on canvas - no CORS issue since it's base64
@@ -541,10 +543,12 @@ async function startBulkGenerate() {
         var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
         if (imgUrl) {
           var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
+          console.log('Logo applied, finalUrl type:', finalUrl.startsWith('data:') ? 'base64 (logo applied!)' : 'cdn url (no logo)');
           bulkQueue[i].status = 'done';
           bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: imgUrl });
           if (currentUserId) {
-            sb.from('photoshoots').insert({ user_id: currentUserId, image_url: imgUrl, collection_name: 'Bulk Photoshoot', suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit', image_count: 1, media_type: 'photo' });
+            // Always save original CDN url (not base64) to gallery
+            sb.from('photoshoots').insert({ user_id: currentUserId, image_url: imgUrl, collection_name: 'Bulk Photoshoot', suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit', image_count: 1, media_type: 'photo' }).then(function(r){ console.log('Saved to gallery:', r.error ? r.error.message : 'OK'); });
             sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
               if (res.data) sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
             });
