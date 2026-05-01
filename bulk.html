@@ -270,6 +270,7 @@
       <div style="font-size:13px;font-weight:500;margin-bottom:8px;" id="bulk-progress-label">Processing...</div>
       <div class="progress-bar"><div class="progress-fill" id="bulk-progress-fill" style="width:0%"></div></div>
       <div class="progress-text" id="bulk-progress-text">0 / 0 done</div>
+      <div id="bulk-status-msg" style="font-size:11px;color:#555;margin-top:6px;text-align:center;"></div>
     </div>
 
     <div style="display:flex;gap:10px;">
@@ -528,6 +529,15 @@ async function startBulkGenerate() {
         console.log('Generate error:', data.error);
         bulkQueue[i].status = 'error';
         renderQueue();
+        var statusMsg = document.getElementById('bulk-status-msg');
+        if (statusMsg) statusMsg.textContent = '❌ Error on ' + bulkQueue[i].name + ': ' + String(data.error).substring(0,80);
+        continue;
+      }
+      if (!data.prediction_id) {
+        bulkQueue[i].status = 'error';
+        renderQueue();
+        var statusMsg = document.getElementById('bulk-status-msg');
+        if (statusMsg) statusMsg.textContent = '❌ No prediction ID returned for ' + bulkQueue[i].name;
         continue;
       }
 
@@ -540,7 +550,9 @@ async function startBulkGenerate() {
         try {
           var pollRes = await fetch('/api/poll?id=' + predId + '&t=' + Date.now());
           pollResult = await pollRes.json();
-          progressLabel.textContent = 'Processing ' + (i+1) + '/' + bulkQueue.length + ': ' + bulkQueue[i].name + ' (' + Math.round((attempts+1)*4) + 's)';
+          progressLabel.textContent = 'Processing ' + (i+1) + '/' + bulkQueue.length + ': ' + bulkQueue[i].name;
+          var statusMsg = document.getElementById('bulk-status-msg');
+          if (statusMsg) statusMsg.textContent = 'Waiting for AI... ' + Math.round((attempts+1)*4) + 's elapsed';
           if (pollResult.status === 'succeeded' || pollResult.status === 'completed') break;
           if (pollResult.status === 'failed') { console.log('Failed:', pollResult.error); break; }
         } catch(pe) { console.log('Poll error:', pe.message); }
@@ -553,30 +565,42 @@ async function startBulkGenerate() {
         console.log('Image URL:', imgUrl);
         if (!imgUrl) { console.log('No imgUrl!'); bulkQueue[i].status = 'error'; renderQueue(); continue; }
 
-        // Overlay logo if set
-        var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
+        // Try overlay logo (may fail due to CORS on CDN images)
+        var finalUrl = imgUrl;
+        if (bulkLogoUrl) {
+          var logoResult = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
+          // If result is different from input, logo was successfully applied
+          if (logoResult !== imgUrl) {
+            finalUrl = logoResult;
+          } else {
+            console.log('Logo CORS blocked - saving original');
+          }
+        }
 
         bulkQueue[i].status = 'done';
         bulkQueue[i].result = finalUrl;
-        bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: imgUrl });
+        bulkResults.push({ name: bulkQueue[i].name.replace(/[^a-zA-Z0-9]/g, '_') + '_drapely.jpg', url: finalUrl, original: imgUrl });
         console.log('Generated:', imgUrl);
 
-        // Save to Supabase
+        // Save to Supabase gallery
         if (currentUserId) {
-          sb.from('photoshoots').insert({
+          await sb.from('photoshoots').insert({
             user_id: currentUserId,
             image_url: imgUrl,
             collection_name: 'Bulk Photoshoot',
             suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit',
             image_count: 1,
             media_type: 'photo'
+          }).then(function(r) {
+            if (r.error) console.log('Save error:', r.error.message);
+            else console.log('Saved to gallery!');
           });
+
           // Deduct 1 credit
-          sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
-            if (res.data) {
-              sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
-            }
-          });
+          var credRes = await sb.from('credits').select('balance').eq('user_id', currentUserId).single();
+          if (credRes.data) {
+            await sb.from('credits').update({ balance: Math.max(0, credRes.data.balance - 1) }).eq('user_id', currentUserId);
+          }
         }
       } else {
         bulkQueue[i].status = 'error';
@@ -592,7 +616,9 @@ async function startBulkGenerate() {
   // Done
   progressFill.style.width = '100%';
   progressText.textContent = bulkResults.length + ' / ' + bulkQueue.length + ' done';
-  progressLabel.textContent = '✅ All done! ' + bulkResults.length + ' photos generated.';
+  progressLabel.textContent = '✅ Done! ' + bulkResults.length + ' of ' + bulkQueue.length + ' photos generated.';
+  var statusMsg = document.getElementById('bulk-status-msg');
+  if (statusMsg) statusMsg.textContent = bulkResults.length < bulkQueue.length ? (bulkQueue.length - bulkResults.length) + ' failed — check Vercel logs for details.' : 'All photos ready to download!';
 
   btn.disabled = false;
   btn.textContent = '⚡ Generate All — ' + bulkQueue.length + ' photos';
