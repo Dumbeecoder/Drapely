@@ -1190,13 +1190,17 @@ async function startGenerate() {
       progressWrap.classList.remove('visible');
       studioBody.style.display = 'block';
       if (results.length > 0) {
-        // Save original URLs to gallery/Supabase FIRST
+        // Save original CDN URLs to gallery first
         addToGallery(results);
         updateStats(results.length);
         deductCredit();
-        // Then overlay logo for display only
+        // Overlay logo for display only (not saved to DB)
         overlayLogoOnImages(results).then(function(finalImages) {
           showRealResults(finalImages);
+          showToast('Photoshoot ready! Download your images.');
+          goStep(0);
+        }).catch(function() {
+          showRealResults(results);
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         });
@@ -1341,6 +1345,7 @@ async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
   if (!logoDataUrl) return imageUrl;
   try {
     // Fetch image via server proxy to bypass CORS
+    console.log('Watermark call for:', imageUrl.substring(0, 50));
     var proxyRes = await fetch('/api/watermark', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
