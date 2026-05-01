@@ -429,21 +429,27 @@ function compressImage(dataUrl) {
 }
 
 // OVERLAY LOGO
-function overlayLogo(imageUrl, logoDataUrl, position) {
-  // Note: CORS prevents canvas logo overlay on external CDN images in browser
-  // Logo is stored and will be applied on future server-side processing
-  if (!logoDataUrl) return Promise.resolve(imageUrl);
-  // Try canvas - if CORS blocks, return original silently
-  return new Promise(function(resolve) {
+async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
+  if (!logoDataUrl) return imageUrl;
+  try {
+    // Fetch image via server proxy to bypass CORS
+    var proxyRes = await fetch('/api/watermark', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: imageUrl })
+    });
+    var proxyData = await proxyRes.json();
+    if (!proxyData.dataUrl) return imageUrl;
+
+    // Now overlay logo on canvas - no CORS issue since it's base64
     var logo = new Image();
-    logo.onload = function() {
-      var photo = new Image();
-      photo.crossOrigin = 'anonymous';
-      photo.onload = function() {
-        try {
+    return new Promise(function(resolve) {
+      logo.onload = function() {
+        var photo = new Image();
+        photo.onload = function() {
           var canvas = document.createElement('canvas');
-          canvas.width = photo.naturalWidth || 800;
-          canvas.height = photo.naturalHeight || 1000;
+          canvas.width = photo.naturalWidth;
+          canvas.height = photo.naturalHeight;
           var ctx = canvas.getContext('2d');
           ctx.drawImage(photo, 0, 0);
           var lw = canvas.width * 0.15;
@@ -451,50 +457,45 @@ function overlayLogo(imageUrl, logoDataUrl, position) {
           var pad = canvas.width * 0.03;
           var x = canvas.width - lw - pad;
           var y = canvas.height - lh - pad;
-          if (position === 'top-left') { x=pad; y=pad; }
-          else if (position === 'top-center') { x=(canvas.width-lw)/2; y=pad; }
-          else if (position === 'top-right') { x=canvas.width-lw-pad; y=pad; }
-          else if (position === 'bottom-left') { x=pad; y=canvas.height-lh-pad; }
-          else if (position === 'bottom-center') { x=(canvas.width-lw)/2; y=canvas.height-lh-pad; }
+          if (position === 'top-left')      { x=pad; y=pad; }
+          if (position === 'top-center')    { x=(canvas.width-lw)/2; y=pad; }
+          if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
+          if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
+          if (position === 'bottom-center') { x=(canvas.width-lw)/2; y=canvas.height-lh-pad; }
           ctx.drawImage(logo, x, y, lw, lh);
-          var result = canvas.toDataURL('image/jpeg', 0.92);
-          console.log('Logo overlay success!');
-          resolve(result);
-        } catch(e) {
-          console.log('Logo overlay failed (CORS):', e.message);
-          resolve(imageUrl); // return original
-        }
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
+        };
+        photo.onerror = function() { resolve(imageUrl); };
+        photo.src = proxyData.dataUrl;
       };
-      photo.onerror = function() { resolve(imageUrl); };
-      photo.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + '_=' + Date.now();
-    };
-    logo.onerror = function() { resolve(imageUrl); };
-    logo.src = logoDataUrl;
-  });
+      logo.onerror = function() { resolve(imageUrl); };
+      logo.src = logoDataUrl;
+    });
+  } catch(e) {
+    console.log('Logo overlay error:', e.message);
+    return imageUrl;
+  }
+}
+
+async function overlayLogo(imageUrl, logoDataUrl, position) {
+  return overlayLogoOnImage(imageUrl, logoDataUrl, position);
 }
 
 
 
 async function startBulkGenerate() {
   if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
-
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  if (credits < bulkQueue.length) {
-    showToast('Need ' + bulkQueue.length + ' credits, you have ' + credits);
-    return;
-  }
+  if (credits < bulkQueue.length) { showToast('Need ' + bulkQueue.length + ' credits, have ' + credits); return; }
 
   var btn = document.getElementById('bulk-generate-btn');
-  btn.disabled = true;
-  btn.textContent = 'Generating...';
-
+  btn.disabled = true; btn.textContent = 'Generating...';
   var progressWrap = document.getElementById('bulk-progress-wrap');
   var progressFill = document.getElementById('bulk-progress-fill');
   var progressText = document.getElementById('bulk-progress-text');
   var progressLabel = document.getElementById('bulk-progress-label');
   var statusMsg = document.getElementById('bulk-status-msg');
   progressWrap.style.display = 'block';
-
   bulkResults = [];
   document.getElementById('bulk-results-wrap').style.display = 'none';
   document.getElementById('export-btn').style.display = 'none';
@@ -504,111 +505,61 @@ async function startBulkGenerate() {
   var pose = document.getElementById('bulk-pose').value;
   var garmentType = document.getElementById('bulk-garment').value;
   var logoPos = document.getElementById('bulk-logo-pos') ? document.getElementById('bulk-logo-pos').value : 'bottom-right';
-
-  var garmentDesc = garmentType === 'saree'
-    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
-    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+  var garmentDesc = garmentType === 'saree' ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length' : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
   var prompt = garmentDesc + ', ' + pose + ', ' + scene + ', professional Indian fashion photography, high quality';
 
   for (var i = 0; i < bulkQueue.length; i++) {
-    bulkQueue[i].status = 'processing';
-    renderQueue();
+    bulkQueue[i].status = 'processing'; renderQueue();
     progressLabel.textContent = 'Processing ' + (i+1) + ' of ' + bulkQueue.length + ': ' + bulkQueue[i].name;
     progressText.textContent = i + ' / ' + bulkQueue.length + ' done';
     progressFill.style.width = Math.round((i / bulkQueue.length) * 100) + '%';
-
     try {
       var compressed = await compressImage(bulkQueue[i].dataUrl);
-
       var response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          garment_img: compressed,
-          model_index: modelIndex,
-          prompt: prompt,
-          garment_type: garmentType
-        })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ garment_img: compressed, model_index: modelIndex, prompt: prompt, garment_type: garmentType })
       });
-
       var data = await response.json();
-      console.log('Generate:', data.prediction_id || data.error);
-
       if (data.error || !data.prediction_id) {
-        bulkQueue[i].status = 'error';
-        renderQueue();
-        if (statusMsg) statusMsg.textContent = '❌ Error: ' + (data.error || 'No prediction ID');
+        bulkQueue[i].status = 'error'; renderQueue();
+        if (statusMsg) statusMsg.textContent = 'Error: ' + (data.error || 'No prediction ID');
         continue;
       }
-
-      // Poll for result
-      var predId = data.prediction_id;
-      var pollResult = null;
-      var attempts = 0;
+      var predId = data.prediction_id; var pollResult = null; var attempts = 0;
       while (attempts < 80) {
         await new Promise(function(r){ setTimeout(r, 4000); });
         try {
           var pollRes = await fetch('/api/poll?id=' + predId + '&t=' + Date.now());
           pollResult = await pollRes.json();
-          progressLabel.textContent = 'Processing ' + (i+1) + '/' + bulkQueue.length + ': ' + bulkQueue[i].name;
           if (statusMsg) statusMsg.textContent = 'AI generating... ' + Math.round((attempts+1)*4) + 's';
           if (pollResult.status === 'succeeded' || pollResult.status === 'completed') break;
           if (pollResult.status === 'failed') break;
-        } catch(pe) { console.log('Poll error:', pe.message); }
+        } catch(pe) {}
         attempts++;
       }
-
       if (pollResult && pollResult.output) {
         var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
-        if (!imgUrl) { bulkQueue[i].status = 'error'; renderQueue(); continue; }
-
-        var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
-
-        bulkQueue[i].status = 'done';
-        bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: imgUrl });
-
-        // Save to gallery
-        if (currentUserId) {
-          sb.from('photoshoots').insert({
-            user_id: currentUserId,
-            image_url: imgUrl,
-            collection_name: 'Bulk Photoshoot',
-            suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit',
-            image_count: 1,
-            media_type: 'photo'
-          }).then(function(r){ if(r.error) console.log('Save error:', r.error.message); });
-
-          // Deduct 1 credit
-          sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
-            if (res.data) sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
-          });
-        }
-      } else {
-        bulkQueue[i].status = 'error';
-      }
+        if (imgUrl) {
+          var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
+          bulkQueue[i].status = 'done';
+          bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: imgUrl });
+          if (currentUserId) {
+            sb.from('photoshoots').insert({ user_id: currentUserId, image_url: imgUrl, collection_name: 'Bulk Photoshoot', suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit', image_count: 1, media_type: 'photo' });
+            sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
+              if (res.data) sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
+            });
+          }
+        } else { bulkQueue[i].status = 'error'; }
+      } else { bulkQueue[i].status = 'error'; }
       renderQueue();
-
-    } catch(err) {
-      bulkQueue[i].status = 'error';
-      renderQueue();
-      if (statusMsg) statusMsg.textContent = '❌ Error: ' + err.message;
-    }
+    } catch(err) { bulkQueue[i].status = 'error'; renderQueue(); }
   }
 
   progressFill.style.width = '100%';
   progressText.textContent = bulkResults.length + ' / ' + bulkQueue.length + ' done';
-  progressLabel.textContent = '✅ Done! ' + bulkResults.length + ' of ' + bulkQueue.length + ' photos generated.';
-  if (statusMsg) statusMsg.textContent = bulkResults.length < bulkQueue.length ? (bulkQueue.length - bulkResults.length) + ' failed.' : 'All ready!';
-
-  btn.disabled = false;
-  btn.textContent = '⚡ Generate All — ' + bulkQueue.length + ' photos';
-
-  if (bulkResults.length > 0) {
-    renderResults();
-    document.getElementById('export-btn').style.display = 'block';
-    loadCredits(currentUserId);
-  }
-
+  progressLabel.textContent = '✅ ' + bulkResults.length + ' of ' + bulkQueue.length + ' done!';
+  btn.disabled = false; btn.textContent = '⚡ Generate All — ' + bulkQueue.length + ' photos';
+  if (bulkResults.length > 0) { renderResults(); document.getElementById('export-btn').style.display = 'block'; loadCredits(currentUserId); }
   showToast('✅ ' + bulkResults.length + ' photos generated!');
 }
 
@@ -624,36 +575,29 @@ function renderResults() {
     card.className = 'result-card';
     var img = document.createElement('img');
     img.className = 'result-img';
-    img.src = item.original || item.url;
+    img.src = item.url || item.original;
     card.appendChild(img);
     var actions = document.createElement('div');
     actions.className = 'result-actions';
     var view = document.createElement('a');
-    view.href = item.original || item.url;
+    view.href = item.original;
     view.target = '_blank';
     view.className = 'result-btn primary';
     view.textContent = '↓ Open & Save';
-    view.style.textDecoration = 'none';
-    view.style.textAlign = 'center';
+    view.style.cssText = 'text-decoration:none;text-align:center;';
     var share = document.createElement('button');
     share.className = 'result-btn';
     share.textContent = '💬';
-    share.onclick = (function(u){ return function(){
-      window.open('https://wa.me/?text=' + encodeURIComponent('AI Fashion Photo! ' + u), '_blank');
-    }; })(item.original || item.url);
-    actions.appendChild(view);
-    actions.appendChild(share);
-    card.appendChild(actions);
-    grid.appendChild(card);
+    share.onclick = (function(u){ return function(){ window.open('https://wa.me/?text=' + encodeURIComponent('AI Fashion Photo! ' + u), '_blank'); }; })(item.original);
+    actions.appendChild(view); actions.appendChild(share);
+    card.appendChild(actions); grid.appendChild(card);
   });
 }
 
 async function exportAllAsZip() {
-  if (bulkResults.length === 0) { showToast('No results to export!'); return; }
-  showToast('Opening all images...');
-  bulkResults.forEach(function(item) {
-    window.open(item.original || item.url, '_blank');
-  });
+  if (bulkResults.length === 0) { showToast('No results!'); return; }
+  showToast('Opening all images in new tabs...');
+  bulkResults.forEach(function(item) { window.open(item.original, '_blank'); });
 }
 
 function showToast(msg) {
