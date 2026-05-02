@@ -452,44 +452,50 @@ async function uploadBase64ToImgur(base64DataUrl) {
 
 async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
   if (!logoDataUrl) return imageUrl;
-  var proxiedUrl = 'https://corsproxy.io/?' + encodeURIComponent(imageUrl);
-  return new Promise(function(resolve) {
-    var logo = new Image();
-    logo.onload = function() {
-      var photo = new Image();
-      photo.crossOrigin = 'anonymous';
-      photo.onload = function() {
-        try {
-          var canvas = document.createElement('canvas');
-          canvas.width = photo.naturalWidth || 1000;
-          canvas.height = photo.naturalHeight || 1000;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(photo, 0, 0);
-          var lw = Math.round(canvas.width * 0.15);
-          var lh = Math.round((logo.height / logo.width) * lw);
-          var pad = Math.round(canvas.width * 0.03);
-          var x = canvas.width - lw - pad;
-          var y = canvas.height - lh - pad;
-          if (position === 'top-left')      { x=pad; y=pad; }
-          if (position === 'top-center')    { x=Math.round((canvas.width-lw)/2); y=pad; }
-          if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
-          if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
-          if (position === 'bottom-center') { x=Math.round((canvas.width-lw)/2); y=canvas.height-lh-pad; }
-          ctx.drawImage(logo, x, y, lw, lh);
-          var result = canvas.toDataURL('image/jpeg', 0.92);
-          console.log('Logo applied!');
-          resolve(result);
-        } catch(e) {
-          console.log('Canvas error:', e.message);
-          resolve(imageUrl);
-        }
+  try {
+    var proxyRes = await fetch('/api/watermark', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: imageUrl })
+    });
+    if (!proxyRes.ok) { return imageUrl; }
+    var proxyData = await proxyRes.json();
+    if (!proxyData.dataUrl) { return imageUrl; }
+    console.log('Got proxied image, applying logo...');
+    return new Promise(function(resolve) {
+      var logo = new Image();
+      logo.onload = function() {
+        var photo = new Image();
+        photo.onload = function() {
+          try {
+            var canvas = document.createElement('canvas');
+            canvas.width = photo.naturalWidth || 1000;
+            canvas.height = photo.naturalHeight || 1000;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(photo, 0, 0);
+            var lw = Math.round(canvas.width * 0.15);
+            var lh = Math.round((logo.height / logo.width) * lw);
+            var pad = Math.round(canvas.width * 0.03);
+            var x = canvas.width - lw - pad;
+            var y = canvas.height - lh - pad;
+            if (position === 'top-left')      { x=pad; y=pad; }
+            if (position === 'top-center')    { x=Math.round((canvas.width-lw)/2); y=pad; }
+            if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
+            if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
+            if (position === 'bottom-center') { x=Math.round((canvas.width-lw)/2); y=canvas.height-lh-pad; }
+            ctx.drawImage(logo, x, y, lw, lh);
+            var result = canvas.toDataURL('image/jpeg', 0.92);
+            console.log('Logo applied! Length:', result.length);
+            resolve(result);
+          } catch(e) { console.log('Canvas error:', e.message); resolve(imageUrl); }
+        };
+        photo.onerror = function() { resolve(imageUrl); };
+        photo.src = proxyData.dataUrl;
       };
-      photo.onerror = function() { console.log('Proxy load failed'); resolve(imageUrl); };
-      photo.src = proxiedUrl;
-    };
-    logo.onerror = function() { resolve(imageUrl); };
-    logo.src = logoDataUrl;
-  });
+      logo.onerror = function() { resolve(imageUrl); };
+      logo.src = logoDataUrl;
+    });
+  } catch(e) { console.log('overlayLogoOnImage error:', e.message); return imageUrl; }
 }
 
 async function overlayLogo(imageUrl, logoDataUrl, position) {
