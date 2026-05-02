@@ -1,3 +1,5 @@
+export const config = { maxDuration: 60 };
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -5,7 +7,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { garment_img, model_index, prompt, garment_type, custom_model } = req.body;
+  const { garment_img, model_index, prompt, garment_type, custom_model, background_url, num_images } = req.body;
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
@@ -28,42 +30,52 @@ export default async function handler(req, res) {
     if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
     const garmentUrl = imgurData.data.link;
 
-    // Use custom model if provided, else use preset
+    // Model image
     let humanImg;
     if (custom_model && custom_model.startsWith('data:')) {
-      // Upload custom model to Imgur too
       const customBase64 = custom_model.replace(/^data:image\/\w+;base64,/, '');
-      const customImgurRes = await fetch('https://api.imgur.com/3/image', {
+      const customRes = await fetch('https://api.imgur.com/3/image', {
         method: 'POST',
         headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: customBase64, type: 'base64' })
       });
-      const customImgurData = await customImgurRes.json();
-      humanImg = customImgurData.success ? customImgurData.data.link : models[0];
-      console.log('Using custom model:', humanImg);
+      const customData = await customRes.json();
+      humanImg = customData.success ? customData.data.link : models[0];
     } else {
       humanImg = models[model_index || 0];
-      console.log('Using preset model:', model_index);
     }
 
-    // Build prompt
+    // Garment description prompt
     const isSaree = garment_type === 'saree';
     const garmentDesc = isSaree
       ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
       : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
-    const finalPrompt = [garmentDesc, prompt || ''].filter(Boolean).join(', ');
 
-    const requestBody = {
-      model_name: 'product-to-model',
-      inputs: {
-        product_image: garmentUrl,
-        model_image: humanImg,
-        resolution: '1k',
-        generation_mode: 'balanced',
-        output_format: 'jpeg',
-        prompt: finalPrompt,
-      }
+    // Build inputs - use background_reference IMAGE if provided, else text prompt
+    const inputs = {
+      product_image: garmentUrl,
+      model_image: humanImg,
+      resolution: '1k',
+      generation_mode: 'balanced',
+      output_format: 'jpeg',
+      aspect_ratio: '9:16',          // portrait format - perfect for fashion
+      num_images: Math.min(num_images || 1, 4),
     };
+
+    // Background: image URL or text prompt
+    if (background_url && background_url.startsWith('http')) {
+      inputs.background_reference = background_url;
+      inputs.prompt = [garmentDesc, prompt || ''].filter(Boolean).join(', ');
+      console.log('Using background_reference image:', background_url.substring(0, 60));
+    } else {
+      // Text prompt fallback (custom scene or studio)
+      const bgText = background_url || prompt || '';
+      inputs.prompt = [garmentDesc, bgText].filter(Boolean).join(', ');
+      console.log('Using text prompt:', inputs.prompt.substring(0, 80));
+    }
+
+    const requestBody = { model_name: 'product-to-model', inputs };
+    console.log('Sending to Fashn:', JSON.stringify(inputs).substring(0, 200));
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -74,9 +86,8 @@ export default async function handler(req, res) {
       body: JSON.stringify(requestBody)
     });
 
-    console.log('HTTP Status:', response.status);
     const text = await response.text();
-    console.log('Fashn response:', text.substring(0, 400));
+    console.log('Fashn status:', response.status, text.substring(0, 200));
 
     let data;
     try { data = JSON.parse(text); }
@@ -85,7 +96,6 @@ export default async function handler(req, res) {
     if (data.error) return res.status(500).json({ error: typeof data.error === 'object' ? JSON.stringify(data.error) : String(data.error) });
     if (!data.id) return res.status(500).json({ error: 'No ID: ' + JSON.stringify(data).substring(0, 200) });
 
-    console.log('Success! ID:', data.id);
     return res.status(200).json({ prediction_id: data.id, status: data.status });
 
   } catch (err) {
