@@ -1190,16 +1190,28 @@ async function startGenerate() {
       progressWrap.classList.remove('visible');
       studioBody.style.display = 'block';
       if (results.length > 0) {
-        // Save original CDN URLs to gallery first
-        addToGallery(results);
         updateStats(results.length);
         deductCredit();
-        // Overlay logo for display only (not saved to DB)
-        overlayLogoOnImages(results).then(function(finalImages) {
+        // Overlay logo then upload watermarked images to Imgur, save those URLs
+        overlayLogoOnImages(results).then(async function(finalImages) {
+          // Upload each watermarked image to Imgur if logo was applied
+          var urlsToSave = [];
+          for (var fi = 0; fi < finalImages.length; fi++) {
+            var fImg = finalImages[fi];
+            if (fImg.startsWith('data:')) {
+              // Has logo - upload to Imgur to get permanent URL
+              var imgurUrl = await uploadBase64ToImgur(fImg);
+              urlsToSave.push(imgurUrl || results[fi]);
+            } else {
+              urlsToSave.push(fImg); // No logo - use original CDN URL
+            }
+          }
+          addToGallery(urlsToSave);
           showRealResults(finalImages);
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         }).catch(function() {
+          addToGallery(results);
           showRealResults(results);
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
@@ -1341,53 +1353,67 @@ function selectLogoPos(btn, pos) {
   showToast('Logo position: ' + pos.replace('-', ' '));
 }
 
+
+async function uploadBase64ToImgur(base64DataUrl) {
+  try {
+    var base64Data = base64DataUrl.replace(/^data:image\/\w+;base64,/, '');
+    var res = await fetch('https://api.imgur.com/3/image', {
+      method: 'POST',
+      headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64Data, type: 'base64' })
+    });
+    var data = await res.json();
+    if (data.success) {
+      console.log('Uploaded to Imgur:', data.data.link);
+      return data.data.link;
+    }
+    return null;
+  } catch(e) {
+    console.log('Imgur upload error:', e.message);
+    return null;
+  }
+}
+
 async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
   if (!logoDataUrl) return imageUrl;
-  try {
-    // Fetch image via server proxy to bypass CORS
-    console.log('Watermark call for:', imageUrl.substring(0, 50));
-    var proxyRes = await fetch('/api/watermark', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image_url: imageUrl })
-    });
-    var proxyData = await proxyRes.json();
-    if (!proxyData.dataUrl) return imageUrl;
-
-    // Now overlay logo on canvas - no CORS issue since it's base64
+  var proxiedUrl = 'https://corsproxy.io/?' + encodeURIComponent(imageUrl);
+  return new Promise(function(resolve) {
     var logo = new Image();
-    return new Promise(function(resolve) {
-      logo.onload = function() {
-        var photo = new Image();
-        photo.onload = function() {
+    logo.onload = function() {
+      var photo = new Image();
+      photo.crossOrigin = 'anonymous';
+      photo.onload = function() {
+        try {
           var canvas = document.createElement('canvas');
-          canvas.width = photo.naturalWidth;
-          canvas.height = photo.naturalHeight;
+          canvas.width = photo.naturalWidth || 1000;
+          canvas.height = photo.naturalHeight || 1000;
           var ctx = canvas.getContext('2d');
           ctx.drawImage(photo, 0, 0);
-          var lw = canvas.width * 0.15;
-          var lh = (logo.height / logo.width) * lw;
-          var pad = canvas.width * 0.03;
+          var lw = Math.round(canvas.width * 0.15);
+          var lh = Math.round((logo.height / logo.width) * lw);
+          var pad = Math.round(canvas.width * 0.03);
           var x = canvas.width - lw - pad;
           var y = canvas.height - lh - pad;
           if (position === 'top-left')      { x=pad; y=pad; }
-          if (position === 'top-center')    { x=(canvas.width-lw)/2; y=pad; }
+          if (position === 'top-center')    { x=Math.round((canvas.width-lw)/2); y=pad; }
           if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
           if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
-          if (position === 'bottom-center') { x=(canvas.width-lw)/2; y=canvas.height-lh-pad; }
+          if (position === 'bottom-center') { x=Math.round((canvas.width-lw)/2); y=canvas.height-lh-pad; }
           ctx.drawImage(logo, x, y, lw, lh);
-          resolve(canvas.toDataURL('image/jpeg', 0.92));
-        };
-        photo.onerror = function() { resolve(imageUrl); };
-        photo.src = proxyData.dataUrl;
+          var result = canvas.toDataURL('image/jpeg', 0.92);
+          console.log('Logo applied!');
+          resolve(result);
+        } catch(e) {
+          console.log('Canvas error:', e.message);
+          resolve(imageUrl);
+        }
       };
-      logo.onerror = function() { resolve(imageUrl); };
-      logo.src = logoDataUrl;
-    });
-  } catch(e) {
-    console.log('Logo overlay error:', e.message);
-    return imageUrl;
-  }
+      photo.onerror = function() { console.log('Proxy load failed'); resolve(imageUrl); };
+      photo.src = proxiedUrl;
+    };
+    logo.onerror = function() { resolve(imageUrl); };
+    logo.src = logoDataUrl;
+  });
 }
 
 function overlayLogoOnImages(imageUrls) {
