@@ -311,8 +311,8 @@ function renderHistory(items) {
     row.className = 'history-row';
     var icon = item.type === 'video' ? '🎬' : (item.type === 'bulk' ? '⚡' : '📷');
     var iconClass = item.type === 'video' ? 'video' : (item.type === 'bulk' ? 'bulk' : 'photo');
-    var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-    var timeStr = item.date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+    var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata' });
+    var timeStr = item.date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' });
     row.innerHTML = '<div class="history-icon ' + iconClass + '">' + icon + '</div>' +
       '<div class="history-info"><div class="history-title">' + item.title + '</div><div class="history-date">' + dateStr + ' · ' + timeStr + '</div></div>' +
       '<div class="history-credits">-' + item.credits + ' credit' + (item.credits > 1 ? 's' : '') + '</div>';
