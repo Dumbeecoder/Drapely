@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   if (!image) return res.status(400).json({ error: 'Missing image' });
 
   try {
-    console.log('Fashn video - duration:', duration);
+    console.log('Fashn video - duration:', duration, 'resolution: 1080p');
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         inputs: {
           image: image,
           duration: duration || 5,
-          resolution: '720p',
+          resolution: '1080p',  // upgraded from 720p
           prompt: prompt || ''
         }
       })
