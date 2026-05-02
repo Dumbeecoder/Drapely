@@ -872,16 +872,18 @@ sb.auth.getSession().then(function(r) {
 
 
 
-function deductCredit() {
+function deductCredit(count) {
+  var amount = count || 1;
   sb.auth.getSession().then(function(r) {
     if (!r.data.session) return;
     var userId = r.data.session.user.id;
     sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
       if (res.data) {
-        var newBal = Math.max(0, res.data.balance - 1);
+        var newBal = Math.max(0, res.data.balance - amount);
         sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', userId).then(function() {
           var el = document.getElementById('stat-credits');
           if (el) el.textContent = newBal;
+          console.log('Deducted', amount, 'credits. New balance:', newBal);
         });
       }
     });
@@ -1070,6 +1072,9 @@ function selectBg(card) {
 function selectVars(btn) {
   document.querySelectorAll('.var-btn').forEach(function(b){ b.classList.remove('selected'); });
   btn.classList.add('selected');
+  var count = parseInt(btn.textContent) || 1;
+  var genBtn = document.querySelector('.generate-btn');
+  if (genBtn) genBtn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg> Generate ' + count + ' Photo' + (count>1?'s':'') + ' — ₹' + (count*25);
 }
 
 function getVarCount() {
@@ -1103,7 +1108,8 @@ async function startGenerate() {
   if (!suitFile) { showToast('Please upload your suit photo first!'); goStep(0); return; }
 
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  if (credits <= 0) { showToast('No credits! Buy more to generate.'); showBuyCredits(); return; }
+  var imageCount = getVarCount();
+  if (credits < imageCount) { showToast('Need ' + imageCount + ' credits for ' + imageCount + ' image' + (imageCount>1?'s':'') + '! Buy more.'); showBuyCredits(); return; }
 
   // Read collection name from input
   var collectionInput = document.getElementById('collection-name');
@@ -1203,7 +1209,7 @@ async function startGenerate() {
       studioBody.style.display = 'block';
       if (results.length > 0) {
         updateStats(results.length);
-        deductCredit();
+        deductCredit(results.length); // 1 credit per generated image
         // Overlay logo then upload watermarked images to Imgur, save those URLs
         overlayLogoOnImages(results).then(async function(finalImages) {
           var urlsToSave = [];
@@ -1815,19 +1821,7 @@ async function startVideoGenerate() {
           });
         });
 
-        // Deduct 5 credits
-        sb.auth.getSession().then(function(r) {
-          if (!r.data.session) return;
-          var userId = r.data.session.user.id;
-          sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
-            if (res.data) {
-              var newBal = Math.max(0, res.data.balance - 5);
-              sb.from('credits').update({ balance: newBal }).eq('user_id', userId).then(function() {
-                document.getElementById('stat-credits').textContent = newBal;
-              });
-            }
-          });
-        });
+        deductVideoCredits(); // 2 credits for 5s, 4 for 10s
 
         showToast('Your fashion video is ready!');
       } else {
