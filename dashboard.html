@@ -376,249 +376,75 @@
             <div style="font-size:12px;color:#555;margin-bottom:10px;">Pick a background scene for your photo</div>
             <input type="hidden" id="photo-prompt-val" value="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" data-bg="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" />
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem;">
-              <div class="prompt-preset selected" onclick="selectScene(this,'grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🏰</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Royal Palace</div>
-                <div style="font-size:10px;color:#555;">Grand & majestic</div>
+
+              <!-- ROYAL PALACE -->
+              <div class="prompt-preset selected" onclick="selectScene(this,'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800','Royal Palace')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">🏰 Royal Palace</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'Indian wedding mandap decorated with marigold flowers and golden drapes, warm wedding lighting')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">💍</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Wedding Mandap</div>
-                <div style="font-size:10px;color:#555;">Floral & golden</div>
+
+              <!-- WEDDING MANDAP -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800','Wedding Mandap')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">💍 Wedding Mandap</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'festive Diwali celebration with glowing diyas and warm fairy lights bokeh')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🪔</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Diwali Festive</div>
-                <div style="font-size:10px;color:#555;">Warm & glowing</div>
+
+              <!-- DIWALI -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800','Diwali Festive')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">🪔 Diwali Festive</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'heritage Rajasthani haveli with carved stone arches and warm terracotta tones')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🕌</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Heritage Haveli</div>
-                <div style="font-size:10px;color:#555;">Traditional & rustic</div>
+
+              <!-- HERITAGE HAVELI -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1524613032530-449a5dd58eae?w=800','Heritage Haveli')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1524613032530-449a5dd58eae?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">🕌 Heritage Haveli</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'lush blooming rose garden with soft pink flowers and golden hour sunlight')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🌸</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Rose Garden</div>
-                <div style="font-size:10px;color:#555;">Soft & romantic</div>
+
+              <!-- ROSE GARDEN -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800','Rose Garden')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">🌸 Rose Garden</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'beautiful golden sunset sky with warm orange tones and soft bokeh')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🌅</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Golden Sunset</div>
-                <div style="font-size:10px;color:#555;">Warm & dramatic</div>
+
+              <!-- GOLDEN SUNSET -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800','Golden Sunset')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">🌅 Golden Sunset</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'iconic Taj Mahal monument background with soft morning light and lush gardens')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🕍</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Taj Mahal</div>
-                <div style="font-size:10px;color:#555;">Iconic & timeless</div>
+
+              <!-- TAJ MAHAL -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800','Taj Mahal')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">🕍 Taj Mahal</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'grand crystal chandelier ballroom with golden walls and elegant lighting')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">✨</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Grand Ballroom</div>
-                <div style="font-size:10px;color:#555;">Glamorous & luxe</div>
+
+              <!-- GRAND BALLROOM -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800','Grand Ballroom')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">✨ Grand Ballroom</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'rooftop at night with sparkling city lights and blue hour sky')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">🌃</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">City Rooftop</div>
-                <div style="font-size:10px;color:#555;">Modern & chic</div>
+
+              <!-- CITY ROOFTOP -->
+              <div class="prompt-preset" onclick="selectScene(this,'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800','City Rooftop')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&q=70" style="width:100%;height:90px;object-fit:cover;display:block;" />
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">🌃 City Rooftop</div></div>
               </div>
-              <div class="prompt-preset" onclick="selectScene(this,'clean white professional studio background with soft even lighting')" style="padding:12px;text-align:center;">
-                <div style="font-size:22px;margin-bottom:4px;">📸</div>
-                <div style="font-size:12px;font-weight:500;color:#000;">Clean Studio</div>
-                <div style="font-size:10px;color:#555;">Simple & professional</div>
+
+              <!-- CLEAN STUDIO -->
+              <div class="prompt-preset" onclick="selectScene(this,'','Clean Studio')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <div style="width:100%;height:90px;background:linear-gradient(135deg,#f8f8f8,#eee);display:flex;align-items:center;justify-content:center;font-size:28px;">📸</div>
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">📸 Clean Studio</div></div>
               </div>
+
+              <!-- CUSTOM -->
+              <div class="prompt-preset" onclick="selectScene(this,'custom','Custom Scene')" style="padding:0;overflow:hidden;border-radius:10px;position:relative;">
+                <div style="width:100%;height:90px;background:linear-gradient(135deg,#fff0f5,#ffe0ef);display:flex;align-items:center;justify-content:center;font-size:28px;">✏️</div>
+                <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:500;color:#000;">✏️ Custom Scene</div></div>
+              </div>
+
             </div>
-
-            <div style="font-size:12px;color:#555;margin-bottom:10px;font-weight:500;">MODEL POSE</div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;" id="pose-selector">
-              <div class="prompt-preset selected" onclick="selectPoseCard(this,'standing straight facing forward, confident pose')" style="padding:10px;text-align:center;">
-                <div style="font-size:20px;margin-bottom:3px;">🧍‍♀️</div>
-                <div style="font-size:11px;font-weight:500;color:#000;">Standing</div>
-                <div style="font-size:9px;color:#555;">Front facing</div>
-              </div>
-              <div class="prompt-preset" onclick="selectPoseCard(this,'graceful walking pose mid stride, natural movement')" style="padding:10px;text-align:center;">
-                <div style="font-size:20px;margin-bottom:3px;">🚶‍♀️</div>
-                <div style="font-size:11px;font-weight:500;color:#000;">Walking</div>
-                <div style="font-size:9px;color:#555;">Natural stride</div>
-              </div>
-              <div class="prompt-preset" onclick="selectPoseCard(this,'elegant 3/4 turn pose, looking over shoulder gracefully')" style="padding:10px;text-align:center;">
-                <div style="font-size:20px;margin-bottom:3px;">💃</div>
-                <div style="font-size:11px;font-weight:500;color:#000;">3/4 Turn</div>
-                <div style="font-size:9px;color:#555;">Over shoulder</div>
-              </div>
-              <div class="prompt-preset" onclick="selectPoseCard(this,'sitting gracefully on steps, elegant seated pose')" style="padding:10px;text-align:center;">
-                <div style="font-size:20px;margin-bottom:3px;">🪑</div>
-                <div style="font-size:11px;font-weight:500;color:#000;">Sitting</div>
-                <div style="font-size:9px;color:#555;">Graceful & elegant</div>
-              </div>
-              <div class="prompt-preset" onclick="selectPoseCard(this,'hand on hip confident fashion model pose')" style="padding:10px;text-align:center;">
-                <div style="font-size:20px;margin-bottom:3px;">👸</div>
-                <div style="font-size:11px;font-weight:500;color:#000;">Fashion Pose</div>
-                <div style="font-size:9px;color:#555;">Hand on hip</div>
-              </div>
-              <div class="prompt-preset" onclick="selectPoseCard(this,'twirling spinning pose showing full outfit movement')" style="padding:10px;text-align:center;">
-                <div style="font-size:20px;margin-bottom:3px;">🌀</div>
-                <div style="font-size:11px;font-weight:500;color:#000;">Twirling</div>
-                <div style="font-size:9px;color:#555;">Show the outfit</div>
-              </div>
-            </div>
-            <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
-          </div>
-
-          <div class="step-panel" id="step-3">
-            <div class="step-label">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
-            <div style="background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:10px;padding:14px;margin-bottom:1.25rem;display:flex;gap:10px;flex-wrap:wrap;">
-              <div style="font-size:12px;color:#000;">🧣 Suit uploaded</div>
-              <div style="font-size:12px;color:#000;">👩🏽 Model selected</div>
-              <div style="font-size:12px;color:#000;">🎨 Background set</div>
-            </div>
-            <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">AI enhancements</div>
-            <div class="enhance-grid">
-              <label class="enhance-item on"><input type="checkbox" checked /> Professional lighting</label>
-              <label class="enhance-item on"><input type="checkbox" checked /> Dupatta styling</label>
-              <label class="enhance-item on"><input type="checkbox" checked /> Jewellery suggestion</label>
-              <label class="enhance-item"><input type="checkbox" /> Soft shadow effect</label>
-            </div>
-            <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">Number of images</div>
-            <div class="var-row">
-              <button class="var-btn selected" onclick="selectVars(this)">1 image</button>
-              <button class="var-btn" onclick="selectVars(this)">2 images</button>
-              <button class="var-btn" onclick="selectVars(this)">4 images</button>
-            </div>
-            <!-- LOGO UPLOAD -->
-            <div style="border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:14px;margin-bottom:1rem;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="font-size:12px;font-weight:500;color:#555;">ADD YOUR BRAND LOGO <span style="font-weight:300;color:#aaa;">(optional)</span></div>
-                <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 12px;font-size:11px;color:#E91E63;font-weight:500;">
-                  Upload Logo
-                  <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(event)" />
-                </label>
-              </div>
-              <div id="logo-preview-wrap" style="display:none;margin-bottom:10px;">
-                <img id="logo-preview" style="height:40px;object-fit:contain;border-radius:4px;border:1px solid rgba(233,30,99,0.15);padding:4px;" />
-                <button onclick="removeLogo()" style="margin-left:8px;background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">✕ Remove</button>
-              </div>
-              <div id="logo-position-wrap" style="display:none;">
-                <div style="font-size:11px;color:#555;margin-bottom:8px;">LOGO POSITION</div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↖ Top Left</button>
-                  <button class="logo-pos-btn selected" onclick="selectLogoPos(this,'top-center')" style="padding:8px 4px;border:1px solid #E91E63;border-radius:6px;background:#fff0f5;font-size:10px;cursor:pointer;color:#E91E63;font-weight:500;">↑ Top Center</button>
-                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↗ Top Right</button>
-                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↙ Bottom Left</button>
-                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-center')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↓ Bottom Center</button>
-                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↘ Bottom Right</button>
-                </div>
-              </div>
-            </div>
-
-            <button class="generate-btn" onclick="startGenerate()">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-              Generate AI Photoshoot — ₹25
-            </button>
-            <div class="step-nav" style="margin-top:1rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
-          </div>
-        </div>
-
-        <div class="progress-wrap" id="progress-wrap">
-          <div class="progress-label-text" id="progress-label">Preparing...</div>
-          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-          <div class="progress-pct" id="progress-pct">0%</div>
-          <div style="font-size:11px;color:#555;margin-top:12px;">This takes 60–120 seconds. Please wait ☕</div>
-        </div>
-      </div>
-
-      <div class="results-card">
-        <div class="results-header"><h2>Generated photos</h2><span style="font-size:12px;color:#555;">Ready to download</span></div>
-        <div class="results-body" id="results-body">
-          <div style="text-align:center;padding:2.5rem 1rem;color:#555;">
-            <div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">✨</div>
-            <div style="font-size:13px;line-height:1.7;">Your AI-generated photos will appear here after you click Generate</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    </div><!-- end photo tab -->
-
-    <!-- VIDEO STUDIO TAB -->
-    <div class="tab-content" id="content-video">
-      <div class="video-card">
-        <div class="video-header">
-          <div><h2>🎬 AI Video Studio</h2><p>Generate a model walking and showing your suit — perfect for WhatsApp & Instagram</p></div>
-          <span class="credit-badge">₹50 for 5s · ₹100 for 10s</span>
-        </div>
-        <div class="video-body">
-          <div class="video-grid">
-            <div>
-              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 1 — UPLOAD YOUR SUIT</div>
-              <div class="upload-zone" id="v-upload-zone" onclick="document.getElementById('v-suit-input').click()" style="margin-bottom:1rem;">
-                <div id="v-upload-empty">
-                  <div class="upload-icon-wrap"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
-                  <div class="upload-title" style="font-size:13px;">Upload suit photo</div>
-                  <div class="upload-hint">JPG or PNG</div>
-                </div>
-                <img id="v-suit-preview" class="upload-preview" />
-              </div>
-              <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
-
-              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 2 — CHOOSE A SCENE</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;" id="prompt-presets">
-                <div class="prompt-preset selected" onclick="selectPrompt(this,0)">
-                  <div style="font-size:18px;margin-bottom:4px;">🏰</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Royal Palace</div>
-                  <div style="font-size:10px;color:#555;">Grand corridors</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,1)">
-                  <div style="font-size:18px;margin-bottom:4px;">💍</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Wedding Mandap</div>
-                  <div style="font-size:10px;color:#555;">Floral & golden</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,2)">
-                  <div style="font-size:18px;margin-bottom:4px;">🪔</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Diwali Festive</div>
-                  <div style="font-size:10px;color:#555;">Diyas & sparkles</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,3)">
-                  <div style="font-size:18px;margin-bottom:4px;">🕌</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Heritage Haveli</div>
-                  <div style="font-size:10px;color:#555;">Rajasthani palace</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,4)">
-                  <div style="font-size:18px;margin-bottom:4px;">🌸</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Blooming Garden</div>
-                  <div style="font-size:10px;color:#555;">Golden hour flowers</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,5)">
-                  <div style="font-size:18px;margin-bottom:4px;">✨</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Grand Ballroom</div>
-                  <div style="font-size:10px;color:#555;">Crystal chandeliers</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,6)">
-                  <div style="font-size:18px;margin-bottom:4px;">🌅</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Sunset Beach</div>
-                  <div style="font-size:10px;color:#555;">Golden waves</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,7)">
-                  <div style="font-size:18px;margin-bottom:4px;">🌹</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Palace Staircase</div>
-                  <div style="font-size:10px;color:#555;">Rose petals & marble</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,8)">
-                  <div style="font-size:18px;margin-bottom:4px;">🌃</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Rooftop Night</div>
-                  <div style="font-size:10px;color:#555;">City lights glow</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,9)">
-                  <div style="font-size:18px;margin-bottom:4px;">🛕</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Temple Festival</div>
-                  <div style="font-size:10px;color:#555;">Flowers & diyas</div>
-                </div>
-                <div class="prompt-preset" onclick="selectPrompt(this,10)" style="grid-column:1/-1;">
-                  <div style="font-size:18px;margin-bottom:4px;">✏️</div>
-                  <div style="font-size:12px;font-weight:500;color:#000;">Custom Scene</div>
-                  <div style="font-size:10px;color:#555;">Write your own description</div>
-                </div>
-              </div>
-              <textarea class="prompt-input" id="v-prompt" placeholder="Your prompt will appear here..." style="display:none;margin-top:8px;" rows="3"></textarea>
+            <textarea class="prompt-input" id="v-prompt" placeholder="Your prompt will appear here..." style="display:none;margin-top:8px;" rows="3"></textarea>
 
               <div style="font-size:12px;color:#555;margin-bottom:8px;margin-top:1rem;font-weight:500;">STEP 3 — VIDEO LENGTH</div>
               <div class="duration-row">
@@ -736,16 +562,21 @@ function selectPoseCard(el, posePrompt) {
   showToast('Pose: ' + el.querySelector('div:nth-child(2)').textContent);
 }
 
-function selectScene(el, scenePrompt) {
+function selectScene(el, bgValue, sceneName) {
   document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
   el.classList.add('selected');
+  // Store background URL or prompt
+  window._selectedBgUrl = bgValue;
+  window._selectedBgName = sceneName || bgValue;
   var promptEl = document.getElementById('photo-prompt-val');
   if (promptEl) {
-    promptEl.value = scenePrompt;
-    promptEl.setAttribute('data-bg', scenePrompt);
-    console.log('Scene selected:', scenePrompt.substring(0, 60));
+    promptEl.value = bgValue;
+    promptEl.setAttribute('data-bg', bgValue);
   }
-  showToast('Scene: ' + el.querySelector('div:nth-child(2)').textContent);
+  // Show/hide custom textarea
+  var customArea = document.getElementById('custom-scene-wrap');
+  if (customArea) customArea.style.display = bgValue === 'custom' ? 'block' : 'none';
+  showToast('Scene: ' + (sceneName || 'selected'));
 }
 
 function selectPhotoPrompt(el, val) {
@@ -1153,7 +984,9 @@ async function startGenerate() {
           model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
           custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
           prompt: buildPhotoPrompt(),
-          garment_type: selectedGarmentType
+          garment_type: selectedGarmentType,
+          background_url: window._selectedBgUrl || '',
+          num_images: getVarCount()
         })
       });
       var data = await response.json();
