@@ -422,71 +422,201 @@
                 <div style="font-size:10px;color:#555;">Write your own description</div>
               </div>
             </div>
-            <textarea class="prompt-input" id="v-prompt" placeholder="Your prompt will appear here..." style="display:none;margin-top:8px;" rows="3"></textarea>
 
-              <div style="font-size:12px;color:#555;margin-bottom:8px;margin-top:1rem;font-weight:500;">STEP 3 — VIDEO LENGTH</div>
-              <div class="duration-row">
-                <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec</button>
-                <button class="dur-btn" onclick="selectDur(this,'10')">10 sec</button>
-              </div>
-
-
-
-              <div id="v-progress" class="video-progress">
-                <div style="font-size:13px;color:#555;margin-bottom:12px;" id="v-progress-label">Generating your fashion video...</div>
-                <div class="progress-track"><div class="progress-fill" id="v-progress-fill" style="width:0%;"></div></div>
-                <div class="progress-pct" id="v-progress-pct">0%</div>
-                <div style="font-size:11px;color:#555;margin-top:8px;">Videos take 2-3 minutes ☕</div>
-              </div>
-
-              <button class="video-generate-btn" onclick="startVideoGenerate()">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/></svg>
-                Generate Fashion Video — ₹50 (5s) · ₹100 (10s)
-              </button>
+            <!-- POSE SELECTION -->
+            <div style="font-size:12px;color:#555;margin-bottom:8px;margin-top:1rem;font-weight:500;">POSE</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem;">
+              <div class="pose-card selected" onclick="selectPoseCard(this,'standing straight facing forward, confident pose')">🧍‍♀️<div>Standing</div></div>
+              <div class="pose-card" onclick="selectPoseCard(this,'graceful walking pose mid stride showing full outfit')">🚶‍♀️<div>Walking</div></div>
+              <div class="pose-card" onclick="selectPoseCard(this,'elegant 3/4 turn pose looking over shoulder')">💃<div>3/4 Turn</div></div>
+              <div class="pose-card" onclick="selectPoseCard(this,'hand on hip confident fashion model pose')">👸<div>Fashion</div></div>
+              <div class="pose-card" onclick="selectPoseCard(this,'sitting gracefully on steps elegant seated pose')">🪑<div>Sitting</div></div>
+              <div class="pose-card" onclick="selectPoseCard(this,'twirling spinning pose showing full outfit movement')">🌀<div>Twirl</div></div>
             </div>
 
-            <div>
-              <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">GENERATED VIDEO</div>
-              <div class="video-result" id="v-result">
-                <div>
-                  <div style="font-size:32px;margin-bottom:8px;">🎬</div>
-                  <div>Your fashion video will appear here</div>
-                  <div style="font-size:11px;margin-top:4px;color:#888;">Takes 2-3 minutes</div>
+            <!-- CUSTOM PROMPT -->
+            <textarea class="prompt-input" id="custom-prompt" placeholder="Add extra details... (optional)" rows="2" style="margin-bottom:1rem;"></textarea>
+
+            <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
+          </div>
+
+          <!-- STEP 4 — GENERATE -->
+          <div class="step-panel" id="step-3">
+            <div class="step-label">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
+
+            <div style="background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:10px;padding:14px;margin-bottom:1.25rem;display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="font-size:13px;color:#000;">🧣 Suit uploaded</div>
+              <div style="font-size:13px;color:#000;">👩🏽 Model selected</div>
+              <div style="font-size:13px;color:#000;">🎨 Background set</div>
+            </div>
+
+            <!-- NUMBER OF IMAGES -->
+            <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">NUMBER OF IMAGES</div>
+            <div style="display:flex;gap:8px;margin-bottom:1.25rem;">
+              <button class="var-btn selected" onclick="selectVars(this)">1 image</button>
+              <button class="var-btn" onclick="selectVars(this)">2 images</button>
+              <button class="var-btn" onclick="selectVars(this)">4 images</button>
+            </div>
+
+            <!-- LOGO -->
+            <div style="border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:14px;margin-bottom:1rem;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="font-size:12px;font-weight:500;color:#555;">ADD YOUR BRAND LOGO <span style="font-weight:300;color:#aaa;">(optional)</span></div>
+                <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 12px;font-size:11px;color:#E91E63;font-weight:500;">
+                  Upload Logo
+                  <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(event)" />
+                </label>
+              </div>
+              <div id="logo-preview-wrap" style="display:none;margin-bottom:10px;align-items:center;gap:8px;">
+                <img id="logo-preview" style="height:40px;object-fit:contain;border-radius:4px;border:1px solid rgba(233,30,99,0.15);padding:4px;" />
+                <button onclick="removeLogo()" style="background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">✕ Remove</button>
+              </div>
+              <div id="logo-position-wrap" style="display:none;">
+                <div style="font-size:11px;color:#555;margin-bottom:8px;">LOGO POSITION</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↖ Top Left</button>
+                  <button class="logo-pos-btn selected" onclick="selectLogoPos(this,'top-center')" style="padding:8px 4px;border:1px solid #E91E63;border-radius:6px;background:#fff0f5;font-size:10px;cursor:pointer;color:#E91E63;font-weight:500;">↑ Top Center</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↗ Top Right</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↙ Bottom Left</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-center')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↓ Bottom Center</button>
+                  <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↘ Bottom Right</button>
                 </div>
               </div>
-              <div style="margin-top:10px;display:none;" id="v-download-wrap">
-                <button onclick="downloadVideo()" style="width:100%;padding:11px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">⬇ Download Video</button>
-                <button onclick="shareVideoWA()" style="width:100%;padding:11px;background:#25D366;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:8px;">💬 Share on WhatsApp</button>
-              </div>
             </div>
+
+            <button class="generate-btn" onclick="startGenerate()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+              Generate AI Photoshoot — ₹25
+            </button>
+            <div class="step-nav" style="margin-top:1rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
+          </div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-label">
+            <span id="progress-label-text">Analysing garment details...</span>
+            <span id="progress-pct" style="color:#E91E63;font-weight:500;">0%</span>
+          </div>
+          <div class="progress-bar-outer">
+            <div class="progress-bar-inner" id="progress-bar"></div>
+          </div>
+          <div class="progress-sub">This takes 60–120 seconds. Please wait 🎨</div>
+        </div>
+
+      </div><!-- end studio card -->
+
+      <!-- RIGHT PANEL: RESULTS -->
+      <div class="results-panel" id="results-panel">
+        <div class="results-header">
+          <div class="results-title">Generated photos</div>
+          <div class="results-sub" id="results-sub">Ready to download</div>
+        </div>
+        <div id="results-body">
+          <div style="text-align:center;padding:3rem 1rem;color:#555;">
+            <div style="font-size:48px;margin-bottom:1rem;opacity:0.3;">✦</div>
+            <div style="font-size:14px;">Your AI-generated photos will appear here after you click Generate</div>
           </div>
         </div>
       </div>
 
+    </div><!-- end studio-grid -->
+  </div><!-- end content-photo -->
 
-    </div><!-- end video tab -->
+  <!-- VIDEO STUDIO TAB -->
+  <div class="tab-content" id="content-video">
+    <div class="video-grid">
+      <!-- LEFT: CONTROLS -->
+      <div class="studio-card" style="padding:1.5rem;">
+        <h2 style="font-size:17px;font-weight:500;margin-bottom:4px;">New AI Fashion Video</h2>
+        <p style="font-size:12px;color:#555;margin-bottom:1.25rem;">Upload your suit or use a generated photo</p>
 
-  </div><!-- end content -->
-</div>
+        <!-- VIDEO SUIT UPLOAD -->
+        <div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">STEP 1 — YOUR SUIT PHOTO</div>
+        <div class="upload-zone" id="v-upload-zone" onclick="document.getElementById('v-suit-input').click()" style="margin-bottom:1rem;">
+          <div id="v-upload-empty">
+            <div class="upload-icon-wrap"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
+            <div class="upload-title">Upload suit photo</div>
+            <div class="upload-hint">Or use a photo you already generated</div>
+          </div>
+          <img id="v-suit-preview" class="upload-preview" />
+          <button class="clear-file-btn" id="v-clear-btn" onclick="clearVideoSuit(event)">✕</button>
+        </div>
+        <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
 
-<!-- CREDITS MODAL -->
-<div id="credits-modal" onclick="handleModalClick(event)">
-  <div id="credits-modal-inner">
-    <button onclick="hideBuyCredits()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:#999;line-height:1;">✕</button>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#000;margin-bottom:4px;">Buy Credits</div>
-    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;line-height:1.6;">Choose a pack · Pay via UPI · Credits added in 30 mins</div>
-    
-    <!-- PACKS -->
+        <!-- SCENE -->
+        <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 2 — CHOOSE SCENE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
+          <div class="prompt-preset selected" onclick="selectVideoPreset(this,0)" style="padding:10px;text-align:center;font-size:12px;">🌅 Golden Sunset</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,1)" style="padding:10px;text-align:center;font-size:12px;">🏰 Royal Palace</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,2)" style="padding:10px;text-align:center;font-size:12px;">🪔 Diwali Night</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,3)" style="padding:10px;text-align:center;font-size:12px;">🌸 Rose Garden</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,4)" style="padding:10px;text-align:center;font-size:12px;">💍 Wedding Mandap</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,5)" style="padding:10px;text-align:center;font-size:12px;">🌃 City Rooftop</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,6)" style="padding:10px;text-align:center;font-size:12px;">✨ Grand Ballroom</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,7)" style="padding:10px;text-align:center;font-size:12px;">🕌 Heritage Haveli</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,8)" style="padding:10px;text-align:center;font-size:12px;">🕍 Taj Mahal</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,9)" style="padding:10px;text-align:center;font-size:12px;">✏️ Custom Scene</div>
+        </div>
+        <textarea class="prompt-input" id="v-prompt" placeholder="Your prompt will appear here..." style="display:none;margin-bottom:1rem;" rows="3"></textarea>
+
+        <!-- DURATION -->
+        <div style="font-size:12px;color:#555;margin-bottom:8px;margin-top:0.5rem;font-weight:500;">STEP 3 — VIDEO LENGTH</div>
+        <div class="duration-row">
+          <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec</button>
+          <button class="dur-btn" onclick="selectDur(this,'10')">10 sec</button>
+        </div>
+
+        <button class="generate-btn" id="v-generate-btn" onclick="startVideoGenerate()" style="margin-top:1rem;">
+          ▶ Generate Fashion Video — ₹50 (5s) · ₹100 (10s)
+        </button>
+
+        <div class="video-progress" id="v-progress">
+          <div class="progress-label">
+            <span id="v-progress-label">Generating your video...</span>
+            <span id="v-progress-pct" style="color:#E91E63;font-weight:500;">0%</span>
+          </div>
+          <div class="progress-bar-outer"><div class="progress-bar-inner" id="v-progress-fill"></div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: VIDEO RESULT -->
+      <div>
+        <div class="studio-card" style="margin-bottom:16px;">
+          <div style="padding:1rem;border-bottom:1px solid rgba(233,30,99,0.1);">
+            <div style="font-size:14px;font-weight:500;">GENERATED VIDEO</div>
+          </div>
+          <div id="v-result" style="height:200px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;background:#f9f9f9;">
+            <div>
+              <div style="font-size:36px;margin-bottom:8px;">🎬</div>
+              <div>Your fashion video will appear here</div>
+              <div style="font-size:11px;margin-top:4px;color:#888;">Takes 2–3 minutes</div>
+            </div>
+          </div>
+          <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
+            <a id="v-download-btn" href="#" target="_blank" style="display:block;padding:10px;background:#E91E63;color:#fff;text-align:center;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">↓ Download Video</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end content-video -->
+
+</div><!-- end main -->
+
+<!-- BUY CREDITS MODAL -->
+<div class="modal-backdrop" id="credits-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:1.5rem;max-width:340px;width:90%;text-align:center;position:relative;">
+    <button onclick="hideBuyCredits()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:#555;">✕</button>
+    <div style="font-size:18px;font-weight:500;margin-bottom:4px;">Buy Credits</div>
+    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;">₹25 per credit · Added within 30 mins</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;">
       <div onclick="selectPack(250,10)" id="pack-250" style="border:2px solid #E91E63;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff0f5;">
         <div style="font-size:16px;font-weight:500;color:#E91E63;">₹250</div>
         <div style="font-size:10px;color:#555;margin-top:2px;">10 credits</div>
-        <div style="font-size:9px;color:#E91E63;margin-top:2px;">= 10 photos</div>
       </div>
       <div onclick="selectPack(500,20)" id="pack-500" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;">
         <div style="font-size:16px;font-weight:500;color:#000;">₹500</div>
         <div style="font-size:10px;color:#555;margin-top:2px;">20 credits</div>
-        <div style="font-size:9px;color:#555;margin-top:2px;">= 20 photos</div>
       </div>
       <div onclick="selectPack(1000,40)" id="pack-1000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;">
         <div style="font-size:16px;font-weight:500;color:#000;">₹1000</div>
@@ -494,19 +624,15 @@
         <div style="font-size:9px;color:#28a745;margin-top:2px;">Best value!</div>
       </div>
     </div>
-
-    <div style="background:#fff0f5;border-radius:10px;padding:1rem;margin-bottom:1rem;">
-      <img id="credits-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=250%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;" alt="UPI QR" />
-      <div style="font-size:12px;font-weight:500;color:#000;margin-top:8px;">GPay · PhonePe · Paytm</div>
-      <div style="font-size:11px;color:#555;margin-top:3px;">6352197977@ptyes</div>
-      <div style="font-size:14px;font-weight:600;color:#E91E63;margin-top:5px;" id="credits-amount">₹250</div>
-    </div>
+    <img id="credits-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=250%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;margin-bottom:8px;" alt="UPI QR" />
+    <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:3px;">GPay · PhonePe · Paytm</div>
+    <div style="font-size:11px;color:#555;margin-bottom:5px;">6352197977@ptyes</div>
+    <div style="font-size:14px;font-weight:600;color:#E91E63;margin-bottom:1rem;" id="credits-amount">₹250</div>
     <div style="text-align:left;background:#fff0f5;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:11px;color:#555;line-height:1.9;">
-      1. Choose a pack above<br/>2. Scan QR and pay<br/>3. Screenshot the payment<br/>4. Send on WhatsApp below<br/>5. Credits added in 30 mins ✓
+      1. Choose a pack above<br/>2. Scan QR and pay<br/>3. Send screenshot on WhatsApp below<br/>4. Credits added in 30 mins ✓
     </div>
-    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9250%20for%20Drapely%20credits." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-      Send Payment Screenshot
+    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9250%20for%20Drapely%20credits." target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:500;margin-bottom:8px;">
+      💬 Send Payment Screenshot
     </a>
   </div>
 </div>
@@ -1643,21 +1769,4 @@ async function startVideoGenerate() {
 
 </script>
 </body>
-  <div class="nav-section">STUDIO</div>
-  <a href="dashboard.html" class="nav-item active">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-    New photoshoot
-  </a>
-  <a href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')" class="nav-item">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
-    New video
-  </a>
-  <a href="bulk.html" class="nav-item">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"/></svg>
-    Bulk Studio
-  </a>
-  <a href="gallery.html" class="nav-item">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
-    My gallery
-  </a>
 </html>
