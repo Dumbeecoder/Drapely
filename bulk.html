@@ -449,25 +449,23 @@ function compressForImgur(dataUrl) {
   });
 }
 
-async function uploadBase64ToImgur(base64DataUrl) {
+async function uploadLogoedImageToStorage(base64DataUrl) {
   try {
-    var base64Data = base64DataUrl.replace(/^data:image\/\w+;base64,/, '');
-    var res = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64Data, type: 'base64' })
-    });
-    var data = await res.json();
-    if (data.success) {
-      console.log('Uploaded to Imgur:', data.data.link);
-      return data.data.link;
-    }
-    return null;
-  } catch(e) {
-    console.log('Imgur upload error:', e.message);
-    return null;
-  }
+    var parts = base64DataUrl.split(',');
+    var mimeType = parts[0].match(/:(.*?);/)[1];
+    var binary = atob(parts[1]);
+    var array = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+    var blob = new Blob([array], { type: mimeType });
+    var fileName = 'logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
+    var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
+    if (uploadResult.error) { console.log('Storage error:', uploadResult.error.message); return null; }
+    var urlResult = sb.storage.from('photoshoots').getPublicUrl(fileName);
+    console.log('Stored:', urlResult.data.publicUrl);
+    return urlResult.data.publicUrl;
+  } catch(e) { console.log('Storage error:', e.message); return null; }
 }
+
 
 async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
   if (!logoDataUrl) return imageUrl;
@@ -595,7 +593,7 @@ async function startBulkGenerate() {
           var saveUrl = imgUrl;
           if (finalUrl.startsWith('data:')) {
             var compressed = await compressForImgur(finalUrl);
-            var imgurUrl = await uploadBase64ToImgur(compressed);
+            var imgurUrl = await uploadLogoedImageToStorage(compressed);
             if (imgurUrl) saveUrl = imgurUrl;
           }
           // Save watermarked URL to gallery
