@@ -452,72 +452,69 @@ async function uploadBase64ToImgur(base64DataUrl) {
 
 async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
   if (!logoDataUrl) return imageUrl;
+
+  var directResult = await tryDirectCanvas(imageUrl, logoDataUrl, position);
+  if (directResult) { console.log('Logo applied via direct canvas!'); return directResult; }
+
   try {
     var proxyRes = await fetch('/api/watermark', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image_url: imageUrl })
     });
-    if (!proxyRes.ok) { return imageUrl; }
-    var proxyData = await proxyRes.json();
-    if (!proxyData.dataUrl) { return imageUrl; }
-    console.log('Got proxied image, applying logo...');
-    return new Promise(function(resolve) {
-      var logo = new Image();
-      logo.onload = function() {
-        var photo = new Image();
-        photo.onload = function() {
-          try {
-            var canvas = document.createElement('canvas');
-            canvas.width = photo.naturalWidth || 1000;
-            canvas.height = photo.naturalHeight || 1000;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(photo, 0, 0);
-            var lw = Math.round(canvas.width * 0.15);
-            var lh = Math.round((logo.height / logo.width) * lw);
-            var pad = Math.round(canvas.width * 0.03);
-            var x = canvas.width - lw - pad;
-            var y = canvas.height - lh - pad;
-            if (position === 'top-left')      { x=pad; y=pad; }
-            if (position === 'top-center')    { x=Math.round((canvas.width-lw)/2); y=pad; }
-            if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
-            if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
-            if (position === 'bottom-center') { x=Math.round((canvas.width-lw)/2); y=canvas.height-lh-pad; }
-            ctx.drawImage(logo, x, y, lw, lh);
-            var result = canvas.toDataURL('image/jpeg', 0.92);
-            console.log('Logo applied! Length:', result.length);
-            resolve(result);
-          } catch(e) { console.log('Canvas error:', e.message); resolve(imageUrl); }
-        };
-        photo.onerror = function() { resolve(imageUrl); };
-        photo.src = proxyData.dataUrl;
+    if (proxyRes.ok) {
+      var proxyData = await proxyRes.json();
+      if (proxyData.dataUrl) {
+        var proxyResult = await tryDirectCanvas(proxyData.dataUrl, logoDataUrl, position);
+        if (proxyResult) { console.log('Logo applied via proxy!'); return proxyResult; }
+      }
+    }
+  } catch(e) { console.log('Proxy failed:', e.message); }
+
+  return imageUrl;
+}
+
+function tryDirectCanvas(photoSrc, logoDataUrl, position) {
+  return new Promise(function(resolve) {
+    var logo = new Image();
+    logo.onload = function() {
+      var photo = new Image();
+      if (!photoSrc.startsWith('data:')) photo.crossOrigin = 'anonymous';
+      var timeout = setTimeout(function() { resolve(null); }, 8000);
+      photo.onload = function() {
+        clearTimeout(timeout);
+        try {
+          var canvas = document.createElement('canvas');
+          canvas.width = photo.naturalWidth || 1000;
+          canvas.height = photo.naturalHeight || 1000;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(photo, 0, 0);
+          var lw = Math.round(canvas.width * 0.15);
+          var lh = Math.round((logo.height / logo.width) * lw);
+          var pad = Math.round(canvas.width * 0.03);
+          var x = canvas.width - lw - pad;
+          var y = canvas.height - lh - pad;
+          if (position === 'top-left')      { x=pad; y=pad; }
+          if (position === 'top-center')    { x=Math.round((canvas.width-lw)/2); y=pad; }
+          if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
+          if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
+          if (position === 'bottom-center') { x=Math.round((canvas.width-lw)/2); y=canvas.height-lh-pad; }
+          var result = canvas.toDataURL('image/jpeg', 0.92);
+          resolve(result.length > 1000 ? result : null);
+        } catch(e) { clearTimeout(timeout); resolve(null); }
       };
-      logo.onerror = function() { resolve(imageUrl); };
-      logo.src = logoDataUrl;
-    });
-  } catch(e) { console.log('overlayLogoOnImage error:', e.message); return imageUrl; }
+      photo.onerror = function() { clearTimeout(timeout); resolve(null); };
+      photo.src = photoSrc;
+    };
+    logo.onerror = function() { resolve(null); };
+    logo.src = logoDataUrl;
+  });
 }
 
 async function overlayLogo(imageUrl, logoDataUrl, position) {
   return overlayLogoOnImage(imageUrl, logoDataUrl, position);
 }
 
-
-function compressImage(dataUrl) {
-  return new Promise(function(resolve) {
-    var img = new Image();
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var MAX = 512; var w = img.width, h = img.height;
-      if (w > h) { if (w > MAX) { h = Math.round(h*MAX/w); w = MAX; } }
-      else { if (h > MAX) { w = Math.round(w*MAX/h); h = MAX; } }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.7));
-    };
-    img.src = dataUrl;
-  });
-}
 
 async function startBulkGenerate() {
   if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
