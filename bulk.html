@@ -430,6 +430,25 @@ function compressImage(dataUrl) {
 
 // OVERLAY LOGO
 
+
+function compressForImgur(dataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var MAX = 800;
+      var w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = function() { resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
 async function uploadBase64ToImgur(base64DataUrl) {
   try {
     var base64Data = base64DataUrl.replace(/^data:image\/\w+;base64,/, '');
@@ -573,10 +592,10 @@ async function startBulkGenerate() {
         if (imgUrl) {
           // Apply logo
           var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
-          // If logo was applied, upload to Imgur to get permanent URL
           var saveUrl = imgUrl;
           if (finalUrl.startsWith('data:')) {
-            var imgurUrl = await uploadBase64ToImgur(finalUrl);
+            var compressed = await compressForImgur(finalUrl);
+            var imgurUrl = await uploadBase64ToImgur(compressed);
             if (imgurUrl) saveUrl = imgurUrl;
           }
           // Save watermarked URL to gallery
