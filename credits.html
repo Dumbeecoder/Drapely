@@ -271,18 +271,21 @@ function loadHistory(userId) {
     .order('created_at', { ascending: false })
     .then(function(r) {
       if (r.error) { console.log('History error:', r.error.message); return; }
-      allHistory = (r.data || []).map(function(item) {
+      allHistory = (r.data || []).map(function(item, idx) {
         var isVideo = item.media_type === 'video' || item.suit_type === 'Video';
         var isBulk = item.collection_name === 'Bulk Photoshoot';
         var type = isVideo ? 'video' : (isBulk ? 'bulk' : 'photo');
         var credits = isVideo ? 2 : 1;
+        var num = idx + 1;
+        var hasCustomName = item.collection_name && item.collection_name !== 'AI Photoshoot' && item.collection_name !== 'Bulk Photoshoot';
+        var title = isVideo ? ('Drapely AI Video ' + num) : (isBulk ? ('Drapely Bulk Photo ' + num) : (hasCustomName ? item.collection_name : ('Drapely AI Photo ' + num)));
         return {
           id: item.id,
           type: type,
-          title: isVideo ? 'AI Fashion Video' : (isBulk ? 'Bulk Photo' : 'AI Photoshoot'),
+          title: title,
           date: new Date(item.created_at),
           credits: credits,
-          collection: item.collection_name || 'AI Photoshoot'
+          collection: item.collection_name || ''
         };
       });
       var total = allHistory.reduce(function(s,i){ return s + i.credits; }, 0);
