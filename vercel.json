@@ -1,8 +1,16 @@
 {
   "functions": {
-    "api/generate.js": { "maxDuration": 10 },
-    "api/poll.js": { "maxDuration": 10 },
-    "api/video.js": { "maxDuration": 10 },
-    "api/watermark.js": { "maxDuration": 30 }
+    "api/generate.js": {
+      "maxDuration": 10
+    },
+    "api/poll.js": {
+      "maxDuration": 10
+    },
+    "api/video.js": {
+      "maxDuration": 10
+    },
+    "api/watermark.js": {
+      "maxDuration": 10
+    }
   }
 }
