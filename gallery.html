@@ -290,7 +290,8 @@ function renderPhotos(photos) {
 
     var body = document.createElement('div');
     body.className = 'gallery-card-body';
-    var photoTitle = (item.collection_name && item.collection_name !== 'AI Photoshoot' && item.collection_name !== 'Bulk Photoshoot') ? item.collection_name : 'Drapely AI Photo ' + (i+1);
+    var reverseNum = photos.length - i;
+    var photoTitle = (item.collection_name && item.collection_name !== 'AI Photoshoot' && item.collection_name !== 'Bulk Photoshoot') ? item.collection_name : 'Drapely AI Photo ' + reverseNum;
     body.innerHTML = '<div class="gallery-card-title">' + photoTitle + '</div><div class="gallery-card-meta">' + date + '</div>';
     card.appendChild(body);
 
@@ -340,7 +341,8 @@ function renderVideos(videos) {
 
     var body = document.createElement('div');
     body.className = 'video-card-body';
-    body.innerHTML = '<div class="video-card-title">Drapely AI Video ' + (i+1) + '</div><div class="video-card-meta">' + date + '</div>';
+    var vidReverseNum = videos.length - i;
+    body.innerHTML = '<div class="video-card-title">Drapely AI Video ' + vidReverseNum + '</div><div class="video-card-meta">' + date + '</div>';
 
     var actions = document.createElement('div');
     actions.className = 'video-card-actions';
