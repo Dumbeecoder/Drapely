@@ -1198,8 +1198,8 @@ async function startGenerate() {
           for (var fi = 0; fi < finalImages.length; fi++) {
             var fImg = finalImages[fi];
             if (fImg && fImg.startsWith('data:')) {
-              var compressed = await compressForImgur(fImg);
-              var storedUrl = await uploadLogoedImageToStorage(compressed);
+              var compressedLogo = await compressForImgur(fImg);
+              var storedUrl = await uploadLogoedImageToStorage(compressedLogo);
               urlsToSave.push(storedUrl || results[fi]);
             } else {
               urlsToSave.push(results[fi]);
@@ -1380,30 +1380,24 @@ function compressForImgur(dataUrl) {
 
 async function uploadLogoedImageToStorage(base64DataUrl) {
   try {
-    // Convert base64 to blob
     var parts = base64DataUrl.split(',');
     var mimeType = parts[0].match(/:(.*?);/)[1];
     var binary = atob(parts[1]);
     var array = new Uint8Array(binary.length);
     for (var i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
     var blob = new Blob([array], { type: mimeType });
-    
-    // Upload to Supabase Storage
     var fileName = 'logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
-    var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, {
-      contentType: 'image/jpeg', upsert: false
-    });
-    
+    console.log('Uploading to Supabase Storage, size:', Math.round(blob.size/1024) + 'KB');
+    var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
     if (uploadResult.error) {
-      console.log('Storage upload error:', uploadResult.error.message);
+      console.log('Storage FAILED:', uploadResult.error.message);
       return null;
     }
-    
     var urlResult = sb.storage.from('photoshoots').getPublicUrl(fileName);
-    console.log('Storage upload success:', urlResult.data.publicUrl);
+    console.log('Storage SUCCESS:', urlResult.data.publicUrl);
     return urlResult.data.publicUrl;
   } catch(e) {
-    console.log('Storage upload error:', e.message);
+    console.log('Storage exception:', e.message);
     return null;
   }
 }
