@@ -1194,20 +1194,20 @@ async function startGenerate() {
         deductCredit();
         // Overlay logo then upload watermarked images to Imgur, save those URLs
         overlayLogoOnImages(results).then(async function(finalImages) {
-          // Upload each watermarked image to Imgur if logo was applied
           var urlsToSave = [];
           for (var fi = 0; fi < finalImages.length; fi++) {
             var fImg = finalImages[fi];
             if (fImg.startsWith('data:')) {
-              // Has logo - upload to Imgur to get permanent URL
-              var imgurUrl = await uploadBase64ToImgur(fImg);
-              urlsToSave.push(imgurUrl || results[fi]);
+              // Compress before Imgur upload
+              var compressed = await compressForImgur(fImg);
+              var imgurUrl = await uploadBase64ToImgur(compressed);
+              urlsToSave.push(imgurUrl || results[fi]); // fallback to original if Imgur fails
             } else {
-              urlsToSave.push(fImg); // No logo - use original CDN URL
+              urlsToSave.push(fImg);
             }
           }
           addToGallery(urlsToSave);
-          showRealResults(finalImages);
+          showRealResults(finalImages); // show full quality with logo
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         }).catch(function() {
@@ -1270,6 +1270,11 @@ function showRealResults(images) {
 // LOGO FUNCTIONS
 // GARMENT TYPE
 var selectedGarmentType = 'suit';
+
+function newShoot() {
+  goStep(0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 function loadCustomModel(e) {
   var file = e.target.files[0];
@@ -1354,19 +1359,47 @@ function selectLogoPos(btn, pos) {
 }
 
 
+
+function compressForImgur(dataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var MAX = 800; // max 800px for Imgur
+      var w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = function() { resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
 async function uploadBase64ToImgur(base64DataUrl) {
   try {
-    var base64Data = base64DataUrl.replace(/^data:image\/\w+;base64,/, '');
+    // Strip data URL prefix - Imgur wants raw base64
+    var base64Data = base64DataUrl.split(',')[1];
+    if (!base64Data) { console.log('No base64 data'); return null; }
+    console.log('Uploading to Imgur, size:', Math.round(base64Data.length/1024) + 'KB');
     var res = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
-      headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64Data, type: 'base64' })
+      headers: {
+        'Authorization': 'Client-ID 546c25a59c58ad7',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ image: base64Data, type: 'base64', name: 'drapely.jpg' })
     });
+    console.log('Imgur status:', res.status);
     var data = await res.json();
-    if (data.success) {
-      console.log('Uploaded to Imgur:', data.data.link);
+    console.log('Imgur response:', JSON.stringify(data).substring(0, 100));
+    if (data.success && data.data && data.data.link) {
+      console.log('Imgur upload success:', data.data.link);
       return data.data.link;
     }
+    console.log('Imgur failed:', data.data && data.data.error);
     return null;
   } catch(e) {
     console.log('Imgur upload error:', e.message);
