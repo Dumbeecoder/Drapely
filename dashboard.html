@@ -1197,17 +1197,16 @@ async function startGenerate() {
           var urlsToSave = [];
           for (var fi = 0; fi < finalImages.length; fi++) {
             var fImg = finalImages[fi];
-            if (fImg.startsWith('data:')) {
-              // Compress before Imgur upload
+            if (fImg && fImg.startsWith('data:')) {
               var compressed = await compressForImgur(fImg);
-              var imgurUrl = await uploadBase64ToImgur(compressed);
-              urlsToSave.push(imgurUrl || results[fi]); // fallback to original if Imgur fails
+              var storedUrl = await uploadLogoedImageToStorage(compressed);
+              urlsToSave.push(storedUrl || results[fi]);
             } else {
-              urlsToSave.push(fImg);
+              urlsToSave.push(results[fi]);
             }
           }
           addToGallery(urlsToSave);
-          showRealResults(finalImages); // show full quality with logo
+          showRealResults(finalImages);
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         }).catch(function() {
@@ -1269,6 +1268,7 @@ function showRealResults(images) {
 
 // LOGO FUNCTIONS
 // GARMENT TYPE
+var selectedDuration = '5';
 var selectedGarmentType = 'suit';
 
 function newShoot() {
@@ -1378,31 +1378,32 @@ function compressForImgur(dataUrl) {
   });
 }
 
-async function uploadBase64ToImgur(base64DataUrl) {
+async function uploadLogoedImageToStorage(base64DataUrl) {
   try {
-    // Strip data URL prefix - Imgur wants raw base64
-    var base64Data = base64DataUrl.split(',')[1];
-    if (!base64Data) { console.log('No base64 data'); return null; }
-    console.log('Uploading to Imgur, size:', Math.round(base64Data.length/1024) + 'KB');
-    var res = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Client-ID 546c25a59c58ad7',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ image: base64Data, type: 'base64', name: 'drapely.jpg' })
+    // Convert base64 to blob
+    var parts = base64DataUrl.split(',');
+    var mimeType = parts[0].match(/:(.*?);/)[1];
+    var binary = atob(parts[1]);
+    var array = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+    var blob = new Blob([array], { type: mimeType });
+    
+    // Upload to Supabase Storage
+    var fileName = 'logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
+    var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, {
+      contentType: 'image/jpeg', upsert: false
     });
-    console.log('Imgur status:', res.status);
-    var data = await res.json();
-    console.log('Imgur response:', JSON.stringify(data).substring(0, 100));
-    if (data.success && data.data && data.data.link) {
-      console.log('Imgur upload success:', data.data.link);
-      return data.data.link;
+    
+    if (uploadResult.error) {
+      console.log('Storage upload error:', uploadResult.error.message);
+      return null;
     }
-    console.log('Imgur failed:', data.data && data.data.error);
-    return null;
+    
+    var urlResult = sb.storage.from('photoshoots').getPublicUrl(fileName);
+    console.log('Storage upload success:', urlResult.data.publicUrl);
+    return urlResult.data.publicUrl;
   } catch(e) {
-    console.log('Imgur upload error:', e.message);
+    console.log('Storage upload error:', e.message);
     return null;
   }
 }
@@ -1709,11 +1710,16 @@ async function startVideoGenerate() {
   }, 2000);
 
   try {
-    var reader = new FileReader();
-    var imgData = await new Promise(function(resolve) {
-      reader.onload = function(e){ resolve(e.target.result); };
-      reader.readAsDataURL(suitFile);
-    });
+    var imgData;
+    if (fromPhotoUrl) {
+      imgData = fromPhotoUrl; // already a URL, use directly
+    } else {
+      var reader = new FileReader();
+      imgData = await new Promise(function(resolve) {
+        reader.onload = function(e){ resolve(e.target.result); };
+        reader.readAsDataURL(suitFile);
+      });
+    }
 
     var response = await fetch('/api/video', {
       method: 'POST',
