@@ -562,10 +562,10 @@ async function startBulkGenerate() {
     progressText.textContent = i + ' / ' + bulkQueue.length + ' done';
     progressFill.style.width = Math.round((i / bulkQueue.length) * 100) + '%';
     try {
-      var compressed = await compressImage(bulkQueue[i].dataUrl);
+      var compressedGarment = await compressImage(bulkQueue[i].dataUrl);
       var response = await fetch('/api/generate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ garment_img: compressed, model_index: modelIndex, prompt: prompt, garment_type: garmentType })
+        body: JSON.stringify({ garment_img: compressedGarment, model_index: modelIndex, prompt: prompt, garment_type: garmentType })
       });
       var data = await response.json();
       if (data.error || !data.prediction_id) {
@@ -588,13 +588,14 @@ async function startBulkGenerate() {
       if (pollResult && pollResult.output) {
         var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
         if (imgUrl) {
-          // Apply logo
           var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
+          console.log('finalUrl type:', finalUrl.startsWith('data:') ? 'base64 WITH LOGO' : 'cdn url NO LOGO');
           var saveUrl = imgUrl;
           if (finalUrl.startsWith('data:')) {
-            var compressed = await compressForImgur(finalUrl);
-            var imgurUrl = await uploadLogoedImageToStorage(compressed);
-            if (imgurUrl) saveUrl = imgurUrl;
+            var compressedLogo = await compressForImgur(finalUrl);
+            var storedUrl = await uploadLogoedImageToStorage(compressedLogo);
+            console.log('Storage URL:', storedUrl);
+            if (storedUrl) saveUrl = storedUrl;
           }
           // Save watermarked URL to gallery
           if (currentUserId) {
