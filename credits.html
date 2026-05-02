@@ -271,14 +271,16 @@ function loadHistory(userId) {
     .order('created_at', { ascending: false })
     .then(function(r) {
       if (r.error) { console.log('History error:', r.error.message); return; }
+      var totalItems = (r.data || []).length;
       allHistory = (r.data || []).map(function(item, idx) {
+        var reverseIdx = totalItems - idx; // oldest = 1, newest = totalItems
         var isVideo = item.media_type === 'video' || item.suit_type === 'Video';
         var isBulk = item.collection_name === 'Bulk Photoshoot';
         var type = isVideo ? 'video' : (isBulk ? 'bulk' : 'photo');
         var credits = isVideo ? 2 : 1;
-        var num = idx + 1;
+        // num replaced by reverseIdx
         var hasCustomName = item.collection_name && item.collection_name !== 'AI Photoshoot' && item.collection_name !== 'Bulk Photoshoot';
-        var title = isVideo ? ('Drapely AI Video ' + num) : (isBulk ? ('Drapely Bulk Photo ' + num) : (hasCustomName ? item.collection_name : ('Drapely AI Photo ' + num)));
+        var title = isVideo ? ('Drapely AI Video ' + reverseIdx) : (isBulk ? ('Drapely Bulk Photo ' + reverseIdx) : (hasCustomName ? item.collection_name : ('Drapely AI Photo ' + reverseIdx)));
         return {
           id: item.id,
           type: type,
@@ -314,8 +316,8 @@ function renderHistory(items) {
     row.className = 'history-row';
     var icon = item.type === 'video' ? '🎬' : (item.type === 'bulk' ? '⚡' : '📷');
     var iconClass = item.type === 'video' ? 'video' : (item.type === 'bulk' ? 'bulk' : 'photo');
-    var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata' });
-    var timeStr = item.date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' });
+    var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata', hour12:false });
+    var timeStr = item.date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
     row.innerHTML = '<div class="history-icon ' + iconClass + '">' + icon + '</div>' +
       '<div class="history-info"><div class="history-title">' + item.title + '</div><div class="history-date">' + dateStr + ' · ' + timeStr + '</div></div>' +
       '<div class="history-credits">-' + item.credits + ' credit' + (item.credits > 1 ? 's' : '') + '</div>';
