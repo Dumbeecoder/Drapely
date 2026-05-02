@@ -1435,33 +1435,57 @@ function tryDirectCanvas(photoSrc, logoDataUrl, position) {
     logo.onload = function() {
       var photo = new Image();
       if (!photoSrc.startsWith('data:')) photo.crossOrigin = 'anonymous';
-      var timeout = setTimeout(function() { resolve(null); }, 8000);
+      var timeout = setTimeout(function() { console.log('Canvas timeout'); resolve(null); }, 10000);
       photo.onload = function() {
         clearTimeout(timeout);
         try {
           var canvas = document.createElement('canvas');
-          canvas.width = photo.naturalWidth || 1000;
-          canvas.height = photo.naturalHeight || 1000;
+          var W = photo.naturalWidth || photo.width || 800;
+          var H = photo.naturalHeight || photo.height || 1000;
+          canvas.width = W;
+          canvas.height = H;
           var ctx = canvas.getContext('2d');
-          ctx.drawImage(photo, 0, 0);
-          var lw = Math.round(canvas.width * 0.15);
-          var lh = Math.round((logo.height / logo.width) * lw);
-          var pad = Math.round(canvas.width * 0.03);
-          var x = canvas.width - lw - pad;
-          var y = canvas.height - lh - pad;
+          ctx.drawImage(photo, 0, 0, W, H);
+
+          // Logo: 20% of width
+          var lw = Math.round(W * 0.20);
+          var scale = lw / logo.naturalWidth;
+          var lh = Math.round(logo.naturalHeight * scale);
+          var pad = Math.round(W * 0.03);
+
+          var x = W - lw - pad;
+          var y = H - lh - pad;
           if (position === 'top-left')      { x=pad; y=pad; }
-          if (position === 'top-center')    { x=Math.round((canvas.width-lw)/2); y=pad; }
-          if (position === 'top-right')     { x=canvas.width-lw-pad; y=pad; }
-          if (position === 'bottom-left')   { x=pad; y=canvas.height-lh-pad; }
-          if (position === 'bottom-center') { x=Math.round((canvas.width-lw)/2); y=canvas.height-lh-pad; }
+          if (position === 'top-center')    { x=Math.round((W-lw)/2); y=pad; }
+          if (position === 'top-right')     { x=W-lw-pad; y=pad; }
+          if (position === 'bottom-left')   { x=pad; y=H-lh-pad; }
+          if (position === 'bottom-center') { x=Math.round((W-lw)/2); y=H-lh-pad; }
+
+          ctx.globalAlpha = 1.0;
+          ctx.drawImage(logo, x, y, lw, lh);
+          console.log('Drew logo at', x, y, 'size', lw, 'x', lh, 'on canvas', W, 'x', H);
+
           var result = canvas.toDataURL('image/jpeg', 0.92);
-          resolve(result.length > 1000 ? result : null);
-        } catch(e) { clearTimeout(timeout); resolve(null); }
+          if (result && result.length > 5000) {
+            resolve(result);
+          } else {
+            console.log('Canvas result too small:', result.length);
+            resolve(null);
+          }
+        } catch(e) {
+          clearTimeout(timeout);
+          console.log('Canvas error:', e.message);
+          resolve(null);
+        }
       };
-      photo.onerror = function() { clearTimeout(timeout); resolve(null); };
+      photo.onerror = function(e) {
+        clearTimeout(timeout);
+        console.log('Photo load failed for:', photoSrc.substring(0,60));
+        resolve(null);
+      };
       photo.src = photoSrc;
     };
-    logo.onerror = function() { resolve(null); };
+    logo.onerror = function() { console.log('Logo load failed'); resolve(null); };
     logo.src = logoDataUrl;
   });
 }
