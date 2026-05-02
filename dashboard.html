@@ -1600,7 +1600,7 @@ function renderVideoGallery() {
       vid.controls = true;
       vid.setAttribute('playsinline', '');
       vid.setAttribute('preload', 'metadata');
-      vid.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;background:#000;';
+      vid.style.cssText = 'width:100%;aspect-ratio:9/16;object-fit:contain;display:block;background:#000;max-height:400px;';
       card.appendChild(vid);
 
       var body = document.createElement('div');
@@ -1780,7 +1780,7 @@ async function startVideoGenerate() {
       var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
       if (videoUrl) {
         currentVideoUrl = videoUrl;
-        document.getElementById('v-result').innerHTML = '<video controls autoplay style="width:100%;height:200px;object-fit:cover;display:block;border-radius:10px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        document.getElementById('v-result').innerHTML = '<video controls autoplay style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:10px;background:#000;max-height:500px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
         document.getElementById('v-download-wrap').style.display = 'block';
 
         // Save video to gallery and Supabase
