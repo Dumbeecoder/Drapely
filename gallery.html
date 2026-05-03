@@ -347,13 +347,28 @@ function renderVideos(videos) {
     var actions = document.createElement('div');
     actions.className = 'video-card-actions';
 
-    var dlA = document.createElement('a');
-    dlA.href = url;
-    dlA.target = '_blank';
+    var dlA = document.createElement('button');
     dlA.className = 'action-btn primary';
     dlA.textContent = '↓ Download';
-    dlA.style.textDecoration = 'none';
-    dlA.style.textAlign = 'center';
+    dlA.onclick = (function(u, i){ return async function() {
+      showToast('Preparing download...');
+      try {
+        var response = await fetch(u);
+        var blob = await response.blob();
+        var blobUrl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = 'drapely-video-' + i + '.mp4';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
+        showToast('Downloaded!');
+      } catch(e) {
+        window.open(u, '_blank');
+        showToast('Opening video...');
+      }
+    }; })(url, i+1);
 
     var waBtn = document.createElement('button');
     waBtn.className = 'action-btn';
@@ -381,13 +396,25 @@ function closeViewer() {
   document.getElementById('viewer-modal').classList.remove('open');
 }
 
-function downloadImage(url, num) {
-  var a = document.createElement('a');
-  a.href = url;
-  a.target = '_blank';
-  a.download = 'drapely-photo-' + num + '.jpg';
-  a.click();
-  showToast('Downloading...');
+async function downloadImage(url, num) {
+  showToast('Preparing download...');
+  try {
+    var response = await fetch(url);
+    var blob = await response.blob();
+    var blobUrl = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = 'drapely-photo-' + num + '.jpg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 1000);
+    showToast('Downloaded!');
+  } catch(e) {
+    // Fallback: open in new tab
+    window.open(url, '_blank');
+    showToast('Opening photo...');
+  }
 }
 
 function showToast(msg) {
