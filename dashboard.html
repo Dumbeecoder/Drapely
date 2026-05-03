@@ -321,7 +321,7 @@
         <!-- STEP 2: MODEL -->
         <div class="step-panel" id="step-1">
           <div class="step-label">STEP 2 — CHOOSE YOUR MODEL</div>
-                                  <div class="model-grid">
+                                            <div class="model-grid">
             <div class="model-card selected" id="model-0" onclick="selectModel(0,this)">
               <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" class="model-img" />
               <div class="model-name">Model 1</div>
@@ -353,27 +353,13 @@
               <div class="model-type">Elegant fit</div>
             </div>
             <div class="model-card" id="model-98" onclick="selectModel(98,this)">
-              <div style="height:120px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:32px;">🪆</div>
+              <div style="height:120px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:32px;border-radius:8px;">🪆</div>
               <div class="model-name">Mannequin</div>
               <div class="model-type">No model</div>
             </div>
             <div class="model-card" id="model-99" onclick="selectModel(99,this)">
               <div class="upload-zone" id="custom-model-zone" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()" style="height:120px;margin:0;">
-                <div id="custom-model-empty" style="text-align:center;"><div style="font-size:24px;margin-bottom:4px;">📷</div><div style="font-size:11px;color:#555;">Upload your model</div></div>
-                <img id="custom-model-preview" class="upload-preview" />
-              </div>
-              <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
-              <div class="model-name">Custom</div>
-              <div class="model-type">Your photo</div>
-            </div>
-          </div><div style="font-size:11px;color:#555;">Upload your model</div></div>
-                <img id="custom-model-preview" class="upload-preview" />
-              </div>
-              <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
-              <div class="model-name">Custom</div>
-              <div class="model-type">Your photo</div>
-            </div>
-          </div><div style="font-size:11px;color:#555;">Upload your model</div></div>
+                <div id="custom-model-empty" style="text-align:center;"><div style="font-size:24px;margin-bottom:4px;">📷</div><div style="font-size:11px;color:#555;">Upload model</div></div>
                 <img id="custom-model-preview" class="upload-preview" />
               </div>
               <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
