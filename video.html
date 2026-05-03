@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Video — Drapely</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --pink:#E91E63;
+      --pink-light:#ff6b9d;
+      --pink-pale:#fff0f5;
+      --deep:#000000;
+      --muted:#555555;
+      --text:#000000;
+      --border:rgba(233,30,99,0.2);
+      --border-mid:rgba(233,30,99,0.4);
+      --surface:#ffffff;
+      --white:#ffffff;
+    }
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#000;border-right:1px solid rgba(233,30,99,0.2);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
+    .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
+    .sidebar-brand span{color:#E91E63}
+    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+    .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff}
+    .nav-item.active{background:rgba(233,30,99,0.15);color:#fff}
+    .nav-icon{width:16px;height:16px;flex-shrink:0}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500}
+    .sidebar-footer{padding:0 0.75rem;border-top:1px solid rgba(233,30,99,0.2);padding-top:1rem}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2)}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-plan{font-size:10px;color:#E91E63}
+    .main{margin-left:220px;min-height:100vh}
+    .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
+    .topbar-sub{font-size:12px;color:#555;margin-left:10px}
+    .beta-pill{padding:5px 14px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;font-weight:500;color:#E91E63}
+    .content{padding:2rem}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem}
+    .stat-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1.25rem 1.5rem}
+    .stat-card.highlight{border-color:#E91E63}
+    .stat-label{font-size:11px;color:#555;letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
+    .stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#000;line-height:1;margin-bottom:4px}
+    .stat-note{font-size:11px;color:#E91E63}
+    .studio-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+    .studio-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
+    .studio-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .studio-header h2{font-size:15px;font-weight:500;color:#000}
+    .studio-header p{font-size:12px;color:#555;margin-top:2px}
+    .step-pills{display:flex;gap:6px}
+    .step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:#f5f5f5;border:1px solid #ddd;color:#555;transition:all 0.2s}
+    .step-pill.active{background:#E91E63;border-color:#E91E63;color:#fff}
+    .step-pill.done{background:#dcfce7;border-color:#86efac;color:#16a34a}
+    .studio-body{padding:1.5rem}
+    .step-panel{display:none}
+    .step-panel.active{display:block}
+    .step-label{font-size:12px;font-weight:500;color:#555;margin-bottom:12px;letter-spacing:0.5px}
+    .upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+    .upload-zone:hover{border-color:#E91E63;background:#ffe0ec}
+    .upload-zone.has-file{padding:0;border-style:solid;border-color:#E91E63}
+    .upload-icon-wrap{width:52px;height:52px;background:rgba(233,30,99,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+    .upload-icon-wrap svg{width:22px;height:22px;color:#E91E63}
+    .upload-title{font-size:15px;font-weight:500;color:#000;margin-bottom:4px}
+    .upload-hint{font-size:12px;color:#555}
+    .upload-preview{width:100%;max-height:300px;object-fit:contain;display:none;border-radius:10px;padding:1rem;background:#fff0f5}
+    .clear-file-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center}
+    .models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+    .model-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#f9f9f9}
+    .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
+    .model-card.selected{border-color:#E91E63;border-width:2px}
+    .model-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;}
+    .model-avatar{height:160px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f8f8f8}
+    .model-avatar img{width:100%;height:100%;object-fit:contain;object-position:top center}
+    .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center}
+    .model-card.selected .model-check{display:flex}
+    .model-info{padding:8px;border-top:1px solid rgba(233,30,99,0.15)}
+    .model-name{font-size:11px;font-weight:500;color:#000}
+    .model-spec{font-size:10px;color:#555}
+    .pose-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
+    .pose-tag{padding:6px 14px;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:12px;color:#555;cursor:pointer;transition:all 0.15s;background:#fff}
+    .pose-tag:hover,.pose-tag.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+    .bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+    .bg-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.15s}
+    .bg-card:hover{border-color:#E91E63;transform:translateY(-1px)}
+    .bg-card.selected{border-color:#E91E63;border-width:2px}
+    .bg-swatch{height:56px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+    .bg-label{padding:5px 6px;font-size:10px;color:#555;background:#fff;border-top:1px solid rgba(233,30,99,0.15)}
+    .enhance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
+    .enhance-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;transition:all 0.15s;background:#fff;font-size:12px;color:#000}
+    .enhance-item:hover,.enhance-item.on{border-color:#E91E63;background:#fff0f5}
+    .enhance-item input{accent-color:#E91E63;width:13px;height:13px}
+    .var-row{display:flex;gap:8px;margin-bottom:1.5rem}
+    .var-btn{flex:1;padding:9px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
+    .var-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+    .generate-btn{width:100%;padding:14px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
+    .generate-btn:hover{background:#c2185b}
+    .step-nav{display:flex;justify-content:space-between;margin-top:1.5rem;gap:10px}
+    .btn-back{padding:10px 20px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:#555;cursor:pointer}
+    .btn-back:hover{border-color:#E91E63}
+    .btn-next{padding:10px 24px;border:none;border-radius:8px;background:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#fff;cursor:pointer}
+    .btn-next:hover{background:#222}
+    .progress-wrap{display:none;padding:2rem 1.5rem;text-align:center}
+    .progress-wrap.visible{display:block}
+    .progress-label-text{font-size:13px;color:#555;margin-bottom:12px}
+    .progress-track{height:5px;background:rgba(233,30,99,0.15);border-radius:3px;overflow:hidden;margin-bottom:8px}
+    .progress-fill{height:100%;background:#E91E63;border-radius:3px;width:0%;transition:width 0.5s ease}
+    .progress-pct{font-size:12px;color:#E91E63}
+    .results-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
+    .results-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .results-header h2{font-size:15px;font-weight:500;color:#000}
+    .results-body{padding:1.5rem}
+    .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+    .result-item{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden}
+    .result-actions{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(233,30,99,0.15)}
+    .result-btn{flex:1;padding:6px 0;border:1px solid rgba(233,30,99,0.3);border-radius:6px;background:#fff;font-size:11px;color:#555;cursor:pointer;font-family:'DM Sans',sans-serif}
+    .result-btn:hover,.result-btn.primary{background:#E91E63;color:#fff;border-color:#E91E63}
+    .new-shoot-btn{width:100%;padding:11px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:0.5rem}
+    .gallery-panel{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-top:20px}
+    .gallery-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .gallery-header h2{font-size:15px;font-weight:500;color:#000}
+    .gallery-empty{padding:3rem;text-align:center;color:#555;font-size:14px}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:1.5rem}
+    .gallery-item{border-radius:10px;overflow:hidden;border:1px solid rgba(233,30,99,0.15)}
+    .gallery-item img{width:100%;height:200px;object-fit:cover;display:block}
+    .gallery-item-label{padding:6px 10px;font-size:11px;color:#555}
+    /* CREDITS MODAL */
+    #credits-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
+    #credits-modal-inner{background:#fff;border-radius:14px;padding:1.5rem;max-width:320px;width:100%;text-align:center;position:relative;max-height:90vh;overflow-y:auto}
+    .studio-tab{padding:14px 24px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+    .studio-tab.active{color:#E91E63;border-bottom-color:#E91E63}
+    .studio-tab:hover{color:#E91E63}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .video-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-bottom:20px}
+    .video-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+    .video-header h2{font-size:15px;font-weight:500;color:#000}
+    .video-header p{font-size:12px;color:#555;margin-top:2px}
+    .video-body{padding:1.5rem}
+    .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .prompt-preset{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
+    .prompt-preset:hover{border-color:#E91E63;background:#fff0f5;}
+    .prompt-preset.selected{border-color:#E91E63;border-width:2px;background:#fff0f5;}
+    .prompt-input{width:100%;padding:12px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;resize:vertical;min-height:80px}
+    .prompt-input:focus{border-color:#E91E63}
+    .duration-row{display:flex;gap:8px;margin-bottom:1rem}
+    .dur-btn{flex:1;padding:8px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
+    .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+    .video-generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:1rem}
+    .video-generate-btn:hover{background:linear-gradient(135deg,#c2185b,#ad1457)}
+    .video-result{background:#000;border-radius:10px;overflow:hidden;height:230px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;}
+    .video-result video{width:100%;height:230px;object-fit:cover;display:block;}
+    .video-progress{display:none;text-align:center;padding:2rem}
+    .video-progress.visible{display:block}
+    .credit-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;color:#E91E63;font-weight:500}
+    /* MOBILE NAV */
+    .burger{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#E91E63;border:none;border-radius:8px;width:40px;height:40px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
+    .burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:150;}
+    .mobile-overlay.open{display:block;}
+    .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0;}
+    .mobile-nav.open{left:0;}
+    .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .mobile-nav-brand span{color:#E91E63;}
+    .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2);}
+    .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);}
+    .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
+    .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
+    .mobile-user-plan{font-size:10px;color:#E91E63;}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.studio-grid{grid-template-columns:1fr}.video-grid{grid-template-columns:1fr}.burger{display:flex !important;}.topbar{padding-left:60px;}}
+    @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.bg-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
+      .pose-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:20px;transition:all 0.15s;}
+    .pose-card.selected,.pose-card:hover{border-color:#E91E63;background:#fff0f5;}
+    .progress-bar-outer{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:8px 0;}
+    .progress-bar-inner{height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;}
+    .results-panel{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;}
+    .results-header{padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.1);display:flex;align-items:center;justify-content:space-between;}
+    .results-title{font-size:15px;font-weight:500;}
+    .results-sub{font-size:12px;color:#555;}
+    .duration-row{display:flex;gap:8px;margin-bottom:1rem;}
+    .dur-btn{flex:1;padding:10px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
+    .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff;}
+    .video-progress{display:none;margin-top:1rem;}
+    .video-progress.visible{display:block;}
+</style>
+</head>
+<body>
+<button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="index.html" class="mobile-nav-brand">Drape<span>ly</span></a>
+  <div class="mobile-nav-items">
+    <a class="mobile-nav-item" href="dashboard.html" onclick="closeMobileNav()">📸 New Photoshoot</a>
+    <a class="mobile-nav-item active" href="video.html" onclick="closeMobileNav()">🎬 New Video</a>
+    <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼 My Gallery</a>
+    <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
+    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
+    <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
+  </div>
+  <div class="mobile-nav-footer">
+    <div class="mobile-user">
+      <div class="mobile-user-avatar" id="m-avatar">?</div>
+      <div><div class="mobile-user-name" id="m-name">...</div><div class="mobile-user-plan">Beta · Free</div></div>
+    </div>
+  </div>
+</div>
+<div class="sidebar">
+  <a href="index.html" class="brand">Drape<span>ly</span></a>
+  <div class="nav-section">STUDIO</div>
+  <a href="dashboard.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+    New photoshoot
+  </a>
+  <a href="video.html" class="nav-item active">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+    New video
+  </a>
+  <a href="bulk.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"/></svg>
+    Bulk Studio
+  </a>
+  <a href="gallery.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
+    My gallery
+  </a>
+  <div class="nav-section">ACCOUNT</div>
+  <a href="settings.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    Settings
+  </a>
+  <a href="credits.html" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+    Credits
+  </a>
+  <a href="#" onclick="doSignOut()" class="nav-item">
+    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+    Sign out
+  </a>
+  <div class="nav-footer"><div class="user-pill"><div class="user-av" id="user-avatar">?</div><div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div></div></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div><h1 class="page-title">New Video</h1><p class="page-sub">Create an AI fashion video</p></div>
+    <div class="beta-badge">✦ Beta — Free access</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Videos generated</div><div class="stat-val" id="stat-videos">0</div><div class="stat-note">Generated here</div></div>
+    <div class="stat-card" style="border-color:rgba(233,30,99,0.4);"><div class="stat-label">Your credits</div><div class="stat-val" id="stat-credits">—</div><div class="stat-note"><a href="credits.html" style="color:#E91E63;text-decoration:none;">+ Add credits</a></div></div>
+  </div>
+
+    <div class="video-grid">
+
+      <!-- LEFT: VIDEO CONTROLS -->
+      <div class="studio-card" style="padding:1.5rem;">
+        <h2 style="font-size:17px;font-weight:500;margin-bottom:4px;">New AI Fashion Video</h2>
+        <p style="font-size:12px;color:#555;margin-bottom:1.25rem;">Upload your suit or use a generated photo</p>
+
+        <div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:500;">STEP 1 — YOUR SUIT PHOTO</div>
+        <div class="upload-zone" id="v-upload-zone" onclick="document.getElementById('v-suit-input').click()" style="margin-bottom:1rem;">
+          <div id="v-upload-empty">
+            <div class="upload-icon-wrap"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
+            <div class="upload-title">Upload suit photo</div>
+            <div class="upload-hint">Or use a photo you already generated</div>
+          </div>
+          <img id="v-suit-preview" class="upload-preview" />
+          <button class="clear-file-btn" id="v-clear-btn" onclick="clearVideoSuit(event)">✕</button>
+        </div>
+        <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
+
+        <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">STEP 2 — CHOOSE SCENE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
+          <div class="prompt-preset selected" onclick="selectVideoPreset(this,0)" style="padding:10px;text-align:center;font-size:12px;">🌅 Golden Sunset</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,1)" style="padding:10px;text-align:center;font-size:12px;">🏰 Royal Palace</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,2)" style="padding:10px;text-align:center;font-size:12px;">🪔 Diwali Night</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,3)" style="padding:10px;text-align:center;font-size:12px;">🌸 Rose Garden</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,4)" style="padding:10px;text-align:center;font-size:12px;">💍 Wedding Mandap</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,5)" style="padding:10px;text-align:center;font-size:12px;">🌃 City Rooftop</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,6)" style="padding:10px;text-align:center;font-size:12px;">✨ Grand Ballroom</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,7)" style="padding:10px;text-align:center;font-size:12px;">🕌 Heritage Haveli</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,8)" style="padding:10px;text-align:center;font-size:12px;">🕍 Taj Mahal</div>
+          <div class="prompt-preset" onclick="selectVideoPreset(this,9)" style="padding:10px;text-align:center;font-size:12px;">✏️ Custom Scene</div>
+        </div>
+        <textarea class="prompt-input" id="v-prompt" placeholder="Your prompt will appear here..." style="display:none;margin-bottom:1rem;" rows="3"></textarea>
+
+        <div style="font-size:12px;color:#555;margin-bottom:8px;margin-top:0.5rem;font-weight:500;">STEP 3 — VIDEO LENGTH</div>
+        <div style="display:flex;gap:8px;margin-bottom:1rem;">
+          <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec</button>
+          <button class="dur-btn" onclick="selectDur(this,'10')">10 sec</button>
+        </div>
+
+        <button class="generate-btn" id="v-generate-btn" onclick="startVideoGenerate()" style="margin-top:0.5rem;">
+          ▶ Generate Fashion Video — ₹50 (5s) · ₹100 (10s)
+        </button>
+
+        <div id="v-progress" style="display:none;margin-top:1rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span id="v-progress-label" style="font-size:12px;color:#555;">Generating your video...</span>
+            <span id="v-progress-pct" style="font-size:12px;color:#E91E63;font-weight:500;">0%</span>
+          </div>
+          <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;">
+            <div id="v-progress-fill" style="height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: VIDEO RESULT -->
+      <div>
+        <div class="studio-card">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.1);">
+            <div style="font-size:13px;font-weight:500;color:#555;">GENERATED VIDEO</div>
+          </div>
+          <div id="v-result" style="min-height:200px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;background:#f9f9f9;padding:2rem;">
+            <div>
+              <div style="font-size:36px;margin-bottom:8px;">🎬</div>
+              <div>Your fashion video will appear here</div>
+              <div style="font-size:11px;margin-top:4px;color:#888;">Takes 2–3 minutes</div>
+            </div>
+          </div>
+          <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
+            <div style="display:flex;gap:8px;">
+              <a id="v-download-btn" href="#" target="_blank" style="flex:1;display:block;padding:10px;background:#E91E63;color:#fff;text-align:center;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">↓ Download Video</a>
+              <button onclick="shareVideo()" style="padding:10px 16px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;">💬</button>
+            </div>
+          </div>
+        </div>
+        <!-- Video Gallery -->
+        <div id="video-gallery-wrap" style="display:none;margin-top:16px;">
+          <div class="studio-card" style="padding:1rem 1.25rem;">
+            <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Recent Videos</div>
+            <div class="video-grid" id="video-gallery-grid"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end content-video -->
+
+
+</div>
+<!-- BUY CREDITS MODAL -->
+<div class="modal-backdrop" id="credits-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:1.5rem;max-width:340px;width:90%;text-align:center;position:relative;">
+    <button onclick="hideBuyCredits()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:#555;">✕</button>
+    <div style="font-size:18px;font-weight:500;margin-bottom:4px;">Buy Credits</div>
+    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;">₹25 per credit · Added within 30 mins</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;">
+      <div onclick="selectPack(250,10)" id="pack-250" style="border:2px solid #E91E63;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff0f5;"><div style="font-size:16px;font-weight:500;color:#E91E63;">₹250</div><div style="font-size:10px;color:#555;margin-top:2px;">10 credits</div></div>
+      <div onclick="selectPack(500,20)" id="pack-500" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">₹500</div><div style="font-size:10px;color:#555;margin-top:2px;">20 credits</div></div>
+      <div onclick="selectPack(1000,40)" id="pack-1000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">₹1000</div><div style="font-size:10px;color:#555;margin-top:2px;">40 credits</div><div style="font-size:9px;color:#28a745;margin-top:2px;">Best value!</div></div>
+    </div>
+    <img id="credits-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=250%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;margin-bottom:8px;" alt="UPI QR" />
+    <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:3px;">GPay · PhonePe · Paytm</div>
+    <div style="font-size:11px;color:#555;margin-bottom:5px;">6352197977@ptyes</div>
+    <div style="font-size:14px;font-weight:600;color:#E91E63;margin-bottom:1rem;" id="credits-amount">₹250</div>
+    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9250%20for%20Drapely%20credits." target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:500;margin-bottom:8px;">💬 Send Payment Screenshot</a>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+// PRESET PROMPTS
+var presetPrompts = [
+  'Graceful Indian woman walking slowly on a grand royal palace corridor, wearing a stunning embroidered Indian salwar kameez suit, golden chandeliers, marble floors, warm royal lighting, full body, slow motion, cinematic 4K fashion video',
+  'Beautiful Indian bride walking in a lavish wedding mandap decorated with marigold flowers and golden drapes, wearing an exquisite Indian designer suit with heavy embroidery, full body, dreamy soft lighting, cinematic slow motion',
+  'Elegant Indian woman twirling gracefully in a festive Diwali setting, sparkling diyas and fairy lights in background, wearing a gorgeous embroidered Indian suit with dupatta flowing, full body, warm golden bokeh, cinematic 4K',
+  'Indian woman walking through a stunning haveli courtyard with carved arches and rose petals on floor, wearing a royal Indian designer suit, soft warm sunlight, full body, slow motion, heritage rajasthani palace background',
+  'Beautiful Indian model posing in a lush blooming garden with pink and white flowers, wearing an elegant floral Indian suit, golden hour sunlight, full body, slow graceful movement, cinematic fashion video 4K',
+  'Graceful Indian woman doing a slow 360 degree spin in a grand ballroom with crystal chandeliers and golden walls, wearing a heavily embroidered Indian designer suit, full body, magical sparkle lighting, cinematic slow motion',
+  'Indian woman walking on a beach at sunset, golden hour light, wearing a flowing Indian suit with dupatta blowing in breeze, full body, slow motion waves in background, warm orange and pink sky, cinematic 4K',
+  'Elegant Indian woman descending a grand marble staircase in a palace, wearing a royal embroidered Indian suit, surrounded by rose petals, warm yellow lighting, full body, slow graceful movement, cinematic fashion video',
+  'Beautiful Indian model at a rooftop terrace during blue hour, city lights glowing in background, wearing a stunning embroidered Indian designer suit, full body, elegant slow movement, premium fashion video 4K',
+  'Indian woman walking through a stunning temple entrance decorated with flowers and diyas, wearing a traditional embroidered Indian suit in bright colours, full body, warm festive lighting, cinematic slow motion video',
+  ''
+];
+var selectedPresetIndex = 0;
+
+var selectedPosePrompt = 'standing straight facing forward, confident pose';
+
+function selectPoseCard(el, posePrompt) {
+  // Support both old .prompt-preset and new .pose-card systems
+  var parent = el.parentElement;
+  parent.querySelectorAll('.prompt-preset, .pose-card').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedPosePrompt = posePrompt;
+  showToast('Pose: ' + el.querySelector('div:nth-child(2)').textContent);
+}
+
+function selectScene(el, scenePrompt) {
+  document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  var promptEl = document.getElementById('photo-prompt-val');
+  if (promptEl) {
+    promptEl.value = scenePrompt;
+    promptEl.setAttribute('data-bg', scenePrompt);
+    console.log('Scene selected:', scenePrompt.substring(0, 60));
+  }
+  showToast('Scene: ' + el.querySelector('div:nth-child(2)').textContent);
+}
+
+function selectPhotoPrompt(el, val) {
+  document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  var promptEl = document.getElementById('photo-prompt-val');
+  promptEl.setAttribute('data-style', val);
+  var bgPrompt = promptEl.getAttribute('data-bg') || '';
+  promptEl.value = (val + ' ' + bgPrompt).trim();
+  showToast('✓ Style: ' + el.querySelector('div:nth-child(2)').textContent);
+}
+
+function selectPrompt(el, idx) {
+  document.querySelectorAll('.prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedPresetIndex = idx;
+  var textarea = document.getElementById('v-prompt');
+  if (idx === 10) {
+    textarea.style.display = 'block';
+    textarea.value = '';
+    textarea.focus();
+    textarea.placeholder = 'Describe the video you want — e.g. Indian model walking on beach in a floral suit...';
+  } else {
+    textarea.style.display = 'none';
+    textarea.value = presetPrompts[idx];
+  }
+}
+
+// Build prompt from all user selections
+function buildPhotoPrompt() {
+  // Get selected pose
+  var poseTag = document.querySelector('.pose-tag.selected');
+  var pose = poseTag ? poseTag.textContent.trim() : 'Standing front';
+
+  // Pose map to natural language
+  var poseMap = {
+    'Standing front': 'standing straight facing forward, full body',
+    '3/4 turn': 'standing in elegant 3/4 turn, full body',
+    'Side profile': 'side profile pose, full body',
+    'Walking pose': 'graceful walking pose, full body',
+    'Sitting graceful': 'sitting gracefully, full body',
+    'Full length': 'full length standing pose'
+  };
+  var poseDesc = poseMap[pose] || 'standing straight, full body';
+
+  // Get background prompt
+  var bgEl = document.getElementById('photo-prompt-val');
+  var bgPrompt = bgEl ? (bgEl.getAttribute('data-bg') || '') : '';
+  var stylePrompt = bgEl ? (bgEl.getAttribute('data-style') || '') : '';
+
+  // Build garment-specific prompt
+  var garmentDesc = selectedGarmentType === 'saree'
+    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+
+  var parts = [garmentDesc, selectedPosePrompt || poseDesc];
+  if (stylePrompt) parts.push(stylePrompt);
+  if (bgPrompt) parts.push(bgPrompt);
+  parts.push('professional Indian fashion photography, high quality, full outfit visible');
+
+  var finalPrompt = parts.join(', ');
+  console.log('Final photo prompt:', finalPrompt);
+  return finalPrompt;
+}
+
+// TAB SWITCHING - defined early so mobile nav can use it
+// Auto open video tab if coming from gallery
+if (sessionStorage.getItem('openTab') === 'video') {
+  sessionStorage.removeItem('openTab');
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function(){ switchTab('video'); }, 300);
+  });
+}
+function switchTab(tab) {
+  document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+  var tabEl = document.getElementById('tab-' + tab);
+  var contentEl = document.getElementById('content-' + tab);
+  if(tabEl) tabEl.classList.add('active');
+  if(contentEl) contentEl.classList.add('active');
+  // Update mobile nav active state
+  document.querySelectorAll('.mobile-nav-item').forEach(function(el){ el.classList.remove('active'); });
+}
+
+function openMobileNav() {
+  document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+var currentStep = 0;
+var selectedModelIndex = 0;
+var galleryImages = [];
+
+// Load user
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var fullname = (fname + ' ' + lname).trim();
+  var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('topbar-sub').textContent = 'Welcome back, ' + (fname || displayName) + '!';
+  if(document.getElementById('m-avatar')) document.getElementById('m-avatar').textContent = initials;
+  if(document.getElementById('m-name')) document.getElementById('m-name').textContent = displayName;
+  loadCredits(user.id);
+  loadGalleryFromDB(user.id);
+});
+
+
+
+function deductCredit(count) {
+  var amount = count || 1;
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) return;
+    var userId = r.data.session.user.id;
+    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
+      if (res.data) {
+        var newBal = Math.max(0, res.data.balance - amount);
+        sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', userId).then(function() {
+          var el = document.getElementById('stat-credits');
+          if (el) el.textContent = newBal;
+          console.log('Deducted', amount, 'credits. New balance:', newBal);
+        });
+      }
+    });
+  });
+}
+
+function updateStats(count) {
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) return;
+    sb.from('photoshoots').select('id,media_type,image_url').eq('user_id', r.data.session.user.id).then(function(res) {
+      if (!res.data) return;
+      var photos = res.data.filter(function(i){ return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4')); });
+      var el1 = document.getElementById('stat-shoots');
+      var el2 = document.getElementById('stat-images');
+      if (el1) el1.textContent = photos.length;
+      if (el2) el2.textContent = photos.length;
+    });
+  });
+}
+
+function selectPack(amount, credits) {
+  // Update all pack borders
+  ['250','500','1000'].forEach(function(p) {
+    var el = document.getElementById('pack-' + p);
+    if (el) {
+      el.style.border = '1.5px solid rgba(233,30,99,0.2)';
+      el.style.background = '#fff';
+    }
+  });
+  // Highlight selected
+  var sel = document.getElementById('pack-' + amount);
+  if (sel) { sel.style.border = '2px solid #E91E63'; sel.style.background = '#fff0f5'; }
+  // Update QR code
+  var qr = document.getElementById('credits-qr');
+  if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=' + amount + '%26cu=INR%26tn=Drapely+Credits';
+  // Update amount display
+  var amtEl = document.getElementById('credits-amount');
+  if (amtEl) amtEl.textContent = '₹' + amount;
+  // Update WhatsApp link
+  var wa = document.getElementById('wa-credits-link');
+  if (wa) wa.href = 'https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9' + amount + '%20for%20Drapely%20' + credits + '%20credits.';
+}
+
+function showBuyCredits() {
+  var modal = document.getElementById('credits-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function hideBuyCredits() {
+  var modal = document.getElementById('credits-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function handleModalClick(e) {
+  if (e.target.id === 'credits-modal') hideBuyCredits();
+}
+
+function switchGalleryTab(tab) {
+  var photosBtn = document.getElementById('gtab-photos');
+  var videosBtn = document.getElementById('gtab-videos');
+  var photosDiv = document.getElementById('gallery-body');
+  var videosDiv = document.getElementById('video-gallery-body');
+  if (tab === 'photos') {
+    if (photosBtn) { photosBtn.style.background = '#E91E63'; photosBtn.style.color = '#fff'; }
+    if (videosBtn) { videosBtn.style.background = '#fff'; videosBtn.style.color = '#555'; }
+    if (photosDiv) photosDiv.style.display = 'block';
+    if (videosDiv) videosDiv.style.display = 'none';
+  } else {
+    if (videosBtn) { videosBtn.style.background = '#E91E63'; videosBtn.style.color = '#fff'; }
+    if (photosBtn) { photosBtn.style.background = '#fff'; photosBtn.style.color = '#555'; }
+    if (videosDiv) videosDiv.style.display = 'block';
+    if (photosDiv) photosDiv.style.display = 'none';
+  }
+}
+
+function loadGalleryFromDB(userId) {
+  sb.from('photoshoots')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', {ascending: false})
+    .limit(100)
+    .then(function(r) {
+      if (r.error) return;
+      var allData = r.data || [];
+      var photos = allData.filter(function(i){
+        return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4'));
+      });
+      var videos = allData.filter(function(i){
+        return i.media_type === 'video' || (i.image_url && i.image_url.includes('.mp4'));
+      });
+      galleryImages = [];
+      videoGallery = [];
+      photos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
+      videos.forEach(function(item){ if(item.image_url) videoGallery.push(item.image_url); });
+      var statShoots = document.getElementById('stat-shoots');
+      var statImages = document.getElementById('stat-images');
+      if (statShoots) statShoots.textContent = photos.length;
+      if (statImages) statImages.textContent = photos.length;
+      var statVideos = document.getElementById('stat-suits');
+      if (statVideos) statVideos.textContent = videos.length;
+      renderGallery();
+      renderVideoGallery();
+  });
+}
+
+function loadCredits(userId) {
+  sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
+    if (r.data !== null && r.data !== undefined) {
+      document.getElementById('stat-credits').textContent = r.data.balance;
+    } else {
+      document.getElementById('stat-credits').textContent = '3';
+      sb.from('credits').upsert({ user_id: userId, balance: 3 }, { onConflict: 'user_id' });
+    }
+  });
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+function goStep(n) {
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  document.getElementById('pill-' + currentStep).classList.remove('active');
+  if (n > currentStep) document.getElementById('pill-' + currentStep).classList.add('done');
+  else document.getElementById('pill-' + currentStep).classList.remove('done');
+  currentStep = n;
+  document.getElementById('step-' + n).classList.add('active');
+  document.getElementById('pill-' + n).classList.add('active');
+}
+
+function loadSuit(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('suit-preview').src = ev.target.result;
+    document.getElementById('suit-preview').style.display = 'block';
+    document.getElementById('upload-empty').style.display = 'none';
+    document.getElementById('clear-btn').style.display = 'flex';
+    document.getElementById('upload-zone').classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearSuit(e) {
+  e.stopPropagation();
+  document.getElementById('suit-preview').style.display = 'none';
+  document.getElementById('upload-empty').style.display = 'block';
+  document.getElementById('clear-btn').style.display = 'none';
+  document.getElementById('upload-zone').classList.remove('has-file');
+  document.getElementById('suit-input').value = '';
+}
+
+function selectModel(card, idx) {
+  document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+  card.classList.add('selected');
+  selectedModelIndex = idx;
+}
+
+function selectPose(tag) {
+  document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
+  tag.classList.add('selected');
+}
+
+function selectBg(card) {
+  document.querySelectorAll('.bg-card').forEach(function(c){ c.classList.remove('selected'); });
+  card.classList.add('selected');
+  var promptEl = document.getElementById('photo-prompt-val');
+  if (promptEl && card.dataset.prompt) {
+    var bgPrompt = card.dataset.prompt;
+    promptEl.setAttribute('data-bg', bgPrompt);
+    var stylePrompt = promptEl.getAttribute('data-style') || '';
+    promptEl.value = (stylePrompt ? stylePrompt + ', ' : '') + bgPrompt;
+    console.log('Photo prompt set to:', promptEl.value);
+  }
+}
+
+function selectVars(btn) {
+  document.querySelectorAll('.var-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  var count = parseInt(btn.textContent) || 1;
+  var genBtn = document.querySelector('.generate-btn');
+  if (genBtn) genBtn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg> Generate ' + count + ' Photo' + (count>1?'s':'') + ' — ₹' + (count*25);
+}
+
+function getVarCount() {
+  var s = document.querySelector('.var-btn.selected');
+  return s ? parseInt(s.textContent) : 1;
+}
+
+function compressImage(file) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var MAX = 512;
+        var w = img.width, h = img.height;
+        if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+        else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function startGenerate() {
+  var suitFile = document.getElementById('suit-input').files[0];
+  if (!suitFile) { showToast('Please upload your suit photo first!'); goStep(0); return; }
+
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  var imageCount = getVarCount();
+  if (credits < imageCount) { showToast('Need ' + imageCount + ' credits for ' + imageCount + ' image' + (imageCount>1?'s':'') + '! Buy more.'); showBuyCredits(); return; }
+
+  // Read collection name from input
+  var collectionInput = document.getElementById('collection-name');
+  var collectionName = (collectionInput && collectionInput.value.trim()) ? collectionInput.value.trim() : null;
+
+  var progressWrap = document.getElementById('progress-wrap');
+  var progressFill = document.getElementById('progress-fill');
+  var progressLabel = document.getElementById('progress-label');
+  var progressPct = document.getElementById('progress-pct');
+  var studioBody = document.getElementById('studio-body');
+
+  studioBody.style.display = 'none';
+  progressWrap.classList.add('visible');
+  progressFill.style.width = '0%';
+  progressPct.textContent = '0%';
+
+  var msgs = ['Compressing suit photo...','Sending to AI model...','Analysing garment details...','Compositing onto model...','Applying lighting & effects...','Almost ready...'];
+  var progress = 0;
+  var interval = setInterval(function() {
+    if (progress < 88) {
+      progress += Math.random() * 5 + 1;
+      if (progress > 88) progress = 88;
+      progressFill.style.width = Math.round(progress) + '%';
+      progressPct.textContent = Math.round(progress) + '%';
+      progressLabel.textContent = msgs[Math.min(Math.floor(progress / 16), msgs.length - 1)];
+    }
+  }, 1000);
+
+  try {
+    var compressed = await compressImage(suitFile);
+    var count = getVarCount();
+    var results = [];
+
+    for (var i = 0; i < count; i++) {
+      progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
+      var response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          garment_img: compressed,
+          model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
+          custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
+          prompt: buildPhotoPrompt(),
+          garment_type: selectedGarmentType
+        })
+      });
+      var data = await response.json();
+      if (data.error) {
+        clearInterval(interval);
+        progressWrap.classList.remove('visible');
+        studioBody.style.display = 'block';
+        showToast('Error: ' + String(data.error).substring(0, 80));
+        return;
+      }
+
+      // Poll for result via our api/poll endpoint
+      var predId = data.prediction_id;
+      if (!predId) {
+        clearInterval(interval);
+        progressWrap.classList.remove('visible');
+        studioBody.style.display = 'block';
+        showToast('No prediction ID returned');
+        return;
+      }
+
+      var pollResult = null;
+      var pollAttempts = 0;
+      while (pollAttempts < 60) {
+        await new Promise(function(r){ setTimeout(r, 3000); });
+        var pollRes = await fetch('/api/poll?id=' + predId);
+        pollResult = await pollRes.json();
+        progressLabel.textContent = 'AI generating... (' + Math.round((pollAttempts+1)*3) + 's)';
+        if (pollResult.status === 'succeeded') break;
+        if (pollResult.status === 'failed') {
+          clearInterval(interval);
+          progressWrap.classList.remove('visible');
+          studioBody.style.display = 'block';
+          showToast('Generation failed: ' + (pollResult.error || 'Try again'));
+          return;
+        }
+        pollAttempts++;
+      }
+
+      if (pollResult && pollResult.output && pollResult.output.length > 0) {
+        var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
+        results = results.concat(imgs);
+      }
+    }
+
+    clearInterval(interval);
+    progressFill.style.width = '100%';
+    progressPct.textContent = '100%';
+    progressLabel.textContent = 'Your photoshoot is ready!';
+
+    setTimeout(function() {
+      progressWrap.classList.remove('visible');
+      studioBody.style.display = 'block';
+      if (results.length > 0) {
+        updateStats(results.length);
+        deductCredit(results.length); // 1 credit per generated image
+        // Overlay logo then upload watermarked images to Imgur, save those URLs
+        overlayLogoOnImages(results).then(async function(finalImages) {
+          var urlsToSave = [];
+          for (var fi = 0; fi < finalImages.length; fi++) {
+            var fImg = finalImages[fi];
+            if (fImg && fImg.startsWith('data:')) {
+              var compressedLogo = await compressForImgur(fImg);
+              var storedUrl = await uploadLogoedImageToStorage(compressedLogo);
+              urlsToSave.push(storedUrl || results[fi]);
+            } else {
+              urlsToSave.push(results[fi]);
+            }
+          }
+          addToGallery(urlsToSave, collectionName);
+          showRealResults(finalImages);
+          showToast('Photoshoot ready! Download your images.');
+          goStep(0);
+        }).catch(function() {
+          addToGallery(results, collectionName);
+          showRealResults(results);
+          showToast('Photoshoot ready! Download your images.');
+          goStep(0);
+        });
+      } else {
+        showToast('No images returned. Please try again.');
+        goStep(0);
+      }
+    }, 600);
+
+  } catch(err) {
+    clearInterval(interval);
+    progressWrap.classList.remove('visible');
+    studioBody.style.display = 'block';
+    showToast('Error: ' + err.message);
+  }
+}
+
+function showRealResults(images) {
+  var body = document.getElementById('results-body');
+  if (!body) return;
+  body.innerHTML = '';
+  var grid = document.createElement('div');
+  grid.className = 'results-grid';
+  images.forEach(function(url, i) {
+    var item = document.createElement('div');
+    item.className = 'result-item';
+    var img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;border-radius:10px 10px 0 0;';
+    var actions = document.createElement('div');
+    actions.className = 'result-actions';
+    var dlBtn = document.createElement('button');
+    dlBtn.className = 'result-btn primary';
+    dlBtn.textContent = '↓ Download';
+    dlBtn.onclick = (function(u, n){ return function(){ downloadImg(u, n); }; })(url, i+1);
+    var vidBtn = document.createElement('button');
+    vidBtn.className = 'result-btn';
+    vidBtn.style.cssText = 'background:#000;color:#fff;border-color:#000;';
+    vidBtn.textContent = '🎬 Make Video';
+    vidBtn.onclick = (function(u){ return function(){ convertToVideo(u); }; })(url);
+    actions.appendChild(dlBtn);
+    actions.appendChild(vidBtn);
+    item.appendChild(img);
+    item.appendChild(actions);
+    grid.appendChild(item);
+  });
+  body.appendChild(grid);
+  var newBtn = document.createElement('button');
+  newBtn.className = 'new-shoot-btn';
+  newBtn.textContent = '+ Start a new photoshoot';
+  newBtn.onclick = newShoot;
+  body.appendChild(newBtn);
+}
+
+// LOGO FUNCTIONS
+// GARMENT TYPE
+var selectedDuration = '5';
+var selectedGarmentType = 'suit';
+
+function newShoot() {
+  goStep(0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function loadCustomModel(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('custom-model-preview');
+    var empty = document.getElementById('custom-model-empty');
+    var card = document.getElementById('custom-model-input').previousElementSibling;
+    preview.src = ev.target.result;
+    preview.style.display = 'block';
+    empty.style.display = 'none';
+    // Select this custom model card
+    document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+    card.classList.add('selected');
+    // Store custom model data URL for API
+    window._customModelUrl = ev.target.result;
+    selectedModelIndex = 99; // flag for custom
+    showToast('Custom model uploaded!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function selectGarmentType(type) {
+  selectedGarmentType = type;
+  var suitEl = document.getElementById('gtype-suit');
+  var sareeEl = document.getElementById('gtype-saree');
+  if (type === 'suit') {
+    suitEl.style.border = '2px solid #E91E63';
+    suitEl.style.background = '#fff0f5';
+    sareeEl.style.border = '1.5px solid rgba(233,30,99,0.2)';
+    sareeEl.style.background = '#fff';
+  } else {
+    sareeEl.style.border = '2px solid #E91E63';
+    sareeEl.style.background = '#fff0f5';
+    suitEl.style.border = '1.5px solid rgba(233,30,99,0.2)';
+    suitEl.style.background = '#fff';
+  }
+}
+
+var logoDataUrl = null;
+var logoPosition = 'top-center';
+
+function loadLogo(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    logoDataUrl = ev.target.result;
+    var preview = document.getElementById('logo-preview');
+    var previewWrap = document.getElementById('logo-preview-wrap');
+    var posWrap = document.getElementById('logo-position-wrap');
+    if (preview) preview.src = logoDataUrl;
+    if (previewWrap) previewWrap.style.display = 'flex';
+    if (posWrap) posWrap.style.display = 'block';
+    showToast('Logo uploaded! Choose position below.');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo() {
+  logoDataUrl = null;
+  document.getElementById('logo-input').value = '';
+  document.getElementById('logo-preview-wrap').style.display = 'none';
+  document.getElementById('logo-position-wrap').style.display = 'none';
+  showToast('Logo removed');
+}
+
+function selectLogoPos(btn, pos) {
+  document.querySelectorAll('.logo-pos-btn').forEach(function(b) {
+    b.style.border = '1px solid rgba(233,30,99,0.2)';
+    b.style.background = '#fff';
+    b.style.color = '#555';
+    b.style.fontWeight = 'normal';
+  });
+  btn.style.border = '1px solid #E91E63';
+  btn.style.background = '#fff0f5';
+  btn.style.color = '#E91E63';
+  btn.style.fontWeight = '500';
+  logoPosition = pos;
+  showToast('Logo position: ' + pos.replace('-', ' '));
+}
+
+
+
+function compressForImgur(dataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var MAX = 800; // max 800px for Imgur
+      var w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = function() { resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
+async function uploadLogoedImageToStorage(base64DataUrl) {
+  try {
+    var parts = base64DataUrl.split(',');
+    var mimeType = parts[0].match(/:(.*?);/)[1];
+    var binary = atob(parts[1]);
+    var array = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+    var blob = new Blob([array], { type: mimeType });
+    var fileName = 'logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
+    console.log('Uploading to Supabase Storage, size:', Math.round(blob.size/1024) + 'KB');
+    var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
+    if (uploadResult.error) {
+      console.log('Storage FAILED:', uploadResult.error.message);
+      return null;
+    }
+    var urlResult = sb.storage.from('photoshoots').getPublicUrl(fileName);
+    console.log('Storage SUCCESS:', urlResult.data.publicUrl);
+    return urlResult.data.publicUrl;
+  } catch(e) {
+    console.log('Storage exception:', e.message);
+    return null;
+  }
+}
+
+async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
+  if (!logoDataUrl) return imageUrl;
+
+  // Step 1: Try direct canvas with crossOrigin
+  var directResult = await tryDirectCanvas(imageUrl, logoDataUrl, position);
+  if (directResult) { console.log('Logo applied via direct canvas!'); return directResult; }
+
+  // Step 2: Try via our watermark proxy
+  try {
+    var proxyRes = await fetch('/api/watermark', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: imageUrl })
+    });
+    if (proxyRes.ok) {
+      var proxyData = await proxyRes.json();
+      if (proxyData.dataUrl) {
+        var proxyResult = await tryDirectCanvas(proxyData.dataUrl, logoDataUrl, position);
+        if (proxyResult) { console.log('Logo applied via proxy!'); return proxyResult; }
+      }
+    }
+  } catch(e) { console.log('Proxy failed:', e.message); }
+
+  console.log('Logo overlay failed, returning original');
+  return imageUrl;
+}
+
+function tryDirectCanvas(photoSrc, logoDataUrl, position) {
+  return new Promise(function(resolve) {
+    var logo = new Image();
+    logo.onload = function() {
+      var photo = new Image();
+      if (!photoSrc.startsWith('data:')) photo.crossOrigin = 'anonymous';
+      var timeout = setTimeout(function() { console.log('Canvas timeout'); resolve(null); }, 10000);
+      photo.onload = function() {
+        clearTimeout(timeout);
+        try {
+          var canvas = document.createElement('canvas');
+          var W = photo.naturalWidth || photo.width || 800;
+          var H = photo.naturalHeight || photo.height || 1000;
+          canvas.width = W;
+          canvas.height = H;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(photo, 0, 0, W, H);
+
+          // Logo: 20% of width
+          var lw = Math.round(W * 0.20);
+          var scale = lw / logo.naturalWidth;
+          var lh = Math.round(logo.naturalHeight * scale);
+          var pad = Math.round(W * 0.03);
+
+          var x = W - lw - pad;
+          var y = H - lh - pad;
+          if (position === 'top-left')      { x=pad; y=pad; }
+          if (position === 'top-center')    { x=Math.round((W-lw)/2); y=pad; }
+          if (position === 'top-right')     { x=W-lw-pad; y=pad; }
+          if (position === 'bottom-left')   { x=pad; y=H-lh-pad; }
+          if (position === 'bottom-center') { x=Math.round((W-lw)/2); y=H-lh-pad; }
+
+          ctx.globalAlpha = 1.0;
+          ctx.drawImage(logo, x, y, lw, lh);
+          console.log('Drew logo at', x, y, 'size', lw, 'x', lh, 'on canvas', W, 'x', H);
+
+          var result = canvas.toDataURL('image/jpeg', 0.92);
+          if (result && result.length > 5000) {
+            resolve(result);
+          } else {
+            console.log('Canvas result too small:', result.length);
+            resolve(null);
+          }
+        } catch(e) {
+          clearTimeout(timeout);
+          console.log('Canvas error:', e.message);
+          resolve(null);
+        }
+      };
+      photo.onerror = function(e) {
+        clearTimeout(timeout);
+        console.log('Photo load failed for:', photoSrc.substring(0,60));
+        resolve(null);
+      };
+      photo.src = photoSrc;
+    };
+    logo.onerror = function() { console.log('Logo load failed'); resolve(null); };
+    logo.src = logoDataUrl;
+  });
+}
+
+
+function overlayLogoOnImages(imageUrls) {
+  if (!logoDataUrl) return Promise.resolve(imageUrls);
+  var pos = logoPosition || 'bottom-right';
+  return Promise.all(imageUrls.map(function(url) {
+    return overlayLogoOnImage(url, logoDataUrl, pos);
+  }));
+}
+
+
+function convertToVideo(imageUrl) {
+  // Switch to video tab
+  switchTab('video');
+
+  // Wait for tab to render then auto-fill the image
+  setTimeout(function() {
+    // Set preview image in video upload zone
+    var preview = document.getElementById('v-suit-preview');
+    var empty = document.getElementById('v-upload-empty');
+    var zone = document.getElementById('v-upload-zone');
+
+    if (preview) {
+      preview.src = imageUrl;
+      preview.style.display = 'block';
+    }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+
+    // Store the URL so video generation uses it directly
+    window._videoFromPhotoUrl = imageUrl;
+
+    showToast('Photo loaded! Choose a scene and generate your video 🎬');
+
+    // Scroll to top
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }, 300);
+}
+
+function downloadImg(url, num) {
+  var a = document.createElement('a');
+  a.href = url; a.download = 'drapely-' + num + '.jpg'; a.target = '_blank';
+  a.click();
+  showToast('Downloading image ' + num + '...');
+}
+
+function addToGallery(images, collectionName) {
+  galleryImages = images.concat(galleryImages);
+  renderGallery();
+  // Save to Supabase
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) return;
+    var userId = r.data.session.user.id;
+    images.forEach(function(url) {
+      sb.from('photoshoots').insert({
+        user_id: userId,
+        image_url: url,
+        collection_name: collectionName || 'AI Photoshoot',
+        suit_type: 'Designer Suit',
+        image_count: 1,
+        media_type: 'photo'
+      }).then(function(r){ if(r.error) console.log('Save error:', r.error.message); });
+    });
+  });
+}
+
+function renderGallery() {
+  var body = document.getElementById('gallery-body');
+  if (!body) return;
+  if (galleryImages.length === 0) {
+    body.innerHTML = '<div class="gallery-empty"><div style="font-size:40px;margin-bottom:1rem;opacity:0.4;">📷</div>No photos yet!</div>';
+  } else {
+    var html = '<div class="gallery-grid" style="padding:1rem;">';
+    galleryImages.forEach(function(url, i) {
+      html += '<div class="gallery-item"><img src="' + url + '" />';
+      html += '<div class="gallery-item-label" style="display:flex;justify-content:space-between;align-items:center;"><span>Photo ' + (i+1) + '</span>';
+      html += '<a href="' + url + '" target="_blank" style="background:#E91E63;color:#fff;border-radius:4px;padding:2px 8px;font-size:10px;text-decoration:none;">↓</a>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+    body.innerHTML = html;
+  }
+  renderVideoGallery();
+}
+
+function renderVideoGallery() {
+  var emptyHtml = '<div style="padding:2rem;text-align:center;color:#555;"><div style="font-size:36px;margin-bottom:1rem;opacity:0.3;">🎬</div><div style="font-size:13px;">No videos yet — generate your first fashion video above!</div></div>';
+
+  var vbody = document.getElementById('video-gallery-body');
+  var vg = document.getElementById('v-gallery');
+
+  if (videoGallery.length === 0) {
+    if (vbody) vbody.innerHTML = emptyHtml;
+    if (vg) vg.innerHTML = emptyHtml;
+    return;
+  }
+
+  // Build grid using createElement to avoid quote issues
+  function buildVideoGrid() {
+    var grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:1rem;';
+    for (var i = 0; i < videoGallery.length; i++) {
+      var url = videoGallery[i];
+      var card = document.createElement('div');
+      card.style.cssText = 'background:#fff;border-radius:10px;overflow:hidden;border:1px solid rgba(233,30,99,0.1);box-shadow:0 2px 8px rgba(0,0,0,0.05);';
+
+      var vid = document.createElement('video');
+      vid.src = url;
+      vid.controls = true;
+      vid.setAttribute('playsinline', '');
+      vid.setAttribute('preload', 'metadata');
+      vid.style.cssText = 'width:100%;aspect-ratio:9/16;object-fit:contain;display:block;background:#000;max-height:400px;';
+      card.appendChild(vid);
+
+      var body = document.createElement('div');
+      body.style.cssText = 'padding:10px 12px;';
+
+      var title = document.createElement('div');
+      title.style.cssText = 'font-size:13px;font-weight:500;margin-bottom:2px;';
+      title.textContent = 'AI Fashion Video';
+      body.appendChild(title);
+
+      var meta = document.createElement('div');
+      meta.style.cssText = 'font-size:11px;color:#555;margin-bottom:8px;';
+      meta.textContent = 'Generated';
+      body.appendChild(meta);
+
+      var actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:6px;';
+
+      var dlBtn = document.createElement('a');
+      dlBtn.href = url;
+      dlBtn.target = '_blank';
+      dlBtn.style.cssText = 'flex:1;padding:6px;background:#E91E63;color:#fff;border-radius:6px;font-size:11px;font-weight:500;text-decoration:none;text-align:center;';
+      dlBtn.textContent = '↓ Download';
+      actions.appendChild(dlBtn);
+
+      var shareBtn = document.createElement('button');
+      shareBtn.style.cssText = 'flex:1;padding:6px;background:#fff;border:1px solid rgba(233,30,99,0.3);color:#555;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;';
+      shareBtn.textContent = '💬 Share';
+      shareBtn.onclick = (function(u) {
+        return function() {
+          window.open('https://wa.me/?text=' + encodeURIComponent('Check this AI fashion video! ' + u), '_blank');
+        };
+      })(url);
+      actions.appendChild(shareBtn);
+
+      body.appendChild(actions);
+      card.appendChild(body);
+      grid.appendChild(card);
+    }
+    return grid;
+  }
+
+  if (vbody) { vbody.innerHTML = ''; vbody.appendChild(buildVideoGrid()); }
+  if (vg) { vg.innerHTML = ''; vg.appendChild(buildVideoGrid()); }
+}
+
+
+function loadVideoSuit(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('v-suit-preview');
+    var empty = document.getElementById('v-upload-empty');
+    var zone = document.getElementById('v-upload-zone');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
+
+function selectDur(btn, dur) {
+  document.querySelectorAll('.dur-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  selectedDuration = dur;
+}
+
+function downloadVideo() {
+  if (!currentVideoUrl) return;
+  var a = document.createElement('a');
+  a.href = currentVideoUrl;
+  a.download = 'drapely-video.mp4';
+  a.target = '_blank';
+  a.click();
+  showToast('Downloading video...');
+}
+
+function shareVideoWA() {
+  if (!currentVideoUrl) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video! ' + currentVideoUrl), '_blank');
+}
+
+function deductVideoCredits() {
+  var dur = selectedDuration || '5';
+  var cost = dur === '10' ? 4 : 2; // 5s = 2 credits (₹60), 10s = 4 credits (₹100)
+  sb.auth.getSession().then(function(r) {
+    if (!r.data.session) return;
+    var userId = r.data.session.user.id;
+    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
+      if (res.data) {
+        var newBal = Math.max(0, res.data.balance - cost);
+        sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', userId).then(function() {
+          var el = document.getElementById('stat-credits');
+          if (el) el.textContent = newBal;
+        });
+      }
+    });
+  });
+}
+
+function selectVideoPreset(el, idx) {
+  var presets = [
+    'beautiful Indian woman in golden sunset light, warm bokeh, fashion photography',
+    'grand royal Indian palace with golden chandeliers and marble floors',
+    'festive Diwali night with glowing diyas and warm fairy lights',
+    'lush blooming rose garden with soft pink flowers and golden hour light',
+    'Indian wedding mandap decorated with marigold flowers and golden drapes',
+    'rooftop at night with sparkling city lights and blue hour sky',
+    'grand crystal chandelier ballroom with golden walls and elegant lighting',
+    'heritage Rajasthani haveli with carved stone arches and warm terracotta tones',
+    'iconic Taj Mahal monument background with soft morning light',
+    ''
+  ];
+  document.querySelectorAll('#content-video .prompt-preset, .video-grid .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  var promptEl = document.getElementById('v-prompt');
+  var prompt = presets[idx] || '';
+  if (idx === 9) {
+    if (promptEl) promptEl.style.display = 'block';
+  } else {
+    if (promptEl) { promptEl.style.display = 'none'; promptEl.value = prompt; }
+  }
+  window._videoPrompt = prompt;
+}
+
+async function startVideoGenerate() {
+  // Check if coming from photo generation
+  var suitFile = document.getElementById('v-suit-input').files[0];
+  var fromPhotoUrl = window._videoFromPhotoUrl || null;
+
+  if (!suitFile && !fromPhotoUrl) { showToast('Please upload your suit photo first!'); return; }
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  var vidCost = selectedDuration === '10' ? 4 : 2;
+  if (credits < vidCost) { showToast('Need ' + vidCost + ' credits (₹' + (vidCost*25) + ') for this video!'); showBuyCredits(); return; }
+
+  var prompt = presetPrompts[selectedPresetIndex] || '';
+  document.getElementById('v-progress').classList.add('visible');
+  document.getElementById('v-download-wrap').style.display = 'none';
+  document.getElementById('v-result').innerHTML = '<div style="text-align:center;color:#555;padding:2rem;"><div style="font-size:32px;margin-bottom:8px;">⏳</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;">Takes 2-3 minutes</div></div>';
+
+  var progress = 0;
+  var vInterval = setInterval(function() {
+    if (progress < 90) {
+      progress += Math.random() * 2 + 0.5;
+      if (progress > 90) progress = 90;
+      document.getElementById('v-progress-fill').style.width = Math.round(progress) + '%';
+      document.getElementById('v-progress-pct').textContent = Math.round(progress) + '%';
+    }
+  }, 2000);
+
+  try {
+    var imgData;
+    if (fromPhotoUrl) {
+      imgData = fromPhotoUrl; // already a URL, use directly
+    } else {
+      var reader = new FileReader();
+      imgData = await new Promise(function(resolve) {
+        reader.onload = function(e){ resolve(e.target.result); };
+        reader.readAsDataURL(suitFile);
+      });
+    }
+
+    var response = await fetch('/api/video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt })
+    });
+
+    var data = await response.json();
+    if (data.error) {
+      clearInterval(vInterval);
+      document.getElementById('v-progress').classList.remove('visible');
+      showToast('Error: ' + data.error.substring(0, 80));
+      return;
+    }
+
+    var predId = data.prediction_id;
+    var pollResult = null;
+    var attempts = 0;
+    while (attempts < 60) {
+      await new Promise(function(r){ setTimeout(r, 5000); });
+      var pollRes = await fetch('/api/poll?id=' + predId);
+      pollResult = await pollRes.json();
+      document.getElementById('v-progress-label').textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
+      if (pollResult.status === 'succeeded') break;
+      if (pollResult.status === 'failed') {
+        clearInterval(vInterval);
+        document.getElementById('v-progress').classList.remove('visible');
+        showToast('Video failed. Try again.');
+        return;
+      }
+      attempts++;
+    }
+
+    clearInterval(vInterval);
+    document.getElementById('v-progress-fill').style.width = '100%';
+    document.getElementById('v-progress-pct').textContent = '100%';
+
+    setTimeout(function() {
+      document.getElementById('v-progress').classList.remove('visible');
+      var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
+      if (videoUrl) {
+        currentVideoUrl = videoUrl;
+        document.getElementById('v-result').innerHTML = '<video controls autoplay style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:10px;background:#000;max-height:500px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        document.getElementById('v-download-wrap').style.display = 'block';
+
+        // Save video to gallery and Supabase
+        videoGallery.unshift(videoUrl);
+        renderVideoGallery();
+        switchGalleryTab('videos');
+
+        sb.auth.getSession().then(function(r) {
+          if (!r.data.session) return;
+          sb.from('photoshoots').insert({
+            user_id: r.data.session.user.id,
+            image_url: videoUrl,
+            collection_name: 'AI Fashion Video',
+            suit_type: 'Video',
+            image_count: 1,
+            media_type: 'video'
+          }).then(function(res) {
+            if (res.error) console.log('Video save error:', res.error.message);
+            else console.log('Video saved to DB!');
+          });
+        });
+
+        deductVideoCredits(); // 2 credits for 5s, 4 for 10s
+
+        showToast('Your fashion video is ready!');
+      } else {
+        showToast('No video returned. Try again.');
+      }
+    }, 500);
+
+  } catch(err) {
+    clearInterval(vInterval);
+    document.getElementById('v-progress').classList.remove('visible');
+    showToast('Error: ' + err.message);
+  }
+}
+
+
+</script>
+</body>
+</html>
