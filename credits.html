@@ -285,7 +285,7 @@ function loadHistory(userId) {
           id: item.id,
           type: type,
           title: title,
-          date: new Date(item.created_at),
+          date: new Date((item.created_at || '').replace(' ', 'T').replace(/Z?$/, 'Z')),
           credits: credits,
           collection: item.collection_name || ''
         };
