@@ -11,9 +11,13 @@ export default async function handler(req, res) {
   const models = [
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_03_27%20AM.png',
+    null, // index 6 placeholder
+    null, // index 7 placeholder
+    'MANNEQUIN', // index 98 - handled separately
   ];
 
   try {
@@ -26,6 +30,34 @@ export default async function handler(req, res) {
     const imgurData = await imgurRes.json();
     if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
     const garmentUrl = imgurData.data.link;
+
+    // Handle mannequin (index 98) — no human model, just garment on white bg
+    if (model_index === 98) {
+      // Override prompt for mannequin
+      const mannequinPrompt = isSaree
+        ? 'Professional product photo of an elegant saree displayed on invisible mannequin, clean white background, studio lighting, e-commerce style'
+        : 'Professional product photo of a salwar suit displayed on invisible mannequin, clean white background, studio lighting, e-commerce style';
+      const mannequinBody = {
+        model_name: 'product-to-model',
+        inputs: {
+          product_image: garmentUrl,
+          model_image: models[0], // fallback model but prompt overrides
+          resolution: '1k',
+          generation_mode: 'balanced',
+          output_format: 'jpeg',
+          prompt: mannequinPrompt,
+        }
+      };
+      const mannequinRes = await fetch('https://api.fashn.ai/v1/run', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${process.env.FASHN_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(mannequinBody)
+      });
+      const mannequinData = await mannequinRes.json();
+      if (mannequinData.error) return res.status(500).json({ error: String(mannequinData.error) });
+      if (!mannequinData.id) return res.status(500).json({ error: 'No ID returned' });
+      return res.status(200).json({ prediction_id: mannequinData.id, status: mannequinData.status });
+    }
 
     let humanImg;
     if (custom_model && custom_model.startsWith('data:')) {
