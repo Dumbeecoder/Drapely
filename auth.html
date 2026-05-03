@@ -86,7 +86,10 @@
         <div class="form-title">Welcome back</div>
         <div class="form-sub">Sign in to your Drapely account.</div>
         <div class="field"><label>Email address</label><input type="email" id="si-email" placeholder="you@example.com" /><div class="field-error" id="e-si-email">Enter a valid email</div></div>
-        <div class="field"><label>Password</label><input type="password" id="si-pass" placeholder="Your password" /><div class="field-error" id="e-si-pass">Enter your password</div></div>
+        <div class="field"><label>Password</label><div style="position:relative;display:flex;align-items:center;">
+              <input type="password" id="si-pass" placeholder="Your password" style="width:100%;padding-right:44px;" onkeydown="if(event.key==='Enter')doSignIn()" />
+              <button type="button" onclick="togglePass('si-pass','si-pass-eye')" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;color:#888;font-size:18px;padding:4px;line-height:1;" id="si-pass-eye">👁</button>
+            </div><div class="field-error" id="e-si-pass">Enter your password</div></div>
         <div class="forgot"><a href="#" onclick="forgotPassword()">Forgot password?</a></div>
         <button class="btn" id="si-btn" onclick="doSignIn()">Sign in to Drapely</button>
         <div class="terms">No account? <a href="#" onclick="goTab('signup')">Create one free</a></div>
@@ -103,7 +106,10 @@
         <div class="field"><label>Store name</label><input type="text" id="su-store" placeholder="Priya Boutique, Surat" /><div class="field-error" id="e-su-store">Required</div></div>
         <div class="field"><label>WhatsApp number</label><input type="tel" id="su-phone" placeholder="+91 98765 43210" /><div class="field-error" id="e-su-phone">Required</div></div>
         <div class="field"><label>Email address</label><input type="email" id="su-email" placeholder="you@example.com" /><div class="field-error" id="e-su-email">Enter a valid email</div></div>
-        <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Min 8 characters" /><div class="field-error" id="e-su-pass">Min 8 characters</div></div>
+        <div class="field"><label>Password</label><div style="position:relative;display:flex;align-items:center;">
+              <input type="password" id="su-pass" placeholder="Min 8 characters" style="width:100%;padding-right:44px;" onkeydown="if(event.key==='Enter')doSignUp()" />
+              <button type="button" onclick="togglePass('su-pass','su-pass-eye')" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;color:#888;font-size:18px;padding:4px;line-height:1;" id="su-pass-eye">👁</button>
+            </div><div class="field-error" id="e-su-pass">Min 8 characters</div></div>
         <button class="btn" id="su-btn" onclick="doSignUp()">Create free account</button>
         <div class="terms">Have an account? <a href="#" onclick="goTab('signin')">Sign in</a></div>
       </div>
@@ -141,6 +147,19 @@ function toast(msg){ var e=document.getElementById('toast-el'); e.textContent=ms
 function clrErr(){ document.querySelectorAll('.field-error').forEach(function(e){ e.classList.remove('show'); }); document.querySelectorAll('input').forEach(function(i){ i.classList.remove('err'); }); }
 function shErr(fid,eid){ document.getElementById(fid).classList.add('err'); document.getElementById(eid).classList.add('show'); }
 function setBtn(id,on,lbl){ var b=document.getElementById(id); b.disabled=on; b.textContent=on?'Please wait...':lbl; }
+
+function togglePass(inputId, btnId) {
+  var input = document.getElementById(inputId);
+  var btn = document.getElementById(btnId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+  input.focus();
+}
 
 async function doSignIn(){
   clrErr();
