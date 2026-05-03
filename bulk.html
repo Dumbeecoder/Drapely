@@ -26,7 +26,6 @@
     .topbar h1{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:1px;}
     .credit-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#fff;border:1px solid rgba(233,30,99,0.2);border-radius:20px;font-size:13px;}
     .credit-val{color:#E91E63;font-weight:500;}
-    /* BULK UPLOAD ZONE */
     .bulk-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;padding:2rem;margin-bottom:1.5rem;}
     .bulk-card-title{font-size:15px;font-weight:500;margin-bottom:4px;}
     .bulk-card-sub{font-size:12px;color:#555;margin-bottom:1.5rem;}
@@ -37,17 +36,14 @@
     .upload-title{font-size:15px;font-weight:500;margin-bottom:4px;}
     .upload-hint{font-size:12px;color:#555;}
     .upload-hint span{color:#E91E63;font-weight:500;}
-    /* SETTINGS */
     .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
     .setting-group{display:flex;flex-direction:column;gap:6px;}
     .setting-label{font-size:12px;color:#555;font-weight:500;}
     .setting-select{width:100%;padding:10px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;}
     .setting-select:focus{border-color:#E91E63;}
-    /* MODEL PICKER */
     .model-row{display:flex;gap:8px;margin-bottom:1.5rem;}
     .model-chip{padding:8px 14px;border:1.5px solid rgba(233,30,99,0.2);border-radius:20px;font-size:12px;font-weight:500;color:#555;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
     .model-chip.selected{background:#E91E63;border-color:#E91E63;color:#fff;}
-    /* QUEUE */
     .queue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem;}
     .queue-item{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;background:#fff;position:relative;}
     .queue-img{width:100%;height:140px;object-fit:cover;display:block;}
@@ -57,26 +53,21 @@
     .queue-status.done{background:#4caf50;color:#fff;}
     .queue-status.error{background:#f44336;color:#fff;}
     .queue-label{padding:6px 8px;font-size:10px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    /* RESULTS */
     .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
     .result-card{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;background:#fff;}
     .result-img{width:100%;height:180px;object-fit:cover;display:block;}
     .result-actions{display:flex;gap:6px;padding:8px;}
     .result-btn{flex:1;padding:7px;border:1px solid rgba(233,30,99,0.3);border-radius:6px;background:#fff;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:#555;cursor:pointer;text-align:center;text-decoration:none;}
     .result-btn.primary{background:#E91E63;border-color:#E91E63;color:#fff;}
-    /* BUTTONS */
     .generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
     .generate-btn:disabled{background:#ccc;cursor:not-allowed;}
     .export-btn{padding:10px 24px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
-    /* PROGRESS */
     .progress-bar{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:12px 0;}
     .progress-fill{height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.3s;}
     .progress-text{font-size:12px;color:#555;text-align:center;}
-    /* TOAST */
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.settings-grid{grid-template-columns:1fr}}
-    /* MOBILE NAV */
     .burger{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#E91E63;border:none;border-radius:8px;width:40px;height:40px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
     .burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
     .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:150;}
@@ -97,8 +88,6 @@
   </style>
 </head>
 <body>
-
-
 <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
 <div class="mobile-nav" id="mobile-nav">
@@ -106,13 +95,10 @@
   <div class="mobile-nav-items">
     <a class="mobile-nav-item" href="dashboard.html">📸 New Photoshoot</a>
     <a class="mobile-nav-item" href="video.html">🎬 New Video</a>
-    <a class="mobile-nav-item" href="bulk.html">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item active" href="bulk.html">⚡ Bulk Studio</a>
     <a class="mobile-nav-item" href="gallery.html">🖼 My Gallery</a>
     <a class="mobile-nav-item" href="settings.html">⚙️ Settings</a>
-    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
-      Credits
-    </a>
+    <a class="mobile-nav-item" href="credits.html">💳 Credits</a>
     <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
   </div>
   <div class="mobile-nav-footer">
@@ -175,18 +161,15 @@
     </div>
   </div>
 
-  <!-- STEP 1: UPLOAD -->
   <div class="bulk-card">
     <div class="bulk-card-title">Step 1 — Upload your suit photos</div>
     <div class="bulk-card-sub">Upload multiple suit photos at once. Each photo = 1 credit.</div>
-
     <div class="bulk-upload-zone" id="bulk-upload-zone" onclick="document.getElementById('bulk-input').click()">
       <div class="upload-icon">📦</div>
       <div class="upload-title">Click or drag & drop your suits</div>
       <div class="upload-hint">Upload <span>multiple JPG/PNG</span> files at once · Max 20 photos</div>
     </div>
     <input type="file" id="bulk-input" accept="image/*" multiple style="display:none;" onchange="handleBulkUpload(event)" />
-
     <div id="queue-wrap" style="display:none;margin-top:1.5rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-size:12px;font-weight:500;color:#555;"><span id="queue-count">0</span> photos uploaded</div>
@@ -196,11 +179,9 @@
     </div>
   </div>
 
-  <!-- STEP 2: SETTINGS -->
   <div class="bulk-card">
     <div class="bulk-card-title">Step 2 — Choose settings</div>
     <div class="bulk-card-sub">These settings apply to all photos in this batch.</div>
-
     <div class="settings-grid">
       <div class="setting-group">
         <div class="setting-label">GARMENT TYPE</div>
@@ -227,13 +208,13 @@
       <div class="setting-group">
         <div class="setting-label">MODEL</div>
         <select class="setting-select" id="bulk-model">
-          <option value="0">Model 1 — Straight fit</option>
-          <option value="1">Model 2 — Slim fit</option>
-          <option value="2">Model 3 — Curvy fit</option>
-          <option value="3">Model 4 — Slim fit</option>
-          <option value="4">Model 5 — Curvy fit</option>
-          <option value="5">Model 6 — Elegant fit</option>
-          <option value="98">Mannequin — No model</option>
+          <option value="0">Priya S.</option>
+          <option value="1">Anjali M.</option>
+          <option value="2">Kavya R.</option>
+          <option value="3">Simran K.</option>
+          <option value="4">Meera P.</option>
+          <option value="5">Naina T.</option>
+          <option value="6">Mannequin</option>
         </select>
       </div>
       <div class="setting-group">
@@ -247,8 +228,6 @@
         </select>
       </div>
     </div>
-
-    <!-- LOGO OPTION -->
     <div style="border-top:1px solid rgba(233,30,99,0.1);padding-top:1rem;margin-top:0.5rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-size:12px;font-weight:500;color:#555;">BRAND LOGO (optional — applied to all photos)</div>
@@ -257,7 +236,7 @@
           <input type="file" id="bulk-logo-input" accept="image/*" style="display:none;" onchange="loadBulkLogo(event)" />
         </label>
       </div>
-      <div id="bulk-logo-preview" style="display:none;display:flex;align-items:center;gap:10px;">
+      <div id="bulk-logo-preview" style="display:none;align-items:center;gap:10px;">
         <img id="bulk-logo-img" style="height:36px;object-fit:contain;border:1px solid rgba(233,30,99,0.15);border-radius:4px;padding:4px;" />
         <select class="setting-select" id="bulk-logo-pos" style="width:160px;">
           <option value="bottom-right">↘ Bottom Right</option>
@@ -272,18 +251,15 @@
     </div>
   </div>
 
-  <!-- STEP 3: GENERATE -->
   <div class="bulk-card">
     <div class="bulk-card-title">Step 3 — Generate & Export</div>
     <div class="bulk-card-sub">All photos will be processed one by one. You can export all as ZIP when done.</div>
-
     <div id="bulk-progress-wrap" style="display:none;margin-bottom:1.5rem;">
       <div style="font-size:13px;font-weight:500;margin-bottom:8px;" id="bulk-progress-label">Processing...</div>
       <div class="progress-bar"><div class="progress-fill" id="bulk-progress-fill" style="width:0%"></div></div>
       <div class="progress-text" id="bulk-progress-text">0 / 0 done</div>
       <div id="bulk-status-msg" style="font-size:11px;color:#555;margin-top:6px;text-align:center;"></div>
     </div>
-
     <div style="display:flex;gap:10px;">
       <button class="generate-btn" id="bulk-generate-btn" onclick="startBulkGenerate()" style="flex:1;">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
@@ -293,7 +269,6 @@
     </div>
   </div>
 
-  <!-- RESULTS -->
   <div id="bulk-results-wrap" style="display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
       <div style="font-size:15px;font-weight:500;">Generated Photos <span id="results-count" style="font-size:13px;color:#555;font-weight:400;"></span></div>
@@ -304,7 +279,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
@@ -313,12 +287,11 @@ var sb = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
 
-var bulkQueue = []; // {file, dataUrl, name}
-var bulkResults = []; // {name, url}
+var bulkQueue = [];
+var bulkResults = [];
 var bulkLogoUrl = null;
 var currentUserId = null;
 
-// AUTH
 sb.auth.getSession().then(function(r) {
   if (!r.data.session) { window.location.href = 'auth.html'; return; }
   var user = r.data.session.user;
@@ -340,34 +313,22 @@ function loadCredits(userId) {
   });
 }
 
-// DRAG AND DROP
 var zone = document.getElementById('bulk-upload-zone');
 zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('dragover'); });
 zone.addEventListener('dragleave', function(){ zone.classList.remove('dragover'); });
 zone.addEventListener('drop', function(e){
-  e.preventDefault();
-  zone.classList.remove('dragover');
+  e.preventDefault(); zone.classList.remove('dragover');
   var files = Array.from(e.dataTransfer.files).filter(function(f){ return f.type.startsWith('image/'); });
   processFiles(files);
 });
 
-function handleBulkUpload(e) {
-  var files = Array.from(e.target.files);
-  processFiles(files);
-  e.target.value = '';
-}
+function handleBulkUpload(e) { var files = Array.from(e.target.files); processFiles(files); e.target.value = ''; }
 
 function processFiles(files) {
-  if (bulkQueue.length + files.length > 20) {
-    showToast('Max 20 photos allowed!');
-    files = files.slice(0, 20 - bulkQueue.length);
-  }
+  if (bulkQueue.length + files.length > 20) { showToast('Max 20 photos allowed!'); files = files.slice(0, 20 - bulkQueue.length); }
   files.forEach(function(file) {
     var reader = new FileReader();
-    reader.onload = function(ev) {
-      bulkQueue.push({ file: file, dataUrl: ev.target.result, name: file.name, status: 'pending', result: null });
-      renderQueue();
-    };
+    reader.onload = function(ev) { bulkQueue.push({ file: file, dataUrl: ev.target.result, name: file.name, status: 'pending', result: null }); renderQueue(); };
     reader.readAsDataURL(file);
   });
 }
@@ -375,19 +336,13 @@ function processFiles(files) {
 function renderQueue() {
   var grid = document.getElementById('queue-grid');
   var wrap = document.getElementById('queue-wrap');
-  var count = document.getElementById('queue-count');
-  var genCount = document.getElementById('generate-count');
-  var costPreview = document.getElementById('cost-preview');
-
-  if (count) count.textContent = bulkQueue.length;
-  if (genCount) genCount.textContent = bulkQueue.length;
-  if (costPreview) costPreview.textContent = bulkQueue.length;
+  if (document.getElementById('queue-count')) document.getElementById('queue-count').textContent = bulkQueue.length;
+  if (document.getElementById('generate-count')) document.getElementById('generate-count').textContent = bulkQueue.length;
+  if (document.getElementById('cost-preview')) document.getElementById('cost-preview').textContent = bulkQueue.length;
   if (wrap) wrap.style.display = bulkQueue.length > 0 ? 'block' : 'none';
-
   grid.innerHTML = '';
-  bulkQueue.forEach(function(item, i) {
-    var div = document.createElement('div');
-    div.className = 'queue-item';
+  bulkQueue.forEach(function(item) {
+    var div = document.createElement('div'); div.className = 'queue-item';
     var statusMap = {pending:'⏳', processing:'⚙️', done:'✓', error:'✕'};
     div.innerHTML = '<img class="queue-img" src="' + item.dataUrl + '" />' +
       '<div class="queue-status ' + item.status + '">' + statusMap[item.status] + '</div>' +
@@ -396,15 +351,10 @@ function renderQueue() {
   });
 }
 
-function clearQueue() {
-  bulkQueue = [];
-  renderQueue();
-  document.getElementById('queue-wrap').style.display = 'none';
-}
+function clearQueue() { bulkQueue = []; renderQueue(); document.getElementById('queue-wrap').style.display = 'none'; }
 
 function loadBulkLogo(e) {
-  var file = e.target.files[0];
-  if (!file) return;
+  var file = e.target.files[0]; if (!file) return;
   var reader = new FileReader();
   reader.onload = function(ev) {
     bulkLogoUrl = ev.target.result;
@@ -421,14 +371,12 @@ function removeBulkLogo() {
   document.getElementById('bulk-logo-preview').style.display = 'none';
 }
 
-// COMPRESS IMAGE
 function compressImage(dataUrl) {
   return new Promise(function(resolve) {
     var img = new Image();
     img.onload = function() {
       var canvas = document.createElement('canvas');
-      var MAX = 512;
-      var w = img.width, h = img.height;
+      var MAX = 512; var w = img.width, h = img.height;
       if (w > h) { if (w > MAX) { h = Math.round(h*MAX/w); w = MAX; } }
       else { if (h > MAX) { w = Math.round(w*MAX/h); h = MAX; } }
       canvas.width = w; canvas.height = h;
@@ -439,16 +387,12 @@ function compressImage(dataUrl) {
   });
 }
 
-// OVERLAY LOGO
-
-
 function compressForImgur(dataUrl) {
   return new Promise(function(resolve) {
     var img = new Image();
     img.onload = function() {
       var canvas = document.createElement('canvas');
-      var MAX = 800;
-      var w = img.width, h = img.height;
+      var MAX = 800; var w = img.width, h = img.height;
       if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
       if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
       canvas.width = w; canvas.height = h;
@@ -470,36 +414,10 @@ async function uploadLogoedImageToStorage(base64DataUrl) {
     var blob = new Blob([array], { type: mimeType });
     var fileName = 'logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
     var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
-    if (uploadResult.error) { console.log('Storage error:', uploadResult.error.message); return null; }
+    if (uploadResult.error) { return null; }
     var urlResult = sb.storage.from('photoshoots').getPublicUrl(fileName);
-    console.log('Stored:', urlResult.data.publicUrl);
     return urlResult.data.publicUrl;
-  } catch(e) { console.log('Storage error:', e.message); return null; }
-}
-
-
-async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
-  if (!logoDataUrl) return imageUrl;
-
-  var directResult = await tryDirectCanvas(imageUrl, logoDataUrl, position);
-  if (directResult) { console.log('Logo applied via direct canvas!'); return directResult; }
-
-  try {
-    var proxyRes = await fetch('/api/watermark', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image_url: imageUrl })
-    });
-    if (proxyRes.ok) {
-      var proxyData = await proxyRes.json();
-      if (proxyData.dataUrl) {
-        var proxyResult = await tryDirectCanvas(proxyData.dataUrl, logoDataUrl, position);
-        if (proxyResult) { console.log('Logo applied via proxy!'); return proxyResult; }
-      }
-    }
-  } catch(e) { console.log('Proxy failed:', e.message); }
-
-  return imageUrl;
+  } catch(e) { return null; }
 }
 
 function tryDirectCanvas(photoSrc, logoDataUrl, position) {
@@ -508,66 +426,50 @@ function tryDirectCanvas(photoSrc, logoDataUrl, position) {
     logo.onload = function() {
       var photo = new Image();
       if (!photoSrc.startsWith('data:')) photo.crossOrigin = 'anonymous';
-      var timeout = setTimeout(function() { console.log('Canvas timeout'); resolve(null); }, 10000);
+      var timeout = setTimeout(function() { resolve(null); }, 10000);
       photo.onload = function() {
         clearTimeout(timeout);
         try {
           var canvas = document.createElement('canvas');
-          var W = photo.naturalWidth || photo.width || 800;
-          var H = photo.naturalHeight || photo.height || 1000;
-          canvas.width = W;
-          canvas.height = H;
+          var W = photo.naturalWidth || 800, H = photo.naturalHeight || 1000;
+          canvas.width = W; canvas.height = H;
           var ctx = canvas.getContext('2d');
           ctx.drawImage(photo, 0, 0, W, H);
-
-          // Logo: 20% of width
-          var lw = Math.round(W * 0.20);
-          var scale = lw / logo.naturalWidth;
-          var lh = Math.round(logo.naturalHeight * scale);
-          var pad = Math.round(W * 0.03);
-
-          var x = W - lw - pad;
-          var y = H - lh - pad;
+          var lw = Math.round(W * 0.20), scale = lw / logo.naturalWidth;
+          var lh = Math.round(logo.naturalHeight * scale), pad = Math.round(W * 0.03);
+          var x = W - lw - pad, y = H - lh - pad;
           if (position === 'top-left')      { x=pad; y=pad; }
           if (position === 'top-center')    { x=Math.round((W-lw)/2); y=pad; }
           if (position === 'top-right')     { x=W-lw-pad; y=pad; }
           if (position === 'bottom-left')   { x=pad; y=H-lh-pad; }
           if (position === 'bottom-center') { x=Math.round((W-lw)/2); y=H-lh-pad; }
-
           ctx.globalAlpha = 1.0;
           ctx.drawImage(logo, x, y, lw, lh);
-          console.log('Drew logo at', x, y, 'size', lw, 'x', lh, 'on canvas', W, 'x', H);
-
           var result = canvas.toDataURL('image/jpeg', 0.92);
-          if (result && result.length > 5000) {
-            resolve(result);
-          } else {
-            console.log('Canvas result too small:', result.length);
-            resolve(null);
-          }
-        } catch(e) {
-          clearTimeout(timeout);
-          console.log('Canvas error:', e.message);
-          resolve(null);
-        }
+          resolve(result && result.length > 5000 ? result : null);
+        } catch(e) { clearTimeout(timeout); resolve(null); }
       };
-      photo.onerror = function(e) {
-        clearTimeout(timeout);
-        console.log('Photo load failed for:', photoSrc.substring(0,60));
-        resolve(null);
-      };
+      photo.onerror = function() { clearTimeout(timeout); resolve(null); };
       photo.src = photoSrc;
     };
-    logo.onerror = function() { console.log('Logo load failed'); resolve(null); };
+    logo.onerror = function() { resolve(null); };
     logo.src = logoDataUrl;
   });
 }
 
-
-async function overlayLogo(imageUrl, logoDataUrl, position) {
-  return overlayLogoOnImage(imageUrl, logoDataUrl, position);
+async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
+  if (!logoDataUrl) return imageUrl;
+  var directResult = await tryDirectCanvas(imageUrl, logoDataUrl, position);
+  if (directResult) return directResult;
+  try {
+    var proxyRes = await fetch('/api/watermark', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image_url: imageUrl }) });
+    if (proxyRes.ok) {
+      var proxyData = await proxyRes.json();
+      if (proxyData.dataUrl) { var r = await tryDirectCanvas(proxyData.dataUrl, logoDataUrl, position); if (r) return r; }
+    }
+  } catch(e) {}
+  return imageUrl;
 }
-
 
 async function startBulkGenerate() {
   if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
@@ -604,11 +506,7 @@ async function startBulkGenerate() {
         body: JSON.stringify({ garment_img: compressedGarment, model_index: modelIndex, prompt: prompt, garment_type: garmentType })
       });
       var data = await response.json();
-      if (data.error || !data.prediction_id) {
-        bulkQueue[i].status = 'error'; renderQueue();
-        if (statusMsg) statusMsg.textContent = 'Error: ' + (data.error || 'No prediction ID');
-        continue;
-      }
+      if (data.error || !data.prediction_id) { bulkQueue[i].status = 'error'; renderQueue(); continue; }
       var predId = data.prediction_id; var pollResult = null; var attempts = 0;
       while (attempts < 80) {
         await new Promise(function(r){ setTimeout(r, 4000); });
@@ -624,18 +522,15 @@ async function startBulkGenerate() {
       if (pollResult && pollResult.output) {
         var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
         if (imgUrl) {
-          var finalUrl = await overlayLogo(imgUrl, bulkLogoUrl, logoPos);
-          console.log('finalUrl type:', finalUrl.startsWith('data:') ? 'base64 WITH LOGO' : 'cdn url NO LOGO');
+          var finalUrl = await overlayLogoOnImage(imgUrl, bulkLogoUrl, logoPos);
           var saveUrl = imgUrl;
           if (finalUrl.startsWith('data:')) {
             var compressedLogo = await compressForImgur(finalUrl);
             var storedUrl = await uploadLogoedImageToStorage(compressedLogo);
-            console.log('Storage URL:', storedUrl);
             if (storedUrl) saveUrl = storedUrl;
           }
-          // Save watermarked URL to gallery
           if (currentUserId) {
-            sb.from('photoshoots').insert({ user_id: currentUserId, image_url: saveUrl, collection_name: 'Bulk Photoshoot', suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit', image_count: 1, media_type: 'photo' }).then(function(r){ console.log('Saved:', r.error ? r.error.message : 'OK'); });
+            sb.from('photoshoots').insert({ user_id: currentUserId, image_url: saveUrl, collection_name: 'Bulk Photoshoot', suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit', image_count: 1, media_type: 'photo' });
             sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
               if (res.data) sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
             });
@@ -645,7 +540,7 @@ async function startBulkGenerate() {
         } else { bulkQueue[i].status = 'error'; }
       } else { bulkQueue[i].status = 'error'; }
       renderQueue();
-    } catch(err) { bulkQueue[i].status = 'error'; renderQueue(); console.log('Error:', err.message); }
+    } catch(err) { bulkQueue[i].status = 'error'; renderQueue(); }
   }
 
   progressFill.style.width = '100%';
@@ -689,10 +584,8 @@ async function exportAllAsZip() {
 }
 
 function showToast(msg) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
+  var t = document.getElementById('toast'); if (!t) return;
+  t.textContent = msg; t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 3000);
 }
 
@@ -706,10 +599,7 @@ function closeMobileNav() {
   document.getElementById('mobile-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-async function doSignOut() {
-  await sb.auth.signOut();
-  window.location.href = 'auth.html';
-}
+async function doSignOut() { await sb.auth.signOut(); window.location.href = 'auth.html'; }
 </script>
 </body>
 </html>
