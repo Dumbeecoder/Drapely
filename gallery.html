@@ -276,7 +276,7 @@ function renderPhotos(photos) {
   var grid = document.createElement('div');
   grid.className = 'gallery-grid';
   photos.forEach(function(item, i) {
-    var date = new Date(item.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+    var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
     var url = item.image_url || '';
     var card = document.createElement('div');
     card.className = 'gallery-card';
@@ -326,7 +326,7 @@ function renderVideos(videos) {
   var grid = document.createElement('div');
   grid.className = 'video-grid';
   videos.forEach(function(item, i) {
-    var date = new Date(item.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+    var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
     var url = item.image_url || '';
     var card = document.createElement('div');
     card.className = 'video-card';
