@@ -1315,31 +1315,8 @@ function overlayLogoOnImages(imageUrls) {
 
 
 function convertToVideo(imageUrl) {
-  // Switch to video tab
-  switchTab('video');
-
-  // Wait for tab to render then auto-fill the image
-  setTimeout(function() {
-    // Set preview image in video upload zone
-    var preview = document.getElementById('v-suit-preview');
-    var empty = document.getElementById('v-upload-empty');
-    var zone = document.getElementById('v-upload-zone');
-
-    if (preview) {
-      preview.src = imageUrl;
-      preview.style.display = 'block';
-    }
-    if (empty) empty.style.display = 'none';
-    if (zone) zone.classList.add('has-file');
-
-    // Store the URL so video generation uses it directly
-    window._videoFromPhotoUrl = imageUrl;
-
-    showToast('Photo loaded! Choose a scene and generate your video 🎬');
-
-    // Scroll to top
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  }, 300);
+  sessionStorage.setItem('videoFromPhoto', imageUrl);
+  window.location.href = 'video.html';
 }
 
 function downloadImg(url, num) {
