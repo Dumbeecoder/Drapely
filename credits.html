@@ -98,12 +98,12 @@
 <div class="mobile-nav" id="mobile-nav">
   <a href="index.html" class="mobile-nav-brand">Drape<span>ly</span></a>
   <div class="mobile-nav-items">
-    <a class="mobile-nav-item" href="dashboard.html">📸 New Photoshoot</a>
-    <a class="mobile-nav-item" href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')">🎬 New Video</a>
-    <a class="mobile-nav-item" href="bulk.html">⚡ Bulk Studio</a>
-    <a class="mobile-nav-item" href="gallery.html">🖼 My Gallery</a>
-    <a class="mobile-nav-item" href="settings.html">⚙️ Settings</a>
-    <a class="mobile-nav-item" href="credits.html">💳 Credits</a>
+    <a class="mobile-nav-item" href="dashboard.html" onclick="closeMobileNav()">📸 New Photoshoot</a>
+    <a class="mobile-nav-item" href="video.html" onclick="closeMobileNav()" href="video.html">🎬 New Video</a>
+    <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼 My Gallery</a>
+    <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
+    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
     <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
   </div>
   <div class="mobile-nav-footer">
@@ -121,7 +121,7 @@
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
     New photoshoot
   </a>
-  <a href="dashboard.html" onclick="sessionStorage.setItem('openTab','video')" class="nav-item">
+  <a href="video.html" class="nav-item">
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
     New video
   </a>
@@ -316,7 +316,7 @@ function renderHistory(items) {
     row.className = 'history-row';
     var icon = item.type === 'video' ? '🎬' : (item.type === 'bulk' ? '⚡' : '📷');
     var iconClass = item.type === 'video' ? 'video' : (item.type === 'bulk' ? 'bulk' : 'photo');
-    var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata', hour12:false });
+    var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata' });
     var timeStr = item.date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
     row.innerHTML = '<div class="history-icon ' + iconClass + '">' + icon + '</div>' +
       '<div class="history-info"><div class="history-title">' + item.title + '</div><div class="history-date">' + dateStr + ' · ' + timeStr + '</div></div>' +
