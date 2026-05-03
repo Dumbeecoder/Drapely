@@ -610,23 +610,8 @@ function buildPhotoPrompt() {
 }
 
 // TAB SWITCHING - defined early so mobile nav can use it
-// Auto open video tab if coming from gallery
-if (sessionStorage.getItem('openTab') === 'video') {
-  sessionStorage.removeItem('openTab');
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function(){ switchTab('video'); }, 300);
-  });
-}
-function switchTab(tab) {
-  document.querySelectorAll('.studio-tab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
-  var tabEl = document.getElementById('tab-' + tab);
-  var contentEl = document.getElementById('content-' + tab);
-  if(tabEl) tabEl.classList.add('active');
-  if(contentEl) contentEl.classList.add('active');
-  // Update mobile nav active state
-  document.querySelectorAll('.mobile-nav-item').forEach(function(el){ el.classList.remove('active'); });
-}
+// Video studio moved to video.html
+function switchTab(tab) { /* deprecated - video is now at video.html */ }
 
 function openMobileNav() {
   document.getElementById('mobile-nav').classList.add('open');
