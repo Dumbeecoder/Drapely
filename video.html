@@ -299,6 +299,23 @@ var selectedDuration = '5';
 var currentVideoUrl = null;
 var videoGallery = [];
 
+// Check if coming from dashboard "Make Video" button
+document.addEventListener('DOMContentLoaded', function() {
+  var fromPhoto = sessionStorage.getItem('videoFromPhoto');
+  if (fromPhoto) {
+    sessionStorage.removeItem('videoFromPhoto');
+    window._videoFromPhotoUrl = fromPhoto;
+    var preview = document.getElementById('v-suit-preview');
+    var empty = document.getElementById('v-upload-empty');
+    var zone = document.getElementById('v-upload-zone');
+    var clearBtn = document.getElementById('v-clear-btn');
+    if (preview) { preview.src = fromPhoto; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  }
+});
+
 // Video scene prompts
 var videoPresets = [
   'beautiful Indian woman in golden sunset light, warm bokeh, full body fashion photography, cinematic 4K slow motion',
