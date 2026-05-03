@@ -568,7 +568,9 @@ async function startVideoGenerate() {
           var userId = r.data.session.user.id;
           sb.from('photoshoots').insert({
             user_id: userId, image_url: videoUrl,
-            collection_name: 'Drapely AI Video', suit_type: 'Video', image_count: 1, media_type: 'video'
+            collection_name: 'Drapely AI Video', suit_type: 'Video',
+            image_count: (selectedDuration === '10' ? 4 : 2),
+            media_type: 'video'
           }).then(function(res) {
             if (res.error) console.error('Video save error:', res.error.message);
             else { console.log('Video saved!'); loadVideoCount(userId); }
