@@ -58,8 +58,11 @@
     .studio-body{padding:1.5rem}
     .step-panel{display:none;padding:1.25rem 1.5rem}
     .step-panel.active{display:block}
-    .step-label{font-size:10px;font-weight:600;color:#999;margin-bottom:10px;letter-spacing:1px;text-transform:uppercase}
-    .upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+    .step-label{font-size:12px;font-weight:500;color:#555;margin-bottom:12px;letter-spacing:0.5px}
+    .upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:2rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+    .garment-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff}
+    .garment-card:hover{border-color:#E91E63;background:#fff0f5}
+    .garment-card.selected{border:2px solid #E91E63;background:#fff0f5}
     .upload-zone:hover{border-color:#E91E63;background:#ffe0ec}
     .upload-zone.has-file{padding:0;border-style:solid;border-color:#E91E63}
     .upload-icon-wrap{width:52px;height:52px;background:rgba(233,30,99,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
@@ -73,9 +76,12 @@
     .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
     .model-card.selected{border-color:#E91E63;border-width:2px}
     .model-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+    .model-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#f9f9f9;position:relative}
+    .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
+    .model-card.selected{border-color:#E91E63;border-width:2px}
     .model-avatar{height:200px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f0f0f0}
     .model-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
-    .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center}
+    .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:10px}
     .model-card.selected .model-check{display:flex}
     .model-info{padding:7px 8px;border-top:1px solid rgba(233,30,99,0.12)}
     .model-name{font-size:11px;font-weight:500;color:#000}
@@ -214,8 +220,9 @@
   </div>
 </div>
 <div class="sidebar">
-  <a href="index.html" class="brand">Drape<span>ly</span></a>
-  <div class="nav-section">STUDIO</div>
+  <a href="index.html" class="sidebar-brand">Drape<span>ly</span></a>
+  <div class="sidebar-nav">
+  <div class="nav-section-label">Studio</div>
   <a href="dashboard.html" class="nav-item active">
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
     New photoshoot
@@ -232,7 +239,7 @@
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
     My gallery
   </a>
-  <div class="nav-section">ACCOUNT</div>
+  <div class="nav-section-label" style="margin-top:8px;">Account</div>
   <a href="settings.html" class="nav-item">
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
     Settings
@@ -245,14 +252,21 @@
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
     Sign out
   </a>
-  <div class="nav-footer"><div class="user-pill"><div class="user-av" id="user-avatar">?</div><div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div></div></div>
+  </div><!-- end sidebar-nav -->
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div>
+    </div>
+  </div>
 </div>
 
 <div class="main">
   <div class="topbar">
-    <div><h1 class="page-title">My Studio</h1><p class="page-sub">Welcome back, <span id="user-first">...</span>!</p></div>
-    <div class="beta-badge">✦ Beta — Free access</div>
+    <div style="display:flex;align-items:baseline;gap:8px;"><h1 class="topbar-title">My Studio</h1><p class="topbar-sub" id="topbar-sub">Welcome back!</p></div>
+    <div class="beta-pill">✦ Beta — Free access</div>
   </div>
+  <div class="content">
 
 
     <!-- STATS -->
@@ -297,7 +311,6 @@
             <button class="clear-file-btn" id="suit-clear-btn" onclick="clearSuit(event)">✕</button>
           </div>
           <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
-
           <div style="font-size:10px;color:#999;margin-bottom:7px;margin-top:1rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Garment Type</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
             <div class="garment-card selected" id="garment-suit" onclick="selectGarment('suit',this)">
@@ -311,50 +324,36 @@
               <div style="font-size:10px;color:#888;margin-top:2px;">Silk, Chiffon, Cotton</div>
             </div>
           </div>
-
           <div style="font-size:10px;color:#999;margin-bottom:5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Collection Name <span style="font-weight:300;color:#bbb;text-transform:none;letter-spacing:0;">(optional)</span></div>
           <input type="text" id="collection-name" class="prompt-input" placeholder="e.g. Festive 2025" style="margin-bottom:1rem;min-height:unset;resize:none;padding:9px 12px;" />
-
           <div class="step-nav"><div></div><button class="btn-next" onclick="goStep(1)">Choose Model →</button></div>
         </div>
 
         <!-- STEP 2: MODEL -->
         <div class="step-panel" id="step-1">
-          <div class="step-label">Step 2 — Choose Your Model</div>
+          <div class="step-label">STEP 2 — CHOOSE YOUR MODEL</div>
           <div class="model-grid">
             <div class="model-card selected" id="model-0" onclick="selectModel(this,0)">
-              <div class="model-avatar">
-                <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" />
-                <div class="model-check" style="display:none;">✓</div>
-              </div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Priya S.</div><div class="model-spec">Straight fit</div></div>
             </div>
             <div class="model-card" id="model-1" onclick="selectModel(this,1)">
-              <div class="model-avatar">
-                <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" />
-                <div class="model-check" style="display:none;">✓</div>
-              </div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Anjali M.</div><div class="model-spec">Slim fit</div></div>
             </div>
             <div class="model-card" id="model-2" onclick="selectModel(this,2)">
-              <div class="model-avatar">
-                <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" />
-                <div class="model-check" style="display:none;">✓</div>
-              </div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Kavya R.</div><div class="model-spec">Curvy fit</div></div>
             </div>
             <div class="model-card" id="model-3" onclick="selectModel(this,3)">
-              <div class="model-avatar">
-                <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" />
-                <div class="model-check" style="display:none;">✓</div>
-              </div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Simran K.</div><div class="model-spec">Elegant fit</div></div>
             </div>
             <div class="model-card" id="model-99" onclick="selectModel(this,99)">
-              <div class="model-avatar" style="background:#fff0f5;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()">
+              <div class="model-avatar" style="background:#fff0f5;flex-direction:column;" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()">
                 <div id="custom-model-empty" style="text-align:center;"><div style="font-size:26px;margin-bottom:6px;">📷</div><div style="font-size:11px;color:#E91E63;font-weight:500;">Upload model</div></div>
-                <img id="custom-model-preview" style="display:none;width:100%;height:100%;object-fit:cover;object-position:top center;" />
-                <div class="model-check" style="display:none;">✓</div>
+                <img id="custom-model-preview" style="display:none;width:100%;height:100%;object-fit:cover;object-position:top center;position:absolute;top:0;left:0;" />
+                <div class="model-check">✓</div>
               </div>
               <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
               <div class="model-info"><div class="model-name">Custom</div><div class="model-spec">Your photo</div></div>
@@ -365,96 +364,93 @@
 
         <!-- STEP 3: SCENE & POSE -->
         <div class="step-panel" id="step-2">
-          <div class="step-label">Step 3 — Choose Scene & Pose</div>
+          <div class="step-label">STEP 3 — CHOOSE SCENE & POSE</div>
           <div style="font-size:11px;color:#888;margin-bottom:8px;">Pick a background scene</div>
           <input type="hidden" id="photo-prompt-val" value="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" data-bg="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" />
-
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:0.75rem;">
-            <div class="prompt-preset selected" onclick="selectScene(this,'grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏰</div><div style="font-size:10px;font-weight:500;">Royal Palace</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'Indian wedding mandap decorated with marigold flowers and golden drapes')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">💍</div><div style="font-size:10px;font-weight:500;">Wedding</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'festive Diwali celebration with glowing diyas and warm fairy lights bokeh')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🪔</div><div style="font-size:10px;font-weight:500;">Diwali</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'heritage Rajasthani haveli with carved stone arches and warm terracotta tones')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🕌</div><div style="font-size:10px;font-weight:500;">Haveli</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'lush blooming rose garden with soft pink flowers and golden hour sunlight')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌸</div><div style="font-size:10px;font-weight:500;">Rose Garden</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'beautiful golden sunset sky with warm orange tones and soft bokeh')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌅</div><div style="font-size:10px;font-weight:500;">Sunset</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'iconic Taj Mahal monument background with soft morning light')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🕍</div><div style="font-size:10px;font-weight:500;">Taj Mahal</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'grand crystal chandelier ballroom with golden walls and elegant lighting')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">✨</div><div style="font-size:10px;font-weight:500;">Ballroom</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'rooftop at night with sparkling city lights and blue hour sky')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌃</div><div style="font-size:10px;font-weight:500;">City Night</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'clean white professional studio background with soft even lighting')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">📸</div><div style="font-size:10px;font-weight:500;">Studio</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'__custom__')" style="padding:8px 4px;text-align:center;border-style:dashed;"><div style="font-size:18px;margin-bottom:2px;">✏️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Custom</div></div>
+            <div class="prompt-preset selected" onclick="selectScene(this,'grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">🏰</div><div style="font-size:10px;font-weight:500;">Royal Palace</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'Indian wedding mandap decorated with marigold flowers and golden drapes')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">💍</div><div style="font-size:10px;font-weight:500;">Wedding</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'festive Diwali celebration with glowing diyas and warm fairy lights bokeh')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">🪔</div><div style="font-size:10px;font-weight:500;">Diwali</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'heritage Rajasthani haveli with carved stone arches and warm terracotta tones')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">🕌</div><div style="font-size:10px;font-weight:500;">Haveli</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'lush blooming rose garden with soft pink flowers and golden hour sunlight')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">🌸</div><div style="font-size:10px;font-weight:500;">Rose Garden</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'beautiful golden sunset sky with warm orange tones and soft bokeh')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">🌅</div><div style="font-size:10px;font-weight:500;">Sunset</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'iconic Taj Mahal monument background with soft morning light')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">🕍</div><div style="font-size:10px;font-weight:500;">Taj Mahal</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'grand crystal chandelier ballroom with golden walls and elegant lighting')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">✨</div><div style="font-size:10px;font-weight:500;">Ballroom</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'rooftop at night with sparkling city lights and blue hour sky')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">🌃</div><div style="font-size:10px;font-weight:500;">City Night</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'clean white professional studio background with soft even lighting')" style="padding:8px 4px;"><div style="font-size:18px;margin-bottom:2px;">📸</div><div style="font-size:10px;font-weight:500;">Studio</div></div>
+            <div class="prompt-preset" onclick="selectScene(this,'__custom__')" style="padding:8px 4px;border-style:dashed;"><div style="font-size:18px;margin-bottom:2px;">✏️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Custom</div></div>
           </div>
           <textarea class="prompt-input" id="custom-scene-input" placeholder="Describe your custom background..." rows="2" style="display:none;margin-bottom:0.75rem;min-height:unset;padding:8px 10px;font-size:12px;"></textarea>
-
           <div style="font-size:10px;color:#999;margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Pose</div>
           <div id="pose-selector" style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:0.75rem;">
-            <div class="prompt-preset selected" onclick="selectPoseCard(this,'standing straight facing forward, confident pose')" style="padding:7px 3px;text-align:center;font-size:16px;">🧍‍♀️<div style="font-size:9px;margin-top:2px;font-weight:500;">Standing</div></div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'graceful walking pose mid stride showing full outfit')" style="padding:7px 3px;text-align:center;font-size:16px;">🚶‍♀️<div style="font-size:9px;margin-top:2px;color:#555;">Walking</div></div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'elegant 3/4 turn pose looking over shoulder')" style="padding:7px 3px;text-align:center;font-size:16px;">💃<div style="font-size:9px;margin-top:2px;color:#555;">3/4 Turn</div></div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'hand on hip confident fashion model pose')" style="padding:7px 3px;text-align:center;font-size:16px;">👸<div style="font-size:9px;margin-top:2px;color:#555;">Fashion</div></div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'sitting gracefully on steps elegant seated pose')" style="padding:7px 3px;text-align:center;font-size:16px;">🪑<div style="font-size:9px;margin-top:2px;color:#555;">Sitting</div></div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'twirling spinning pose showing full outfit movement')" style="padding:7px 3px;text-align:center;font-size:16px;">🌀<div style="font-size:9px;margin-top:2px;color:#555;">Twirl</div></div>
+            <div class="prompt-preset selected" onclick="selectPoseCard(this,'standing straight facing forward, confident pose')" style="padding:7px 3px;font-size:16px;"><div style="font-size:9px;margin-top:2px;font-weight:500;">🧍‍♀️<br>Standing</div></div>
+            <div class="prompt-preset" onclick="selectPoseCard(this,'graceful walking pose mid stride showing full outfit')" style="padding:7px 3px;font-size:16px;"><div style="font-size:9px;margin-top:2px;color:#555;">🚶‍♀️<br>Walking</div></div>
+            <div class="prompt-preset" onclick="selectPoseCard(this,'elegant 3/4 turn pose looking over shoulder')" style="padding:7px 3px;font-size:16px;"><div style="font-size:9px;margin-top:2px;color:#555;">💃<br>3/4 Turn</div></div>
+            <div class="prompt-preset" onclick="selectPoseCard(this,'hand on hip confident fashion model pose')" style="padding:7px 3px;font-size:16px;"><div style="font-size:9px;margin-top:2px;color:#555;">👸<br>Fashion</div></div>
+            <div class="prompt-preset" onclick="selectPoseCard(this,'sitting gracefully on steps elegant seated pose')" style="padding:7px 3px;font-size:16px;"><div style="font-size:9px;margin-top:2px;color:#555;">🪑<br>Sitting</div></div>
+            <div class="prompt-preset" onclick="selectPoseCard(this,'twirling spinning pose showing full outfit movement')" style="padding:7px 3px;font-size:16px;"><div style="font-size:9px;margin-top:2px;color:#555;">🌀<br>Twirl</div></div>
           </div>
-
           <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
         </div>
 
         <!-- STEP 4: GENERATE -->
         <div class="step-panel" id="step-3">
-          <div class="step-label">Step 4 — Generate Your Photoshoot</div>
+          <div class="step-label">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
 
-          <div style="background:#fff0f5;border:1px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 12px;margin-bottom:0.75rem;display:flex;gap:14px;flex-wrap:wrap;">
+          <div style="background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:10px;padding:14px;margin-bottom:1.25rem;display:flex;gap:16px;flex-wrap:wrap;">
             <div style="font-size:12px;color:#000;">🧣 Suit uploaded</div>
             <div style="font-size:12px;color:#000;">👩🏽 Model selected</div>
             <div style="font-size:12px;color:#000;">🎨 Background set</div>
           </div>
 
           <!-- AI ENHANCEMENTS -->
-          <div style="font-size:10px;color:#999;margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">AI Enhancements</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:0.75rem;">
-            <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Professional lighting</label>
-            <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Dupatta styling</label>
-            <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Jewellery suggestion</label>
-            <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" style="accent-color:#E91E63;" /> Soft shadow effect</label>
+          <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">AI ENHANCEMENTS</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;">
+            <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:13px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Professional lighting</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:13px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Dupatta styling</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:13px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Jewellery suggestion</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:13px;"><input type="checkbox" style="accent-color:#E91E63;" /> Soft shadow effect</label>
           </div>
 
           <!-- NUMBER OF IMAGES -->
-          <div style="font-size:10px;color:#999;margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Number of Images</div>
-          <div style="display:flex;gap:6px;margin-bottom:0.75rem;">
+          <div style="font-size:12px;color:#555;margin-bottom:8px;font-weight:500;">NUMBER OF IMAGES</div>
+          <div style="display:flex;gap:8px;margin-bottom:1.25rem;">
             <button class="var-btn selected" onclick="selectVars(this)">1 image</button>
             <button class="var-btn" onclick="selectVars(this)">2 images</button>
             <button class="var-btn" onclick="selectVars(this)">4 images</button>
           </div>
 
           <!-- LOGO -->
-          <div style="border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:11px;margin-bottom:0.75rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-              <div style="font-size:10px;font-weight:600;color:#999;letter-spacing:1px;text-transform:uppercase;">Brand Logo <span style="font-weight:300;color:#bbb;text-transform:none;letter-spacing:0;">(optional)</span></div>
-              <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 10px;font-size:11px;color:#E91E63;font-weight:500;">
+          <div style="border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:14px;margin-bottom:1.25rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="font-size:12px;font-weight:500;color:#555;">ADD YOUR BRAND LOGO <span style="font-weight:300;color:#aaa;">(optional)</span></div>
+              <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 12px;font-size:11px;color:#E91E63;font-weight:500;">
                 Upload Logo
                 <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(event)" />
               </label>
             </div>
-            <div id="logo-preview-wrap" style="display:none;margin-bottom:8px;align-items:center;gap:8px;">
-              <img id="logo-preview" style="height:36px;object-fit:contain;border-radius:4px;border:1px solid rgba(233,30,99,0.15);padding:3px;" />
+            <div id="logo-preview-wrap" style="display:none;margin-bottom:10px;align-items:center;gap:8px;">
+              <img id="logo-preview" style="height:40px;object-fit:contain;border-radius:4px;border:1px solid rgba(233,30,99,0.15);padding:4px;" />
               <button onclick="removeLogo()" style="background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">✕ Remove</button>
             </div>
             <div id="logo-position-wrap" style="display:none;">
-              <div style="font-size:10px;color:#999;margin-bottom:6px;font-weight:500;">Position</div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;">
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-left')" style="padding:7px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;font-family:'DM Sans',sans-serif;">↖ Top Left</button>
-                <button class="logo-pos-btn selected" onclick="selectLogoPos(this,'top-center')" style="padding:7px 4px;border:1px solid #E91E63;border-radius:6px;background:#fff0f5;font-size:10px;cursor:pointer;color:#E91E63;font-weight:500;font-family:'DM Sans',sans-serif;">↑ Top Center</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-right')" style="padding:7px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;font-family:'DM Sans',sans-serif;">↗ Top Right</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-left')" style="padding:7px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;font-family:'DM Sans',sans-serif;">↙ Bottom Left</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-center')" style="padding:7px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;font-family:'DM Sans',sans-serif;">↓ Bottom Center</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-right')" style="padding:7px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;font-family:'DM Sans',sans-serif;">↘ Bottom Right</button>
+              <div style="font-size:11px;color:#555;margin-bottom:8px;">LOGO POSITION</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+                <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↖ Top Left</button>
+                <button class="logo-pos-btn selected" onclick="selectLogoPos(this,'top-center')" style="padding:8px 4px;border:1px solid #E91E63;border-radius:6px;background:#fff0f5;font-size:10px;cursor:pointer;color:#E91E63;font-weight:500;">↑ Top Center</button>
+                <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↗ Top Right</button>
+                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↙ Bottom Left</button>
+                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-center')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↓ Bottom Center</button>
+                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↘ Bottom Right</button>
               </div>
             </div>
           </div>
 
-          <button class="generate-btn" id="generate-btn" onclick="startGenerate()">
+          <button class="generate-btn" onclick="startGenerate()">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
             Generate AI Photoshoot — ₹25
           </button>
-          <div class="step-nav" style="margin-top:0.75rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
+          <div class="step-nav" style="margin-top:1rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
         </div>
 
         <!-- PROGRESS -->
@@ -491,8 +487,8 @@
       </div>
 
     </div><!-- end studio-grid -->
-  
-</div>
+  </div><!-- end content -->
+</div><!-- end main -->
 <!-- BUY CREDITS MODAL -->
 <div class="modal-backdrop" id="credits-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:20px;padding:1.5rem;max-width:340px;width:90%;text-align:center;position:relative;">
@@ -546,15 +542,6 @@ function selectModel(card, idx) {
   selectedModelIndex = idx;
 }
 
-function selectPoseCard(el, posePrompt) {
-  // Support both old .prompt-preset and new .pose-card systems
-  var parent = el.parentElement;
-  parent.querySelectorAll('.prompt-preset, .pose-card').forEach(function(p){ p.classList.remove('selected'); });
-  el.classList.add('selected');
-  selectedPosePrompt = posePrompt;
-  showToast('Pose: ' + el.querySelector('div:nth-child(2)').textContent);
-}
-
 function selectScene(el, scenePrompt) {
   document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
   el.classList.add('selected');
@@ -565,12 +552,7 @@ function selectScene(el, scenePrompt) {
     if (promptEl) promptEl.setAttribute('data-bg', '');
   } else {
     if (customInput) customInput.style.display = 'none';
-    if (promptEl) {
-      promptEl.value = scenePrompt;
-      promptEl.setAttribute('data-bg', scenePrompt);
-    }
-    var label = el.querySelector('div:nth-child(2)');
-    if (label) showToast('Scene: ' + label.textContent);
+    if (promptEl) { promptEl.value = scenePrompt; promptEl.setAttribute('data-bg', scenePrompt); }
   }
 }
 
@@ -591,6 +573,17 @@ function loadCustomModel(e) {
   };
   reader.readAsDataURL(file);
 }
+
+function selectPoseCard(el, posePrompt) {
+  // Support both old .prompt-preset and new .pose-card systems
+  var parent = el.parentElement;
+  parent.querySelectorAll('.prompt-preset, .pose-card').forEach(function(p){ p.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedPosePrompt = posePrompt;
+  showToast('Pose: ' + el.querySelector('div:nth-child(2)').textContent);
+}
+
+// selectScene defined above
 
 function selectPhotoPrompt(el, val) {
   document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
@@ -692,7 +685,7 @@ sb.auth.getSession().then(function(r) {
   var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
   document.getElementById('user-name').textContent = displayName;
   document.getElementById('user-avatar').textContent = initials;
-  document.getElementById('topbar-sub').textContent = 'Welcome back, ' + (fname || displayName) + '!';
+  var tSub = document.getElementById('topbar-sub'); if(tSub) tSub.textContent = 'Welcome back, ' + (fname || displayName) + '!';
   if(document.getElementById('m-avatar')) document.getElementById('m-avatar').textContent = initials;
   if(document.getElementById('m-name')) document.getElementById('m-name').textContent = displayName;
   loadCredits(user.id);
@@ -859,8 +852,8 @@ function loadSuit(e) {
     document.getElementById('suit-preview').src = ev.target.result;
     document.getElementById('suit-preview').style.display = 'block';
     document.getElementById('upload-empty').style.display = 'none';
-    document.getElementById('clear-btn').style.display = 'flex';
-    document.getElementById('upload-zone').classList.add('has-file');
+    document.getElementById('suit-clear-btn').style.display = 'flex';
+    document.getElementById('suit-upload-zone').classList.add('has-file');
   };
   reader.readAsDataURL(file);
 }
@@ -869,10 +862,12 @@ function clearSuit(e) {
   e.stopPropagation();
   document.getElementById('suit-preview').style.display = 'none';
   document.getElementById('upload-empty').style.display = 'block';
-  document.getElementById('clear-btn').style.display = 'none';
-  document.getElementById('upload-zone').classList.remove('has-file');
+  document.getElementById('suit-clear-btn').style.display = 'none';
+  document.getElementById('suit-upload-zone').classList.remove('has-file');
   document.getElementById('suit-input').value = '';
 }
+
+// selectModel defined above
 
 function selectPose(tag) {
   document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
@@ -942,17 +937,12 @@ async function startGenerate() {
   var progressBar = document.getElementById('progress-bar');
   var progressLabel = document.getElementById('progress-label-text');
   var progressPct = document.getElementById('progress-pct');
-  var activeStep = document.getElementById('step-' + currentStep);
+  var activeStepEl = document.getElementById('step-' + currentStep);
 
-  activeStep.style.display = 'none';
+  activeStepEl.style.display = 'none';
   progressWrap.classList.add('visible');
   progressBar.style.width = '0%';
   progressPct.textContent = '0%';
-
-  function restoreStep() {
-    progressWrap.classList.remove('visible');
-    activeStep.style.display = 'block';
-  }
 
   var msgs = ['Compressing suit photo...','Sending to AI model...','Analysing garment details...','Compositing onto model...','Applying lighting & effects...','Almost ready...'];
   var progress = 0;
@@ -988,7 +978,7 @@ async function startGenerate() {
       if (data.error) {
         clearInterval(interval);
         progressWrap.classList.remove('visible');
-        restoreStep();
+        activeStepEl.style.display = 'block';
         showToast('Error: ' + String(data.error).substring(0, 80));
         return;
       }
@@ -998,7 +988,7 @@ async function startGenerate() {
       if (!predId) {
         clearInterval(interval);
         progressWrap.classList.remove('visible');
-        restoreStep();
+        activeStepEl.style.display = 'block';
         showToast('No prediction ID returned');
         return;
       }
@@ -1014,7 +1004,7 @@ async function startGenerate() {
         if (pollResult.status === 'failed') {
           clearInterval(interval);
           progressWrap.classList.remove('visible');
-          restoreStep();
+          activeStepEl.style.display = 'block';
           showToast('Generation failed: ' + (pollResult.error || 'Try again'));
           return;
         }
@@ -1034,7 +1024,7 @@ async function startGenerate() {
 
     setTimeout(function() {
       progressWrap.classList.remove('visible');
-      restoreStep();
+      activeStepEl.style.display = 'block';
       if (results.length > 0) {
         updateStats(results.length);
         deductCredit(results.length); // 1 credit per generated image
@@ -1070,7 +1060,7 @@ async function startGenerate() {
   } catch(err) {
     clearInterval(interval);
     progressWrap.classList.remove('visible');
-    restoreStep();
+    activeStepEl.style.display = 'block';
     showToast('Error: ' + err.message);
   }
 }
@@ -1119,6 +1109,9 @@ function newShoot() {
   goStep(0);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// loadCustomModel defined above
+
 function selectGarmentType(type) {
   selectedGarmentType = type;
   var suitEl = document.getElementById('gtype-suit');
