@@ -73,7 +73,7 @@
     .model-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#f9f9f9;position:relative}
     .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
     .model-card.selected{border-color:#E91E63;border-width:2px}
-    .model-avatar{height:130px;position:relative;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
+    .model-avatar{width:100%;aspect-ratio:2/3;position:relative;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
     .model-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
     .model-check{position:absolute;top:4px;right:4px;width:16px;height:16px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:9px;z-index:2}
     .model-card.selected .model-check{display:flex}
@@ -336,24 +336,24 @@
               <div class="model-info"><div class="model-name">Model 2</div><div class="model-spec">Slim fit</div></div>
             </div>
             <div class="model-card" id="model-2" onclick="selectModel(this,2)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png" /><div class="model-check">✓</div></div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_56_44%20AM.png" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Model 3</div><div class="model-spec">Curvy fit</div></div>
             </div>
             <div class="model-card" id="model-3" onclick="selectModel(this,3)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png" /><div class="model-check">✓</div></div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Model 4</div><div class="model-spec">Slim fit</div></div>
             </div>
             <div class="model-card" id="model-4" onclick="selectModel(this,4)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png" /><div class="model-check">✓</div></div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Model 5</div><div class="model-spec">Curvy fit</div></div>
             </div>
             <div class="model-card" id="model-5" onclick="selectModel(this,5)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_03_27%20AM.png" /><div class="model-check">✓</div></div>
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Model 6</div><div class="model-spec">Elegant fit</div></div>
             </div>
-            <div class="model-card" id="model-98" onclick="selectModel(this,98)">
-              <div class="model-avatar" style="background:#f5f5f5;flex-direction:column;gap:4px;"><div style="font-size:28px;">🪆</div><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Mannequin</div><div class="model-spec">No model</div></div>
+            <div class="model-card" id="model-6" onclick="selectModel(this,6)">
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_03_27%20AM.png" /><div class="model-check">✓</div></div>
+              <div class="model-info"><div class="model-name">Model 7</div><div class="model-spec">Straight fit</div></div>
             </div>
             <div class="model-card" id="model-99" onclick="selectModel(this,99)">
               <div class="model-avatar" style="background:#fff0f5;flex-direction:column;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()">
