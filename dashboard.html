@@ -73,8 +73,8 @@
     .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
     .model-card.selected{border-color:#E91E63;border-width:2px}
     .model-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;}
-    .model-avatar{height:160px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f8f8f8}
-    .model-avatar img{width:100%;height:100%;object-fit:contain;object-position:top center}
+    .model-avatar{height:200px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f0f0f0}
+    .model-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
     .model-check{position:absolute;top:5px;right:5px;width:18px;height:18px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center}
     .model-card.selected .model-check{display:flex}
     .model-info{padding:8px;border-top:1px solid rgba(233,30,99,0.15)}
@@ -177,7 +177,10 @@
     .toast.show{transform:translateX(-50%) translateY(0)}
     @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.studio-grid{grid-template-columns:1fr}.video-grid{grid-template-columns:1fr}.burger{display:flex !important;}.topbar{padding-left:60px;}}
     @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.bg-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
-      .pose-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:20px;transition:all 0.15s;}
+      .garment-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff}
+    .garment-card:hover{border-color:#E91E63;background:#fff0f5}
+    .garment-card.selected{border:2px solid #E91E63;background:#fff0f5}
+    .pose-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:20px;transition:all 0.15s;}
     .pose-card.selected,.pose-card:hover{border-color:#E91E63;background:#fff0f5;}
     .progress-bar-outer{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:8px 0;}
     .progress-bar-inner{height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;}
@@ -214,8 +217,8 @@
   </div>
 </div>
 <div class="sidebar">
-  <a href="index.html" class="brand">Drape<span>ly</span></a>
-  <div class="nav-section">STUDIO</div>
+  <a href="index.html" class="sidebar-brand">Drape<span>ly</span></a>
+  <div class="sidebar-nav"><div class="nav-section-label">Studio</div>
   <a href="dashboard.html" class="nav-item active">
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
     New photoshoot
@@ -232,7 +235,7 @@
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
     My gallery
   </a>
-  <div class="nav-section">ACCOUNT</div>
+  <div class="nav-section-label" style="margin-top:8px;">Account</div>
   <a href="settings.html" class="nav-item">
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
     Settings
@@ -245,16 +248,18 @@
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
     Sign out
   </a>
-  <div class="nav-footer"><div class="user-pill"><div class="user-av" id="user-avatar">?</div><div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div></div></div>
+  </div><!-- end sidebar-nav -->
+  <div class="sidebar-footer"><div class="user-chip"><div class="user-avatar" id="user-avatar">?</div><div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div></div></div>
 </div>
 
 <div class="main">
   <div class="topbar">
-    <div><h1 class="page-title">My Studio</h1><p class="page-sub">Welcome back, <span id="user-first">...</span>!</p></div>
-    <div class="beta-badge">✦ Beta — Free access</div>
+    <div><h1 class="topbar-title">My Studio</h1><p class="topbar-sub" id="topbar-sub">Welcome back!</p></div>
+    <div class="beta-pill">✦ Beta — Free access</div>
   </div>
 
 
+    <div class="content">
     <!-- STATS -->
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
@@ -283,7 +288,7 @@
         </div>
 
         <!-- STEP 1: UPLOAD -->
-        <div class="step-panel" id="step-0">
+        <div class="step-panel active" id="step-0">
           <div class="step-label">STEP 1 — UPLOAD YOUR SUIT</div>
           <div class="upload-zone" id="suit-upload-zone" onclick="document.getElementById('suit-input').click()">
             <div id="upload-empty">
@@ -321,45 +326,30 @@
         <!-- STEP 2: MODEL -->
         <div class="step-panel" id="step-1">
           <div class="step-label">STEP 2 — CHOOSE YOUR MODEL</div>
-                                            <div class="model-grid">
-            <div class="model-card selected" id="model-0" onclick="selectModel(0,this)">
+          <div class="model-grid">
+            <div class="model-card selected" id="model-0" onclick="selectModel(this,0)">
               <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" class="model-img" />
-              <div class="model-name">Model 1</div>
+              <div class="model-name">Priya S.</div>
               <div class="model-type">Straight fit</div>
             </div>
-            <div class="model-card" id="model-1" onclick="selectModel(1,this)">
+            <div class="model-card" id="model-1" onclick="selectModel(this,1)">
               <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" class="model-img" />
-              <div class="model-name">Model 2</div>
+              <div class="model-name">Anjali M.</div>
               <div class="model-type">Slim fit</div>
             </div>
-            <div class="model-card" id="model-2" onclick="selectModel(2,this)">
-              <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png" class="model-img" />
-              <div class="model-name">Model 3</div>
+            <div class="model-card" id="model-2" onclick="selectModel(this,2)">
+              <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" class="model-img" />
+              <div class="model-name">Kavya R.</div>
               <div class="model-type">Curvy fit</div>
             </div>
-            <div class="model-card" id="model-3" onclick="selectModel(3,this)">
-              <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png" class="model-img" />
-              <div class="model-name">Model 4</div>
-              <div class="model-type">Slim fit</div>
-            </div>
-            <div class="model-card" id="model-4" onclick="selectModel(4,this)">
-              <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png" class="model-img" />
-              <div class="model-name">Model 5</div>
-              <div class="model-type">Curvy fit</div>
-            </div>
-            <div class="model-card" id="model-5" onclick="selectModel(5,this)">
-              <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_03_27%20AM.png" class="model-img" />
-              <div class="model-name">Model 6</div>
+            <div class="model-card" id="model-3" onclick="selectModel(this,3)">
+              <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" class="model-img" />
+              <div class="model-name">Simran K.</div>
               <div class="model-type">Elegant fit</div>
             </div>
-            <div class="model-card" id="model-98" onclick="selectModel(98,this)">
-              <div style="height:120px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:32px;border-radius:8px;">🪆</div>
-              <div class="model-name">Mannequin</div>
-              <div class="model-type">No model</div>
-            </div>
-            <div class="model-card" id="model-99" onclick="selectModel(99,this)">
+            <div class="model-card" id="model-99" onclick="selectModel(this,99)">
               <div class="upload-zone" id="custom-model-zone" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()" style="height:120px;margin:0;">
-                <div id="custom-model-empty" style="text-align:center;"><div style="font-size:24px;margin-bottom:4px;">📷</div><div style="font-size:11px;color:#555;">Upload model</div></div>
+                <div id="custom-model-empty" style="text-align:center;"><div style="font-size:24px;margin-bottom:4px;">📷</div><div style="font-size:11px;color:#555;">Upload your model</div></div>
                 <img id="custom-model-preview" class="upload-preview" />
               </div>
               <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
@@ -498,8 +488,8 @@
       </div>
 
     </div><!-- end studio-grid -->
-  
-</div>
+  </div><!-- end content -->
+</div><!-- end main -->
 <!-- BUY CREDITS MODAL -->
 <div class="modal-backdrop" id="credits-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:20px;padding:1.5rem;max-width:340px;width:90%;text-align:center;position:relative;">
@@ -659,9 +649,9 @@ sb.auth.getSession().then(function(r) {
   var fullname = (fname + ' ' + lname).trim();
   var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
   var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
-  var unEl = document.getElementById('user-name'); if(unEl) unEl.textContent = displayName;
-  var uaEl = document.getElementById('user-avatar'); if(uaEl) uaEl.textContent = initials;
-  var userFirstEl = document.getElementById('user-first'); if(userFirstEl) userFirstEl.textContent = fname || displayName;
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = initials;
+  var tsEl = document.getElementById('topbar-sub'); if(tsEl) tsEl.textContent = 'Welcome back, ' + (fname || displayName) + '!';
   if(document.getElementById('m-avatar')) document.getElementById('m-avatar').textContent = initials;
   if(document.getElementById('m-name')) document.getElementById('m-name').textContent = displayName;
   loadCredits(user.id);
@@ -780,7 +770,7 @@ function loadGalleryFromDB(userId) {
       var statImages = document.getElementById('stat-images');
       if (statShoots) statShoots.textContent = photos.length;
       if (statImages) statImages.textContent = photos.length;
-      var statVideos = document.getElementById('stat-suits');
+      var statVideos = document.getElementById('stat-videos');
       if (statVideos) statVideos.textContent = videos.length;
       renderGallery();
       renderVideoGallery();
@@ -828,8 +818,8 @@ function loadSuit(e) {
     document.getElementById('suit-preview').src = ev.target.result;
     document.getElementById('suit-preview').style.display = 'block';
     document.getElementById('upload-empty').style.display = 'none';
-    document.getElementById('clear-btn').style.display = 'flex';
-    document.getElementById('upload-zone').classList.add('has-file');
+    document.getElementById('suit-clear-btn').style.display = 'flex';
+    document.getElementById('suit-upload-zone').classList.add('has-file');
   };
   reader.readAsDataURL(file);
 }
@@ -838,9 +828,16 @@ function clearSuit(e) {
   e.stopPropagation();
   document.getElementById('suit-preview').style.display = 'none';
   document.getElementById('upload-empty').style.display = 'block';
-  document.getElementById('clear-btn').style.display = 'none';
-  document.getElementById('upload-zone').classList.remove('has-file');
+  document.getElementById('suit-clear-btn').style.display = 'none';
+  document.getElementById('suit-upload-zone').classList.remove('has-file');
   document.getElementById('suit-input').value = '';
+}
+
+
+function selectGarment(type, el) {
+  selectedGarmentType = type;
+  document.querySelectorAll('.garment-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
 }
 
 function selectModel(card, idx) {
@@ -914,14 +911,14 @@ async function startGenerate() {
   var collectionName = (collectionInput && collectionInput.value.trim()) ? collectionInput.value.trim() : null;
 
   var progressWrap = document.getElementById('progress-wrap');
-  var progressFill = document.getElementById('progress-fill');
-  var progressLabel = document.getElementById('progress-label');
+  var progressBar = document.getElementById('progress-bar');
+  var progressLabel = document.getElementById('progress-label-text');
   var progressPct = document.getElementById('progress-pct');
-  var studioBody = document.getElementById('studio-body');
+  var activeStepEl = document.getElementById('step-' + currentStep);
 
-  studioBody.style.display = 'none';
+  activeStepEl.style.display = 'none';
   progressWrap.classList.add('visible');
-  progressFill.style.width = '0%';
+  progressBar.style.width = '0%';
   progressPct.textContent = '0%';
 
   var msgs = ['Compressing suit photo...','Sending to AI model...','Analysing garment details...','Compositing onto model...','Applying lighting & effects...','Almost ready...'];
@@ -930,7 +927,7 @@ async function startGenerate() {
     if (progress < 88) {
       progress += Math.random() * 5 + 1;
       if (progress > 88) progress = 88;
-      progressFill.style.width = Math.round(progress) + '%';
+      progressBar.style.width = Math.round(progress) + '%';
       progressPct.textContent = Math.round(progress) + '%';
       progressLabel.textContent = msgs[Math.min(Math.floor(progress / 16), msgs.length - 1)];
     }
@@ -958,7 +955,7 @@ async function startGenerate() {
       if (data.error) {
         clearInterval(interval);
         progressWrap.classList.remove('visible');
-        studioBody.style.display = 'block';
+        activeStepEl.style.display = 'block';
         showToast('Error: ' + String(data.error).substring(0, 80));
         return;
       }
@@ -968,7 +965,7 @@ async function startGenerate() {
       if (!predId) {
         clearInterval(interval);
         progressWrap.classList.remove('visible');
-        studioBody.style.display = 'block';
+        activeStepEl.style.display = 'block';
         showToast('No prediction ID returned');
         return;
       }
@@ -984,7 +981,7 @@ async function startGenerate() {
         if (pollResult.status === 'failed') {
           clearInterval(interval);
           progressWrap.classList.remove('visible');
-          studioBody.style.display = 'block';
+          activeStepEl.style.display = 'block';
           showToast('Generation failed: ' + (pollResult.error || 'Try again'));
           return;
         }
@@ -998,13 +995,13 @@ async function startGenerate() {
     }
 
     clearInterval(interval);
-    progressFill.style.width = '100%';
+    progressBar.style.width = '100%';
     progressPct.textContent = '100%';
     progressLabel.textContent = 'Your photoshoot is ready!';
 
     setTimeout(function() {
       progressWrap.classList.remove('visible');
-      studioBody.style.display = 'block';
+      activeStepEl.style.display = 'block';
       if (results.length > 0) {
         updateStats(results.length);
         deductCredit(results.length); // 1 credit per generated image
@@ -1040,7 +1037,7 @@ async function startGenerate() {
   } catch(err) {
     clearInterval(interval);
     progressWrap.classList.remove('visible');
-    studioBody.style.display = 'block';
+    activeStepEl.style.display = 'block';
     showToast('Error: ' + err.message);
   }
 }
@@ -1317,31 +1314,8 @@ function overlayLogoOnImages(imageUrls) {
 
 
 function convertToVideo(imageUrl) {
-  // Switch to video tab
-  switchTab('video');
-
-  // Wait for tab to render then auto-fill the image
-  setTimeout(function() {
-    // Set preview image in video upload zone
-    var preview = document.getElementById('v-suit-preview');
-    var empty = document.getElementById('v-upload-empty');
-    var zone = document.getElementById('v-upload-zone');
-
-    if (preview) {
-      preview.src = imageUrl;
-      preview.style.display = 'block';
-    }
-    if (empty) empty.style.display = 'none';
-    if (zone) zone.classList.add('has-file');
-
-    // Store the URL so video generation uses it directly
-    window._videoFromPhotoUrl = imageUrl;
-
-    showToast('Photo loaded! Choose a scene and generate your video 🎬');
-
-    // Scroll to top
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  }, 300);
+  sessionStorage.setItem('videoFromPhoto', imageUrl);
+  window.location.href = 'video.html';
 }
 
 function downloadImg(url, num) {
