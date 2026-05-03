@@ -659,9 +659,9 @@ sb.auth.getSession().then(function(r) {
   var fullname = (fname + ' ' + lname).trim();
   var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
   var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
-  document.getElementById('user-name').textContent = displayName;
-  document.getElementById('user-avatar').textContent = initials;
-  document.getElementById('topbar-sub').textContent = 'Welcome back, ' + (fname || displayName) + '!';
+  var unEl = document.getElementById('user-name'); if(unEl) unEl.textContent = displayName;
+  var uaEl = document.getElementById('user-avatar'); if(uaEl) uaEl.textContent = initials;
+  var userFirstEl = document.getElementById('user-first'); if(userFirstEl) userFirstEl.textContent = fname || displayName;
   if(document.getElementById('m-avatar')) document.getElementById('m-avatar').textContent = initials;
   if(document.getElementById('m-name')) document.getElementById('m-name').textContent = displayName;
   loadCredits(user.id);
