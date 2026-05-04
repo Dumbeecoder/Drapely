@@ -169,9 +169,7 @@
     <div class="step-pill"><div class="step-num">4</div> Upload the background image</div>
   </div>
 
-  <div class="bg-grid" id="bg-grid">
-    <div class="empty"><div class="empty-icon">🌄</div><div>Loading backgrounds...</div></div>
-  </div>
+  <div class="bg-grid" id="bg-grid"></div>
 </div>
 
 <!-- LIGHTBOX -->
@@ -238,19 +236,37 @@ function renderGrid(files) {
   files.forEach(function(file) {
     var url = BASE_URL + encodeURIComponent(file.name);
     var label = file.name.replace(/[-_]/g,' ').replace(/\.[^.]+$/,'').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+
     var card = document.createElement('div');
     card.className = 'bg-card';
-    card.innerHTML =
-      '<div class="bg-img-wrap" onclick='openLightbox("' + url + '","' + label + '")' style="cursor:pointer;">' +
-        '<img src="' + url + '" alt="' + label + '" loading="lazy" />' +
-      '</div>' +
-      '<div class="bg-body">' +
-        '<div class="bg-name">' + label + '</div>' +
-        '<a class="dl-btn" href="' + url + '" download="' + file.name + '" onclick="showToast('Downloading...')">'+
-          '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>' +
-          ' Download' +
-        '</a>' +
-      '</div>';
+
+    // Image wrap
+    var imgWrap = document.createElement('div');
+    imgWrap.className = 'bg-img-wrap';
+    imgWrap.style.cursor = 'pointer';
+    imgWrap.onclick = (function(u, l){ return function(){ openLightbox(u, l); }; })(url, label);
+    var img = document.createElement('img');
+    img.src = url; img.alt = label; img.loading = 'lazy';
+    imgWrap.appendChild(img);
+    card.appendChild(imgWrap);
+
+    // Body
+    var body = document.createElement('div');
+    body.className = 'bg-body';
+    var name = document.createElement('div');
+    name.className = 'bg-name';
+    name.textContent = label;
+    body.appendChild(name);
+
+    // Download button
+    var dlBtn = document.createElement('a');
+    dlBtn.className = 'dl-btn';
+    dlBtn.href = url;
+    dlBtn.download = file.name;
+    dlBtn.innerHTML = '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg> Download';
+    dlBtn.onclick = function(){ showToast('Downloading...'); };
+    body.appendChild(dlBtn);
+    card.appendChild(body);
     grid.appendChild(card);
   });
 }
