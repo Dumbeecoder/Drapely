@@ -82,20 +82,17 @@ export default async function handler(req, res) {
       : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
 
     // Handle custom background image
-    let bgPromptExtra = prompt || '';
-    if (custom_bg && custom_bg.startsWith('data:')) {
-      const bgBase64 = custom_bg.replace(/^data:image\/\w+;base64,/, '');
-      const bgImgurRes = await fetch('https://api.imgur.com/3/image', {
-        method: 'POST',
-        headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: bgBase64, type: 'base64' })
-      });
-      const bgImgurData = await bgImgurRes.json();
-      if (bgImgurData.success) {
-        bgPromptExtra = 'background inspired by uploaded scene, professional Indian fashion photography';
-      }
+    // Use the full prompt built on frontend (includes pose + scene)
+    // Only override for custom_bg case
+    let finalPrompt = prompt || '';
+    if (!finalPrompt || finalPrompt === 'custom_bg_upload') {
+      finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, high quality';
     }
-    const finalPrompt = [garmentDesc, bgPromptExtra].filter(Boolean).join(', ');
+    // If custom bg uploaded, keep pose but use neutral scene description
+    if (custom_bg && custom_bg.startsWith('data:')) {
+      // Keep the pose from prompt but replace scene with neutral
+      finalPrompt = garmentDesc + ', ' + (prompt ? prompt.split(',').slice(1, 3).join(',') : 'standing straight') + ', professional Indian fashion photography, high quality';
+    }
 
     const requestBody = {
       model_name: 'product-to-model',
