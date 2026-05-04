@@ -255,6 +255,15 @@ function renderPhotos(photos) {
     container.innerHTML = '<div class="empty-state"><div style="font-size:48px;opacity:0.3;margin-bottom:1rem;">📷</div><div style="font-size:15px;font-weight:500;margin-bottom:8px;">No photos yet</div><div style="font-size:13px;color:#555;margin-bottom:1.5rem;">Generate your first AI photoshoot!</div><a href="dashboard.html" class="new-btn">Start a photoshoot</a></div>';
     return;
   }
+  // Separate counters: oldest = 1 for each type
+  // photos array is newest-first, so assign numbers in reverse
+  var regularPhotos = photos.filter(function(p){ return p.suit_type !== 'Bulk' && !(p.collection_name && p.collection_name.toLowerCase().includes('bulk')); });
+  var bulkPhotos = photos.filter(function(p){ return p.suit_type === 'Bulk' || (p.collection_name && p.collection_name.toLowerCase().includes('bulk')); });
+  // Build number maps: id -> number (oldest=1)
+  var regularMap = {}, bulkMap = {};
+  regularPhotos.slice().reverse().forEach(function(p, i){ regularMap[p.id] = i + 1; });
+  bulkPhotos.slice().reverse().forEach(function(p, i){ bulkMap[p.id] = i + 1; });
+
   var grid = document.createElement('div'); grid.className = 'gallery-grid';
   photos.forEach(function(item, i) {
     var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
@@ -264,8 +273,23 @@ function renderPhotos(photos) {
     img.onclick = (function(u){ return function(){ openViewer(u); }; })(url);
     card.appendChild(img);
     var body = document.createElement('div'); body.className = 'gallery-card-body';
-    var reverseNum = photos.length - i;
-    var photoTitle = (item.collection_name && item.collection_name !== 'AI Photoshoot' && item.collection_name !== 'Bulk Photoshoot' && item.collection_name !== 'Drapely AI Video') ? item.collection_name : 'Drapely AI Photo ' + reverseNum;
+    // Title logic
+    var isBulk = item.suit_type === 'Bulk' || (item.collection_name && item.collection_name.toLowerCase().includes('bulk'));
+    var isCustomName = item.collection_name &&
+      item.collection_name !== 'AI Photoshoot' &&
+      item.collection_name !== 'Bulk Photoshoot' &&
+      item.collection_name !== 'Drapely AI Video' &&
+      !item.collection_name.startsWith('Drapely AI Photo') &&
+      !item.collection_name.startsWith('Drapely Bulk') &&
+      !item.collection_name.toLowerCase().includes('bulk');
+    var photoTitle;
+    if (isCustomName && !isBulk) {
+      photoTitle = item.collection_name;
+    } else if (isBulk) {
+      photoTitle = 'Drapely Bulk Photo ' + bulkMap[item.id];
+    } else {
+      photoTitle = 'Drapely AI Photo ' + regularMap[item.id];
+    }
     body.innerHTML = '<div class="gallery-card-title">' + photoTitle + '</div><div class="gallery-card-meta">' + date + '</div>';
     card.appendChild(body);
     var actions = document.createElement('div'); actions.className = 'gallery-card-actions';
