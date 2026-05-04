@@ -8,13 +8,16 @@ export default async function handler(req, res) {
   const { garment_img, model_index, prompt, garment_type, custom_model, custom_bg } = req.body;
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
+  const modelIdx = parseInt(model_index) || 0;
+  console.log('Model index:', modelIdx, 'Garment type:', garment_type);
+
   const models = [
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_56_44%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_03_27%20AM.png',
   ];
 
   // Declare isSaree early so it's available everywhere
@@ -32,7 +35,7 @@ export default async function handler(req, res) {
     const garmentUrl = imgurData.data.link;
 
     // Handle mannequin (index 98 or 6) — use actual mannequin model image
-    if (model_index === 98 || model_index === 6) {
+    if (modelIdx === 98 || modelIdx === 6) {
       const mannequinImg = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/mannequin.jpg';
       const garmentDesc = isSaree ? 'elegant saree on mannequin' : 'salwar suit on mannequin';
       const scenePrompt = prompt || 'clean white studio background, soft studio lighting';
@@ -70,7 +73,8 @@ export default async function handler(req, res) {
       const customImgurData = await customImgurRes.json();
       humanImg = customImgurData.success ? customImgurData.data.link : models[0];
     } else {
-      humanImg = models[model_index] || models[0];
+      humanImg = models[modelIdx] || models[0];
+      console.log('Using model:', modelIdx, humanImg);
     }
 
     const garmentDesc = isSaree
