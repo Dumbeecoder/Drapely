@@ -386,9 +386,13 @@
             <div class="prompt-preset" onclick="selectScene(this,'grand crystal chandelier ballroom with golden walls and elegant lighting')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">✨</div><div style="font-size:10px;font-weight:500;">Grand Ballroom</div></div>
             <div class="prompt-preset" onclick="selectScene(this,'rooftop at night with sparkling city lights and blue hour sky')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌃</div><div style="font-size:10px;font-weight:500;">City Rooftop</div></div>
             <div class="prompt-preset" onclick="selectScene(this,'clean white professional studio background with soft even lighting')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">📸</div><div style="font-size:10px;font-weight:500;">Clean Studio</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'')" style="padding:8px 4px;text-align:center;border-style:dashed;"><div style="font-size:17px;margin-bottom:2px;">✏️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Custom</div></div>
+            <div class="prompt-preset" onclick="document.getElementById('bg-upload-input').click()" style="padding:8px 4px;text-align:center;border-style:dashed;cursor:pointer;"><div style="font-size:17px;margin-bottom:2px;">🖼️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Upload background</div></div>
+            <input type="file" id="bg-upload-input" accept="image/*" style="display:none;" onchange="loadCustomBackground(event)" />
           </div>
-          <textarea class="prompt-input" id="custom-scene-input" placeholder="Describe your custom background..." rows="2" style="display:none;margin-bottom:1rem;"></textarea>
+          <div id="custom-bg-preview-wrap" style="display:none;margin-bottom:0.75rem;border-radius:8px;overflow:hidden;border:1.5px solid #E91E63;">
+            <img id="custom-bg-preview-img" style="width:100%;height:80px;object-fit:cover;display:block;" />
+            <div style="padding:4px 8px;font-size:10px;color:#E91E63;font-weight:500;background:#fff0f5;">✓ Custom background uploaded</div>
+          </div>
 
           <div style="font-size:12px;color:#555;margin-bottom:5px;font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;">POSE</div>
           <div id="pose-selector" style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:0.75rem;">
@@ -606,7 +610,11 @@ function buildPhotoPrompt() {
   // Get background prompt
   var bgEl = document.getElementById('photo-prompt-val');
   var bgPrompt = bgEl ? (bgEl.getAttribute('data-bg') || '') : '';
-  var stylePrompt = bgEl ? (bgEl.getAttribute('data-style') || '') : '';
+
+  // If custom background uploaded, use neutral prompt (image handles the bg)
+  if (bgPrompt === 'custom_bg_upload') {
+    bgPrompt = 'professional Indian fashion photography, high quality';
+  }
 
   // Build garment-specific prompt
   var garmentDesc = selectedGarmentType === 'saree'
@@ -850,6 +858,30 @@ function clearSuit(e) {
 }
 
 
+function loadCustomBackground(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    window._customBgDataUrl = ev.target.result;
+    var preview = document.getElementById('custom-bg-preview-img');
+    var wrap = document.getElementById('custom-bg-preview-wrap');
+    if (preview) preview.src = ev.target.result;
+    if (wrap) wrap.style.display = 'block';
+    // Deselect all scene presets and mark custom as selected
+    document.querySelectorAll('#step-2 .prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
+    document.getElementById('bg-upload-input').previousElementSibling.classList.add('selected');
+    // Store as the background prompt value
+    var promptEl = document.getElementById('photo-prompt-val');
+    if (promptEl) {
+      promptEl.value = 'custom_bg_upload';
+      promptEl.setAttribute('data-bg', 'custom_bg_upload');
+    }
+    showToast('Background uploaded!');
+  };
+  reader.readAsDataURL(file);
+}
+
 function selectGarment(type, el) {
   selectedGarmentType = type;
   document.querySelectorAll('.garment-card').forEach(function(c){ c.classList.remove('selected'); });
@@ -963,6 +995,7 @@ async function startGenerate() {
           garment_img: compressed,
           model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
           custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
+          custom_bg: window._customBgDataUrl || null,
           prompt: buildPhotoPrompt(),
           garment_type: selectedGarmentType
         })
