@@ -216,12 +216,24 @@ sb.auth.getSession().then(function(r) {
 });
 
 function loadBackgrounds() {
-  sb.storage.from(BUCKET).list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } }).then(function(r) {
-    if (r.error) { console.error(r.error); showEmpty('Error loading backgrounds.'); return; }
-    var files = (r.data || []).filter(function(f){ return f.name !== '.emptyFolderPlaceholder' && /\.(jpg|jpeg|png|webp)$/i.test(f.name); });
+  // Use Storage REST API directly — works without needing list RLS policy
+  fetch('https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/list/backgrounds', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM',
+      'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+    },
+    body: JSON.stringify({ prefix: '', limit: 100, offset: 0, sortBy: { column: 'created_at', order: 'desc' } })
+  })
+  .then(function(res){ return res.json(); })
+  .then(function(data) {
+    if (!Array.isArray(data)) { console.error('Unexpected response:', data); showEmpty('Error loading backgrounds.'); return; }
+    var files = data.filter(function(f){ return f.name && f.name !== '.emptyFolderPlaceholder' && /\.(jpg|jpeg|png|webp)$/i.test(f.name); });
     if (files.length === 0) { showEmpty(); return; }
     renderGrid(files);
-  });
+  })
+  .catch(function(err){ console.error(err); showEmpty('Error loading backgrounds.'); });
 }
 
 function renderGrid(files) {
