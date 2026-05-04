@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drapely Admin — Credits</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh;padding:2rem;max-width:860px;margin:0 auto;}
+    .header{background:#000;border-radius:14px;padding:1.25rem 1.75rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;}
+    .header h1{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:2px;}
+    .header h1 span{color:#E91E63;}
+    .badge{padding:5px 12px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;font-weight:500;}
+    .gate{background:#fff;border:1px solid rgba(233,30,99,0.2);border-radius:14px;padding:2rem;max-width:360px;margin:4rem auto;text-align:center;}
+    .gate h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:6px;}
+    .gate p{font-size:12px;color:#555;margin-bottom:1.25rem;}
+    .gate input{width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;margin-bottom:10px;outline:none;}
+    .gate input:focus{border-color:#E91E63;}
+    .gate button{width:100%;padding:11px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;}
+    .admin-body{display:none;}
+    .card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
+    .card-title{font-size:15px;font-weight:500;margin-bottom:4px;}
+    .card-sub{font-size:12px;color:#555;margin-bottom:1.25rem;}
+    .search-row{display:flex;gap:10px;}
+    .search-input{flex:1;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+    .search-input:focus{border-color:#E91E63;}
+    .search-btn{padding:10px 22px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .user-result{background:#f9f9f9;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:1.25rem;margin-top:1rem;display:none;}
+    .user-result.show{display:block;}
+    .user-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem;}
+    .user-av{width:40px;height:40px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:14px;font-weight:500;}
+    .user-email{font-size:12px;color:#555;}
+    .user-meta{font-size:11px;color:#888;margin-top:2px;}
+    .credits-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border:1px solid rgba(233,30,99,0.2);border-radius:8px;margin-bottom:1rem;}
+    .credits-label{font-size:12px;color:#555;flex:1;}
+    .credits-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#E91E63;}
+    .add-row{display:flex;gap:8px;}
+    .amount-input{flex:1;padding:9px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;text-align:center;}
+    .amount-input:focus{border-color:#E91E63;}
+    .add-btn{padding:9px 20px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .add-btn:hover{background:#E91E63;}
+    .quick-btns{display:flex;gap:6px;margin-bottom:8px;}
+    .quick-btn{padding:6px 12px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#E91E63;cursor:pointer;}
+    .quick-btn:hover{background:#E91E63;color:#fff;}
+    /* ALL USERS TABLE */
+    .users-table{width:100%;border-collapse:collapse;}
+    .users-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(233,30,99,0.1);}
+    .users-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(233,30,99,0.06);vertical-align:middle;}
+    .users-table tr:last-child td{border-bottom:none;}
+    .users-table tr:hover td{background:#fafafa;}
+    .bal-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+    .bal-high{background:#dcfce7;color:#16a34a;}
+    .bal-mid{background:#fff7ed;color:#d97706;}
+    .bal-low{background:#fee2e2;color:#dc2626;}
+    .edit-btn{padding:4px 12px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;font-size:11px;font-weight:500;color:#E91E63;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .edit-btn:hover{background:#E91E63;color:#fff;}
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem;}
+    .stat-box{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:1rem;text-align:center;}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:#E91E63;}
+    .stat-lbl{font-size:11px;color:#555;margin-top:2px;}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Drape<span>ly</span> Admin</h1>
+  <div class="badge">Credits Manager</div>
+</div>
+
+<!-- GATE -->
+<div class="gate" id="gate">
+  <h2>Admin Access</h2>
+  <p>Enter admin password to manage user credits</p>
+  <input type="password" id="admin-pass" placeholder="Password" onkeydown="if(event.key==='Enter')checkPass()" />
+  <button onclick="checkPass()">Enter</button>
+</div>
+
+<div class="admin-body" id="admin-body">
+
+  <!-- STATS -->
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num" id="stat-users">—</div><div class="stat-lbl">Total Users</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-credits-total">—</div><div class="stat-lbl">Total Credits Issued</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-photos">—</div><div class="stat-lbl">Photos Generated</div></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="card">
+    <div class="card-title">Find User & Add Credits</div>
+    <div class="card-sub">Search by email address or phone number to find a user and manage their credits</div>
+    <div class="search-row">
+      <input class="search-input" id="search-input" type="text" placeholder="email@example.com or +91 98765 43210" onkeydown="if(event.key==='Enter')searchUser()" />
+      <button class="search-btn" onclick="searchUser()">Search</button>
+    </div>
+
+    <div class="user-result" id="user-result">
+      <div class="user-row">
+        <div class="user-av" id="res-av">?</div>
+        <div>
+          <div class="user-name" id="res-name">—</div>
+          <div class="user-email" id="res-email">—</div>
+          <div class="user-meta" id="res-meta">—</div>
+        </div>
+      </div>
+      <div class="credits-row">
+        <div class="credits-label">Current balance</div>
+        <div class="credits-val" id="res-credits">—</div>
+        <div style="font-size:11px;color:#555;">credits</div>
+      </div>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="setAmount(10)">+10</button>
+        <button class="quick-btn" onclick="setAmount(20)">+20</button>
+        <button class="quick-btn" onclick="setAmount(40)">+40</button>
+        <button class="quick-btn" onclick="setAmount(50)">+50</button>
+        <button class="quick-btn" onclick="setAmount(100)">+100</button>
+      </div>
+      <div class="add-row">
+        <input class="amount-input" id="credit-amount" type="number" placeholder="Credits to add" min="1" max="1000" />
+        <button class="add-btn" onclick="addCredits()">Add Credits</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL USERS -->
+  <div class="card">
+    <div class="card-title">All Users</div>
+    <div class="card-sub">Click any user to select them above for credit management</div>
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Credits</th>
+          <th>Joined</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody">
+        <tr><td colspan="5" style="text-align:center;color:#555;padding:2rem;">Loading users...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+var ADMIN_PASS = 'drapely2025admin';
+var currentUserId = null;
+var currentBalance = 0;
+var allUsers = [];
+
+function checkPass() {
+  if (document.getElementById('admin-pass').value === ADMIN_PASS) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('admin-body').style.display = 'block';
+    loadStats();
+    loadAllUsers();
+  } else {
+    showToast('✗ Wrong password');
+    document.getElementById('admin-pass').value = '';
+  }
+}
+
+async function loadStats() {
+  // Get total photos
+  var photos = await sb.from('photoshoots').select('id', { count: 'exact', head: true });
+  document.getElementById('stat-photos').textContent = photos.count || 0;
+}
+
+async function loadAllUsers() {
+  // Load all credits rows with user info
+  var { data: credits } = await sb.from('credits').select('*').order('created_at', { ascending: false });
+  if (!credits) return;
+
+  document.getElementById('stat-users').textContent = credits.length;
+  var totalCredits = credits.reduce(function(s, c){ return s + (c.balance || 0); }, 0);
+  document.getElementById('stat-credits-total').textContent = totalCredits;
+
+  // Get user metadata from auth - we need to call our own users list
+  // Use the admin auth API to get emails
+  var tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = '';
+
+  allUsers = credits;
+
+  credits.forEach(function(row) {
+    var bal = row.balance || 0;
+    var balClass = bal >= 20 ? 'bal-high' : bal >= 5 ? 'bal-mid' : 'bal-low';
+    var joined = new Date(row.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+    var shortId = row.user_id ? row.user_id.substring(0, 8) + '...' : '—';
+
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><div style="font-size:12px;color:#555;font-family:monospace;">' + shortId + '</div></td>' +
+      '<td><div style="font-size:12px;color:#555;">Search to see email</div></td>' +
+      '<td><span class="bal-badge ' + balClass + '">' + bal + ' credits</span></td>' +
+      '<td style="font-size:12px;color:#555;">' + joined + '</td>' +
+      '<td><button class="edit-btn" onclick='selectUserById("' + row.user_id + '",' + bal + ')'>+ Credits</button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function selectUserById(userId, balance) {
+  currentUserId = userId;
+  currentBalance = balance;
+  var result = document.getElementById('user-result');
+  document.getElementById('res-av').textContent = '?';
+  document.getElementById('res-name').textContent = 'User ID: ' + userId.substring(0, 16) + '...';
+  document.getElementById('res-email').textContent = 'Click Add Credits to update balance';
+  document.getElementById('res-meta').textContent = '';
+  document.getElementById('res-credits').textContent = balance;
+  result.classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('search-input').value = '';
+}
+
+async function searchUser() {
+  var query = document.getElementById('search-input').value.trim();
+  if (!query) { showToast('Enter an email or phone number'); return; }
+
+  showToast('Searching...');
+
+  // Detect if phone or email
+  var isPhone = /^[+\d\s\-()]{7,}$/.test(query) && !query.includes('@');
+  var url = isPhone
+    ? '/api/admin-user?phone=' + encodeURIComponent(query)
+    : '/api/admin-user?email=' + encodeURIComponent(query);
+
+  var res = await fetch(url);
+  var data = await res.json();
+
+  if (data.error || !data.user) {
+    showToast('✗ User not found');
+    return;
+  }
+
+  var user = data.user;
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var displayName = (fname + ' ' + lname).trim() || email.split('@')[0];
+  var initials = displayName.slice(0, 2).toUpperCase();
+  var phone = meta.phone || '—';
+  var joined = new Date(user.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  // Get credits
+  var { data: credRow } = await sb.from('credits').select('balance').eq('user_id', user.id).single();
+  var balance = credRow ? credRow.balance : 0;
+
+  currentUserId = user.id;
+  currentBalance = balance;
+
+  document.getElementById('res-av').textContent = initials;
+  document.getElementById('res-name').textContent = displayName;
+  document.getElementById('res-email').textContent = email;
+  document.getElementById('res-meta').textContent = '☎️ ' + phone + ' · Joined ' + joined + ' · ID: ' + user.id.substring(0, 12) + '...';
+  document.getElementById('res-credits').textContent = balance;
+  document.getElementById('user-result').classList.add('show');
+  showToast('✓ Found: ' + displayName);
+
+  // Also update the table row to show email
+  updateTableRow(user.id, displayName, email, balance);
+}
+
+function updateTableRow(userId, name, email, balance) {
+  var rows = document.querySelectorAll('#users-tbody tr');
+  rows.forEach(function(row) {
+    var btn = row.querySelector('.edit-btn');
+    if (btn && btn.onclick && btn.onclick.toString().includes(userId.substring(0, 8))) {
+      var cells = row.querySelectorAll('td');
+      if (cells[0]) cells[0].innerHTML = '<div style="font-size:13px;font-weight:500;">' + name + '</div>';
+      if (cells[1]) cells[1].innerHTML = '<div style="font-size:12px;color:#555;">' + email + '</div>';
+    }
+  });
+}
+
+function setAmount(n) {
+  document.getElementById('credit-amount').value = n;
+}
+
+async function addCredits() {
+  if (!currentUserId) { showToast('Search for a user first'); return; }
+  var amount = parseInt(document.getElementById('credit-amount').value) || 0;
+  if (amount <= 0) { showToast('Enter a valid amount'); return; }
+
+  var newBal = currentBalance + amount;
+  var { error } = await sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', currentUserId);
+
+  if (error) { showToast('✗ Error: ' + error.message); return; }
+
+  currentBalance = newBal;
+  document.getElementById('res-credits').textContent = newBal;
+  document.getElementById('credit-amount').value = '';
+  showToast('✓ Added credits! New balance: ' + newBal);
+  loadAllUsers();
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+</script>
+</body>
+</html>
