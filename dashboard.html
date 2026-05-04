@@ -523,7 +523,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/bundle.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/index.iife.js" crossorigin="anonymous" onerror="console.log('BG removal lib failed to load')"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // PRESET PROMPTS
@@ -545,12 +545,13 @@ var selectedPresetIndex = 0;
 var selectedPosePrompt = 'standing straight facing forward, confident pose';
 
 function selectPoseCard(el, posePrompt) {
-  // Support both old .prompt-preset and new .pose-card systems
   var parent = el.parentElement;
   parent.querySelectorAll('.prompt-preset, .pose-card').forEach(function(p){ p.classList.remove('selected'); });
   el.classList.add('selected');
   selectedPosePrompt = posePrompt;
-  showToast('Pose: ' + el.querySelector('div:nth-child(2)').textContent);
+  var label = el.querySelector('div') ? el.querySelector('div').nextElementSibling : null;
+  if (!label) label = el.querySelectorAll('div')[1];
+  showToast('Pose selected');
 }
 
 function selectScene(el, scenePrompt) {
@@ -1386,22 +1387,20 @@ async function removeBackgroundAndComposite(photoUrl, bgDataUrl) {
     var response = await fetch(photoUrl);
     var blob = await response.blob();
 
-    // Find the remove background function — library exports as window.backgroundRemoval.removeBackground
+    // window.backgroundRemoval is the correct global from the iife bundle
     var removeFn = null;
-    var searchIn = [window.backgroundRemoval, window.BackgroundRemoval, window.ImglyBackgroundRemoval,
-                    window.imglyBackgroundRemoval, window['@imgly/background-removal']];
+    var searchIn = [window.backgroundRemoval, window.BackgroundRemoval,
+                    window.ImglyBackgroundRemoval, window.imglyBackgroundRemoval,
+                    window['@imgly/background-removal']];
     for (var i = 0; i < searchIn.length; i++) {
       var obj = searchIn[i];
       if (!obj) continue;
-      if (typeof obj.removeBackground === 'function') { removeFn = obj.removeBackground; break; }
+      if (typeof obj.removeBackground === 'function') { removeFn = obj.removeBackground.bind(obj); break; }
       if (typeof obj === 'function') { removeFn = obj; break; }
-      if (obj.default && typeof obj.default.removeBackground === 'function') { removeFn = obj.default.removeBackground; break; }
+      if (obj.default && typeof obj.default.removeBackground === 'function') { removeFn = obj.default.removeBackground.bind(obj.default); break; }
     }
-
-    // Also try direct global function
     if (!removeFn && typeof window.removeBackground === 'function') removeFn = window.removeBackground;
-
-    console.log('BG removal fn found:', !!removeFn, 'Window keys with bg:', Object.keys(window).filter(function(k){ return /background|imgly|remove/i.test(k); }));
+    console.log('BG removal fn found:', !!removeFn, '| backgroundRemoval global:', typeof window.backgroundRemoval);
 
     if (!removeFn) {
       // Library not available — use Clipdrop-style CSS trick: just composite with blended opacity
@@ -1455,37 +1454,46 @@ function compositeImages(foregroundUrl, bgDataUrl, fallback) {
     bg.onload = fg.onload = onLoad;
     bg.onerror = fg.onerror = function(){ resolve(fallback); };
     bg.src = bgDataUrl;
-    fg.src = foregroundUrl;
+    fg.src = foregroundUrl; // blob URL — no CORS issue
   });
 }
 
-function directComposite(photoUrl, bgDataUrl) {
-  return new Promise(function(resolve) {
-    var bg = new Image();
-    var photo = new Image();
-    var loaded = 0;
-    function onLoad() {
-      loaded++;
-      if (loaded < 2) return;
-      try {
-        var canvas = document.createElement('canvas');
-        var W = photo.naturalWidth || 800, H = photo.naturalHeight || 1000;
-        canvas.width = W; canvas.height = H;
-        var ctx = canvas.getContext('2d');
-        var s = Math.max(W/bg.naturalWidth, H/bg.naturalHeight);
-        ctx.drawImage(bg, (W-bg.naturalWidth*s)/2, (H-bg.naturalHeight*s)/2, bg.naturalWidth*s, bg.naturalHeight*s);
-        ctx.drawImage(photo, 0, 0, W, H);
-        var r = canvas.toDataURL('image/jpeg', 0.92);
-        resolve(r.length > 5000 ? r : photoUrl);
-      } catch(e) { resolve(photoUrl); }
-    }
-    bg.onload = onLoad;
-    photo.onload = onLoad;
-    bg.onerror = photo.onerror = function(){ resolve(photoUrl); };
-    bg.src = bgDataUrl;
-    if (!photoUrl.startsWith('data:')) photo.crossOrigin = 'anonymous';
-    photo.src = photoUrl;
-  });
+async function directComposite(photoUrl, bgDataUrl) {
+  // Fetch photo as blob first to avoid CORS canvas taint
+  try {
+    var res = await fetch(photoUrl);
+    var blob = await res.blob();
+    var blobUrl = URL.createObjectURL(blob);
+    var result = await new Promise(function(resolve) {
+      var bg = new Image();
+      var photo = new Image();
+      var loaded = 0;
+      function onLoad() {
+        loaded++;
+        if (loaded < 2) return;
+        try {
+          var canvas = document.createElement('canvas');
+          var W = photo.naturalWidth || 800, H = photo.naturalHeight || 1000;
+          canvas.width = W; canvas.height = H;
+          var ctx = canvas.getContext('2d');
+          var s = Math.max(W/bg.naturalWidth, H/bg.naturalHeight);
+          ctx.drawImage(bg, (W-bg.naturalWidth*s)/2, (H-bg.naturalHeight*s)/2, bg.naturalWidth*s, bg.naturalHeight*s);
+          ctx.drawImage(photo, 0, 0, W, H);
+          var r = canvas.toDataURL('image/jpeg', 0.92);
+          resolve(r.length > 5000 ? r : photoUrl);
+        } catch(e) { console.log('Canvas error:', e.message); resolve(photoUrl); }
+      }
+      bg.onload = photo.onload = onLoad;
+      bg.onerror = photo.onerror = function(){ resolve(photoUrl); };
+      bg.src = bgDataUrl;
+      photo.src = blobUrl;
+    });
+    URL.revokeObjectURL(blobUrl);
+    return result;
+  } catch(e) {
+    console.log('Direct composite failed:', e.message);
+    return photoUrl;
+  }
 }
 
 function convertToVideo(imageUrl) {
