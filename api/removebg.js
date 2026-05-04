@@ -14,24 +14,23 @@ export default async function handler(req, res) {
     const imgBuffer = await imgRes.arrayBuffer();
     const imgBlob = Buffer.from(imgBuffer);
 
-    // Send to remove.bg API
+    // Send to PhotoRoom API (500 free/month, best for fashion)
     const formData = new FormData();
     const blob = new Blob([imgBlob], { type: 'image/jpeg' });
     formData.append('image_file', blob, 'photo.jpg');
-    formData.append('size', 'auto');
 
-    const removeRes = await fetch('https://api.remove.bg/v1.0/removebg', {
+    const removeRes = await fetch('https://sdk.photoroom.com/v1/segment', {
       method: 'POST',
       headers: {
-        'X-Api-Key': process.env.REMOVE_BG_API_KEY,
+        'x-api-key': process.env.PHOTOROOM_API_KEY,
       },
       body: formData,
     });
 
     if (!removeRes.ok) {
       const errText = await removeRes.text();
-      console.log('remove.bg error:', removeRes.status, errText);
-      return res.status(500).json({ error: 'remove.bg failed: ' + removeRes.status });
+      console.log('PhotoRoom error:', removeRes.status, errText);
+      return res.status(500).json({ error: 'PhotoRoom failed: ' + removeRes.status });
     }
 
     // Return as base64 PNG with transparent background
