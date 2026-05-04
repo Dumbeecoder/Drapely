@@ -523,7 +523,6 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="https://unpkg.com/@imgly/background-removal@1.4.5/dist/browser/bundle.iife.js" onerror="console.warn('BG removal unavailable')"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // PRESET PROMPTS
@@ -1383,50 +1382,26 @@ async function removeBackgroundAndComposite(photoUrl, bgDataUrl) {
     var labelEl = document.getElementById('progress-label-text');
     if (labelEl) labelEl.textContent = 'Removing background...';
 
-    // Fetch photo as blob
-    var response = await fetch(photoUrl);
-    var blob = await response.blob();
-
-    // window.backgroundRemoval is the correct global from the iife bundle
-    var removeFn = null;
-    var searchIn = [window.backgroundRemoval, window.BackgroundRemoval,
-                    window.ImglyBackgroundRemoval, window.imglyBackgroundRemoval,
-                    window['@imgly/background-removal']];
-    for (var i = 0; i < searchIn.length; i++) {
-      var obj = searchIn[i];
-      if (!obj) continue;
-      if (typeof obj.removeBackground === 'function') { removeFn = obj.removeBackground.bind(obj); break; }
-      if (typeof obj === 'function') { removeFn = obj; break; }
-      if (obj.default && typeof obj.default.removeBackground === 'function') { removeFn = obj.default.removeBackground.bind(obj.default); break; }
-    }
-    if (!removeFn && typeof window.removeBackground === 'function') removeFn = window.removeBackground;
-    console.log('BG removal fn found:', !!removeFn, '| backgroundRemoval global:', typeof window.backgroundRemoval);
-
-    if (!removeFn) {
-      // Library not available — use Clipdrop-style CSS trick: just composite with blended opacity
-      console.log('No BG removal lib — doing direct composite');
-      return directComposite(photoUrl, bgDataUrl);
-    }
-
-    if (labelEl) labelEl.textContent = 'Removing background... (first run downloads AI model ~40MB)';
-
-    var removedBlob = await removeFn(blob, {
-      publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/',
-      progress: function(key, current, total) {
-        if (labelEl && total > 0) {
-          labelEl.textContent = 'Removing background... ' + Math.round((current/total)*100) + '%';
-        }
-      }
+    // Call our server-side remove.bg proxy
+    var res = await fetch('/api/removebg', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: photoUrl })
     });
 
+    if (!res.ok) throw new Error('removebg API returned ' + res.status);
+
+    var data = await res.json();
+    if (!data.cutout) throw new Error('No cutout returned');
+
     if (labelEl) labelEl.textContent = 'Compositing onto background...';
-    var cutoutUrl = URL.createObjectURL(removedBlob);
-    var result = await compositeImages(cutoutUrl, bgDataUrl, photoUrl);
-    URL.revokeObjectURL(cutoutUrl);
-    return result;
+    console.log('Background removed successfully, compositing...');
+
+    // Composite cutout onto custom background
+    return compositeImages(data.cutout, bgDataUrl, photoUrl);
 
   } catch(e) {
-    console.log('BG removal error:', e.message, e);
+    console.log('BG removal failed:', e.message, '— doing direct composite');
     return directComposite(photoUrl, bgDataUrl);
   }
 }
