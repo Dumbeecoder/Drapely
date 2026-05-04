@@ -207,7 +207,7 @@ async function loadAllUsers() {
       '<td><div style="font-size:12px;color:#555;">Search to see email</div></td>' +
       '<td><span class="bal-badge ' + balClass + '">' + bal + ' credits</span></td>' +
       '<td style="font-size:12px;color:#555;">' + joined + '</td>' +
-      '<td><button class="edit-btn" onclick='selectUserById("' + row.user_id + '",' + bal + ')'>+ Credits</button></td>';
+      '<td><button class="edit-btn" onclick="selectUserById(\'' + row.user_id + '\',' + bal + ')">+ Credits</button></td>';
     tbody.appendChild(tr);
   });
 }
