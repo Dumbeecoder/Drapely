@@ -34,9 +34,9 @@ export default async function handler(req, res) {
     // Handle mannequin (index 98 or 6) — use actual mannequin model image
     if (model_index === 98 || model_index === 6) {
       const mannequinImg = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/mannequin.jpg';
-      const mannequinPrompt = isSaree
-        ? 'elegant saree draped on white mannequin, clean white studio background, professional e-commerce product photo, full length, soft studio lighting'
-        : 'salwar suit displayed on white mannequin, clean white studio background, professional e-commerce product photo, full length, soft studio lighting';
+      const garmentDesc = isSaree ? 'elegant saree on mannequin' : 'salwar suit on mannequin';
+      const scenePrompt = prompt || 'clean white studio background, soft studio lighting';
+      const mannequinPrompt = garmentDesc + ', ' + scenePrompt + ', professional fashion photography, full length, high quality';
       const mannequinBody = {
         model_name: 'product-to-model',
         inputs: {
