@@ -205,21 +205,18 @@
         </div>
         <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
 
-        <!-- STEP 2: SCENE -->
-        <div class="section-label" style="margin-top:1rem;">Step 2 &mdash; Choose Scene</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:0.75rem;">
-          <div class="prompt-preset selected" onclick="selectVideoPreset(this,0)">&#127749; Golden Sunset</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,1)">&#127984; Royal Palace</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,2)">&#129452; Diwali Night</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,3)">&#127800; Rose Garden</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,4)">&#128141; Wedding Mandap</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,5)">&#127747; City Rooftop</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,6)">&#10024; Grand Ballroom</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,7)">&#128332; Heritage Haveli</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,8)">&#128333; Taj Mahal</div>
-          <div class="prompt-preset" onclick="selectVideoPreset(this,9)" style="border-style:dashed;">&#9999; Custom Scene</div>
+        <!-- STEP 2: ACTION PROMPT -->
+        <div class="section-label" style="margin-top:1rem;">Step 2 — What should the model do?</div>
+        <div style="font-size:12px;color:#888;margin-bottom:8px;">Describe the action or movement — e.g. walk, twirl, stand confidently, show dupatta</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="setVideoPrompt(this,'model walking gracefully, showing full outfit')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">👣 Walking</button>
+          <button onclick="setVideoPrompt(this,'model standing confidently, posing for camera')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🧍 Standing</button>
+          <button onclick="setVideoPrompt(this,'model twirling gracefully, dupatta flowing beautifully')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">💃 Twirling</button>
+          <button onclick="setVideoPrompt(this,'model showing dupatta, spreading arms gracefully')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🪄 Show Dupatta</button>
+          <button onclick="setVideoPrompt(this,'model doing a slow 360 degree turn, showing full outfit')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🔄 Full Turn</button>
+          <button onclick="setVideoPrompt(this,'model walking towards camera confidently')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🎬 Walk to Camera</button>
         </div>
-        <textarea class="prompt-input" id="v-prompt" placeholder="Describe your custom scene..." style="display:none;margin-bottom:0.75rem;min-height:70px;" rows="3"></textarea>
+        <textarea class="prompt-input" id="v-prompt" placeholder="e.g. model walking gracefully, twirling to show outfit, standing and posing..." style="margin-bottom:0.75rem;min-height:70px;" rows="3"></textarea>
 
         <!-- STEP 3: DURATION -->
         <div class="section-label" style="margin-top:1rem;">Step 3 &mdash; Video Length</div>
@@ -382,15 +379,13 @@ function loadVideoCount(userId) {
     });
 }
 
-function selectVideoPreset(el, idx) {
-  document.querySelectorAll('.prompt-preset').forEach(function(p){ p.classList.remove('selected'); });
-  el.classList.add('selected');
-  var promptEl = document.getElementById('v-prompt');
-  if (idx === 9) {
-    if (promptEl) { promptEl.style.display = 'block'; promptEl.value = ''; promptEl.focus(); }
-  } else {
-    if (promptEl) { promptEl.style.display = 'none'; promptEl.value = videoPresets[idx] || ''; }
-  }
+function setVideoPrompt(btn, text) {
+  var allBtns = btn.parentElement.querySelectorAll('button');
+  allBtns.forEach(function(b){ b.style.background='#fff'; b.style.color='#555'; b.style.borderColor='rgba(233,30,99,0.3)'; });
+  btn.style.background = '#E91E63';
+  btn.style.color = '#fff';
+  btn.style.borderColor = '#E91E63';
+  document.getElementById('v-prompt').value = text;
 }
 
 function loadVideoSuit(e) {
@@ -497,7 +492,7 @@ async function startVideoGenerate() {
   var vidCost = selectedDuration === '10' ? 4 : 2;
   if (credits < vidCost) { showToast('Need ' + vidCost + ' credits for this video!'); showBuyCredits(); return; }
   var promptEl = document.getElementById('v-prompt');
-  var prompt = (promptEl && promptEl.value.trim()) ? promptEl.value.trim() : (videoPresets[0] || '');
+  var prompt = (promptEl && promptEl.value.trim()) ? promptEl.value.trim() : 'model standing confidently, posing for camera';
   var progressEl = document.getElementById('v-progress');
   var progressFill = document.getElementById('v-progress-fill');
   var progressPct = document.getElementById('v-progress-pct');
