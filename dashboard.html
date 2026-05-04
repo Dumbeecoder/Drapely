@@ -523,6 +523,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/bundle.iife.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // PRESET PROMPTS
@@ -1053,17 +1054,19 @@ async function startGenerate() {
       if (results.length > 0) {
         updateStats(results.length);
         deductCredit(results.length); // 1 credit per generated image
+        // Composite onto custom background if uploaded
+        compositeOnBackground(results).then(function(composited) {
         // Overlay logo then upload watermarked images to Imgur, save those URLs
-        overlayLogoOnImages(results).then(async function(finalImages) {
+        overlayLogoOnImages(composited).then(async function(finalImages) {
           var urlsToSave = [];
           for (var fi = 0; fi < finalImages.length; fi++) {
             var fImg = finalImages[fi];
             if (fImg && fImg.startsWith('data:')) {
               var compressedLogo = await compressForImgur(fImg);
               var storedUrl = await uploadLogoedImageToStorage(compressedLogo);
-              urlsToSave.push(storedUrl || results[fi]);
+              urlsToSave.push(storedUrl || composited[fi]);
             } else {
-              urlsToSave.push(results[fi]);
+              urlsToSave.push(composited[fi]);
             }
           }
           addToGallery(urlsToSave, collectionName);
@@ -1071,10 +1074,11 @@ async function startGenerate() {
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         }).catch(function() {
-          addToGallery(results, collectionName);
-          showRealResults(results);
+          addToGallery(composited, collectionName);
+          showRealResults(composited);
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
+        });
         });
       } else {
         showToast('No images returned. Please try again.');
@@ -1356,6 +1360,105 @@ function overlayLogoOnImages(imageUrls) {
   }));
 }
 
+
+// Remove background from photo then composite onto custom uploaded background
+function compositeOnBackground(imageUrls) {
+  var bgDataUrl = window._customBgDataUrl;
+  if (!bgDataUrl) return Promise.resolve(imageUrls);
+
+  // Show status
+  var labelEl = document.getElementById('progress-label-text');
+  if (labelEl) labelEl.textContent = 'Removing background & applying custom scene...';
+  var progressWrap = document.getElementById('progress-wrap');
+  if (progressWrap) progressWrap.classList.add('visible');
+
+  return Promise.all(imageUrls.map(function(photoUrl) {
+    return removeBackgroundAndComposite(photoUrl, bgDataUrl);
+  }));
+}
+
+async function removeBackgroundAndComposite(photoUrl, bgDataUrl) {
+  try {
+    // Fetch photo as blob
+    var response = await fetch(photoUrl);
+    var blob = await response.blob();
+
+    // Remove background using @imgly/background-removal (runs in browser via WASM)
+    var imglyLib = window.ImglyBackgroundRemoval || window.imglyBackgroundRemoval || (window['@imgly/background-removal']) || null;
+    var removeFn = imglyLib && (imglyLib.removeBackground || (imglyLib.default && imglyLib.default.removeBackground));
+
+    var removedBlob;
+    if (removeFn) {
+      removedBlob = await removeFn(blob, {
+        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/',
+        progress: function(key, current, total) {
+          var labelEl = document.getElementById('progress-label-text');
+          if (labelEl && key === 'compute:inference') {
+            labelEl.textContent = 'Removing background... ' + Math.round((current/total)*100) + '%';
+          }
+        }
+      });
+    } else {
+      console.log('Background removal library not loaded, skipping');
+      return photoUrl;
+    }
+
+    // Convert removed-bg blob to image
+    var cutoutUrl = URL.createObjectURL(removedBlob);
+
+    // Composite: draw bg first, then cutout on top
+    var result = await new Promise(function(resolve) {
+      var bg = new Image();
+      var cutout = new Image();
+      var loaded = 0;
+
+      function onLoad() {
+        loaded++;
+        if (loaded < 2) return;
+        try {
+          var canvas = document.createElement('canvas');
+          var W = cutout.naturalWidth || 800;
+          var H = cutout.naturalHeight || 1000;
+          canvas.width = W;
+          canvas.height = H;
+          var ctx = canvas.getContext('2d');
+
+          // Draw background scaled to cover
+          var bgScale = Math.max(W / bg.naturalWidth, H / bg.naturalHeight);
+          var bw = Math.round(bg.naturalWidth * bgScale);
+          var bh = Math.round(bg.naturalHeight * bgScale);
+          var bx = Math.round((W - bw) / 2);
+          var by = Math.round((H - bh) / 2);
+          ctx.drawImage(bg, bx, by, bw, bh);
+
+          // Draw cutout (transparent bg) on top
+          ctx.drawImage(cutout, 0, 0, W, H);
+
+          var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+          URL.revokeObjectURL(cutoutUrl);
+          resolve(dataUrl.length > 5000 ? dataUrl : photoUrl);
+        } catch(e) {
+          console.log('Composite error:', e.message);
+          URL.revokeObjectURL(cutoutUrl);
+          resolve(photoUrl);
+        }
+      }
+
+      bg.onload = onLoad;
+      bg.onerror = function(){ resolve(photoUrl); };
+      cutout.onload = onLoad;
+      cutout.onerror = function(){ resolve(photoUrl); };
+
+      bg.src = bgDataUrl;
+      cutout.src = cutoutUrl;
+    });
+
+    return result;
+  } catch(e) {
+    console.log('BG removal failed:', e.message);
+    return photoUrl;
+  }
+}
 
 function convertToVideo(imageUrl) {
   sessionStorage.setItem('videoFromPhoto', imageUrl);
