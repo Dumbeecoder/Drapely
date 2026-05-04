@@ -622,7 +622,6 @@ function buildPhotoPrompt() {
     : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
 
   var parts = [garmentDesc, selectedPosePrompt || poseDesc];
-  if (stylePrompt) parts.push(stylePrompt);
   if (bgPrompt) parts.push(bgPrompt);
   parts.push('professional Indian fashion photography, high quality, full outfit visible');
 
