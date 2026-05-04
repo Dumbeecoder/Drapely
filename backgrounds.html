@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backgrounds — Drapely</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
+    .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
+    .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:1.5rem 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .sidebar-brand span{color:#E91E63;}
+    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:rgba(255,255,255,0.45);font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
+    .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff;}
+    .nav-item.active{background:rgba(233,30,99,0.15);color:#E91E63;}
+    .nav-icon{width:16px;height:16px;flex-shrink:0;}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
+    .sidebar-footer{padding:0 0.75rem;border-top:1px solid rgba(233,30,99,0.2);padding-top:1rem;}
+    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2);}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .user-plan{font-size:10px;color:#E91E63;}
+    .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;}
+    .hero{background:linear-gradient(135deg,#000 0%,#1a0010 100%);border-radius:16px;padding:1.75rem 2rem;margin-bottom:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+    .hero h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#fff;margin-bottom:5px;}
+    .hero p{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:400px;}
+    .hero-badge{padding:7px 16px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
+    .how-to{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .step-pill{display:flex;align-items:center;gap:8px;font-size:12px;color:#555;}
+    .step-num{width:22px;height:22px;border-radius:50%;background:#E91E63;color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-arrow{color:#E91E63;font-size:14px;}
+    .bg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+    .bg-card{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:12px;overflow:hidden;transition:all 0.2s;}
+    .bg-card:hover{border-color:#E91E63;transform:translateY(-2px);box-shadow:0 6px 20px rgba(233,30,99,0.1);}
+    .bg-img-wrap{width:100%;aspect-ratio:16/9;overflow:hidden;background:#f5f5f5;position:relative;}
+    .bg-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s;}
+    .bg-card:hover .bg-img-wrap img{transform:scale(1.04);}
+    .bg-body{padding:10px 12px;}
+    .bg-name{font-size:12px;font-weight:500;color:#000;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .dl-btn{width:100%;padding:8px;background:#E91E63;color:#fff;border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;text-decoration:none;}
+    .dl-btn:hover{background:#c2185b;}
+    .empty{text-align:center;padding:4rem 2rem;color:#555;grid-column:1/-1;}
+    .empty-icon{font-size:48px;opacity:0.3;margin-bottom:1rem;}
+    /* LIGHTBOX */
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;align-items:center;justify-content:center;padding:1rem;}
+    .lightbox.open{display:flex;}
+    .lb-inner{background:#fff;border-radius:14px;overflow:hidden;max-width:680px;width:100%;position:relative;}
+    .lb-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
+    .lb-body{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .lb-name{font-size:14px;font-weight:500;}
+    .lb-close{position:absolute;top:10px;right:10px;width:32px;height:32px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;font-size:14px;cursor:pointer;}
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    /* MOBILE */
+    .burger{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#E91E63;border:none;border-radius:8px;width:40px;height:40px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
+    .burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:150;}
+    .mobile-overlay.open{display:block;}
+    .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0;}
+    .mobile-nav.open{left:0;}
+    .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .mobile-nav-brand span{color:#E91E63;}
+    .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .mobile-nav-item:hover{background:rgba(233,30,99,0.12);color:#fff;}
+    .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2);}
+    .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);}
+    .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
+    .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
+    .mobile-user-plan{font-size:10px;color:#E91E63;}
+    @media(max-width:900px){.sidebar{display:none;}.main{margin-left:0;padding-top:60px;}.burger{display:flex !important;}.bg-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}}
+  </style>
+</head>
+<body>
+<button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="index.html" class="mobile-nav-brand">Drape<span>ly</span></a>
+  <div class="mobile-nav-items">
+    <a class="mobile-nav-item" href="dashboard.html">📸 New Photoshoot</a>
+    <a class="mobile-nav-item" href="video.html">🎬 New Video</a>
+    <a class="mobile-nav-item" href="bulk.html">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item" href="gallery.html">🖼 My Gallery</a>
+    <a class="mobile-nav-item active" href="backgrounds.html">🌄 Backgrounds</a>
+    <a class="mobile-nav-item" href="settings.html">⚙️ Settings</a>
+    <a class="mobile-nav-item" href="credits.html">💳 Credits</a>
+    <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
+  </div>
+  <div class="mobile-nav-footer">
+    <div class="mobile-user">
+      <div class="mobile-user-avatar" id="m-avatar">?</div>
+      <div><div class="mobile-user-name" id="m-name">...</div><div class="mobile-user-plan">Beta · Free</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <a href="index.html" class="sidebar-brand">Drape<span>ly</span></a>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Studio</div>
+    <a href="dashboard.html" class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+      New photoshoot
+    </a>
+    <a href="video.html" class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+      New video
+    </a>
+    <a href="bulk.html" class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"/></svg>
+      Bulk Studio
+    </a>
+    <a href="gallery.html" class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
+      My gallery
+    </a>
+    <a href="backgrounds.html" class="nav-item active">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+      Backgrounds
+    </a>
+    <div class="nav-section-label" style="margin-top:8px;">Account</div>
+    <a href="settings.html" class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Settings
+    </a>
+    <a href="credits.html" class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+      Credits
+    </a>
+    <a href="#" onclick="doSignOut()" class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+      Sign out
+    </a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+    <div>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">🌄 Backgrounds</h1>
+      <div style="font-size:13px;color:#555;margin-top:3px;">Download and use in your AI photoshoots</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <h2>Professional AI Backgrounds</h2>
+      <p>Download any background below and upload it as a custom scene in your photoshoot. Works with all models and garments.</p>
+    </div>
+    <div class="hero-badge">✨ Free for all users</div>
+  </div>
+
+  <div class="how-to">
+    <div class="step-pill"><div class="step-num">1</div> Download a background</div>
+    <div class="step-arrow">→</div>
+    <div class="step-pill"><div class="step-num">2</div> Go to New Photoshoot</div>
+    <div class="step-arrow">→</div>
+    <div class="step-pill"><div class="step-num">3</div> In Step 3, pick "Custom Scene"</div>
+    <div class="step-arrow">→</div>
+    <div class="step-pill"><div class="step-num">4</div> Upload the background image</div>
+  </div>
+
+  <div class="bg-grid" id="bg-grid">
+    <div class="empty"><div class="empty-icon">🌄</div><div>Loading backgrounds...</div></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+  <div class="lb-inner">
+    <img class="lb-img" id="lb-img" src="" alt="" />
+    <div class="lb-body">
+      <div class="lb-name" id="lb-name"></div>
+      <a class="dl-btn" id="lb-dl" href="#" style="width:auto;padding:8px 20px;" download>
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        Download
+      </a>
+    </div>
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+var BUCKET = 'backgrounds';
+var BASE_URL = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/' + BUCKET + '/';
+
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
+  var initials = displayName.slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = initials;
+  var ma = document.getElementById('m-avatar'); if(ma) ma.textContent = initials;
+  var mn = document.getElementById('m-name'); if(mn) mn.textContent = displayName;
+  loadBackgrounds();
+});
+
+function loadBackgrounds() {
+  sb.storage.from(BUCKET).list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } }).then(function(r) {
+    if (r.error) { console.error(r.error); showEmpty('Error loading backgrounds.'); return; }
+    var files = (r.data || []).filter(function(f){ return f.name !== '.emptyFolderPlaceholder' && /\.(jpg|jpeg|png|webp)$/i.test(f.name); });
+    if (files.length === 0) { showEmpty(); return; }
+    renderGrid(files);
+  });
+}
+
+function renderGrid(files) {
+  var grid = document.getElementById('bg-grid');
+  grid.innerHTML = '';
+  files.forEach(function(file) {
+    var url = BASE_URL + encodeURIComponent(file.name);
+    var label = file.name.replace(/[-_]/g,' ').replace(/\.[^.]+$/,'').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    var card = document.createElement('div');
+    card.className = 'bg-card';
+    card.innerHTML =
+      '<div class="bg-img-wrap" onclick='openLightbox("' + url + '","' + label + '")' style="cursor:pointer;">' +
+        '<img src="' + url + '" alt="' + label + '" loading="lazy" />' +
+      '</div>' +
+      '<div class="bg-body">' +
+        '<div class="bg-name">' + label + '</div>' +
+        '<a class="dl-btn" href="' + url + '" download="' + file.name + '" onclick="showToast('Downloading...')">'+
+          '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>' +
+          ' Download' +
+        '</a>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function showEmpty(msg) {
+  document.getElementById('bg-grid').innerHTML = '<div class="empty"><div class="empty-icon">🌄</div><div style="font-size:14px;font-weight:500;margin-bottom:5px;">' + (msg || 'No backgrounds yet') + '</div><div style="font-size:12px;color:#888;">Check back soon — new backgrounds added regularly!</div></div>';
+}
+
+function openLightbox(url, name) {
+  document.getElementById('lb-img').src = url;
+  document.getElementById('lb-name').textContent = name;
+  var dl = document.getElementById('lb-dl');
+  dl.href = url; dl.download = name.toLowerCase().replace(/\s+/g,'-') + '.jpg';
+  dl.onclick = function(){ showToast('Downloading...'); };
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+function openMobileNav() { document.getElementById('mobile-nav').classList.add('open'); document.getElementById('mobile-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMobileNav() { document.getElementById('mobile-nav').classList.remove('open'); document.getElementById('mobile-overlay').classList.remove('open'); document.body.style.overflow=''; }
+async function doSignOut() { await sb.auth.signOut(); window.location.href='auth.html'; }
+</script>
+</body>
+</html>
