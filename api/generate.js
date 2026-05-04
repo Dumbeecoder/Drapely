@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { garment_img, model_index, prompt, garment_type, custom_model } = req.body;
+  const { garment_img, model_index, prompt, garment_type, custom_model, custom_bg } = req.body;
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const models = [
@@ -76,7 +76,22 @@ export default async function handler(req, res) {
     const garmentDesc = isSaree
       ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
       : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
-    const finalPrompt = [garmentDesc, prompt || ''].filter(Boolean).join(', ');
+
+    // Handle custom background image
+    let bgPromptExtra = prompt || '';
+    if (custom_bg && custom_bg.startsWith('data:')) {
+      const bgBase64 = custom_bg.replace(/^data:image\/\w+;base64,/, '');
+      const bgImgurRes = await fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: { 'Authorization': 'Client-ID 546c25a59c58ad7', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: bgBase64, type: 'base64' })
+      });
+      const bgImgurData = await bgImgurRes.json();
+      if (bgImgurData.success) {
+        bgPromptExtra = 'background inspired by uploaded scene, professional Indian fashion photography';
+      }
+    }
+    const finalPrompt = [garmentDesc, bgPromptExtra].filter(Boolean).join(', ');
 
     const requestBody = {
       model_name: 'product-to-model',
