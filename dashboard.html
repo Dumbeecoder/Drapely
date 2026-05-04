@@ -814,13 +814,20 @@ function showToast(msg) {
 }
 
 function goStep(n) {
-  document.getElementById('step-' + currentStep).classList.remove('active');
+  var prev = document.getElementById('step-' + currentStep);
+  prev.classList.remove('active');
+  prev.style.display = ''; // clear any inline style from startGenerate
   document.getElementById('pill-' + currentStep).classList.remove('active');
   if (n > currentStep) document.getElementById('pill-' + currentStep).classList.add('done');
   else document.getElementById('pill-' + currentStep).classList.remove('done');
   currentStep = n;
-  document.getElementById('step-' + n).classList.add('active');
+  var next = document.getElementById('step-' + n);
+  next.style.display = ''; // clear inline style
+  next.classList.add('active');
   document.getElementById('pill-' + n).classList.add('active');
+  // Hide progress wrap when navigating
+  var pw = document.getElementById('progress-wrap');
+  if (pw) pw.classList.remove('visible');
 }
 
 function loadSuit(e) {
