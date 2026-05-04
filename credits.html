@@ -265,20 +265,30 @@ function loadHistory(userId) {
     .then(function(r) {
       if (r.error) { console.error('History error:', r.error.message); return; }
       var data = r.data || [];
-      var totalItems = data.length;
 
-      // Assign sequential numbers oldest=1
-      allHistory = data.map(function(item, idx) {
-        var num = idx + 1; // 1-based, oldest = 1
+      // Separate items by type for independent numbering (oldest=1 per type)
+      var regularPhotos = data.filter(function(i){
+        return i.media_type !== 'video' && i.suit_type !== 'Video' &&
+               i.suit_type !== 'Bulk' && !(i.collection_name && i.collection_name.toLowerCase().includes('bulk'));
+      });
+      var bulkPhotos = data.filter(function(i){
+        return i.media_type !== 'video' && i.suit_type !== 'Video' &&
+               (i.suit_type === 'Bulk' || (i.collection_name && i.collection_name.toLowerCase().includes('bulk')));
+      });
+      var videos = data.filter(function(i){ return i.media_type === 'video' || i.suit_type === 'Video'; });
+
+      // data is newest-first (descending), so reverse gives oldest-first for numbering
+      var regularMap = {}, bulkMap = {}, videoMap = {};
+      regularPhotos.slice().reverse().forEach(function(p, i){ regularMap[p.id] = i + 1; });
+      bulkPhotos.slice().reverse().forEach(function(p, i){ bulkMap[p.id] = i + 1; });
+      videos.slice().reverse().forEach(function(p, i){ videoMap[p.id] = i + 1; });
+
+      allHistory = data.map(function(item) {
         var isVideo = item.media_type === 'video' || item.suit_type === 'Video';
         var isBulk = item.suit_type === 'Bulk' ||
                      (item.collection_name && item.collection_name.toLowerCase().includes('bulk'));
         var type = isVideo ? 'video' : (isBulk ? 'bulk' : 'photo');
 
-        // Credits: read from image_count field (stored correctly on save)
-        // For videos: image_count = 2 (5s) or 4 (10s)
-        // For photos: image_count = number of images generated
-        // Old records may have image_count=1 even for videos — fallback
         var credits;
         if (isVideo) {
           credits = (item.image_count && item.image_count >= 2) ? item.image_count : 2;
@@ -286,11 +296,6 @@ function loadHistory(userId) {
           credits = (item.image_count && item.image_count >= 1) ? item.image_count : 1;
         }
 
-        // Title logic:
-        // - Custom collection name → show as-is
-        // - Video → Drapely AI Video N
-        // - Bulk → Drapely Bulk Photo N
-        // - Regular photo with no custom name → Drapely AI Photo N
         var isCustomName = item.collection_name &&
           item.collection_name !== 'AI Photoshoot' &&
           item.collection_name !== 'Drapely AI Video' &&
@@ -298,17 +303,18 @@ function loadHistory(userId) {
           item.collection_name !== 'AI Fashion Video' &&
           !item.collection_name.startsWith('Drapely AI Photo') &&
           !item.collection_name.startsWith('Drapely Bulk') &&
-          !item.collection_name.startsWith('Drapely AI Video');
+          !item.collection_name.startsWith('Drapely AI Video') &&
+          !item.collection_name.toLowerCase().includes('bulk');
 
         var title;
         if (isVideo) {
-          title = 'Drapely AI Video ' + num;
+          title = 'Drapely AI Video ' + videoMap[item.id];
         } else if (isBulk) {
-          title = 'Drapely Bulk Photo ' + num;
+          title = 'Drapely Bulk Photo ' + bulkMap[item.id];
         } else if (isCustomName) {
           title = item.collection_name;
         } else {
-          title = 'Drapely AI Photo ' + num;
+          title = 'Drapely AI Photo ' + regularMap[item.id];
         }
 
         return {
