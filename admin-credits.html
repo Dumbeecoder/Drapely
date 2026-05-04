@@ -185,9 +185,17 @@ async function loadAllUsers() {
     var res = await fetch('/api/admin-user?list=true');
     var data = await res.json();
     var authUsers = data.users || [];
-    var cr = await sb.from('credits').select('*');
+    // Fetch credits using service key via admin API
     var creditsMap = {};
-    (cr.data || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
+    try {
+      var cr = await fetch('/api/admin-user?credits=true');
+      var crData = await cr.json();
+      (crData.credits || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
+    } catch(e) {
+      // fallback to anon key
+      var cr = await sb.from('credits').select('*');
+      (cr.data || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
+    }
     var ph = await sb.from('photoshoots').select('user_id');
     var photoMap = {};
     (ph.data || []).forEach(function(p){ photoMap[p.user_id] = (photoMap[p.user_id] || 0) + 1; });
@@ -307,16 +315,24 @@ async function addCredits() {
   var amount = parseInt(document.getElementById('credit-amount').value) || 0;
   if (amount <= 0) { showToast('Enter a valid amount'); return; }
 
-  var newBal = currentBalance + amount;
-  var { error } = await sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', currentUserId);
+  showToast('Adding credits...');
+  try {
+    var res = await fetch('/api/admin-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: currentUserId, amount: amount })
+    });
+    var data = await res.json();
+    if (!res.ok || data.error) { showToast('✗ Error: ' + (data.error || 'Failed')); return; }
 
-  if (error) { showToast('✗ Error: ' + error.message); return; }
-
-  currentBalance = newBal;
-  document.getElementById('res-credits').textContent = newBal;
-  document.getElementById('credit-amount').value = '';
-  showToast('✓ Added credits! New balance: ' + newBal);
-  loadAllUsers();
+    currentBalance = data.new_balance;
+    document.getElementById('res-credits').textContent = data.new_balance;
+    document.getElementById('credit-amount').value = '';
+    showToast('✓ Added ' + amount + ' credits! New balance: ' + data.new_balance);
+    loadAllUsers();
+  } catch(e) {
+    showToast('✗ Error: ' + e.message);
+  }
 }
 
 function showToast(msg) {
