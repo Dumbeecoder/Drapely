@@ -31,16 +31,17 @@ export default async function handler(req, res) {
     if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
     const garmentUrl = imgurData.data.link;
 
-    // Handle mannequin (index 98 or 6) — flat lay / invisible mannequin style
+    // Handle mannequin (index 98 or 6) — use actual mannequin model image
     if (model_index === 98 || model_index === 6) {
+      const mannequinImg = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/mannequin.jpg';
       const mannequinPrompt = isSaree
-        ? 'Professional product photo of an elegant saree on invisible mannequin, clean white background, studio lighting, e-commerce style, full length'
-        : 'Professional product photo of a salwar suit on invisible mannequin, clean white background, studio lighting, e-commerce style, full length';
+        ? 'elegant saree draped on white mannequin, clean white studio background, professional e-commerce product photo, full length, soft studio lighting'
+        : 'salwar suit displayed on white mannequin, clean white studio background, professional e-commerce product photo, full length, soft studio lighting';
       const mannequinBody = {
         model_name: 'product-to-model',
         inputs: {
           product_image: garmentUrl,
-          model_image: models[0],
+          model_image: mannequinImg,
           resolution: '1k',
           generation_mode: 'balanced',
           output_format: 'jpeg',
