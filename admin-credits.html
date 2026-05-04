@@ -174,56 +174,68 @@ function checkPass() {
 }
 
 async function loadStats() {
-  // Get total photos
   var photos = await sb.from('photoshoots').select('id', { count: 'exact', head: true });
   document.getElementById('stat-photos').textContent = photos.count || 0;
 }
 
 async function loadAllUsers() {
-  // Load all credits rows with user info
-  var { data: credits } = await sb.from('credits').select('*').order('created_at', { ascending: false });
-  if (!credits) return;
-
-  document.getElementById('stat-users').textContent = credits.length;
-  var totalCredits = credits.reduce(function(s, c){ return s + (c.balance || 0); }, 0);
-  document.getElementById('stat-credits-total').textContent = totalCredits;
-
-  // Get user metadata from auth - we need to call our own users list
-  // Use the admin auth API to get emails
   var tbody = document.getElementById('users-tbody');
-  tbody.innerHTML = '';
-
-  allUsers = credits;
-
-  credits.forEach(function(row) {
-    var bal = row.balance || 0;
-    var balClass = bal >= 20 ? 'bal-high' : bal >= 5 ? 'bal-mid' : 'bal-low';
-    var joined = new Date(row.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-    var shortId = row.user_id ? row.user_id.substring(0, 8) + '...' : '—';
-
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><div style="font-size:12px;color:#555;font-family:monospace;">' + shortId + '</div></td>' +
-      '<td><div style="font-size:12px;color:#555;">Search to see email</div></td>' +
-      '<td><span class="bal-badge ' + balClass + '">' + bal + ' credits</span></td>' +
-      '<td style="font-size:12px;color:#555;">' + joined + '</td>' +
-      '<td><button class="edit-btn" onclick="selectUserById(\'' + row.user_id + '\',' + bal + ')">+ Credits</button></td>';
-    tbody.appendChild(tr);
-  });
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;padding:1.5rem;">Loading...</td></tr>';
+  try {
+    var res = await fetch('/api/admin-user?list=true');
+    var data = await res.json();
+    var authUsers = data.users || [];
+    var cr = await sb.from('credits').select('*');
+    var creditsMap = {};
+    (cr.data || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
+    var ph = await sb.from('photoshoots').select('user_id');
+    var photoMap = {};
+    (ph.data || []).forEach(function(p){ photoMap[p.user_id] = (photoMap[p.user_id] || 0) + 1; });
+    document.getElementById('stat-users').textContent = authUsers.length;
+    var totalCr = Object.values(creditsMap).reduce(function(s,v){ return s+v; }, 0);
+    document.getElementById('stat-credits-total').textContent = totalCr;
+    tbody.innerHTML = '';
+    if (!authUsers.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc2626;padding:1.5rem;">No users — add SUPABASE_SERVICE_KEY to Vercel env vars then redeploy</td></tr>';
+      return;
+    }
+    authUsers.forEach(function(user) {
+      var meta = user.user_metadata || {};
+      var fname = (meta.first_name || '').trim();
+      var lname = (meta.last_name || '').trim();
+      var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
+      var phone = meta.phone || user.phone || '—';
+      var bal = creditsMap[user.id] || 0;
+      var balClass = bal >= 20 ? 'bal-high' : bal >= 5 ? 'bal-mid' : 'bal-low';
+      var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+      var photoCount = photoMap[user.id] || 0;
+      var tr = document.createElement('tr');
+      var btn = document.createElement('button');
+      btn.className = 'edit-btn'; btn.textContent = '+ Credits';
+      btn.onclick = (function(id,em,nm,b){ return function(){ selectUserById(id,em,nm,b); }; })(user.id, user.email||'', name, bal);
+      tr.innerHTML =
+        '<td><div style="font-size:13px;font-weight:500;">' + name + '</div><div style="font-size:10px;color:#888;">' + phone + '</div></td>' +
+        '<td style="font-size:12px;color:#555;">' + (user.email||'—') + '</td>' +
+        '<td><span class="bal-badge ' + balClass + '">' + bal + '</span><span style="font-size:10px;color:#999;margin-left:4px;">' + photoCount + ' photos</span></td>' +
+        '<td style="font-size:12px;color:#555;">' + joined + '</td><td></td>';
+      tr.querySelector('td:last-child').appendChild(btn);
+      tbody.appendChild(tr);
+    });
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc2626;padding:1.5rem;">Error: ' + e.message + '</td></tr>';
+  }
 }
 
-function selectUserById(userId, balance) {
+function selectUserById(userId, email, name, balance) {
   currentUserId = userId;
   currentBalance = balance;
-  var result = document.getElementById('user-result');
-  document.getElementById('res-av').textContent = '?';
-  document.getElementById('res-name').textContent = 'User ID: ' + userId.substring(0, 16) + '...';
-  document.getElementById('res-email').textContent = 'Click Add Credits to update balance';
-  document.getElementById('res-meta').textContent = '';
+  document.getElementById('res-av').textContent = (name || email || '?').slice(0,2).toUpperCase();
+  document.getElementById('res-name').textContent = name || email || userId.substring(0,16);
+  document.getElementById('res-email').textContent = email || '—';
+  document.getElementById('res-meta').textContent = 'User ID: ' + userId.substring(0,16) + '...';
   document.getElementById('res-credits').textContent = balance;
-  result.classList.add('show');
+  document.getElementById('user-result').classList.add('show');
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  document.getElementById('search-input').value = '';
 }
 
 async function searchUser() {
