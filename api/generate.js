@@ -15,10 +15,10 @@ export default async function handler(req, res) {
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_03_27%20AM.png',
-    null, // index 6 placeholder
-    null, // index 7 placeholder
-    'MANNEQUIN', // index 98 - handled separately
   ];
+
+  // Declare isSaree early so it's available everywhere
+  const isSaree = garment_type === 'saree';
 
   try {
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
@@ -31,17 +31,16 @@ export default async function handler(req, res) {
     if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
     const garmentUrl = imgurData.data.link;
 
-    // Handle mannequin (index 98) — no human model, just garment on white bg
-    if (model_index === 98) {
-      // Override prompt for mannequin
+    // Handle mannequin (index 98 or 6) — flat lay / invisible mannequin style
+    if (model_index === 98 || model_index === 6) {
       const mannequinPrompt = isSaree
-        ? 'Professional product photo of an elegant saree displayed on invisible mannequin, clean white background, studio lighting, e-commerce style'
-        : 'Professional product photo of a salwar suit displayed on invisible mannequin, clean white background, studio lighting, e-commerce style';
+        ? 'Professional product photo of an elegant saree on invisible mannequin, clean white background, studio lighting, e-commerce style, full length'
+        : 'Professional product photo of a salwar suit on invisible mannequin, clean white background, studio lighting, e-commerce style, full length';
       const mannequinBody = {
         model_name: 'product-to-model',
         inputs: {
           product_image: garmentUrl,
-          model_image: models[0], // fallback model but prompt overrides
+          model_image: models[0],
           resolution: '1k',
           generation_mode: 'balanced',
           output_format: 'jpeg',
@@ -70,10 +69,9 @@ export default async function handler(req, res) {
       const customImgurData = await customImgurRes.json();
       humanImg = customImgurData.success ? customImgurData.data.link : models[0];
     } else {
-      humanImg = models[model_index || 0];
+      humanImg = models[model_index] || models[0];
     }
 
-    const isSaree = garment_type === 'saree';
     const garmentDesc = isSaree
       ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
       : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
