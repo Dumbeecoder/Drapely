@@ -536,14 +536,31 @@ async function startBulkGenerate() {
         if (imgUrl) {
           var finalUrl = await overlayLogoOnImage(imgUrl, bulkLogoUrl, logoPos);
           var saveUrl = imgUrl;
-          if (finalUrl.startsWith('data:')) {
+          // Always upload to Supabase storage so URL doesn't expire
+          try {
+            var imgRes = await fetch(imgUrl);
+            var imgBlob = await imgRes.blob();
+            var storageFileName = 'bulk_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
+            var storageUpload = await sb.storage.from('photoshoots').upload(storageFileName, imgBlob, { contentType: 'image/jpeg', upsert: false });
+            if (!storageUpload.error) {
+              var publicUrlResult = sb.storage.from('photoshoots').getPublicUrl(storageFileName);
+              saveUrl = publicUrlResult.data.publicUrl;
+              console.log('Uploaded to storage:', saveUrl.substring(0, 60));
+            } else {
+              console.error('Storage upload error:', storageUpload.error.message);
+            }
+          } catch(uploadErr) {
+            console.error('Upload failed:', uploadErr.message);
+          }
+          // If logo was applied as data URL, upload that instead
+          if (finalUrl && finalUrl.startsWith('data:')) {
             var compressedLogo = await compressForImgur(finalUrl);
-            var storedUrl = await uploadLogoedImageToStorage(compressedLogo);
-            if (storedUrl) saveUrl = storedUrl;
+            var storedLogoUrl = await uploadLogoedImageToStorage(compressedLogo);
+            if (storedLogoUrl) saveUrl = storedLogoUrl;
           }
           if (currentUserId) {
-            // Save to gallery with suit_type='Bulk' so it shows correctly in gallery/credits
-            sb.from('photoshoots').insert({
+            // Save to gallery with suit_type='Bulk'
+            var insertResult = await sb.from('photoshoots').insert({
               user_id: currentUserId,
               image_url: saveUrl,
               collection_name: 'Drapely Bulk Photo',
@@ -551,10 +568,22 @@ async function startBulkGenerate() {
               image_count: 1,
               media_type: 'photo'
             });
-            // Deduct 1 credit immediately using current running balance
+            if (insertResult.error) {
+              console.error('Photoshoot insert error:', insertResult.error.message);
+            } else {
+              console.log('Photoshoot saved OK for', saveUrl.substring(0, 60));
+            }
+            // Deduct 1 credit
             currentCredits = Math.max(0, currentCredits - 1);
-            sb.from('credits').update({ balance: currentCredits }).eq('user_id', currentUserId);
+            var updateResult = await sb.from('credits').update({ balance: currentCredits }).eq('user_id', currentUserId);
+            if (updateResult.error) {
+              console.error('Credits update error:', updateResult.error.message);
+            } else {
+              console.log('Credits updated to', currentCredits);
+            }
             document.getElementById('stat-credits').textContent = currentCredits;
+          } else {
+            console.error('No currentUserId — not saving!');
           }
           bulkQueue[i].status = 'done';
           bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: saveUrl });
