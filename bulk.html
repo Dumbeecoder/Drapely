@@ -84,15 +84,23 @@
     .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
     .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
     .mobile-user-plan{font-size:10px;color:#E91E63;}
-    @media(max-width:900px){.burger{display:flex !important;}.main{padding-top:60px !important;}}
+    @media(max-width:900px){.burger{display:flex !important;}.main{padding-top:64px !important;}}
+
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:200;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.2);}
+    .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;}
+    .mobile-logo span{color:#E91E63;}
+    @media(max-width:900px){.mobile-header{display:flex !important;}.burger{position:static !important;background:none !important;border-radius:0 !important;width:auto !important;height:auto !important;padding:4px !important;}.burger span{background:#fff !important;}}
   </style>
 </head>
 <body>
 <!-- BURGER -->
-<button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+<div class="mobile-header">
+  <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+  <a href="javascript:location.reload()" class="mobile-logo">Drape<span>ly</span></a>
+</div>
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
 <div class="mobile-nav" id="mobile-nav">
-  <a href="index.html" class="mobile-nav-brand">Drape<span>ly</span></a>
+  <a href="javascript:location.reload()" class="mobile-nav-brand">Drape<span>ly</span></a>
   <div class="mobile-nav-items">
     <a class="mobile-nav-item" href="dashboard.html" onclick="closeMobileNav()">
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
@@ -130,13 +138,13 @@
   <div class="mobile-nav-footer">
     <div class="mobile-user">
       <div class="mobile-user-avatar" id="m-avatar">?</div>
-      <div><div class="mobile-user-name" id="m-name">...</div><div class="mobile-user-plan">Beta · Free</div></div>
+      <div><div class="mobile-user-name" id="m-name">...</div></div>
     </div>
   </div>
 </div>
 
 <div class="sidebar">
-  <a href="index.html" class="brand">Drape<span>ly</span></a>
+  <a href="javascript:location.reload()" class="brand">Drape<span>ly</span></a>
   <div class="nav-section">STUDIO</div>
   <a href="dashboard.html" class="nav-item">
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
@@ -174,7 +182,7 @@
   <div class="nav-footer">
     <div class="user-pill">
       <div class="user-av" id="user-avatar">?</div>
-      <div><div class="user-name" id="user-name">Loading...</div><div class="user-plan">Beta · Free</div></div>
+      <div><div class="user-name" id="user-name">Loading...</div></div>
     </div>
   </div>
 </div>
