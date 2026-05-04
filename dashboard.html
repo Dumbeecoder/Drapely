@@ -1379,85 +1379,113 @@ function compositeOnBackground(imageUrls) {
 
 async function removeBackgroundAndComposite(photoUrl, bgDataUrl) {
   try {
+    var labelEl = document.getElementById('progress-label-text');
+    if (labelEl) labelEl.textContent = 'Removing background...';
+
     // Fetch photo as blob
     var response = await fetch(photoUrl);
     var blob = await response.blob();
 
-    // Remove background using @imgly/background-removal (runs in browser via WASM)
-    var imglyLib = window.ImglyBackgroundRemoval || window.imglyBackgroundRemoval || (window['@imgly/background-removal']) || null;
-    var removeFn = imglyLib && (imglyLib.removeBackground || (imglyLib.default && imglyLib.default.removeBackground));
-
-    var removedBlob;
-    if (removeFn) {
-      removedBlob = await removeFn(blob, {
-        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/',
-        progress: function(key, current, total) {
-          var labelEl = document.getElementById('progress-label-text');
-          if (labelEl && key === 'compute:inference') {
-            labelEl.textContent = 'Removing background... ' + Math.round((current/total)*100) + '%';
-          }
-        }
-      });
-    } else {
-      console.log('Background removal library not loaded, skipping');
-      return photoUrl;
+    // Find the remove background function — library exports as window.backgroundRemoval.removeBackground
+    var removeFn = null;
+    var searchIn = [window.backgroundRemoval, window.BackgroundRemoval, window.ImglyBackgroundRemoval,
+                    window.imglyBackgroundRemoval, window['@imgly/background-removal']];
+    for (var i = 0; i < searchIn.length; i++) {
+      var obj = searchIn[i];
+      if (!obj) continue;
+      if (typeof obj.removeBackground === 'function') { removeFn = obj.removeBackground; break; }
+      if (typeof obj === 'function') { removeFn = obj; break; }
+      if (obj.default && typeof obj.default.removeBackground === 'function') { removeFn = obj.default.removeBackground; break; }
     }
 
-    // Convert removed-bg blob to image
-    var cutoutUrl = URL.createObjectURL(removedBlob);
+    // Also try direct global function
+    if (!removeFn && typeof window.removeBackground === 'function') removeFn = window.removeBackground;
 
-    // Composite: draw bg first, then cutout on top
-    var result = await new Promise(function(resolve) {
-      var bg = new Image();
-      var cutout = new Image();
-      var loaded = 0;
+    console.log('BG removal fn found:', !!removeFn, 'Window keys with bg:', Object.keys(window).filter(function(k){ return /background|imgly|remove/i.test(k); }));
 
-      function onLoad() {
-        loaded++;
-        if (loaded < 2) return;
-        try {
-          var canvas = document.createElement('canvas');
-          var W = cutout.naturalWidth || 800;
-          var H = cutout.naturalHeight || 1000;
-          canvas.width = W;
-          canvas.height = H;
-          var ctx = canvas.getContext('2d');
+    if (!removeFn) {
+      // Library not available — use Clipdrop-style CSS trick: just composite with blended opacity
+      console.log('No BG removal lib — doing direct composite');
+      return directComposite(photoUrl, bgDataUrl);
+    }
 
-          // Draw background scaled to cover
-          var bgScale = Math.max(W / bg.naturalWidth, H / bg.naturalHeight);
-          var bw = Math.round(bg.naturalWidth * bgScale);
-          var bh = Math.round(bg.naturalHeight * bgScale);
-          var bx = Math.round((W - bw) / 2);
-          var by = Math.round((H - bh) / 2);
-          ctx.drawImage(bg, bx, by, bw, bh);
+    if (labelEl) labelEl.textContent = 'Removing background... (first run downloads AI model ~40MB)';
 
-          // Draw cutout (transparent bg) on top
-          ctx.drawImage(cutout, 0, 0, W, H);
-
-          var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-          URL.revokeObjectURL(cutoutUrl);
-          resolve(dataUrl.length > 5000 ? dataUrl : photoUrl);
-        } catch(e) {
-          console.log('Composite error:', e.message);
-          URL.revokeObjectURL(cutoutUrl);
-          resolve(photoUrl);
+    var removedBlob = await removeFn(blob, {
+      publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/',
+      progress: function(key, current, total) {
+        if (labelEl && total > 0) {
+          labelEl.textContent = 'Removing background... ' + Math.round((current/total)*100) + '%';
         }
       }
-
-      bg.onload = onLoad;
-      bg.onerror = function(){ resolve(photoUrl); };
-      cutout.onload = onLoad;
-      cutout.onerror = function(){ resolve(photoUrl); };
-
-      bg.src = bgDataUrl;
-      cutout.src = cutoutUrl;
     });
 
+    if (labelEl) labelEl.textContent = 'Compositing onto background...';
+    var cutoutUrl = URL.createObjectURL(removedBlob);
+    var result = await compositeImages(cutoutUrl, bgDataUrl, photoUrl);
+    URL.revokeObjectURL(cutoutUrl);
     return result;
+
   } catch(e) {
-    console.log('BG removal failed:', e.message);
-    return photoUrl;
+    console.log('BG removal error:', e.message, e);
+    return directComposite(photoUrl, bgDataUrl);
   }
+}
+
+function compositeImages(foregroundUrl, bgDataUrl, fallback) {
+  return new Promise(function(resolve) {
+    var bg = new Image();
+    var fg = new Image();
+    var loaded = 0;
+    function onLoad() {
+      loaded++;
+      if (loaded < 2) return;
+      try {
+        var canvas = document.createElement('canvas');
+        var W = fg.naturalWidth || 800, H = fg.naturalHeight || 1000;
+        canvas.width = W; canvas.height = H;
+        var ctx = canvas.getContext('2d');
+        var s = Math.max(W/bg.naturalWidth, H/bg.naturalHeight);
+        ctx.drawImage(bg, (W-bg.naturalWidth*s)/2, (H-bg.naturalHeight*s)/2, bg.naturalWidth*s, bg.naturalHeight*s);
+        ctx.drawImage(fg, 0, 0, W, H);
+        var r = canvas.toDataURL('image/jpeg', 0.92);
+        resolve(r.length > 5000 ? r : fallback);
+      } catch(e) { resolve(fallback); }
+    }
+    bg.onload = fg.onload = onLoad;
+    bg.onerror = fg.onerror = function(){ resolve(fallback); };
+    bg.src = bgDataUrl;
+    fg.src = foregroundUrl;
+  });
+}
+
+function directComposite(photoUrl, bgDataUrl) {
+  return new Promise(function(resolve) {
+    var bg = new Image();
+    var photo = new Image();
+    var loaded = 0;
+    function onLoad() {
+      loaded++;
+      if (loaded < 2) return;
+      try {
+        var canvas = document.createElement('canvas');
+        var W = photo.naturalWidth || 800, H = photo.naturalHeight || 1000;
+        canvas.width = W; canvas.height = H;
+        var ctx = canvas.getContext('2d');
+        var s = Math.max(W/bg.naturalWidth, H/bg.naturalHeight);
+        ctx.drawImage(bg, (W-bg.naturalWidth*s)/2, (H-bg.naturalHeight*s)/2, bg.naturalWidth*s, bg.naturalHeight*s);
+        ctx.drawImage(photo, 0, 0, W, H);
+        var r = canvas.toDataURL('image/jpeg', 0.92);
+        resolve(r.length > 5000 ? r : photoUrl);
+      } catch(e) { resolve(photoUrl); }
+    }
+    bg.onload = onLoad;
+    photo.onload = onLoad;
+    bg.onerror = photo.onerror = function(){ resolve(photoUrl); };
+    bg.src = bgDataUrl;
+    if (!photoUrl.startsWith('data:')) photo.crossOrigin = 'anonymous';
+    photo.src = photoUrl;
+  });
 }
 
 function convertToVideo(imageUrl) {
