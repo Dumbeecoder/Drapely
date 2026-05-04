@@ -479,6 +479,7 @@ async function startBulkGenerate() {
   if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
   if (credits < bulkQueue.length) { showToast('Need ' + bulkQueue.length + ' credits, have ' + credits); return; }
+  var currentCredits = credits; // track running balance to avoid race conditions
   var btn = document.getElementById('bulk-generate-btn');
   btn.disabled = true; btn.textContent = 'Generating...';
   var progressWrap = document.getElementById('bulk-progress-wrap');
@@ -534,10 +535,19 @@ async function startBulkGenerate() {
             if (storedUrl) saveUrl = storedUrl;
           }
           if (currentUserId) {
-            sb.from('photoshoots').insert({ user_id: currentUserId, image_url: saveUrl, collection_name: 'Bulk Photoshoot', suit_type: garmentType === 'saree' ? 'Saree' : 'Salwar Suit', image_count: 1, media_type: 'photo' });
-            sb.from('credits').select('balance').eq('user_id', currentUserId).single().then(function(res) {
-              if (res.data) sb.from('credits').update({ balance: Math.max(0, res.data.balance - 1) }).eq('user_id', currentUserId);
+            // Save to gallery with suit_type='Bulk' so it shows correctly in gallery/credits
+            sb.from('photoshoots').insert({
+              user_id: currentUserId,
+              image_url: saveUrl,
+              collection_name: 'Drapely Bulk Photo',
+              suit_type: 'Bulk',
+              image_count: 1,
+              media_type: 'photo'
             });
+            // Deduct 1 credit immediately using current running balance
+            currentCredits = Math.max(0, currentCredits - 1);
+            sb.from('credits').update({ balance: currentCredits }).eq('user_id', currentUserId);
+            document.getElementById('stat-credits').textContent = currentCredits;
           }
           bulkQueue[i].status = 'done';
           bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: saveUrl });
@@ -583,8 +593,47 @@ function renderResults() {
 
 async function exportAllAsZip() {
   if (bulkResults.length === 0) { showToast('No results!'); return; }
-  bulkResults.forEach(function(item) { window.open(item.original, '_blank'); });
-  showToast('Opening all images...');
+  showToast('Preparing ZIP...');
+
+  try {
+    var zip = new JSZip();
+    var folder = zip.folder('drapely-bulk');
+
+    for (var i = 0; i < bulkResults.length; i++) {
+      var item = bulkResults[i];
+      var url = item.url || item.original;
+      try {
+        if (url.startsWith('data:')) {
+          // Already a data URL — convert to blob
+          var base64 = url.split(',')[1];
+          folder.file(item.name || ('photo-' + (i+1) + '.jpg'), base64, { base64: true });
+        } else {
+          // Fetch from URL
+          var res = await fetch(url);
+          var blob = await res.blob();
+          var arrBuf = await blob.arrayBuffer();
+          folder.file(item.name || ('photo-' + (i+1) + '.jpg'), arrBuf);
+        }
+      } catch(e) {
+        console.log('Skipping ' + item.name + ':', e.message);
+      }
+    }
+
+    var zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = 'drapely-bulk-photos.zip';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+    showToast('✅ ZIP downloaded!');
+  } catch(e) {
+    console.log('ZIP error:', e.message);
+    // Fallback: open all individually
+    bulkResults.forEach(function(item){ window.open(item.original, '_blank'); });
+    showToast('Opening images individually...');
+  }
 }
 
 function showToast(msg) {
