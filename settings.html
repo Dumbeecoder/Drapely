@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--surface: #ffffff;--white:#fff;--error:#dc2626;--success:#16a34a}
-    body{font-family:'DM Sans',sans-serif;background:#ffffff;color:var(--text);min-height:100vh}
+    :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--surface:#ffffff;--white:#fff;--error:#dc2626;--success:#16a34a}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
     .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
     .sidebar-brand span{color:var(--gold)}
@@ -20,7 +20,7 @@
     .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500}
     .sidebar-footer{padding:0 0.75rem;border-top:1px solid var(--border);padding-top:1rem}
     .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.06);border:1px solid var(--border)}
-    .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--deep);flex-shrink:0}
+    .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
     .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-plan{font-size:10px;color:var(--gold)}
     .main{margin-left:220px;min-height:100vh}
@@ -29,7 +29,7 @@
     .content{padding:2rem;max-width:700px}
     .settings-section{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
     .section-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-    .section-icon{width:32px;height:32px;background:var(--gold-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .section-icon{width:32px;height:32px;background:rgba(233,30,99,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .section-icon svg{width:16px;height:16px;color:var(--gold)}
     .section-title{font-size:14px;font-weight:500;color:var(--text)}
     .section-sub{font-size:12px;color:var(--muted);margin-top:2px}
@@ -39,10 +39,10 @@
     .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.3px}
     .field input,.field select,.field textarea{width:100%;padding:11px 14px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fff;outline:none;transition:border-color 0.2s}
     .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(233,30,99,0.1)}
-    .field input:disabled{background:#ffffff;color:var(--muted);cursor:not-allowed}
+    .field input:disabled{background:#f9f9f9;color:var(--muted);cursor:not-allowed}
     .field textarea{resize:vertical;min-height:80px}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .save-btn{padding:10px 24px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
+    .save-btn{padding:10px 24px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
     .save-btn:hover{background:#c2185b}
     .save-btn:disabled{background:#f06292;cursor:not-allowed}
     .danger-btn{padding:10px 24px;background:#fff;color:var(--error);border:1px solid var(--error);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s}
@@ -56,24 +56,20 @@
     .toggle.on{background:var(--gold)}
     .toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
     .toggle.on::after{transform:translateX(18px)}
-    .plan-card{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:var(--gold-pale);border-bottom:1px solid var(--border)}
+    .plan-card{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:#fafafa;border-bottom:1px solid var(--border)}
     .plan-name{font-size:15px;font-weight:500;color:var(--text)}
     .plan-desc{font-size:12px;color:var(--muted);margin-top:2px}
-    .plan-badge{padding:5px 14px;background:var(--gold);color:var(--deep);border-radius:20px;font-size:11px;font-weight:500}
+    .plan-badge{padding:5px 14px;background:var(--gold);color:#fff;border-radius:20px;font-size:11px;font-weight:500}
     .credits-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
     .credits-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--text)}
-    .buy-btn{padding:9px 20px;background:var(--deep);color:var(--gold-light);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
-    .buy-btn:hover{background:#111111}
-    .avatar-large{width:72px;height:72px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:500;color:var(--deep);margin-bottom:1rem;cursor:pointer;transition:opacity 0.2s}
+    .buy-btn{padding:9px 20px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
+    .buy-btn:hover{background:#c2185b}
+    .avatar-large{width:72px;height:72px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:500;color:#fff;margin-bottom:1rem;cursor:pointer;transition:opacity 0.2s}
     .avatar-large:hover{opacity:0.85}
     .success-msg{font-size:12px;color:var(--success);margin-top:8px;display:none}
     .success-msg.show{display:block}
-    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--deep);color:var(--gold-light);padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid var(--border-mid);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--deep);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid var(--border-mid);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
     .toast.show{transform:translateX(-50%) translateY(0)}
-    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}}
-    @media(max-width:600px){.content{padding:1rem}.field-row{grid-template-columns:1fr}}
-  
-    /* MOBILE NAV */
     .burger{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#E91E63;border:none;border-radius:8px;width:40px;height:40px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
     .burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
     .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:150;}
@@ -84,13 +80,14 @@
     .mobile-nav-brand span{color:#E91E63;}
     .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
     .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
-    .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .mobile-nav-item:hover{background:rgba(233,30,99,0.12);color:#fff;}
     .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2);}
     .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);}
     .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
     .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
     .mobile-user-plan{font-size:10px;color:#E91E63;}
-    @media(max-width:900px){.burger{display:flex !important;}.main{padding-top:60px !important;}}
+    @media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.burger{display:flex !important;}.main{padding-top:60px !important;}}
+    @media(max-width:600px){.content{padding:1rem}.field-row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -104,11 +101,8 @@
     <a class="mobile-nav-item" href="video.html">🎬 New Video</a>
     <a class="mobile-nav-item" href="bulk.html">⚡ Bulk Studio</a>
     <a class="mobile-nav-item" href="gallery.html">🖼 My Gallery</a>
-    <a class="mobile-nav-item" href="settings.html">⚙️ Settings</a>
-    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
-      Credits
-    </a>
+    <a class="mobile-nav-item active" href="settings.html">⚙️ Settings</a>
+    <a class="mobile-nav-item" href="credits.html">💳 Credits</a>
     <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
   </div>
   <div class="mobile-nav-footer">
@@ -136,14 +130,17 @@
       Bulk Studio
     </a>
     <a class="nav-item" href="gallery.html">
-      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
       My gallery
     </a>
-
     <div class="nav-section-label" style="margin-top:8px;">Account</div>
     <a class="nav-item active" href="settings.html">
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       Settings
+    </a>
+    <a class="nav-item" href="credits.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+      Credits
     </a>
     <button class="nav-item" onclick="doSignOut()">
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
@@ -164,10 +161,8 @@
       <div class="topbar-title">Settings</div>
     </div>
   </div>
-
   <div class="content">
 
-    <!-- PROFILE -->
     <div class="settings-section">
       <div class="section-header">
         <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
@@ -177,7 +172,7 @@
         <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;">
           <div class="avatar-large" id="profile-avatar" onclick="showToast('Profile photo coming soon!')">?</div>
           <div>
-            <div style="font-size:14px;font-weight:500;color:var(--text);" id="profile-name">Loading...</div>
+            <div style="font-size:14px;font-weight:500;" id="profile-name">Loading...</div>
             <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="profile-email">Loading...</div>
             <div style="font-size:11px;color:var(--gold);margin-top:4px;">Beta member</div>
           </div>
@@ -189,13 +184,12 @@
         <div class="field"><label>Store / Business name</label><input type="text" id="store-name" placeholder="Priya Boutique, Surat" /></div>
         <div class="field"><label>WhatsApp number</label><input type="tel" id="phone" placeholder="+91 98765 43210" /></div>
         <div class="field"><label>Email address</label><input type="email" id="email" disabled /></div>
-        <div class="field"><label>Store description (optional)</label><textarea id="store-desc" placeholder="Tell customers about your store and the suits you make..."></textarea></div>
+        <div class="field"><label>Store description (optional)</label><textarea id="store-desc" placeholder="Tell customers about your store..."></textarea></div>
         <button class="save-btn" id="save-profile-btn" onclick="saveProfile()">Save profile</button>
         <div class="success-msg" id="profile-success">✓ Profile saved successfully!</div>
       </div>
     </div>
 
-    <!-- PLAN & CREDITS -->
     <div class="settings-section">
       <div class="section-header">
         <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg></div>
@@ -211,7 +205,7 @@
           <div class="credits-val" id="credits-val">—</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px;">₹25 per photo · ₹50 per 5s video · ₹100 per 10s video</div>
         </div>
-        <button class="buy-btn" onclick="window.location.href='dashboard.html'">Buy Credits</button>
+        <button class="buy-btn" onclick="window.location.href='credits.html'">Buy Credits</button>
       </div>
       <div class="section-body">
         <div style="font-size:12px;color:var(--muted);line-height:1.8;">
@@ -223,33 +217,19 @@
       </div>
     </div>
 
-    <!-- NOTIFICATIONS -->
     <div class="settings-section">
       <div class="section-header">
         <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg></div>
         <div><div class="section-title">Notifications</div><div class="section-sub">Choose what you want to be notified about</div></div>
       </div>
       <div class="section-body">
-        <div class="toggle-row">
-          <div class="toggle-info"><div class="toggle-label">WhatsApp updates</div><div class="toggle-desc">Get notified when your photos are ready</div></div>
-          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><div class="toggle-label">New model alerts</div><div class="toggle-desc">Know when new models are added to Drapely</div></div>
-          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><div class="toggle-label">Credit reminders</div><div class="toggle-desc">Alert when credits are running low</div></div>
-          <button class="toggle" onclick="this.classList.toggle('on')"></button>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><div class="toggle-label">Promotional offers</div><div class="toggle-desc">Special deals and discount offers</div></div>
-          <button class="toggle" onclick="this.classList.toggle('on')"></button>
-        </div>
+        <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">WhatsApp updates</div><div class="toggle-desc">Get notified when your photos are ready</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">New model alerts</div><div class="toggle-desc">Know when new models are added to Drapely</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Credit reminders</div><div class="toggle-desc">Alert when credits are running low</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Promotional offers</div><div class="toggle-desc">Special deals and discount offers</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
       </div>
     </div>
 
-    <!-- PASSWORD -->
     <div class="settings-section">
       <div class="section-header">
         <div class="section-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg></div>
@@ -263,7 +243,6 @@
       </div>
     </div>
 
-    <!-- DANGER ZONE -->
     <div class="settings-section" style="border-color:rgba(220,38,38,0.2);">
       <div class="section-header" style="border-color:rgba(220,38,38,0.1);background:rgba(220,38,38,0.02);">
         <div class="section-icon" style="background:rgba(220,38,38,0.08);"><svg fill="none" stroke="#dc2626" viewBox="0 0 24 24" stroke-width="1.5"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg></div>
@@ -271,7 +250,7 @@
       </div>
       <div class="section-body">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Delete account</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Permanently delete your account and all data</div></div>
+          <div><div style="font-size:13px;font-weight:500;">Delete account</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Permanently delete your account and all data</div></div>
           <button class="danger-btn" onclick="confirmDelete()">Delete account</button>
         </div>
       </div>
@@ -281,14 +260,12 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 var sb = window.supabase.createClient(
   'https://oqmoneclnirnhqpcdeqy.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
-
 var currentUser = null;
 
 sb.auth.getSession().then(function(r) {
@@ -300,25 +277,19 @@ sb.auth.getSession().then(function(r) {
   var fullname = (fname + ' ' + lname).trim();
   var displayName = fullname.length > 1 ? fullname : currentUser.email.split('@')[0];
   var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
-
-  // Sidebar
   document.getElementById('user-name').textContent = displayName;
   document.getElementById('user-avatar').textContent = initials;
-
-  // Profile section
+  var ma = document.getElementById('m-avatar'); if(ma) ma.textContent = initials;
+  var mn = document.getElementById('m-name'); if(mn) mn.textContent = displayName;
   document.getElementById('profile-avatar').textContent = initials;
   document.getElementById('profile-name').textContent = displayName;
   document.getElementById('profile-email').textContent = currentUser.email;
-
-  // Fill form fields
   document.getElementById('fname').value = fname;
   document.getElementById('lname').value = lname;
   document.getElementById('store-name').value = meta.store_name || '';
   document.getElementById('phone').value = meta.phone || '';
   document.getElementById('email').value = currentUser.email;
   document.getElementById('store-desc').value = meta.store_desc || '';
-
-  // Load credits
   sb.from('credits').select('balance').eq('user_id', currentUser.id).single().then(function(r) {
     document.getElementById('credits-val').textContent = r.data ? r.data.balance : '3';
   });
@@ -326,31 +297,18 @@ sb.auth.getSession().then(function(r) {
 
 async function saveProfile() {
   var btn = document.getElementById('save-profile-btn');
-  btn.disabled = true;
-  btn.textContent = 'Saving...';
-
-  var r = await sb.auth.updateUser({
-    data: {
-      first_name: document.getElementById('fname').value.trim(),
-      last_name: document.getElementById('lname').value.trim(),
-      store_name: document.getElementById('store-name').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      store_desc: document.getElementById('store-desc').value.trim()
-    }
-  });
-
-  btn.disabled = false;
-  btn.textContent = 'Save profile';
-
-  if (r.error) {
-    showToast('✗ Error: ' + r.error.message);
-    return;
-  }
-
+  btn.disabled = true; btn.textContent = 'Saving...';
+  var r = await sb.auth.updateUser({ data: {
+    first_name: document.getElementById('fname').value.trim(),
+    last_name: document.getElementById('lname').value.trim(),
+    store_name: document.getElementById('store-name').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    store_desc: document.getElementById('store-desc').value.trim()
+  }});
+  btn.disabled = false; btn.textContent = 'Save profile';
+  if (r.error) { showToast('✗ Error: ' + r.error.message); return; }
   document.getElementById('profile-success').classList.add('show');
   setTimeout(function(){ document.getElementById('profile-success').classList.remove('show'); }, 3000);
-
-  // Update display name
   var fname = document.getElementById('fname').value.trim();
   var lname = document.getElementById('lname').value.trim();
   var fullname = (fname + ' ' + lname).trim();
@@ -365,13 +323,10 @@ async function saveProfile() {
 async function changePassword() {
   var newPass = document.getElementById('new-pass').value;
   var confirmPass = document.getElementById('confirm-pass').value;
-
   if (!newPass || newPass.length < 8) { showToast('✗ Password must be at least 8 characters'); return; }
   if (newPass !== confirmPass) { showToast('✗ Passwords do not match'); return; }
-
   var r = await sb.auth.updateUser({ password: newPass });
   if (r.error) { showToast('✗ ' + r.error.message); return; }
-
   document.getElementById('new-pass').value = '';
   document.getElementById('confirm-pass').value = '';
   document.getElementById('pass-success').classList.add('show');
@@ -380,11 +335,10 @@ async function changePassword() {
 }
 
 function confirmDelete() {
-  if (confirm('Are you sure? This will permanently delete your account and all your photos. This cannot be undone.')) {
+  if (confirm('Are you sure? This will permanently delete your account and all your photos.')) {
     showToast('Please contact support to delete your account.');
   }
 }
-
 
 function openMobileNav() {
   document.getElementById('mobile-nav').classList.add('open');
@@ -396,34 +350,12 @@ function closeMobileNav() {
   document.getElementById('mobile-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-async function doSignOut() {
-  await sb.auth.signOut();
-  window.location.href = 'auth.html';
-}
-
+async function doSignOut() { await sb.auth.signOut(); window.location.href = 'auth.html'; }
 function showToast(msg) {
   var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 3500);
 }
 </script>
 </body>
-  <div class="nav-section">STUDIO</div>
-  <a href="dashboard.html" class="nav-item">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-    New photoshoot
-  </a>
-  <a href="video.html" class="nav-item">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
-    New video
-  </a>
-  <a href="bulk.html" class="nav-item">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"/></svg>
-    Bulk Studio
-  </a>
-  <a href="gallery.html" class="nav-item">
-    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
-    My gallery
-  </a>
 </html>
