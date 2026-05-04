@@ -27,7 +27,7 @@
     .hero h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#fff;margin-bottom:5px;}
     .hero p{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:400px;}
     .hero-badge{padding:7px 16px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
-    .how-to{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .how-to{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;}
     .step-pill{display:flex;align-items:center;gap:8px;font-size:12px;color:#555;}
     .step-num{width:22px;height:22px;border-radius:50%;background:#E91E63;color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .step-arrow{color:#E91E63;font-size:14px;}
@@ -164,9 +164,9 @@
     <div class="step-arrow">→</div>
     <div class="step-pill"><div class="step-num">2</div> Go to New Photoshoot</div>
     <div class="step-arrow">→</div>
-    <div class="step-pill"><div class="step-num">3</div> In Step 3, pick "Custom Scene"</div>
+    <div class="step-pill"><div class="step-num">3</div> Step 3 → Custom Scene</div>
     <div class="step-arrow">→</div>
-    <div class="step-pill"><div class="step-num">4</div> Upload the background image</div>
+    <div class="step-pill"><div class="step-num">4</div> Upload the background</div>
   </div>
 
   <div class="bg-grid" id="bg-grid"></div>
@@ -213,29 +213,24 @@ sb.auth.getSession().then(function(r) {
   loadBackgrounds();
 });
 
-// ============================================================
-// ADD YOUR BACKGROUND FILENAMES HERE when you upload new ones
-// ============================================================
-var BACKGROUNDS = [
-  'Subtle-1.jpeg',
-  // 'Royal-Palace.jpg',
-  // 'Wedding-Mandap.jpg',
-  // Add more filenames here as you upload them to Supabase
-];
-// ============================================================
-
 function loadBackgrounds() {
-  var files = BACKGROUNDS.filter(function(name){ return /\.(jpg|jpeg|png|webp)$/i.test(name); });
-  if (files.length === 0) { showEmpty(); return; }
-  renderGrid(files.map(function(name){ return { name: name }; }));
+  sb.storage.from(BUCKET).list('', { limit: 100, sortBy: { column: 'name', order: 'asc' } })
+    .then(function(r) {
+      if (r.error) { showEmpty('Could not load backgrounds.'); return; }
+      var files = (r.data || []).filter(function(f){
+        return f.name && f.name !== '.emptyFolderPlaceholder' && /\.(jpg|jpeg|png|webp)$/i.test(f.name);
+      });
+      if (files.length === 0) { showEmpty(); return; }
+      renderGrid(files);
+    });
 }
 
 function renderGrid(files) {
   var grid = document.getElementById('bg-grid');
   grid.innerHTML = '';
-  files.forEach(function(file) {
+  files.forEach(function(file, idx) {
     var url = BASE_URL + encodeURIComponent(file.name);
-    var label = file.name.replace(/[-_]/g,' ').replace(/\.[^.]+$/,'').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    var label = 'Background ' + (idx + 1);
 
     var card = document.createElement('div');
     card.className = 'bg-card';
@@ -253,19 +248,39 @@ function renderGrid(files) {
     // Body
     var body = document.createElement('div');
     body.className = 'bg-body';
-    var name = document.createElement('div');
-    name.className = 'bg-name';
-    name.textContent = label;
-    body.appendChild(name);
+    var nameEl = document.createElement('div');
+    nameEl.className = 'bg-name';
+    nameEl.textContent = label;
+    body.appendChild(nameEl);
 
-    // Download button
-    var dlBtn = document.createElement('a');
+    // Action buttons row
+    var btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:6px;';
+
+    var viewBtn = document.createElement('button');
+    viewBtn.className = 'dl-btn';
+    viewBtn.style.cssText = 'background:#fff;color:#E91E63;border:1.5px solid #E91E63;flex:0 0 auto;width:auto;padding:8px 14px;';
+    viewBtn.innerHTML = '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> View';
+    viewBtn.onclick = (function(u, l){ return function(){ openLightbox(u, l); }; })(url, label);
+    btnRow.appendChild(viewBtn);
+
+    var dlBtn = document.createElement('button');
     dlBtn.className = 'dl-btn';
-    dlBtn.href = url;
-    dlBtn.download = file.name;
+    dlBtn.style.cssText = 'flex:1;';
     dlBtn.innerHTML = '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg> Download';
-    dlBtn.onclick = function(){ showToast('Downloading...'); };
-    body.appendChild(dlBtn);
+    dlBtn.onclick = (function(u, l){ return function(){
+      showToast('Preparing download...');
+      fetch(u).then(function(res){ return res.blob(); }).then(function(blob){
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = l.replace(/\s+/g,'-').toLowerCase() + '.jpg';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+        showToast('Downloaded!');
+      }).catch(function(){ window.open(u,'_blank'); });
+    }; })(url, label);
+    btnRow.appendChild(dlBtn);
+    body.appendChild(btnRow);
     card.appendChild(body);
     grid.appendChild(card);
   });
