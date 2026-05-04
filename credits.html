@@ -261,7 +261,7 @@ function loadHistory(userId) {
   sb.from('photoshoots')
     .select('*')
     .eq('user_id', userId)
-    .order('created_at', { ascending: true }) // oldest first for numbering
+    .order('created_at', { ascending: false }) // newest first for display
     .then(function(r) {
       if (r.error) { console.error('History error:', r.error.message); return; }
       var data = r.data || [];
@@ -291,7 +291,10 @@ function loadHistory(userId) {
 
         var credits;
         if (isVideo) {
-          credits = (item.image_count && item.image_count >= 2) ? item.image_count : 2;
+          // image_count stores actual cost: 4 = 10s video, 2 = 5s video
+          // Old records incorrectly saved image_count=1, treat those as 2 (5s fallback)
+          if (item.image_count === 4) credits = 4;
+          else credits = 2;
         } else {
           credits = (item.image_count && item.image_count >= 1) ? item.image_count : 1;
         }
@@ -326,8 +329,7 @@ function loadHistory(userId) {
         };
       });
 
-      // Reverse for display (newest first)
-      allHistory.reverse();
+      // No reverse needed — data already newest-first from DB query
 
       var total = allHistory.reduce(function(s,i){ return s + i.credits; }, 0);
       document.getElementById('total-spent').textContent = total + ' credits spent total';
