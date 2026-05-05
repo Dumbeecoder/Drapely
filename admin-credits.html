@@ -70,6 +70,7 @@
 <div class="header">
   <h1>Drape<span>ly</span> Admin</h1>
   <div class="badge">Credits Manager</div>
+  <button id="signout-btn" onclick="adminSignOut()" style="display:none;padding:6px 16px;background:rgba(233,30,99,0.15);color:#E91E63;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;">Sign out</button>
 </div>
 
 <!-- GATE -->
@@ -133,8 +134,9 @@
     <table class="users-table">
       <thead>
         <tr>
-          <th>User</th>
+          <th>Name / Store</th>
           <th>Email</th>
+          <th>Phone</th>
           <th>Credits</th>
           <th>Joined</th>
           <th></th>
@@ -165,12 +167,21 @@ function checkPass() {
   if (document.getElementById('admin-pass').value === ADMIN_PASS) {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('admin-body').style.display = 'block';
+    document.getElementById('signout-btn').style.display = 'inline-block';
     loadStats();
     loadAllUsers();
   } else {
     showToast('✗ Wrong password');
     document.getElementById('admin-pass').value = '';
   }
+}
+
+function adminSignOut() {
+  document.getElementById('admin-body').style.display = 'none';
+  document.getElementById('gate').style.display = 'block';
+  document.getElementById('signout-btn').style.display = 'none';
+  document.getElementById('admin-pass').value = '';
+  showToast('Signed out');
 }
 
 async function loadStats() {
@@ -213,6 +224,7 @@ async function loadAllUsers() {
       var lname = (meta.last_name || '').trim();
       var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
       var phone = meta.phone || user.phone || '—';
+      var store = meta.store_name || '';
       var bal = creditsMap[user.id] || 0;
       var balClass = bal >= 20 ? 'bal-high' : bal >= 5 ? 'bal-mid' : 'bal-low';
       var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
@@ -222,8 +234,9 @@ async function loadAllUsers() {
       btn.className = 'edit-btn'; btn.textContent = '+ Credits';
       btn.onclick = (function(id,em,nm,b){ return function(){ selectUserById(id,em,nm,b); }; })(user.id, user.email||'', name, bal);
       tr.innerHTML =
-        '<td><div style="font-size:13px;font-weight:500;">' + name + '</div><div style="font-size:10px;color:#888;">' + phone + '</div></td>' +
+        '<td><div style="font-size:13px;font-weight:500;">' + name + '</div>' + (store ? '<div style="font-size:10px;color:#888;">' + store + '</div>' : '') + '</td>' +
         '<td style="font-size:12px;color:#555;">' + (user.email||'—') + '</td>' +
+        '<td style="font-size:12px;color:#555;">' + phone + '</td>' +
         '<td><span class="bal-badge ' + balClass + '">' + bal + '</span><span style="font-size:10px;color:#999;margin-left:4px;">' + photoCount + ' photos</span></td>' +
         '<td style="font-size:12px;color:#555;">' + joined + '</td><td></td>';
       tr.querySelector('td:last-child').appendChild(btn);
@@ -270,6 +283,7 @@ async function searchUser() {
   var meta = user.user_metadata || {};
   var fname = (meta.first_name || '').trim();
   var lname = (meta.last_name || '').trim();
+  var email = user.email || query;
   var displayName = (fname + ' ' + lname).trim() || email.split('@')[0];
   var initials = displayName.slice(0, 2).toUpperCase();
   var phone = meta.phone || '—';
