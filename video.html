@@ -229,9 +229,7 @@
           </div>
           <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
             <button onclick="downloadVideo()" style="width:100%;padding:12px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Save / Download Video</button>
-            <div id="v-ios-hint" style="display:none;margin-top:10px;background:#fff8f0;border:1px solid rgba(233,30,99,0.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#555;line-height:1.6;text-align:center;">
-              On iPhone: tap <strong>⬆ Share</strong> on the video, then <strong>Save to Photos</strong>
-            </div>
+
           </div>
         </div>
       </div>
@@ -417,24 +415,26 @@ function downloadVideo() {
 function doDownload(url) {
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (isIOS) {
-    // iOS can't auto-download — show the video and guide user to save it
-    var hint = document.getElementById('v-ios-hint');
-    if (hint) hint.style.display = 'block';
-    // Scroll video into view so user can use the share button
-    var resultEl = document.getElementById('v-result');
-    if (resultEl) resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    showToast('Tap ⬆ Share on the video → Save to Photos');
+    // iOS Safari: open directly → user taps Share → Save to Photos
+    window.open(url, '_blank');
     return;
   }
-  // Android/desktop: direct download works fine
+  // Android/desktop: blob download
   showToast('Downloading...');
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'drapely-video-' + Date.now() + '.mp4';
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  fetch(url)
+    .then(function(r){ return r.blob(); })
+    .then(function(blob){
+      var blobUrl = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'drapely-video-' + Date.now() + '.mp4';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 3000);
+    })
+    .catch(function(){ window.open(url, '_blank'); });
 }
 
 function showBuyCredits() {
