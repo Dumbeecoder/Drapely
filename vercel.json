@@ -11,6 +11,9 @@
     },
     "api/watermark.js": {
       "maxDuration": 10
+    },
+    "api/generate-sync.js": {
+      "maxDuration": 120
     }
   }
 }
