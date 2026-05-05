@@ -285,8 +285,20 @@ function renderVideos(videos) {
     var dlBtn = document.createElement('button'); dlBtn.className = 'action-btn primary'; dlBtn.textContent = '↓ Download';
     dlBtn.onclick = (function(u, n){ return function() {
       if (isIOS) {
-        // iOS: open directly, user taps Share → Save to Photos/Files
-        window.open(u, '_blank');
+        // iOS: use Web Share API to show native share sheet with Save to Photos
+        if (navigator.share) {
+          fetch(u).then(function(r){ return r.blob(); }).then(function(blob){
+            var file = new File([blob], 'drapely-video-' + n + '.mp4', { type: 'video/mp4' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              navigator.share({ files: [file], title: 'Drapely AI Video' })
+                .catch(function(e){ console.log('Share cancelled:', e); });
+            } else {
+              window.open(u, '_blank');
+            }
+          }).catch(function(){ window.open(u, '_blank'); });
+        } else {
+          window.open(u, '_blank');
+        }
         return;
       }
       showToast('Downloading...');
