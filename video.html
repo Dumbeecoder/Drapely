@@ -545,38 +545,58 @@ async function startVideoGenerate() {
       });
     }
 
-    var response = await fetch('/api/video', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt })
-    });
-    var data = await response.json();
-    if (data.error) {
-      clearInterval(vInterval);
-      if (progressEl) progressEl.style.display = 'none';
-      showToast('Error: ' + String(data.error).substring(0, 80));
-      return;
+    var payload = JSON.stringify({ image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt });
+    var videoUrl = null;
+
+    // Try server-side sync first (fixes Android screen timeout)
+    try {
+      var syncRes = await fetch('/api/video-sync', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+      });
+      var syncData = await syncRes.json();
+      if (syncData.video_url) {
+        videoUrl = syncData.video_url;
+      } else if (syncData.error) {
+        console.log('video-sync error, falling back:', syncData.error);
+      }
+    } catch(e) {
+      console.log('video-sync failed, falling back:', e.message);
     }
 
-    var predId = data.prediction_id;
-    var pollResult = null;
-    var attempts = 0;
-    while (attempts < 60) {
-      await new Promise(function(r){ setTimeout(r, 5000); });
-      try {
-        var pollRes = await fetch('/api/poll?id=' + predId);
-        pollResult = await pollRes.json();
-        if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
-        if (pollResult.status === 'succeeded') break;
-        if (pollResult.status === 'failed') {
-          clearInterval(vInterval);
-          if (progressEl) progressEl.style.display = 'none';
-          showToast('Video failed. Try again.');
-          return;
-        }
-      } catch(e) {
-        console.log('Poll retry:', e.message);
+    // Fallback: old client-side polling
+    if (!videoUrl) {
+      var response = await fetch('/api/video', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+      });
+      var data = await response.json();
+      if (data.error) {
+        clearInterval(vInterval);
+        if (progressEl) progressEl.style.display = 'none';
+        showToast('Error: ' + String(data.error).substring(0, 80));
+        return;
       }
-      attempts++;
+      var predId = data.prediction_id;
+      var pollResult = null;
+      var attempts = 0;
+      while (attempts < 60) {
+        await new Promise(function(r){ setTimeout(r, 5000); });
+        try {
+          var pollRes = await fetch('/api/poll?id=' + predId);
+          pollResult = await pollRes.json();
+          if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
+          if (pollResult.status === 'succeeded') break;
+          if (pollResult.status === 'failed') {
+            clearInterval(vInterval);
+            if (progressEl) progressEl.style.display = 'none';
+            showToast('Video failed. Try again.');
+            return;
+          }
+        } catch(e) { console.log('Poll retry:', e.message); }
+        attempts++;
+      }
+      videoUrl = pollResult && pollResult.output
+        ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output)
+        : null;
     }
 
     clearInterval(vInterval);
@@ -585,9 +605,6 @@ async function startVideoGenerate() {
 
     setTimeout(function() {
       if (progressEl) progressEl.style.display = 'none';
-      var videoUrl = pollResult && pollResult.output
-        ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output)
-        : null;
 
       if (videoUrl) {
         currentVideoUrl = videoUrl;
