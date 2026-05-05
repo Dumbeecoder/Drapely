@@ -1081,45 +1081,54 @@ async function startGenerate() {
 
     for (var i = 0; i < count; i++) {
       progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
-      var response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          garment_img: compressed,
-          model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
-          custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
-          custom_bg: window._customBgDataUrl || null,
-          prompt: buildPhotoPrompt(),
-          garment_type: selectedGarmentType
-        })
+      // Try generate-sync first (server-side polling, works on Android)
+      // Falls back to generate + client poll if sync times out
+      var payload = JSON.stringify({
+        garment_img: compressed,
+        model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
+        custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
+        custom_bg: window._customBgDataUrl || null,
+        prompt: buildPhotoPrompt(),
+        garment_type: selectedGarmentType
       });
-      var data = await response.json();
-      if (data.error) {
-        clearInterval(interval);
-        progressWrap.classList.remove('visible');
-        activeStepEl.style.display = 'block';
-        showToast('Error: ' + String(data.error).substring(0, 80));
-        return;
+      var data = null;
+      var usedSync = false;
+      try {
+        var syncRes = await fetch('/api/generate-sync', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+        });
+        data = await syncRes.json();
+        if (data.image_url) { results.push(data.image_url); usedSync = true; }
+      } catch(syncErr) {
+        console.log('generate-sync failed, falling back:', syncErr.message);
       }
-
-      // Poll for result via our api/poll endpoint
-      var predId = data.prediction_id;
-      if (!predId) {
-        clearInterval(interval);
-        progressWrap.classList.remove('visible');
-        activeStepEl.style.display = 'block';
-        showToast('No prediction ID returned');
-        return;
-      }
-
-      var pollResult = null;
-      // Android-safe polling: use visibilitychange to resume immediately on screen wake
-      pollResult = await androidSafePoll(predId, interval, progressWrap, activeStepEl);
-      if (!pollResult) return; // error already handled inside
-
-      if (pollResult && pollResult.output && pollResult.output.length > 0) {
-        var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
-        results = results.concat(imgs);
+      if (!usedSync) {
+        // Fallback: old generate + client-side poll
+        var response = await fetch('/api/generate', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+        });
+        data = await response.json();
+        if (data.error) {
+          clearInterval(interval);
+          progressWrap.classList.remove('visible');
+          activeStepEl.style.display = 'block';
+          showToast('Error: ' + String(data.error).substring(0, 80));
+          return;
+        }
+        var predId = data.prediction_id;
+        if (!predId) {
+          clearInterval(interval);
+          progressWrap.classList.remove('visible');
+          activeStepEl.style.display = 'block';
+          showToast('No prediction ID returned');
+          return;
+        }
+        var pollResult = await androidSafePoll(predId, interval, progressWrap, activeStepEl);
+        if (!pollResult) return;
+        if (pollResult.output) {
+          var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
+          results = results.concat(imgs);
+        }
       }
     }
 
