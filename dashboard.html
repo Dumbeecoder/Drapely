@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -19,191 +20,189 @@
     .user-av,.user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
     .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --pink:#E91E63;
-      --pink-light:#ff6b9d;
-      --pink-pale:#fff0f5;
-      --deep:#000000;
-      --muted:#555555;
-      --text:#000000;
-      --border:rgba(233,30,99,0.2);
-      --border-mid:rgba(233,30,99,0.4);
-      --surface:#ffffff;
-      --white:#ffffff;
-    }
-    body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
-    .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff}
-    .nav-icon{width:16px;height:16px;flex-shrink:0}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2)}
-    .user-plan{font-size:10px;color:#E91E63}
-    .main{margin-left:220px;min-height:100vhoverflow-x:hidden;}
-    .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
-    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
-    .topbar-sub{font-size:12px;color:#555;margin-left:10px}
-    .content{padding:2rem}
-    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem}
-    .stat-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1.25rem 1.5rem}
-    .stat-card.highlight{border-color:#E91E63}
-    .stat-label{font-size:11px;color:#555;letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
-    .stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#000;line-height:1;margin-bottom:4px}
-    .stat-note{font-size:11px;color:#E91E63}
-    .studio-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
-    .studio-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
-    .studio-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
-    .studio-header h2{font-size:15px;font-weight:500;color:#000}
-    .studio-header p{font-size:12px;color:#555;margin-top:2px}
-    .step-pills{display:flex;gap:6px}
-    .step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:#f5f5f5;border:1px solid #ddd;color:#555;transition:all 0.2s}
-    .step-pill.active{background:#E91E63;border-color:#E91E63;color:#fff}
-    .step-pill.done{background:#dcfce7;border-color:#86efac;color:#16a34a}
-    .studio-body{padding:1.5rem}
-    .step-panel{display:none;padding:1rem 1.25rem}
-    .step-panel.active{display:block}
-    .step-label{font-size:10px;font-weight:600;color:#999;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
-    .upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:1.75rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
-    .upload-zone:hover{border-color:#E91E63;background:#ffe0ec}
-    .upload-zone.has-file{padding:0;border-style:solid;border-color:#E91E63}
-    .upload-icon-wrap{width:40px;height:40px;background:rgba(233,30,99,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem}
-    .upload-icon-wrap svg{width:18px;height:18px;color:#E91E63}
-    .upload-title{font-size:13px;font-weight:500;color:#000;margin-bottom:4px}
-    .upload-hint{font-size:12px;color:#555}
-    .upload-preview{width:100%;max-height:300px;object-fit:contain;display:none;border-radius:10px;padding:1rem;background:#fff0f5}
-    .clear-file-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center}
-    .models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
-    .model-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
-    .model-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#f9f9f9;position:relative}
-    .model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
-    .model-card.selected{border-color:#E91E63;border-width:2px}
-    .model-avatar{width:100%;aspect-ratio:2/3;position:relative;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
-    .model-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
-    .model-check{position:absolute;top:4px;right:4px;width:16px;height:16px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:9px;z-index:2}
-    .model-card.selected .model-check{display:flex}
-    .model-info{padding:7px 8px 8px;border-top:1px solid rgba(233,30,99,0.12)}
-    .model-name{font-size:11px;font-weight:500;color:#000}
-    .model-spec{font-size:10px;color:#888}
-    .pose-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
-    .pose-tag{padding:6px 14px;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:12px;color:#555;cursor:pointer;transition:all 0.15s;background:#fff}
-    .pose-tag:hover,.pose-tag.selected{background:#E91E63;border-color:#E91E63;color:#fff}
-    .bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
-    .bg-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.15s}
-    .bg-card:hover{border-color:#E91E63;transform:translateY(-1px)}
-    .bg-card.selected{border-color:#E91E63;border-width:2px}
-    .bg-swatch{height:56px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
-    .bg-label{padding:5px 6px;font-size:10px;color:#555;background:#fff;border-top:1px solid rgba(233,30,99,0.15)}
-    .enhance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
-    .enhance-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;transition:all 0.15s;background:#fff;font-size:12px;color:#000}
-    .enhance-item:hover,.enhance-item.on{border-color:#E91E63;background:#fff0f5}
-    .enhance-item input{accent-color:#E91E63;width:13px;height:13px}
-    .var-row{display:flex;gap:8px;margin-bottom:1.5rem}
-    .var-btn{flex:1;padding:8px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
-    .var-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
-    .generate-btn{width:100%;padding:14px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
-    .generate-btn:hover{background:#c2185b}
-    .step-nav{display:flex;justify-content:space-between;margin-top:1rem;gap:10px}
-    .btn-back{padding:10px 20px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:#555;cursor:pointer}
-    .btn-back:hover{border-color:#E91E63}
-    .btn-next{padding:10px 24px;border:none;border-radius:8px;background:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#fff;cursor:pointer}
-    .btn-next:hover{background:#222}
-    .progress-wrap{display:none;padding:2rem 1.5rem;text-align:center}
-    .progress-wrap.visible{display:block}
-    .progress-label-text{font-size:13px;color:#555;margin-bottom:12px}
-    .progress-track{height:5px;background:rgba(233,30,99,0.15);border-radius:3px;overflow:hidden;margin-bottom:8px}
-    .progress-fill{height:100%;background:#E91E63;border-radius:3px;width:0%;transition:width 0.5s ease}
-    .progress-pct{font-size:12px;color:#E91E63}
-    .results-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
-    .results-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
-    .results-header h2{font-size:15px;font-weight:500;color:#000}
-    .results-body{padding:1.5rem}
-    .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
-    .result-item{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden}
-    .result-actions{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(233,30,99,0.15)}
-    .result-btn{flex:1;padding:6px 0;border:1px solid rgba(233,30,99,0.3);border-radius:6px;background:#fff;font-size:11px;color:#555;cursor:pointer;font-family:'DM Sans',sans-serif}
-    .result-btn:hover,.result-btn.primary{background:#E91E63;color:#fff;border-color:#E91E63}
-    .new-shoot-btn{width:100%;padding:11px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:0.5rem}
-    .gallery-panel{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-top:20px}
-    .gallery-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
-    .gallery-header h2{font-size:15px;font-weight:500;color:#000}
-    .gallery-empty{padding:3rem;text-align:center;color:#555;font-size:14px}
-    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:1.5rem}
-    .gallery-item{border-radius:10px;overflow:hidden;border:1px solid rgba(233,30,99,0.15)}
-    .gallery-item img{width:100%;height:200px;object-fit:cover;display:block}
-    .gallery-item-label{padding:6px 10px;font-size:11px;color:#555}
-    /* CREDITS MODAL */
-    #credits-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
-    #credits-modal-inner{background:#fff;border-radius:14px;padding:1.5rem;max-width:320px;width:100%;text-align:center;position:relative;max-height:90vh;overflow-y:auto}
-    .studio-tab{padding:14px 24px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
-    .studio-tab.active{color:#E91E63;border-bottom-color:#E91E63}
-    .studio-tab:hover{color:#E91E63}
-    .tab-content{display:none}
-    .tab-content.active{display:block}
-    .video-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-bottom:20px}
-    .video-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
-    .video-header h2{font-size:15px;font-weight:500;color:#000}
-    .video-header p{font-size:12px;color:#555;margin-top:2px}
-    .video-body{padding:1.5rem}
-    .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .prompt-preset{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
-    .prompt-preset:hover{border-color:#E91E63;background:#fff0f5;}
-    .prompt-preset.selected{border-color:#E91E63;border-width:2px;background:#fff0f5;}
-    .prompt-input{width:100%;padding:12px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;resize:vertical;min-height:80px}
-    .prompt-input:focus{border-color:#E91E63}
-    .duration-row{display:flex;gap:8px;margin-bottom:1rem}
-    .dur-btn{flex:1;padding:8px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
-    .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
-    .video-generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:1rem}
-    .video-generate-btn:hover{background:linear-gradient(135deg,#c2185b,#ad1457)}
-    .video-result{background:#000;border-radius:10px;overflow:hidden;height:230px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;}
-    .video-result video{width:100%;height:230px;object-fit:cover;display:block;}
-    .video-progress{display:none;text-align:center;padding:2rem}
-    .video-progress.visible{display:block}
-    .credit-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;color:#E91E63;font-weight:500}
-    /* MOBILE NAV */
-    
-    .burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
-    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158;}
-    .mobile-overlay.open{display:block;}
-    .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0;}
-    .mobile-nav.open{left:0;}
-    .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
-    .mobile-nav-brand span{color:#E91E63;}
-    .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
-    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
-    .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
-    .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2);}
-    .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);}
-    .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
-    .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
-    .mobile-user-plan{font-size:10px;color:#E91E63;}
-    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
-    .toast.show{transform:translateX(-50%) translateY(0)}
-    
-    @media(max-width:900px){.studio-grid{grid-template-columns:1fr !important;}.results-panel{display:none;}}
-    @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.bg-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
-      .garment-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 8px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff}
-    .garment-card:hover{border-color:#E91E63;background:#fff0f5}
-    .garment-card.selected{border:2px solid #E91E63;background:#fff0f5}
-    .pose-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:20px;transition:all 0.15s;}
-    .pose-card.selected,.pose-card:hover{border-color:#E91E63;background:#fff0f5;}
-    .progress-bar-outer{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:8px 0;}
-    .progress-bar-inner{height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;}
-    .results-panel{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;}
-    .results-header{padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.1);display:flex;align-items:center;justify-content:space-between;}
-    .results-title{font-size:15px;font-weight:500;}
-    .results-sub{font-size:12px;color:#555;}
-    .duration-row{display:flex;gap:8px;margin-bottom:1rem;}
-    .dur-btn{flex:1;padding:10px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
-    .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff;}
-    .video-progress{display:none;margin-top:1rem;}
-    .video-progress.visible{display:block;}
+```
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink:#E91E63;
+  --pink-light:#ff6b9d;
+  --pink-pale:#fff0f5;
+  --deep:#000000;
+  --muted:#555555;
+  --text:#000000;
+  --border:rgba(233,30,99,0.2);
+  --border-mid:rgba(233,30,99,0.4);
+  --surface:#ffffff;
+  --white:#ffffff;
+}
+body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
+.nav-item:hover{background:rgba(233,30,99,0.1);color:#fff}
+.nav-icon{width:16px;height:16px;flex-shrink:0}
+.user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2)}
+.user-plan{font-size:10px;color:#E91E63}
+.main{margin-left:220px;min-height:100vhoverflow-x:hidden;}
+.topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
+.topbar-sub{font-size:12px;color:#555;margin-left:10px}
+.content{padding:2rem}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem}
+.stat-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1.25rem 1.5rem}
+.stat-card.highlight{border-color:#E91E63}
+.stat-label{font-size:11px;color:#555;letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#000;line-height:1;margin-bottom:4px}
+.stat-note{font-size:11px;color:#E91E63}
+.studio-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+.studio-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
+.studio-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+.studio-header h2{font-size:15px;font-weight:500;color:#000}
+.studio-header p{font-size:12px;color:#555;margin-top:2px}
+.step-pills{display:flex;gap:6px}
+.step-pill{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:#f5f5f5;border:1px solid #ddd;color:#555;transition:all 0.2s}
+.step-pill.active{background:#E91E63;border-color:#E91E63;color:#fff}
+.step-pill.done{background:#dcfce7;border-color:#86efac;color:#16a34a}
+.studio-body{padding:1.5rem}
+.step-panel{display:none;padding:1rem 1.25rem}
+.step-panel.active{display:block}
+.step-label{font-size:10px;font-weight:600;color:#999;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
+.upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:1.75rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.upload-zone:hover{border-color:#E91E63;background:#ffe0ec}
+.upload-zone.has-file{padding:0;border-style:solid;border-color:#E91E63}
+.upload-icon-wrap{width:40px;height:40px;background:rgba(233,30,99,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem}
+.upload-icon-wrap svg{width:18px;height:18px;color:#E91E63}
+.upload-title{font-size:13px;font-weight:500;color:#000;margin-bottom:4px}
+.upload-hint{font-size:12px;color:#555}
+.upload-preview{width:100%;max-height:300px;object-fit:contain;display:none;border-radius:10px;padding:1rem;background:#fff0f5}
+.clear-file-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.model-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.model-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;background:#f9f9f9;position:relative}
+.model-card:hover{border-color:#E91E63;transform:translateY(-1px)}
+.model-card.selected{border-color:#E91E63;border-width:2px}
+.model-avatar{width:100%;aspect-ratio:2/3;position:relative;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
+.model-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.model-check{position:absolute;top:4px;right:4px;width:16px;height:16px;background:#E91E63;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:9px;z-index:2}
+.model-card.selected .model-check{display:flex}
+.model-info{padding:7px 8px 8px;border-top:1px solid rgba(233,30,99,0.12)}
+.model-name{font-size:11px;font-weight:500;color:#000}
+.model-spec{font-size:10px;color:#888}
+.pose-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
+.pose-tag{padding:6px 14px;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:12px;color:#555;cursor:pointer;transition:all 0.15s;background:#fff}
+.pose-tag:hover,.pose-tag.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+.bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.bg-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.15s}
+.bg-card:hover{border-color:#E91E63;transform:translateY(-1px)}
+.bg-card.selected{border-color:#E91E63;border-width:2px}
+.bg-swatch{height:56px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.bg-label{padding:5px 6px;font-size:10px;color:#555;background:#fff;border-top:1px solid rgba(233,30,99,0.15)}
+.enhance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
+.enhance-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;transition:all 0.15s;background:#fff;font-size:12px;color:#000}
+.enhance-item:hover,.enhance-item.on{border-color:#E91E63;background:#fff0f5}
+.enhance-item input{accent-color:#E91E63;width:13px;height:13px}
+.var-row{display:flex;gap:8px;margin-bottom:1.5rem}
+.var-btn{flex:1;padding:8px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
+.var-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+.generate-btn{width:100%;padding:14px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.generate-btn:hover{background:#c2185b}
+.step-nav{display:flex;justify-content:space-between;margin-top:1rem;gap:10px}
+.btn-back{padding:10px 20px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:#555;cursor:pointer}
+.btn-back:hover{border-color:#E91E63}
+.btn-next{padding:10px 24px;border:none;border-radius:8px;background:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#fff;cursor:pointer}
+.btn-next:hover{background:#222}
+.progress-wrap{display:none;padding:2rem 1.5rem;text-align:center}
+.progress-wrap.visible{display:block}
+.progress-label-text{font-size:13px;color:#555;margin-bottom:12px}
+.progress-track{height:5px;background:rgba(233,30,99,0.15);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:#E91E63;border-radius:3px;width:0%;transition:width 0.5s ease}
+.progress-pct{font-size:12px;color:#E91E63}
+.results-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
+.results-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+.results-header h2{font-size:15px;font-weight:500;color:#000}
+.results-body{padding:1.5rem}
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.result-item{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden}
+.result-actions{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(233,30,99,0.15)}
+.result-btn{flex:1;padding:6px 0;border:1px solid rgba(233,30,99,0.3);border-radius:6px;background:#fff;font-size:11px;color:#555;cursor:pointer;font-family:'DM Sans',sans-serif}
+.result-btn:hover,.result-btn.primary{background:#E91E63;color:#fff;border-color:#E91E63}
+.new-shoot-btn{width:100%;padding:11px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:0.5rem}
+.gallery-panel{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-top:20px}
+.gallery-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+.gallery-header h2{font-size:15px;font-weight:500;color:#000}
+.gallery-empty{padding:3rem;text-align:center;color:#555;font-size:14px}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:1.5rem}
+.gallery-item{border-radius:10px;overflow:hidden;border:1px solid rgba(233,30,99,0.15)}
+.gallery-item img{width:100%;height:200px;object-fit:cover;display:block}
+.gallery-item-label{padding:6px 10px;font-size:11px;color:#555}
+/* CREDITS MODAL */
+#credits-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
+#credits-modal-inner{background:#fff;border-radius:14px;padding:1.5rem;max-width:320px;width:100%;text-align:center;position:relative;max-height:90vh;overflow-y:auto}
+.studio-tab{padding:14px 24px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+.studio-tab.active{color:#E91E63;border-bottom-color:#E91E63}
+.studio-tab:hover{color:#E91E63}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.video-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;margin-bottom:20px}
+.video-header{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(233,30,99,0.15);display:flex;align-items:center;justify-content:space-between}
+.video-header h2{font-size:15px;font-weight:500;color:#000}
+.video-header p{font-size:12px;color:#555;margin-top:2px}
+.video-body{padding:1.5rem}
+.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.prompt-preset{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;}
+.prompt-preset:hover{border-color:#E91E63;background:#fff0f5;}
+.prompt-preset.selected{border-color:#E91E63;border-width:2px;background:#fff0f5;}
+.prompt-input{width:100%;padding:12px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;resize:vertical;min-height:80px}
+.prompt-input:focus{border-color:#E91E63}
+.duration-row{display:flex;gap:8px;margin-bottom:1rem}
+.dur-btn{flex:1;padding:8px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#555;cursor:pointer;text-align:center;transition:all 0.15s}
+.dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+.video-generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:1rem}
+.video-generate-btn:hover{background:linear-gradient(135deg,#c2185b,#ad1457)}
+.video-result{background:#000;border-radius:10px;overflow:hidden;height:230px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;}
+.video-result video{width:100%;height:230px;object-fit:cover;display:block;}
+.video-progress{display:none;text-align:center;padding:2rem}
+.video-progress.visible{display:block}
+.credit-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;color:#E91E63;font-weight:500}
+/* MOBILE NAV */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
-    .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
-    .mobile-logo span{color:#E91E63;}
-    .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
-    .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-    @media(max-width:900px){.mobile-header{display:flex !important;}.burger{display:flex !important;}.main{margin-left:0 !important;padding-top:64px !important;}}
-  </style>
+@media(max-width:900px){.studio-grid{grid-template-columns:1fr !important;}.results-panel{display:none;}.sidebar{display:none !important;}.main{margin-left:0 !important;padding-top:64px !important;}.mobile-header{display:flex !important;}.burger{display:flex !important;}}
+@media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
+.garment-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 8px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff}
+.garment-card:hover{border-color:#E91E63;background:#fff0f5}
+.garment-card.selected{border:2px solid #E91E63;background:#fff0f5}
+.pose-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:20px;transition:all 0.15s;}
+.pose-card.selected,.pose-card:hover{border-color:#E91E63;background:#fff0f5;}
+.progress-bar-outer{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:8px 0;}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;}
+.results-panel{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden;}
+.results-header{padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.1);display:flex;align-items:center;justify-content:space-between;}
+.results-title{font-size:15px;font-weight:500;}
+.results-sub{font-size:12px;color:#555;}
+.dur-btn{flex:1;padding:10px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
+.dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff;}
+.video-progress{display:none;margin-top:1rem;}
+.video-progress.visible{display:block;}
+
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158}
+.mobile-overlay.open{display:block}
+.mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0}
+.mobile-nav.open{left:0}
+.mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block}
+.mobile-nav-brand span{color:#E91E63}
+.mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px}
+.mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer}
+.mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff}
+.mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2)}
+.mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08)}
+.mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
+.mobile-user-name{font-size:12px;font-weight:500;color:#fff}
+.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
+.mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
+.mobile-logo span{color:#E91E63;}
+.burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
+.burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+```
+
+</style>
 </head>
 <body>
 <!-- BURGER -->
@@ -215,7 +214,7 @@
 <div class="mobile-nav" id="mobile-nav">
   <a href="#" onclick="location.reload();return false;" class="mobile-nav-brand">Drape<span>ly</span></a>
   <div class="mobile-nav-items">
-    <a class="mobile-nav-item active" href="dashboard.html" onclick="closeMobileNav()">✨ New Photoshoot</a>
+    <a class="mobile-nav-item active" href="dashboard.html" onclick="closeMobileNav();return true;">✨ New Photoshoot</a>
     <a class="mobile-nav-item" href="video.html" onclick="closeMobileNav()">🎬 New Video</a>
     <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
     <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
@@ -258,258 +257,260 @@
     <div><h1 class="topbar-title">My Studio</h1><p class="topbar-sub" id="topbar-sub">Welcome back!</p></div>
   </div>
 
+```
+<div class="content">
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
+  <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
+  <div class="stat-card"><div class="stat-label">Videos generated</div><div class="stat-val" id="stat-videos">0</div><div class="stat-note">Generated in Video Studio</div></div>
+  <div class="stat-card" style="border-color:rgba(233,30,99,0.4);">
+    <div class="stat-label">Your credits</div>
+    <div class="stat-val" id="stat-credits">—</div>
+    <div class="stat-note"><a href="credits.html" style="color:#E91E63;text-decoration:none;">+ Add credits</a></div>
+  </div>
+</div>
 
-    <div class="content">
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Photoshoots done</div><div class="stat-val" id="stat-shoots">0</div><div class="stat-note">Start your first one below</div></div>
-      <div class="stat-card"><div class="stat-label">Images generated</div><div class="stat-val" id="stat-images">0</div><div class="stat-note">HD downloads available</div></div>
-      <div class="stat-card"><div class="stat-label">Videos generated</div><div class="stat-val" id="stat-videos">0</div><div class="stat-note">Generated in Video Studio</div></div>
-      <div class="stat-card" style="border-color:rgba(233,30,99,0.4);">
-        <div class="stat-label">Your credits</div>
-        <div class="stat-val" id="stat-credits">—</div>
-        <div class="stat-note"><a href="credits.html" style="color:#E91E63;text-decoration:none;">+ Add credits</a></div>
+<!-- STUDIO GRID -->
+<div class="studio-grid">
+
+  <!-- LEFT: STEPS -->
+  <div class="studio-card">
+    <div class="studio-header">
+      <div><h2>New AI Photoshoot</h2><p>Complete all 4 steps to generate</p></div>
+      <div class="step-pills">
+        <div class="step-pill active" id="pill-0">1</div>
+        <div class="step-pill" id="pill-1">2</div>
+        <div class="step-pill" id="pill-2">3</div>
+        <div class="step-pill" id="pill-3">4</div>
       </div>
     </div>
 
-    <!-- STUDIO GRID -->
-    <div class="studio-grid">
-
-      <!-- LEFT: STEPS -->
-      <div class="studio-card">
-        <div class="studio-header">
-          <div><h2>New AI Photoshoot</h2><p>Complete all 4 steps to generate</p></div>
-          <div class="step-pills">
-            <div class="step-pill active" id="pill-0">1</div>
-            <div class="step-pill" id="pill-1">2</div>
-            <div class="step-pill" id="pill-2">3</div>
-            <div class="step-pill" id="pill-3">4</div>
+    <!-- STEP 1: UPLOAD -->
+    <div class="step-panel active" id="step-0">
+      <div class="step-label">STEP 1 — UPLOAD YOUR SUIT</div>
+      <div class="upload-zone" id="suit-upload-zone" onclick="document.getElementById('suit-input').click()">
+        <div id="upload-empty">
+          <div class="upload-icon-wrap">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
           </div>
+          <div class="upload-title">Upload your suit photo</div>
+          <div class="upload-hint">JPG or PNG · Clear photo works best</div>
         </div>
+        <img id="suit-preview" class="upload-preview" />
+        <button class="clear-file-btn" id="suit-clear-btn" onclick="clearSuit(event)">✕</button>
+      </div>
+      <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
 
-        <!-- STEP 1: UPLOAD -->
-        <div class="step-panel active" id="step-0">
-          <div class="step-label">STEP 1 — UPLOAD YOUR SUIT</div>
-          <div class="upload-zone" id="suit-upload-zone" onclick="document.getElementById('suit-input').click()">
-            <div id="upload-empty">
-              <div class="upload-icon-wrap">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
-              </div>
-              <div class="upload-title">Upload your suit photo</div>
-              <div class="upload-hint">JPG or PNG · Clear photo works best</div>
-            </div>
-            <img id="suit-preview" class="upload-preview" />
-            <button class="clear-file-btn" id="suit-clear-btn" onclick="clearSuit(event)">✕</button>
-          </div>
-          <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
-
-          <div style="font-size:10px;color:#999;margin-bottom:6px;margin-top:0.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;">GARMENT TYPE</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0.75rem;">
-            <div class="garment-card selected" id="garment-suit" onclick="selectGarment('suit',this)">
-              <div style="font-size:28px;margin-bottom:6px;">👗</div>
-              <div style="font-weight:500;font-size:13px;">Salwar Suit</div>
-              <div style="font-size:11px;color:#555;margin-top:2px;">Kurta, Anarkali, Palazzo</div>
-            </div>
-            <div class="garment-card" id="garment-saree" onclick="selectGarment('saree',this)">
-              <div style="font-size:28px;margin-bottom:6px;">🥻</div>
-              <div style="font-weight:500;font-size:13px;">Saree</div>
-              <div style="font-size:11px;color:#555;margin-top:2px;">Silk, Chiffon, Cotton</div>
-            </div>
-          </div>
-
-          <div style="font-size:12px;color:#555;margin-bottom:5px;font-weight:600;letter-spacing:1px;font-size:10px;text-transform:uppercase;color:#999;">COLLECTION NAME <span style="font-weight:300;color:#aaa;">(optional)</span></div>
-          <input type="text" id="collection-name" class="prompt-input" placeholder="e.g. Festive 2025" style="margin-bottom:0.85rem;min-height:unset;padding:8px 12px;" />
-
-          <div class="step-nav"><div></div><button class="btn-next" onclick="goStep(1)">Choose Model →</button></div>
+      <div style="font-size:10px;color:#999;margin-bottom:6px;margin-top:0.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;">GARMENT TYPE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0.75rem;">
+        <div class="garment-card selected" id="garment-suit" onclick="selectGarment('suit',this)">
+          <div style="font-size:28px;margin-bottom:6px;">👗</div>
+          <div style="font-weight:500;font-size:13px;">Salwar Suit</div>
+          <div style="font-size:11px;color:#555;margin-top:2px;">Kurta, Anarkali, Palazzo</div>
         </div>
-
-        <!-- STEP 2: MODEL -->
-        <div class="step-panel" id="step-1">
-          <div class="step-label">STEP 2 — CHOOSE YOUR MODEL</div>
-          <div class="model-grid">
-            <div class="model-card selected" id="model-0" onclick="selectModel(this,0)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Priya S.</div></div>
-            </div>
-            <div class="model-card" id="model-1" onclick="selectModel(this,1)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Anjali M.</div></div>
-            </div>
-            <div class="model-card" id="model-2" onclick="selectModel(this,2)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_56_44%20AM.png" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Kavya R.</div></div>
-            </div>
-            <div class="model-card" id="model-3" onclick="selectModel(this,3)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Simran K.</div></div>
-            </div>
-            <div class="model-card" id="model-4" onclick="selectModel(this,4)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Meera P.</div></div>
-            </div>
-            <div class="model-card" id="model-5" onclick="selectModel(this,5)">
-              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Naina T.</div></div>
-            </div>
-            <div class="model-card" id="model-99" onclick="selectModel(this,99)">
-              <div class="model-avatar" style="background:#fff0f5;flex-direction:column;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()">
-                <div id="custom-model-empty" style="text-align:center;"><div style="font-size:17px;margin-bottom:2px;">📷</div><div style="font-size:10px;color:#E91E63;font-weight:500;">Upload model</div></div>
-                <img id="custom-model-preview" style="display:none;width:100%;height:100%;object-fit:cover;object-position:top;position:absolute;top:0;left:0;" />
-                <div class="model-check">✓</div>
-              </div>
-              <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
-              <div class="model-info"><div class="model-name">Custom</div></div>
-            </div>
-          </div>
-          <div class="step-nav"><button class="btn-back" onclick="goStep(0)">← Back</button><button class="btn-next" onclick="goStep(2)">Choose Background →</button></div>
-        </div>
-
-        <!-- STEP 3: SCENE & POSE -->
-        <div class="step-panel" id="step-2">
-          <div class="step-label">STEP 3 — CHOOSE SCENE & POSE</div>
-          <div style="font-size:11px;color:#888;margin-bottom:6px;">Pick a background scene for your photo</div>
-          <input type="hidden" id="photo-prompt-val" value="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" data-bg="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" />
-
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:0.75rem;">
-            <div class="prompt-preset selected" onclick="selectScene(this,'elegant Indian woman in a sunlit marble corridor with arched doorways, natural window light casting soft shadows, editorial fashion photography, shot on 85mm lens, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏛️</div><div style="font-size:10px;font-weight:500;">Marble Corridor</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'outdoor golden hour shoot in a lush green garden with soft bokeh background, warm dappled sunlight, professional fashion editorial, shallow depth of field, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌿</div><div style="font-size:10px;font-weight:500;">Garden Golden Hour</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'rooftop terrace at golden hour with warm sunset hues, city skyline softly blurred in background, editorial fashion shoot, natural light, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌇</div><div style="font-size:10px;font-weight:500;">Rooftop Sunset</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'heritage Indian haveli courtyard with terracotta walls and carved stone jharokhas, warm afternoon light, Vogue India editorial style, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏯</div><div style="font-size:10px;font-weight:500;">Haveli Courtyard</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'blooming flower field with pink and white flowers, soft natural light, fashion magazine editorial, airy dreamy atmosphere, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌸</div><div style="font-size:10px;font-weight:500;">Flower Field</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'luxury hotel lobby with marble floors and chandelier lighting, sophisticated editorial fashion photography, professional studio lighting, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🛎️</div><div style="font-size:10px;font-weight:500;">Luxury Lobby</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'ancient temple steps with intricate stone carvings and warm morning light, traditional Indian backdrop, editorial photography, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🛕</div><div style="font-size:10px;font-weight:500;">Temple Steps</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'minimalist white studio with professional softbox lighting and clean background, high fashion editorial photography, sharp details, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">⬜</div><div style="font-size:10px;font-weight:500;">White Studio</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'Indian palace garden with fountains and manicured hedges at dusk, warm fairy lights, royal editorial fashion photography, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">⛲</div><div style="font-size:10px;font-weight:500;">Palace Garden</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'beachside at golden hour with warm sand and soft waves blurred in background, breezy outdoor fashion editorial, natural light, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏖️</div><div style="font-size:10px;font-weight:500;">Beach Golden Hour</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'moody dramatic dark background with single spotlight, high contrast fashion editorial photography, studio lighting, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🎭</div><div style="font-size:10px;font-weight:500;">Dramatic Studio</div></div>
-            <div class="prompt-preset" onclick="selectScene(this,'traditional Indian wedding venue with marigold garlands and diyas, warm festive lighting, editorial photography, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">💍</div><div style="font-size:10px;font-weight:500;">Wedding Venue</div></div>
-            <div class="prompt-preset" id="custom-text-scene-btn" onclick="selectScene(this,'custom')" style="padding:8px 4px;text-align:center;border-style:dashed;"><div style="font-size:17px;margin-bottom:2px;">✏️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Write prompt</div></div>
-            <div class="prompt-preset" onclick="document.getElementById('bg-upload-input').click()" style="padding:8px 4px;text-align:center;border-style:dashed;cursor:pointer;"><div style="font-size:17px;margin-bottom:2px;">🖼️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Upload background</div></div>
-            <input type="file" id="bg-upload-input" accept="image/*" style="display:none;" onchange="loadCustomBackground(event)" />
-          </div>
-
-          <!-- Custom text prompt box -->
-          <div id="custom-scene-text-wrap" style="display:none;margin-bottom:0.75rem;">
-            <textarea id="custom-scene-text" class="prompt-input" rows="2" placeholder="e.g. Sunlit rooftop in Mumbai with city skyline, golden hour, editorial photography..." style="margin-bottom:4px;font-size:12px;" oninput="updateCustomScenePrompt(this.value)"></textarea>
-            <div style="font-size:10px;color:#999;">Tip: describe the location, lighting and mood for best results</div>
-          </div>
-
-          <div id="custom-bg-preview-wrap" style="display:none;margin-bottom:0.75rem;border-radius:8px;overflow:hidden;border:1.5px solid #E91E63;">
-            <img id="custom-bg-preview-img" style="width:100%;height:80px;object-fit:cover;display:block;" />
-            <div style="padding:4px 8px;font-size:10px;color:#E91E63;font-weight:500;background:#fff0f5;">✓ Custom background uploaded</div>
-          </div>
-
-          <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;font-weight:600;margin-bottom:6px;">POSE</div>
-          <div id="pose-selector" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem;">
-            <div class="prompt-preset selected" onclick="selectPoseCard(this,'standing straight facing forward, full body visible, arms relaxed at sides, confident pose')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🧍 Standing</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'graceful walking pose mid stride, one foot forward, natural arm swing, full outfit visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🚶 Walking</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'elegant 3/4 turn, body angled, looking over shoulder gracefully, full outfit details visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">💃 3/4 Turn</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'hand on hip power stance, confident high fashion editorial pose, full length, weight shifted')" style="padding:7px 14px;border-radius:20px;font-size:12px;">👸 Power Stance</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'sitting gracefully on steps, legs to side, elegant seated fashion pose, full outfit visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🪑 Seated</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'arms crossed confidently over chest, strong editorial stance, full length, direct gaze')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🤞 Crossed Arms</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'leaning shoulder against wall, casual relaxed editorial pose, one knee slightly bent, full length')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🫦 Leaning</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'twirling spinning gracefully, arms slightly raised, dupatta flowing and swirling, joyful movement')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🌀 Twirl</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'profile view side pose, showing silhouette and outfit details')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🚺 Side Profile</div>
-            <div class="prompt-preset" onclick="selectPoseCard(this,'one foot forward confident runway model walk, full outfit visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">👣 Runway</div>
-          </div>
-
-          <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
-        </div>
-
-        <!-- STEP 4: GENERATE -->
-        <div class="step-panel" id="step-3">
-          <div class="step-label">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
-
-          <div style="background:#fff0f5;border:1px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 12px;margin-bottom:0.75rem;display:flex;gap:16px;flex-wrap:wrap;">
-            <div style="font-size:12px;color:#000;">🧣 Suit uploaded</div>
-            <div style="font-size:12px;color:#000;">👩🏽 Model selected</div>
-            <div style="font-size:12px;color:#000;">🎨 Background set</div>
-          </div>
-
-          <!-- AI ENHANCEMENTS -->
-          <div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;">AI ENHANCEMENTS</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:0.7rem;">
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Professional lighting</label>
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Dupatta styling</label>
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Jewellery suggestion</label>
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" style="accent-color:#E91E63;" /> Soft shadow effect</label>
-          </div>
-
-          <!-- NUMBER OF IMAGES -->
-          <div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;">NUMBER OF IMAGES</div>
-          <div style="display:flex;gap:6px;margin-bottom:0.7rem;">
-            <button class="var-btn selected" onclick="selectVars(this)">1 image</button>
-            <button class="var-btn" onclick="selectVars(this)">2 images</button>
-            <button class="var-btn" onclick="selectVars(this)">4 images</button>
-          </div>
-
-          <!-- LOGO -->
-          <div style="border:1px solid rgba(233,30,99,0.15);border-radius:8px;padding:10px;margin-bottom:0.7rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-              <div style="font-size:10px;font-weight:600;color:#999;letter-spacing:1px;text-transform:uppercase;">BRAND LOGO <span style="font-weight:300;color:#aaa;">(optional)</span></div>
-              <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 12px;font-size:11px;color:#E91E63;font-weight:500;">
-                Upload Logo
-                <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(event)" />
-              </label>
-            </div>
-            <div id="logo-preview-wrap" style="display:none;margin-bottom:10px;align-items:center;gap:8px;">
-              <img id="logo-preview" style="height:40px;object-fit:contain;border-radius:4px;border:1px solid rgba(233,30,99,0.15);padding:4px;" />
-              <button onclick="removeLogo()" style="background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">✕ Remove</button>
-            </div>
-            <div id="logo-position-wrap" style="display:none;">
-              <div style="font-size:11px;color:#555;margin-bottom:8px;">LOGO POSITION</div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↖ Top Left</button>
-                <button class="logo-pos-btn selected" onclick="selectLogoPos(this,'top-center')" style="padding:8px 4px;border:1px solid #E91E63;border-radius:6px;background:#fff0f5;font-size:10px;cursor:pointer;color:#E91E63;font-weight:500;">↑ Top Center</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↗ Top Right</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↙ Bottom Left</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-center')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↓ Bottom Center</button>
-                <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↘ Bottom Right</button>
-              </div>
-            </div>
-          </div>
-
-          <button class="generate-btn" onclick="startGenerate()">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
-            Generate AI Photoshoot — ₹25
-          </button>
-          <div class="step-nav" style="margin-top:1rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
-        </div>
-
-        <!-- PROGRESS -->
-        <div class="progress-wrap" id="progress-wrap">
-          <div class="progress-label">
-            <span id="progress-label-text">Analysing garment details...</span>
-            <span id="progress-pct" style="color:#E91E63;font-weight:500;">0%</span>
-          </div>
-          <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:8px 0;">
-            <div id="progress-bar" style="height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;"></div>
-          </div>
-          <div class="progress-sub">This takes 60–120 seconds. Please wait 🎨</div>
-        </div>
-
-      </div><!-- end studio-card (left) -->
-
-      <!-- RIGHT: RESULTS -->
-      <div class="results-panel" id="results-panel">
-        <div class="results-header">
-          <div class="results-title">Generated photos</div>
-          <div class="results-sub" id="results-sub">Ready to download</div>
-        </div>
-        <div id="results-body">
-          <div style="text-align:center;padding:3rem 1rem;color:#555;">
-            <div style="font-size:48px;margin-bottom:1rem;opacity:0.3;">✦</div>
-            <div style="font-size:14px;">Your AI-generated photos will appear here after you click Generate</div>
-          </div>
-        </div>
-        <!-- VIDEO GALLERY inside right panel -->
-        <div id="video-gallery-section" style="display:none;margin-top:1rem;border-top:1px solid rgba(233,30,99,0.1);padding-top:1rem;">
-          <div style="font-size:13px;font-weight:500;padding:0 1.25rem;margin-bottom:10px;">Recent Videos</div>
-          <div class="video-grid-small" id="video-gallery-inner"></div>
+        <div class="garment-card" id="garment-saree" onclick="selectGarment('saree',this)">
+          <div style="font-size:28px;margin-bottom:6px;">🥻</div>
+          <div style="font-weight:500;font-size:13px;">Saree</div>
+          <div style="font-size:11px;color:#555;margin-top:2px;">Silk, Chiffon, Cotton</div>
         </div>
       </div>
 
-    </div><!-- end studio-grid -->
+      <div style="font-size:12px;color:#555;margin-bottom:5px;font-weight:600;letter-spacing:1px;font-size:10px;text-transform:uppercase;color:#999;">COLLECTION NAME <span style="font-weight:300;color:#aaa;">(optional)</span></div>
+      <input type="text" id="collection-name" class="prompt-input" placeholder="e.g. Festive 2025" style="margin-bottom:0.85rem;min-height:unset;padding:8px 12px;" />
+
+      <div class="step-nav"><div></div><button class="btn-next" onclick="goStep(1)">Choose Model →</button></div>
+    </div>
+
+    <!-- STEP 2: MODEL -->
+    <div class="step-panel" id="step-1">
+      <div class="step-label">STEP 2 — CHOOSE YOUR MODEL</div>
+      <div class="model-grid">
+        <div class="model-card selected" id="model-0" onclick="selectModel(this,0)">
+          <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" /><div class="model-check">✓</div></div>
+          <div class="model-info"><div class="model-name">Priya S.</div></div>
+        </div>
+        <div class="model-card" id="model-1" onclick="selectModel(this,1)">
+          <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg" /><div class="model-check">✓</div></div>
+          <div class="model-info"><div class="model-name">Anjali M.</div></div>
+        </div>
+        <div class="model-card" id="model-2" onclick="selectModel(this,2)">
+          <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_56_44%20AM.png" /><div class="model-check">✓</div></div>
+          <div class="model-info"><div class="model-name">Kavya R.</div></div>
+        </div>
+        <div class="model-card" id="model-3" onclick="selectModel(this,3)">
+          <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png" /><div class="model-check">✓</div></div>
+          <div class="model-info"><div class="model-name">Simran K.</div></div>
+        </div>
+        <div class="model-card" id="model-4" onclick="selectModel(this,4)">
+          <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png" /><div class="model-check">✓</div></div>
+          <div class="model-info"><div class="model-name">Meera P.</div></div>
+        </div>
+        <div class="model-card" id="model-5" onclick="selectModel(this,5)">
+          <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png" /><div class="model-check">✓</div></div>
+          <div class="model-info"><div class="model-name">Naina T.</div></div>
+        </div>
+        <div class="model-card" id="model-99" onclick="selectModel(this,99)">
+          <div class="model-avatar" style="background:#fff0f5;flex-direction:column;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()">
+            <div id="custom-model-empty" style="text-align:center;"><div style="font-size:17px;margin-bottom:2px;">📷</div><div style="font-size:10px;color:#E91E63;font-weight:500;">Upload model</div></div>
+            <img id="custom-model-preview" style="display:none;width:100%;height:100%;object-fit:cover;object-position:top;position:absolute;top:0;left:0;" />
+            <div class="model-check">✓</div>
+          </div>
+          <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
+          <div class="model-info"><div class="model-name">Custom</div></div>
+        </div>
+      </div>
+      <div class="step-nav"><button class="btn-back" onclick="goStep(0)">← Back</button><button class="btn-next" onclick="goStep(2)">Choose Background →</button></div>
+    </div>
+
+    <!-- STEP 3: SCENE & POSE -->
+    <div class="step-panel" id="step-2">
+      <div class="step-label">STEP 3 — CHOOSE SCENE & POSE</div>
+      <div style="font-size:11px;color:#888;margin-bottom:6px;">Pick a background scene for your photo</div>
+      <input type="hidden" id="photo-prompt-val" value="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" data-bg="grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting" />
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:0.75rem;">
+        <div class="prompt-preset selected" onclick="selectScene(this,'elegant Indian woman in a sunlit marble corridor with arched doorways, natural window light casting soft shadows, editorial fashion photography, shot on 85mm lens, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏛️</div><div style="font-size:10px;font-weight:500;">Marble Corridor</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'outdoor golden hour shoot in a lush green garden with soft bokeh background, warm dappled sunlight, professional fashion editorial, shallow depth of field, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌿</div><div style="font-size:10px;font-weight:500;">Garden Golden Hour</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'rooftop terrace at golden hour with warm sunset hues, city skyline softly blurred in background, editorial fashion shoot, natural light, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌇</div><div style="font-size:10px;font-weight:500;">Rooftop Sunset</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'heritage Indian haveli courtyard with terracotta walls and carved stone jharokhas, warm afternoon light, Vogue India editorial style, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏯</div><div style="font-size:10px;font-weight:500;">Haveli Courtyard</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'blooming flower field with pink and white flowers, soft natural light, fashion magazine editorial, airy dreamy atmosphere, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌸</div><div style="font-size:10px;font-weight:500;">Flower Field</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'luxury hotel lobby with marble floors and chandelier lighting, sophisticated editorial fashion photography, professional studio lighting, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🛎️</div><div style="font-size:10px;font-weight:500;">Luxury Lobby</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'ancient temple steps with intricate stone carvings and warm morning light, traditional Indian backdrop, editorial photography, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🛕</div><div style="font-size:10px;font-weight:500;">Temple Steps</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'minimalist white studio with professional softbox lighting and clean background, high fashion editorial photography, sharp details, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">⬜</div><div style="font-size:10px;font-weight:500;">White Studio</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'Indian palace garden with fountains and manicured hedges at dusk, warm fairy lights, royal editorial fashion photography, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">⛲</div><div style="font-size:10px;font-weight:500;">Palace Garden</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'beachside at golden hour with warm sand and soft waves blurred in background, breezy outdoor fashion editorial, natural light, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏖️</div><div style="font-size:10px;font-weight:500;">Beach Golden Hour</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'moody dramatic dark background with single spotlight, high contrast fashion editorial photography, studio lighting, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🎭</div><div style="font-size:10px;font-weight:500;">Dramatic Studio</div></div>
+        <div class="prompt-preset" onclick="selectScene(this,'traditional Indian wedding venue with marigold garlands and diyas, warm festive lighting, editorial photography, photorealistic')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">💍</div><div style="font-size:10px;font-weight:500;">Wedding Venue</div></div>
+        <div class="prompt-preset" id="custom-text-scene-btn" onclick="selectScene(this,'custom')" style="padding:8px 4px;text-align:center;border-style:dashed;"><div style="font-size:17px;margin-bottom:2px;">✏️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Write prompt</div></div>
+        <div class="prompt-preset" onclick="document.getElementById('bg-upload-input').click()" style="padding:8px 4px;text-align:center;border-style:dashed;cursor:pointer;"><div style="font-size:17px;margin-bottom:2px;">🖼️</div><div style="font-size:10px;font-weight:500;color:#E91E63;">Upload background</div></div>
+        <input type="file" id="bg-upload-input" accept="image/*" style="display:none;" onchange="loadCustomBackground(event)" />
+      </div>
+
+      <!-- Custom text prompt box -->
+      <div id="custom-scene-text-wrap" style="display:none;margin-bottom:0.75rem;">
+        <textarea id="custom-scene-text" class="prompt-input" rows="2" placeholder="e.g. Sunlit rooftop in Mumbai with city skyline, golden hour, editorial photography..." style="margin-bottom:4px;font-size:12px;" oninput="updateCustomScenePrompt(this.value)"></textarea>
+        <div style="font-size:10px;color:#999;">Tip: describe the location, lighting and mood for best results</div>
+      </div>
+
+      <div id="custom-bg-preview-wrap" style="display:none;margin-bottom:0.75rem;border-radius:8px;overflow:hidden;border:1.5px solid #E91E63;">
+        <img id="custom-bg-preview-img" style="width:100%;height:80px;object-fit:cover;display:block;" />
+        <div style="padding:4px 8px;font-size:10px;color:#E91E63;font-weight:500;background:#fff0f5;">✓ Custom background uploaded</div>
+      </div>
+
+      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;font-weight:600;margin-bottom:6px;">POSE</div>
+      <div id="pose-selector" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem;">
+        <div class="prompt-preset selected" onclick="selectPoseCard(this,'standing straight facing forward, full body visible, arms relaxed at sides, confident pose')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🧍 Standing</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'graceful walking pose mid stride, one foot forward, natural arm swing, full outfit visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🚶 Walking</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'elegant 3/4 turn, body angled, looking over shoulder gracefully, full outfit details visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">💃 3/4 Turn</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'hand on hip power stance, confident high fashion editorial pose, full length, weight shifted')" style="padding:7px 14px;border-radius:20px;font-size:12px;">👸 Power Stance</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'sitting gracefully on steps, legs to side, elegant seated fashion pose, full outfit visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🪑 Seated</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'arms crossed confidently over chest, strong editorial stance, full length, direct gaze')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🤞 Crossed Arms</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'leaning shoulder against wall, casual relaxed editorial pose, one knee slightly bent, full length')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🫦 Leaning</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'twirling spinning gracefully, arms slightly raised, dupatta flowing and swirling, joyful movement')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🌀 Twirl</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'profile view side pose, showing silhouette and outfit details')" style="padding:7px 14px;border-radius:20px;font-size:12px;">🚺 Side Profile</div>
+        <div class="prompt-preset" onclick="selectPoseCard(this,'one foot forward confident runway model walk, full outfit visible')" style="padding:7px 14px;border-radius:20px;font-size:12px;">👣 Runway</div>
+      </div>
+
+      <div class="step-nav"><button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Finalize →</button></div>
+    </div>
+
+    <!-- STEP 4: GENERATE -->
+    <div class="step-panel" id="step-3">
+      <div class="step-label">STEP 4 — GENERATE YOUR PHOTOSHOOT</div>
+
+      <div style="background:#fff0f5;border:1px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 12px;margin-bottom:0.75rem;display:flex;gap:16px;flex-wrap:wrap;">
+        <div style="font-size:12px;color:#000;">🧣 Suit uploaded</div>
+        <div style="font-size:12px;color:#000;">👩🏽 Model selected</div>
+        <div style="font-size:12px;color:#000;">🎨 Background set</div>
+      </div>
+
+      <!-- AI ENHANCEMENTS -->
+      <div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;">AI ENHANCEMENTS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:0.7rem;">
+        <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Professional lighting</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Dupatta styling</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Jewellery suggestion</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" style="accent-color:#E91E63;" /> Soft shadow effect</label>
+      </div>
+
+      <!-- NUMBER OF IMAGES -->
+      <div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;">NUMBER OF IMAGES</div>
+      <div style="display:flex;gap:6px;margin-bottom:0.7rem;">
+        <button class="var-btn selected" onclick="selectVars(this)">1 image</button>
+        <button class="var-btn" onclick="selectVars(this)">2 images</button>
+        <button class="var-btn" onclick="selectVars(this)">4 images</button>
+      </div>
+
+      <!-- LOGO -->
+      <div style="border:1px solid rgba(233,30,99,0.15);border-radius:8px;padding:10px;margin-bottom:0.7rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:10px;font-weight:600;color:#999;letter-spacing:1px;text-transform:uppercase;">BRAND LOGO <span style="font-weight:300;color:#aaa;">(optional)</span></div>
+          <label style="cursor:pointer;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;padding:4px 12px;font-size:11px;color:#E91E63;font-weight:500;">
+            Upload Logo
+            <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(event)" />
+          </label>
+        </div>
+        <div id="logo-preview-wrap" style="display:none;margin-bottom:10px;align-items:center;gap:8px;">
+          <img id="logo-preview" style="height:40px;object-fit:contain;border-radius:4px;border:1px solid rgba(233,30,99,0.15);padding:4px;" />
+          <button onclick="removeLogo()" style="background:none;border:none;color:#E91E63;font-size:12px;cursor:pointer;">✕ Remove</button>
+        </div>
+        <div id="logo-position-wrap" style="display:none;">
+          <div style="font-size:11px;color:#555;margin-bottom:8px;">LOGO POSITION</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↖ Top Left</button>
+            <button class="logo-pos-btn selected" onclick="selectLogoPos(this,'top-center')" style="padding:8px 4px;border:1px solid #E91E63;border-radius:6px;background:#fff0f5;font-size:10px;cursor:pointer;color:#E91E63;font-weight:500;">↑ Top Center</button>
+            <button class="logo-pos-btn" onclick="selectLogoPos(this,'top-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↗ Top Right</button>
+            <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-left')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↙ Bottom Left</button>
+            <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-center')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↓ Bottom Center</button>
+            <button class="logo-pos-btn" onclick="selectLogoPos(this,'bottom-right')" style="padding:8px 4px;border:1px solid rgba(233,30,99,0.2);border-radius:6px;background:#fff;font-size:10px;cursor:pointer;color:#555;">↘ Bottom Right</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="generate-btn" onclick="startGenerate()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+        Generate AI Photoshoot — ₹25
+      </button>
+      <div class="step-nav" style="margin-top:1rem;"><button class="btn-back" onclick="goStep(2)">← Back</button><div></div></div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-label-text">Analysing garment details...</span>
+        <span id="progress-pct" style="color:#E91E63;font-weight:500;">0%</span>
+      </div>
+      <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:8px 0;">
+        <div id="progress-bar" style="height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;"></div>
+      </div>
+      <div class="progress-sub">This takes 60–120 seconds. Please wait 🎨</div>
+    </div>
+
+  </div><!-- end studio-card (left) -->
+
+  <!-- RIGHT: RESULTS -->
+  <div class="results-panel" id="results-panel">
+    <div class="results-header">
+      <div class="results-title">Generated photos</div>
+      <div class="results-sub" id="results-sub">Ready to download</div>
+    </div>
+    <div id="results-body">
+      <div style="text-align:center;padding:3rem 1rem;color:#555;">
+        <div style="font-size:48px;margin-bottom:1rem;opacity:0.3;">✦</div>
+        <div style="font-size:14px;">Your AI-generated photos will appear here after you click Generate</div>
+      </div>
+    </div>
+    <!-- VIDEO GALLERY inside right panel -->
+    <div id="video-gallery-section" style="display:none;margin-top:1rem;border-top:1px solid rgba(233,30,99,0.1);padding-top:1rem;">
+      <div style="font-size:13px;font-weight:500;padding:0 1.25rem;margin-bottom:10px;">Recent Videos</div>
+      <div class="video-grid-small" id="video-gallery-inner"></div>
+    </div>
+  </div>
+
+</div><!-- end studio-grid -->
+```
+
   </div><!-- end content -->
 </div><!-- end main -->
 <!-- BUY CREDITS MODAL -->
@@ -533,6 +534,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
 <script>
 // PRESET PROMPTS
 var presetPrompts = [
@@ -670,11 +672,23 @@ function openMobileNav() {
   document.body.style.overflow = 'hidden';
 }
 
+
 function closeMobileNav() {
   document.getElementById('mobile-nav').classList.remove('open');
   document.getElementById('mobile-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+
+// Close nav when tapping anywhere outside on mobile
+document.addEventListener('touchstart', function(e) {
+  var nav = document.getElementById('mobile-nav');
+  var burger = document.querySelector('.burger');
+  if (nav && nav.classList.contains('open')) {
+    if (!nav.contains(e.target) && !burger.contains(e.target)) {
+      closeMobileNav();
+    }
+  }
+}, { passive: true });
 
 var sb = window.supabase.createClient(
   'https://oqmoneclnirnhqpcdeqy.supabase.co',
@@ -1797,5 +1811,6 @@ async function startVideoGenerate() {
 
 
 </script>
+
 </body>
 </html>
