@@ -7,9 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh}
+    body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh}
     /* SIDEBAR */
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#000;border-right:1px solid rgba(233,30,99,0.2);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#000;border-right:1px solid rgba(233,30,99,0.2);display:flex;flex-direction:column;z-index:10;padding:0 0 1.5rem}
     .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
     .sidebar-brand span{color:#E91E63}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
@@ -24,7 +24,7 @@
     .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-plan{font-size:10px;color:#E91E63}
     /* MAIN */
-    .main{margin-left:220px;min-height:100vh}
+    .main{margin-left:220px;min-height:100vhoverflow-x:hidden;}
     .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
     .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
     .topbar-sub{font-size:12px;color:#555;margin-left:10px}
@@ -87,7 +87,7 @@
     
     @media(max-width:500px){.content{padding:1rem}.stats-row{grid-template-columns:1fr}}
 
-    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:200;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
     .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
     .mobile-logo span{color:#E91E63;}
     .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
@@ -96,7 +96,7 @@
 
     .brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
     .brand span{color:#E91E63;}
-    @media(max-width:900px){.mobile-header{display:flex !important;}.burger{display:flex !important;}.sidebar{display:none !important;}.main{margin-left:0 !important;padding-top:64px !important;}}
+    @media(max-width:900px){.mobile-header{display:flex !important;}.burger{display:flex !important;}.sidebar{display:none !important;}.main{margin-left:0 !important;padding-top:64px !important;}.video-layout{grid-template-columns:1fr !important;}.v-result-panel{display:none;}}
   </style>
 </head>
 <body>
@@ -232,7 +232,7 @@
       </div>
 
       <!-- RIGHT: RESULT -->
-      <div>
+      <div class="v-result-panel">
         <div class="studio-card">
           <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.1);">
             <div style="font-size:11px;font-weight:600;color:#999;letter-spacing:1px;text-transform:uppercase;">Generated Video</div>
