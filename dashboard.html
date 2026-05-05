@@ -735,17 +735,11 @@ function deductCredit(count) {
 }
 
 function updateStats(count) {
-  sb.auth.getSession().then(function(r) {
-    if (!r.data.session) return;
-    sb.from('photoshoots').select('id,media_type,image_url').eq('user_id', r.data.session.user.id).then(function(res) {
-      if (!res.data) return;
-      var photos = res.data.filter(function(i){ return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4')); });
-      var el1 = document.getElementById('stat-shoots');
-      var el2 = document.getElementById('stat-images');
-      if (el1) el1.textContent = photos.length;
-      if (el2) el2.textContent = photos.length;
-    });
-  });
+  // Immediately increment counters without waiting for DB
+  var el1 = document.getElementById('stat-shoots');
+  var el2 = document.getElementById('stat-images');
+  if (el1) el1.textContent = (parseInt(el1.textContent) || 0) + count;
+  if (el2) el2.textContent = (parseInt(el2.textContent) || 0) + count;
 }
 
 function selectPack(amount, credits) {
@@ -1109,7 +1103,7 @@ async function startGenerate() {
             }
           }
           addToGallery(urlsToSave, collectionName);
-          showRealResults(finalImages);
+          showRealResults(urlsToSave);
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         }).catch(function() {
@@ -1517,7 +1511,7 @@ function convertToVideo(imageUrl) {
 
 function downloadImg(url, num) {
   showToast('Downloading image ' + num + '...');
-  fetch(url)
+  fetch(url, { mode: 'cors' })
     .then(function(res){ return res.blob(); })
     .then(function(blob){
       var blobUrl = URL.createObjectURL(blob);
@@ -1527,10 +1521,9 @@ function downloadImg(url, num) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 1000);
+      setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
     })
     .catch(function(){
-      // fallback: open in new tab
       window.open(url, '_blank');
     });
 }
