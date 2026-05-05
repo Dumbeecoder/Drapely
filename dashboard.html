@@ -979,6 +979,63 @@ function compressImage(file) {
   });
 }
 
+
+function androidSafePoll(predId, interval, progressWrap, activeStepEl) {
+  return new Promise(async function(resolve) {
+    var attempts = 0;
+    var maxAttempts = 90;
+    var failed = false;
+
+    async function doPoll() {
+      if (attempts >= maxAttempts || failed) {
+        resolve(null);
+        return;
+      }
+      try {
+        var pollRes = await fetch('/api/poll?id=' + predId);
+        var result = await pollRes.json();
+        if (result.status === 'succeeded') {
+          resolve(result);
+          return;
+        }
+        if (result.status === 'failed') {
+          failed = true;
+          clearInterval(interval);
+          progressWrap.classList.remove('visible');
+          activeStepEl.style.display = 'block';
+          showToast('Generation failed: ' + (result.error || 'Try again'));
+          resolve(null);
+          return;
+        }
+      } catch(e) {
+        console.log('Poll retry:', e.message);
+      }
+      attempts++;
+      // Schedule next poll
+      pollTimer = setTimeout(doPoll, 2000);
+    }
+
+    var pollTimer = setTimeout(doPoll, 2000);
+
+    // Android fix: when screen wakes up, immediately poll instead of waiting
+    function onVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        clearTimeout(pollTimer);
+        console.log('Screen woke — polling immediately');
+        doPoll();
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    // Cleanup listener once done
+    var origResolve = resolve;
+    resolve = function(val) {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      origResolve(val);
+    };
+  });
+}
+
 async function startGenerate() {
   var suitFile = document.getElementById('suit-input').files[0];
   if (!suitFile) { showToast('Please upload your suit photo first!'); goStep(0); return; }
@@ -1056,26 +1113,9 @@ async function startGenerate() {
       }
 
       var pollResult = null;
-      var pollAttempts = 0;
-      while (pollAttempts < 90) {
-        await new Promise(function(r){ setTimeout(r, 2000); });
-        try {
-          var pollRes = await fetch('/api/poll?id=' + predId);
-          pollResult = await pollRes.json();
-          if (pollResult.status === 'succeeded') break;
-          if (pollResult.status === 'failed') {
-            clearInterval(interval);
-            progressWrap.classList.remove('visible');
-            activeStepEl.style.display = 'block';
-            showToast('Generation failed: ' + (pollResult.error || 'Try again'));
-            return;
-          }
-        } catch(pollErr) {
-          // Network hiccup (mobile sleep/wake) — keep trying
-          console.log('Poll attempt failed, retrying:', pollErr.message);
-        }
-        pollAttempts++;
-      }
+      // Android-safe polling: use visibilitychange to resume immediately on screen wake
+      pollResult = await androidSafePoll(predId, interval, progressWrap, activeStepEl);
+      if (!pollResult) return; // error already handled inside
 
       if (pollResult && pollResult.output && pollResult.output.length > 0) {
         var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
