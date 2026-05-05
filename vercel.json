@@ -14,9 +14,6 @@
     },
     "api/generate-sync.js": {
       "maxDuration": 120
-    },
-    "api/download.js": {
-      "maxDuration": 30
     }
   }
 }
