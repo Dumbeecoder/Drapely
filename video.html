@@ -302,6 +302,22 @@ sb.auth.getSession().then(function(r) {
   loadVideoCount(user.id);
 });
 
+async function uploadVideoToStorage(videoUrl) {
+  try {
+    var res = await fetch(videoUrl);
+    if (!res.ok) throw new Error('fetch failed');
+    var blob = await res.blob();
+    var fileName = 'video_' + Date.now() + '.mp4';
+    var uploadRes = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'video/mp4', upsert: false });
+    if (uploadRes.error) throw new Error(uploadRes.error.message);
+    var urlRes = sb.storage.from('photoshoots').getPublicUrl(fileName);
+    return urlRes.data.publicUrl;
+  } catch(e) {
+    console.log('Video storage upload failed:', e.message);
+    return null;
+  }
+}
+
 function loadCredits(userId) {
   sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
     var el = document.getElementById('stat-credits');
@@ -371,16 +387,21 @@ function selectDur(btn, dur) {
 }
 
 function shareVideo() {
-  if (!currentVideoUrl) return;
-  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video from Drapely! ' + currentVideoUrl), '_blank');
+  var shareUrl = window._permanentVideoUrl || currentVideoUrl;
+  if (!shareUrl) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video from Drapely! ' + shareUrl), '_blank');
 }
 
 function downloadVideo() {
   if (!currentVideoUrl) return;
   showToast('Starting download...');
-  // iOS Safari: fetch as blob then create object URL
-  fetch(currentVideoUrl)
-    .then(function(res) { return res.blob(); })
+  // Use server proxy to bypass CORS — same approach as photo download
+  var proxyUrl = '/api/download?url=' + encodeURIComponent(currentVideoUrl) + '&name=drapely-video-' + Date.now() + '.mp4';
+  fetch(proxyUrl)
+    .then(function(res) {
+      if (!res.ok) throw new Error('proxy failed');
+      return res.blob();
+    })
     .then(function(blob) {
       var blobUrl = URL.createObjectURL(blob);
       var a = document.createElement('a');
@@ -393,7 +414,6 @@ function downloadVideo() {
       setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 3000);
     })
     .catch(function() {
-      // Fallback: open directly — iOS will show native save prompt
       window.open(currentVideoUrl, '_blank');
     });
 }
@@ -564,13 +584,18 @@ async function startVideoGenerate() {
         sb.auth.getSession().then(function(r) {
           if (!r.data.session) return;
           var userId = r.data.session.user.id;
-          sb.from('photoshoots').insert({
-            user_id: userId, image_url: videoUrl,
-            collection_name: 'Drapely AI Video', suit_type: 'Video',
-            image_count: (selectedDuration === '10' ? 4 : 2),
-            media_type: 'video'
-          }).then(function(res) {
-            if (!res.error) loadVideoCount(userId);
+          // Upload video to Supabase storage for a permanent URL
+          uploadVideoToStorage(videoUrl).then(function(permanentUrl) {
+            var saveUrl = permanentUrl || videoUrl;
+            window._permanentVideoUrl = saveUrl;
+            sb.from('photoshoots').insert({
+              user_id: userId, image_url: saveUrl,
+              collection_name: 'Drapely AI Video', suit_type: 'Video',
+              image_count: (selectedDuration === '10' ? 4 : 2),
+              media_type: 'video'
+            }).then(function(res) {
+              if (!res.error) loadVideoCount(userId);
+            });
           });
           var cost = selectedDuration === '10' ? 4 : 2;
           sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
