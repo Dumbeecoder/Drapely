@@ -6,21 +6,22 @@
   <title>Bulk Studio — Drapely</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
     .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
-    .brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
-    .brand span{color:#E91E63;}
+    .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .sidebar-brand span{color:#E91E63;}
+    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
     .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
-    .nav-section{padding:1.25rem 0.75rem 0.5rem;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;font-weight:500;}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 1rem;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;margin:2px 0.5rem;transition:all 0.15s;cursor:pointer;border:none;background:none;width:calc(100% - 1rem);text-align:left;font-family:'DM Sans',sans-serif;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
     .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
     .nav-item.active{color:#E91E63;}
-    .nav-icon{width:16px;height:16px;flex-shrink:0;}
-    .nav-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
+    .sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
     .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
-    .user-av{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
-    .user-name{font-size:12px;font-weight:500;color:#fff;}
+    .user-av,.user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
+    .nav-icon{width:16px;height:16px;flex-shrink:0;}
     .user-plan{font-size:10px;color:#E91E63;}
     .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;overflow-x:hidden;}
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
@@ -94,7 +95,7 @@
   
       .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
     .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-  @media(max-width:900px){.mobile-header{display:flex !important;}.burger{display:flex !important;}.sidebar{display:none !important;}.main{margin-left:0 !important;padding-top:64px !important;}.settings-grid{grid-template-columns:1fr;}}
+  @media(max-width:900px){.mobile-header{display:flex !important;}.burger{display:flex !important;}.main{margin-left:0 !important;padding-top:64px !important;}.settings-grid{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
@@ -140,7 +141,7 @@
   </div>
   <div class="sidebar-footer">
     <div class="user-pill">
-      <div class="user-av" id="user-avatar">?</div>
+      <div class="user-av user-avatar" id="user-avatar">?</div>
       <div><div class="user-name" id="user-name">Loading...</div></div>
     </div>
   </div>
