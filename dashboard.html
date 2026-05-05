@@ -1036,6 +1036,19 @@ function androidSafePoll(predId, interval, progressWrap, activeStepEl) {
   });
 }
 
+var _wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      _wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake lock acquired');
+    }
+  } catch(e) { console.log('Wake lock failed:', e.message); }
+}
+function releaseWakeLock() {
+  if (_wakeLock) { _wakeLock.release(); _wakeLock = null; console.log('Wake lock released'); }
+}
+
 async function startGenerate() {
   var suitFile = document.getElementById('suit-input').files[0];
   if (!suitFile) { showToast('Please upload your suit photo first!'); goStep(0); return; }
@@ -1058,6 +1071,7 @@ async function startGenerate() {
   progressWrap.classList.add('visible');
   progressBar.style.width = '0%';
   progressPct.textContent = '0%';
+  requestWakeLock(); // keep screen on during generation
 
   var msgs = ['Compressing photo...','Sending to AI...','Analysing garment...','Placing on model...','Applying effects...','Adding finishing touches...','Almost ready...'];
   var progress = 0;
@@ -1160,11 +1174,13 @@ async function startGenerate() {
           }
           addToGallery(urlsToSave, collectionName);
           showRealResults(urlsToSave);
+          releaseWakeLock();
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         }).catch(function() {
           addToGallery(composited, collectionName);
           showRealResults(composited);
+          releaseWakeLock();
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         });
