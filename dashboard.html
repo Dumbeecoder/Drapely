@@ -483,7 +483,7 @@
           <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:8px 0;">
             <div id="progress-bar" style="height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;"></div>
           </div>
-          <div class="progress-sub">This takes 60–120 seconds. Please wait 🎨</div>
+          <div class="progress-sub">Usually 30–60 seconds. Keep screen on 📱</div>
         </div>
 
       </div><!-- end studio-card (left) -->
@@ -1002,15 +1002,18 @@ async function startGenerate() {
   progressBar.style.width = '0%';
   progressPct.textContent = '0%';
 
-  var msgs = ['Compressing suit photo...','Sending to AI model...','Analysing garment details...','Compositing onto model...','Applying lighting & effects...','Almost ready...'];
+  var msgs = ['Compressing photo...','Sending to AI...','Analysing garment...','Placing on model...','Applying effects...','Adding finishing touches...','Almost ready...'];
   var progress = 0;
+  var elapsed = 0;
   var interval = setInterval(function() {
-    if (progress < 88) {
-      progress += Math.random() * 5 + 1;
-      if (progress > 88) progress = 88;
+    elapsed += 1;
+    // Keep moving up to 95%, slowing down as it gets higher
+    if (progress < 95) {
+      var increment = progress < 50 ? (Math.random() * 6 + 2) : progress < 80 ? (Math.random() * 3 + 0.5) : 0.3;
+      progress = Math.min(95, progress + increment);
       progressBar.style.width = Math.round(progress) + '%';
       progressPct.textContent = Math.round(progress) + '%';
-      progressLabel.textContent = msgs[Math.min(Math.floor(progress / 16), msgs.length - 1)];
+      progressLabel.textContent = msgs[Math.min(Math.floor(elapsed / 8), msgs.length - 1)] + ' (' + elapsed + 's)';
     }
   }, 1000);
 
@@ -1054,18 +1057,22 @@ async function startGenerate() {
 
       var pollResult = null;
       var pollAttempts = 0;
-      while (pollAttempts < 60) {
-        await new Promise(function(r){ setTimeout(r, 3000); });
-        var pollRes = await fetch('/api/poll?id=' + predId);
-        pollResult = await pollRes.json();
-        progressLabel.textContent = 'AI generating... (' + Math.round((pollAttempts+1)*3) + 's)';
-        if (pollResult.status === 'succeeded') break;
-        if (pollResult.status === 'failed') {
-          clearInterval(interval);
-          progressWrap.classList.remove('visible');
-          activeStepEl.style.display = 'block';
-          showToast('Generation failed: ' + (pollResult.error || 'Try again'));
-          return;
+      while (pollAttempts < 90) {
+        await new Promise(function(r){ setTimeout(r, 2000); });
+        try {
+          var pollRes = await fetch('/api/poll?id=' + predId);
+          pollResult = await pollRes.json();
+          if (pollResult.status === 'succeeded') break;
+          if (pollResult.status === 'failed') {
+            clearInterval(interval);
+            progressWrap.classList.remove('visible');
+            activeStepEl.style.display = 'block';
+            showToast('Generation failed: ' + (pollResult.error || 'Try again'));
+            return;
+          }
+        } catch(pollErr) {
+          // Network hiccup (mobile sleep/wake) — keep trying
+          console.log('Poll attempt failed, retrying:', pollErr.message);
         }
         pollAttempts++;
       }
