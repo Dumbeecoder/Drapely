@@ -558,9 +558,13 @@ async function startVideoGenerate() {
 
     // Try server-side sync first (fixes Android screen timeout)
     try {
+      var syncController = new AbortController();
+      var syncTimeout = setTimeout(function(){ syncController.abort(); }, 100000);
       var syncRes = await fetch('/api/video-sync', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: payload, signal: syncController.signal
       });
+      clearTimeout(syncTimeout);
       var syncData = await syncRes.json();
       if (syncData.video_url) {
         videoUrl = syncData.video_url;
@@ -568,7 +572,7 @@ async function startVideoGenerate() {
         console.log('video-sync error, falling back:', syncData.error);
       }
     } catch(e) {
-      console.log('video-sync failed, falling back:', e.message);
+      console.log('video-sync failed/timeout, falling back:', e.message);
     }
 
     // Fallback: old client-side polling
