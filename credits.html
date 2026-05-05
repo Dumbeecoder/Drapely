@@ -159,26 +159,26 @@
 
   <div style="margin-bottom:1.5rem;">
     <div style="font-size:13px;font-weight:500;color:#555;margin-bottom:12px;">Choose a pack</div>
-    <div class="packs-grid">
-      <div class="pack-card selected" id="pack-250" onclick="selectPack(250,10,this)">
-        <div class="pack-price">₹250</div>
-        <div class="pack-credits">10 credits</div>
-        <div class="pack-desc">10 photos or 5 videos</div>
-      </div>
-      <div class="pack-card" id="pack-500" onclick="selectPack(500,20,this)">
+        <div class="packs-grid">
+      <div class="pack-card selected" id="pack-500" onclick="selectPack(500,10,this)">
         <div class="pack-price">₹500</div>
+        <div class="pack-credits">10 credits</div>
+        <div class="pack-desc">5 photos or 1 video</div>
+      </div>
+      <div class="pack-card" id="pack-1000" onclick="selectPack(1000,20,this)">
+        <div class="pack-price">₹1000</div>
         <div class="pack-credits">20 credits</div>
-        <div class="pack-desc">20 photos or 10 videos</div>
+        <div class="pack-desc">10 photos or 3 videos</div>
         <div class="pack-tag">Popular</div>
       </div>
-      <div class="pack-card" id="pack-1000" onclick="selectPack(1000,40,this)">
-        <div class="pack-price">₹1000</div>
+      <div class="pack-card" id="pack-2000" onclick="selectPack(2000,40,this)">
+        <div class="pack-price">₹2000</div>
         <div class="pack-credits">40 credits</div>
-        <div class="pack-desc">Best value!</div>
+        <div class="pack-desc">20 photos or 6 videos</div>
         <div class="pack-tag">Best value</div>
       </div>
     </div>
-    <button class="buy-btn" style="width:100%;margin-top:0;" onclick="showBuyModal()">Buy <span id="selected-pack-label">₹250 — 10 credits</span></button>
+    <button class="buy-btn" style="width:100%;margin-top:0;" onclick="showBuyModal()">Buy <span id="selected-pack-label">₹500 — 10 credits</span></button>
   </div>
 
   <div class="section-title">
@@ -200,11 +200,11 @@
   <div class="modal">
     <h3>Buy Credits</h3>
     <p>Scan to pay via UPI</p>
-    <img class="qr-img" id="modal-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=250%26cu=INR%26tn=Drapely+Credits" alt="UPI QR" />
+    <img class="qr-img" id="modal-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=500%26cu=INR%26tn=Drapely+Credits" alt="UPI QR" />
     <div class="upi-id">6352197977@ptyes</div>
-    <div class="modal-amount" id="modal-amount">₹250</div>
+    <div class="modal-amount" id="modal-amount">₹500</div>
     <div style="font-size:12px;color:#555;margin-bottom:1rem;line-height:1.6;">GPay · PhonePe · Paytm<br/>Credits added within 30 minutes</div>
-    <a class="wa-btn" id="modal-wa" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9250%20for%2010%20Drapely%20credits." target="_blank">
+    <a class="wa-btn" id="modal-wa" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9500%20for%2010%20Drapely%20credits." target="_blank">
       💬 Send payment screenshot on WhatsApp
     </a>
     <button class="close-btn" onclick="hideBuyModal()">Close</button>
@@ -219,7 +219,7 @@ var sb = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
 
-var selectedAmount = 250;
+var selectedAmount = 500;
 var selectedCredits = 10;
 var allHistory = [];
 var currentFilter = 'all';
