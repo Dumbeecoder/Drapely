@@ -18,30 +18,22 @@
     .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
     .user-av,.user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
     .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh}
-    /* SIDEBAR */
     .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff}
     .nav-icon{width:16px;height:16px;flex-shrink:0}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2)}
-    .user-plan{font-size:10px;color:#E91E63}
-    /* MAIN */
-    .main{margin-left:220px;min-height:100vhoverflow-x:hidden;}
+    .main{margin-left:220px;min-height:100vh;overflow-x:hidden;}
     .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
     .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
     .topbar-sub{font-size:12px;color:#555;margin-left:10px}
     .content{padding:2rem}
-    /* STATS */
     .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:2rem;max-width:560px}
     .stat-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1.25rem 1.5rem}
     .stat-label{font-size:11px;color:#555;letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
     .stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#000;line-height:1;margin-bottom:4px}
     .stat-note{font-size:11px;color:#E91E63}
-    /* VIDEO LAYOUT */
     .video-layout{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
     .studio-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
-    /* UPLOAD ZONE */
     .upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
     .upload-zone:hover{border-color:#E91E63;background:#ffe0ec}
     .upload-zone.has-file{padding:0;border-style:solid;border-color:#E91E63}
@@ -51,26 +43,20 @@
     .upload-hint{font-size:12px;color:#555}
     .upload-preview{width:100%;max-height:260px;object-fit:contain;display:none;border-radius:10px;padding:0.75rem;background:#fff0f5}
     .clear-file-btn{position:absolute;top:8px;right:8px;width:24px;height:24px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
-    /* SCENE GRID */
     .prompt-preset{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;font-size:12px}
     .prompt-preset:hover{border-color:#E91E63;background:#fff0f5}
     .prompt-preset.selected{border-color:#E91E63;border-width:2px;background:#fff0f5}
     .prompt-input{width:100%;padding:10px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;resize:vertical}
     .prompt-input:focus{border-color:#E91E63}
-    /* DURATION */
     .dur-btn{flex:1;padding:9px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;text-align:center;transition:all 0.15s;font-weight:500;color:#555}
     .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
-    /* GENERATE BTN */
     .generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
     .generate-btn:hover{opacity:0.9}
-    /* SECTION LABEL */
     .section-label{font-size:10px;color:#999;margin-bottom:7px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
-    /* PROGRESS */
     #v-progress{display:none;margin-top:1rem}
     #v-progress.visible{display:block}
-    /* MOBILE */
-    
-    .burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0)}
     .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158}
     .mobile-overlay.open{display:block}
     .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0}
@@ -84,22 +70,25 @@
     .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08)}
     .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
     .mobile-user-name{font-size:12px;font-weight:500;color:#fff}
-    .mobile-user-plan{font-size:10px;color:#E91E63}
-    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
-    .toast.show{transform:translateX(-50%) translateY(0)}
-    
-    @media(max-width:500px){.content{padding:1rem}.stats-row{grid-template-columns:1fr}}
-
     .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
     .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
     .mobile-logo span{color:#E91E63;}
     .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
     .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-    @media(max-width:900px){.sidebar{display:none !important;}.mobile-header{display:flex !important;}.burger{display:flex !important;}.main{margin-left:0 !important;padding-top:64px !important;}.video-layout{grid-template-columns:1fr !important;}.v-result-panel{display:none;}}
-  </style>
+    @media(max-width:500px){.content{padding:1rem}.stats-row{grid-template-columns:1fr}}
+    /* FIX: hide result panel on mobile by default, show when video is ready */
+    @media(max-width:900px){
+      .sidebar{display:none !important;}
+      .mobile-header{display:flex !important;}
+      .burger{display:flex !important;}
+      .main{margin-left:0 !important;padding-top:64px !important;}
+      .video-layout{grid-template-columns:1fr !important;}
+      .v-result-panel{display:none;}
+      .v-result-panel.has-results{display:block !important;}
+    }
+</style>
 </head>
 <body>
-<!-- BURGER -->
 <div class="mobile-header">
   <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
   <a href="#" onclick="location.reload();return false;" class="mobile-logo">Drape<span>ly</span></a>
@@ -148,6 +137,7 @@
     </div>
   </div>
 </div>
+
 <div class="main">
   <div class="topbar">
     <div style="display:flex;align-items:baseline;gap:8px;">
@@ -155,9 +145,7 @@
       <p class="topbar-sub" id="topbar-sub">Create an AI fashion video</p>
     </div>
   </div>
-
   <div class="content">
-    <!-- STATS -->
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-label">Videos Generated</div>
@@ -171,15 +159,12 @@
       </div>
     </div>
 
-    <!-- VIDEO LAYOUT -->
     <div class="video-layout">
-
       <!-- LEFT: CONTROLS -->
       <div class="studio-card" style="padding:1.5rem;">
         <h2 style="font-size:16px;font-weight:500;margin-bottom:4px;">New AI Fashion Video</h2>
         <p style="font-size:12px;color:#555;margin-bottom:1.25rem;">Upload your suit or use a generated photo</p>
 
-        <!-- STEP 1: SUIT PHOTO -->
         <div class="section-label">Step 1 &mdash; Your Suit Photo</div>
         <div class="upload-zone" id="v-upload-zone" onclick="document.getElementById('v-suit-input').click()" style="margin-bottom:1rem;">
           <div id="v-upload-empty">
@@ -194,20 +179,18 @@
         </div>
         <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
 
-        <!-- STEP 2: ACTION PROMPT -->
         <div class="section-label" style="margin-top:1rem;">Step 2 — What should the model do?</div>
-        <div style="font-size:12px;color:#888;margin-bottom:8px;">Describe the action or movement — e.g. walk, twirl, stand confidently, show dupatta</div>
+        <div style="font-size:12px;color:#888;margin-bottom:8px;">Describe the action or movement</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-          <button onclick="setVideoPrompt(this,'model walking gracefully, showing full outfit')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">👣 Walking</button>
-          <button onclick="setVideoPrompt(this,'model standing confidently, posing for camera')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🧍 Standing</button>
-          <button onclick="setVideoPrompt(this,'model twirling gracefully, dupatta flowing beautifully')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">💃 Twirling</button>
-          <button onclick="setVideoPrompt(this,'model showing dupatta, spreading arms gracefully')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🪄 Show Dupatta</button>
-          <button onclick="setVideoPrompt(this,'model doing a slow 360 degree turn, showing full outfit')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🔄 Full Turn</button>
-          <button onclick="setVideoPrompt(this,'model walking towards camera confidently')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🎬 Walk to Camera</button>
+          <button onclick="setVideoPrompt(this,'model walking gracefully, showing full outfit')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:#555;cursor:pointer;">👣 Walking</button>
+          <button onclick="setVideoPrompt(this,'model standing confidently, posing for camera')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:#555;cursor:pointer;">🧍 Standing</button>
+          <button onclick="setVideoPrompt(this,'model twirling gracefully, dupatta flowing beautifully')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:#555;cursor:pointer;">💃 Twirling</button>
+          <button onclick="setVideoPrompt(this,'model showing dupatta, spreading arms gracefully')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:#555;cursor:pointer;">🪄 Show Dupatta</button>
+          <button onclick="setVideoPrompt(this,'model doing a slow 360 degree turn, showing full outfit')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:#555;cursor:pointer;">🔄 Full Turn</button>
+          <button onclick="setVideoPrompt(this,'model walking towards camera confidently')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:#555;cursor:pointer;">🎬 Walk to Camera</button>
         </div>
-        <textarea class="prompt-input" id="v-prompt" placeholder="e.g. model walking gracefully, twirling to show outfit, standing and posing..." style="margin-bottom:0.75rem;min-height:70px;" rows="3"></textarea>
+        <textarea class="prompt-input" id="v-prompt" placeholder="e.g. model walking gracefully, twirling to show outfit..." style="margin-bottom:0.75rem;min-height:70px;" rows="3"></textarea>
 
-        <!-- STEP 3: DURATION -->
         <div class="section-label" style="margin-top:1rem;">Step 3 &mdash; Video Length</div>
         <div style="display:flex;gap:8px;margin-bottom:1.25rem;">
           <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec &mdash; 2 credits</button>
@@ -219,7 +202,6 @@
           Generate Fashion Video
         </button>
 
-        <!-- PROGRESS -->
         <div id="v-progress" style="margin-top:1rem;">
           <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
             <span id="v-progress-label" style="font-size:12px;color:#555;">Generating your video...</span>
@@ -228,57 +210,55 @@
           <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;">
             <div id="v-progress-fill" style="height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;"></div>
           </div>
-          <div style="font-size:11px;color:#aaa;margin-top:6px;">This takes 2&ndash;3 minutes. Please wait.</div>
+          <div style="font-size:11px;color:#aaa;margin-top:6px;">Keep screen on 📱 Takes 2–3 minutes.</div>
         </div>
       </div>
 
       <!-- RIGHT: RESULT -->
-      <div class="v-result-panel">
+      <div class="v-result-panel" id="v-result-panel">
         <div class="studio-card">
           <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.1);">
             <div style="font-size:11px;font-weight:600;color:#999;letter-spacing:1px;text-transform:uppercase;">Generated Video</div>
           </div>
           <div id="v-result" style="min-height:220px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;background:#f9f9f9;padding:2rem;">
             <div>
-              <div style="font-size:40px;margin-bottom:10px;">&#127916;</div>
+              <div style="font-size:40px;margin-bottom:10px;">🎬</div>
               <div style="font-weight:500;margin-bottom:4px;">Your fashion video will appear here</div>
-              <div style="font-size:11px;color:#aaa;">Takes 2&ndash;3 minutes</div>
+              <div style="font-size:11px;color:#aaa;">Takes 2–3 minutes</div>
             </div>
           </div>
           <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
             <div style="display:flex;gap:8px;">
-              <a id="v-download-btn" href="#" target="_blank" style="flex:1;display:block;padding:10px;background:#E91E63;color:#fff;text-align:center;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">&#8595; Download Video</a>
-              <button onclick="shareVideo()" style="padding:10px 16px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">&#128172; Share</button>
+              <a id="v-download-btn" href="#" style="flex:1;display:block;padding:10px;background:#E91E63;color:#fff;text-align:center;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">↓ Download Video</a>
+              <button onclick="shareVideo()" style="padding:10px 16px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">💬 Share</button>
             </div>
           </div>
         </div>
       </div>
-
-    </div><!-- end video-layout -->
-  </div><!-- end content -->
-</div><!-- end main -->
+    </div>
+  </div>
+</div>
 
 <!-- BUY CREDITS MODAL -->
 <div id="credits-modal" onclick="handleModalClick(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:20px;padding:1.5rem;max-width:340px;width:90%;text-align:center;position:relative;">
-    <button onclick="hideBuyCredits()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:#555;">&#10005;</button>
+    <button onclick="hideBuyCredits()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:#555;">✕</button>
     <div style="font-size:18px;font-weight:500;margin-bottom:4px;">Buy Credits</div>
-    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;">&#8377;25 per credit &middot; Added within 30 mins</div>
+    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;">₹50 per credit · Added within 30 mins</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;">
-      <div onclick="selectPack(250,10)" id="pack-250" style="border:2px solid #E91E63;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff0f5;"><div style="font-size:16px;font-weight:500;color:#E91E63;">&#8377;250</div><div style="font-size:10px;color:#555;margin-top:2px;">10 credits</div></div>
-      <div onclick="selectPack(500,20)" id="pack-500" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">&#8377;500</div><div style="font-size:10px;color:#555;margin-top:2px;">20 credits</div></div>
-      <div onclick="selectPack(1000,40)" id="pack-1000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">&#8377;1000</div><div style="font-size:10px;color:#555;margin-top:2px;">40 credits</div><div style="font-size:9px;color:#28a745;margin-top:2px;">Best value!</div></div>
+      <div onclick="selectPack(500,10)" id="pack-500" style="border:2px solid #E91E63;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff0f5;"><div style="font-size:16px;font-weight:500;color:#E91E63;">₹500</div><div style="font-size:10px;color:#555;margin-top:2px;">10 credits</div></div>
+      <div onclick="selectPack(1000,20)" id="pack-1000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">₹1000</div><div style="font-size:10px;color:#555;margin-top:2px;">20 credits</div></div>
+      <div onclick="selectPack(2000,40)" id="pack-2000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">₹2000</div><div style="font-size:10px;color:#555;margin-top:2px;">40 credits</div><div style="font-size:9px;color:#28a745;margin-top:2px;">Best value!</div></div>
     </div>
-    <img id="credits-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=250%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;margin-bottom:8px;" alt="UPI QR" />
-    <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:3px;">GPay &middot; PhonePe &middot; Paytm</div>
+    <img id="credits-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=500%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;margin-bottom:8px;" alt="UPI QR" />
+    <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:3px;">GPay · PhonePe · Paytm</div>
     <div style="font-size:11px;color:#555;margin-bottom:5px;">6352197977@ptyes</div>
-    <div style="font-size:14px;font-weight:600;color:#E91E63;margin-bottom:1rem;" id="credits-amount">&#8377;250</div>
-    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9250%20for%20Drapely%20credits." target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:500;margin-bottom:8px;">&#128172; Send Payment Screenshot</a>
+    <div style="font-size:14px;font-weight:600;color:#E91E63;margin-bottom:1rem;" id="credits-amount">₹500</div>
+    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9500%20for%20Drapely%20credits." target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:500;margin-bottom:8px;">💬 Send Payment Screenshot</a>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 var sb = window.supabase.createClient(
@@ -288,9 +268,7 @@ var sb = window.supabase.createClient(
 
 var selectedDuration = '5';
 var currentVideoUrl = null;
-var videoGallery = [];
 
-// Check if coming from dashboard "Make Video" button
 document.addEventListener('DOMContentLoaded', function() {
   var fromPhoto = sessionStorage.getItem('videoFromPhoto');
   if (fromPhoto) {
@@ -307,21 +285,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Video scene prompts
-var videoPresets = [
-  'beautiful Indian woman in golden sunset light, warm bokeh, full body fashion photography, cinematic 4K slow motion',
-  'grand royal Indian palace with golden chandeliers and marble floors, warm royal lighting, cinematic slow motion',
-  'festive Diwali night with glowing diyas and warm fairy lights, sparkling bokeh, cinematic 4K',
-  'lush blooming rose garden with soft pink flowers and golden hour sunlight, cinematic slow motion',
-  'Indian wedding mandap decorated with marigold flowers and golden drapes, dreamy soft lighting, cinematic',
-  'rooftop at night with sparkling city lights and blue hour sky, premium fashion video 4K',
-  'grand crystal chandelier ballroom with golden walls and elegant lighting, cinematic slow motion',
-  'heritage Rajasthani haveli with carved stone arches and warm terracotta tones, slow motion',
-  'iconic Taj Mahal monument background with soft morning light, cinematic fashion video',
-  ''
-];
-
-// Auth
 sb.auth.getSession().then(function(r) {
   if (!r.data.session) { window.location.href = 'auth.html'; return; }
   var user = r.data.session.user;
@@ -331,16 +294,10 @@ sb.auth.getSession().then(function(r) {
   var fullname = (fname + ' ' + lname).trim();
   var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
   var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
-  var unEl = document.getElementById('user-name');
-  var uaEl = document.getElementById('user-avatar');
-  var tsEl = document.getElementById('topbar-sub');
-  var maEl = document.getElementById('m-avatar');
-  var mnEl = document.getElementById('m-name');
-  if (unEl) unEl.textContent = displayName;
-  if (uaEl) uaEl.textContent = initials;
-  if (tsEl) tsEl.textContent = 'Create an AI fashion video';
-  if (maEl) maEl.textContent = initials;
-  if (mnEl) mnEl.textContent = displayName;
+  if (document.getElementById('user-name')) document.getElementById('user-name').textContent = displayName;
+  if (document.getElementById('user-avatar')) document.getElementById('user-avatar').textContent = initials;
+  if (document.getElementById('m-avatar')) document.getElementById('m-avatar').textContent = initials;
+  if (document.getElementById('m-name')) document.getElementById('m-name').textContent = displayName;
   loadCredits(user.id);
   loadVideoCount(user.id);
 });
@@ -358,9 +315,7 @@ function loadCredits(userId) {
 }
 
 function loadVideoCount(userId) {
-  sb.from('photoshoots')
-    .select('id')
-    .eq('user_id', userId)
+  sb.from('photoshoots').select('id').eq('user_id', userId)
     .or('media_type.eq.video,image_url.like.%.mp4%')
     .then(function(r) {
       var el = document.getElementById('stat-videos');
@@ -435,7 +390,7 @@ function handleModalClick(e) {
 }
 
 function selectPack(amount, credits) {
-  ['250','500','1000'].forEach(function(p) {
+  ['500','1000','2000'].forEach(function(p) {
     var el = document.getElementById('pack-' + p);
     if (el) { el.style.border = '1.5px solid rgba(233,30,99,0.2)'; el.style.background = '#fff'; }
   });
@@ -444,7 +399,7 @@ function selectPack(amount, credits) {
   var qr = document.getElementById('credits-qr');
   if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=' + amount + '%26cu=INR%26tn=Drapely+Credits';
   var amtEl = document.getElementById('credits-amount');
-  if (amtEl) amtEl.textContent = '\u20b9' + amount;
+  if (amtEl) amtEl.textContent = '₹' + amount;
   var wa = document.getElementById('wa-credits-link');
   if (wa) wa.href = 'https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9' + amount + '%20for%20Drapely%20' + credits + '%20credits.';
 }
@@ -460,14 +415,12 @@ function closeMobileNav() {
   document.getElementById('mobile-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-// Close nav when tapping anywhere outside on mobile
+
 document.addEventListener('touchstart', function(e) {
   var nav = document.getElementById('mobile-nav');
   var burger = document.querySelector('.burger');
   if (nav && nav.classList.contains('open')) {
-    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) {
-      closeMobileNav();
-    }
+    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) closeMobileNav();
   }
 }, { passive: true });
 
@@ -500,13 +453,18 @@ async function startVideoGenerate() {
   var resultEl = document.getElementById('v-result');
   if (progressEl) progressEl.style.display = 'block';
   if (downloadWrap) downloadWrap.style.display = 'none';
-  if (resultEl) resultEl.innerHTML = '<div style="text-align:center;color:#555;padding:2rem;"><div style="font-size:32px;margin-bottom:8px;">&#9203;</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;color:#aaa;">Takes 2-3 minutes</div></div>';
+  if (resultEl) resultEl.innerHTML = '<div style="text-align:center;color:#555;padding:2rem;"><div style="font-size:32px;margin-bottom:8px;">⏳</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;color:#aaa;">Keep screen on 📱 Takes 2-3 minutes</div></div>';
+
   var progress = 0;
   var vInterval = setInterval(function() {
-    if (progress < 90) { progress += Math.random() * 2 + 0.5; if (progress > 90) progress = 90;
+    if (progress < 90) {
+      progress += Math.random() * 2 + 0.5;
+      if (progress > 90) progress = 90;
       if (progressFill) progressFill.style.width = Math.round(progress) + '%';
-      if (progressPct) progressPct.textContent = Math.round(progress) + '%'; }
+      if (progressPct) progressPct.textContent = Math.round(progress) + '%';
+    }
   }, 2000);
+
   try {
     var imgData;
     if (fromPhotoUrl) {
@@ -518,32 +476,65 @@ async function startVideoGenerate() {
         reader.readAsDataURL(suitFile);
       });
     }
+
     var response = await fetch('/api/video', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt })
     });
     var data = await response.json();
-    if (data.error) { clearInterval(vInterval); if (progressEl) progressEl.style.display = 'none'; showToast('Error: ' + String(data.error).substring(0, 80)); return; }
+    if (data.error) {
+      clearInterval(vInterval);
+      if (progressEl) progressEl.style.display = 'none';
+      showToast('Error: ' + String(data.error).substring(0, 80));
+      return;
+    }
+
     var predId = data.prediction_id;
-    var pollResult = null; var attempts = 0;
+    var pollResult = null;
+    var attempts = 0;
     while (attempts < 60) {
       await new Promise(function(r){ setTimeout(r, 5000); });
-      var pollRes = await fetch('/api/poll?id=' + predId);
-      pollResult = await pollRes.json();
-      if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
-      if (pollResult.status === 'succeeded') break;
-      if (pollResult.status === 'failed') { clearInterval(vInterval); if (progressEl) progressEl.style.display = 'none'; showToast('Video failed. Try again.'); return; }
+      try {
+        var pollRes = await fetch('/api/poll?id=' + predId);
+        pollResult = await pollRes.json();
+        if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
+        if (pollResult.status === 'succeeded') break;
+        if (pollResult.status === 'failed') {
+          clearInterval(vInterval);
+          if (progressEl) progressEl.style.display = 'none';
+          showToast('Video failed. Try again.');
+          return;
+        }
+      } catch(e) {
+        console.log('Poll retry:', e.message);
+      }
       attempts++;
     }
+
     clearInterval(vInterval);
     if (progressFill) progressFill.style.width = '100%';
     if (progressPct) progressPct.textContent = '100%';
+
     setTimeout(function() {
       if (progressEl) progressEl.style.display = 'none';
-      var videoUrl = pollResult && pollResult.output ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output) : null;
+      var videoUrl = pollResult && pollResult.output
+        ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output)
+        : null;
+
       if (videoUrl) {
         currentVideoUrl = videoUrl;
+
+        // Show result panel on mobile and scroll to it
+        var panel = document.getElementById('v-result-panel');
+        if (panel) {
+          panel.classList.add('has-results');
+          setTimeout(function(){
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+
         if (resultEl) resultEl.innerHTML = '<video controls autoplay playsinline style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:10px;background:#000;max-height:500px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+
         var dlBtn = document.getElementById('v-download-btn');
         if (dlBtn) {
           dlBtn.href = '#';
@@ -562,6 +553,8 @@ async function startVideoGenerate() {
           };
         }
         if (downloadWrap) downloadWrap.style.display = 'block';
+
+        // Save to DB and deduct credits
         sb.auth.getSession().then(function(r) {
           if (!r.data.session) return;
           var userId = r.data.session.user.id;
@@ -571,8 +564,7 @@ async function startVideoGenerate() {
             image_count: (selectedDuration === '10' ? 4 : 2),
             media_type: 'video'
           }).then(function(res) {
-            if (res.error) console.error('Video save error:', res.error.message);
-            else { console.log('Video saved!'); loadVideoCount(userId); }
+            if (!res.error) loadVideoCount(userId);
           });
           var cost = selectedDuration === '10' ? 4 : 2;
           sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
@@ -585,16 +577,19 @@ async function startVideoGenerate() {
             }
           });
         });
+
         showToast('Your fashion video is ready!');
-      } else { showToast('No video returned. Try again.'); }
+      } else {
+        showToast('No video returned. Try again.');
+      }
     }, 500);
+
   } catch(err) {
     clearInterval(vInterval);
     if (progressEl) progressEl.style.display = 'none';
     showToast('Error: ' + err.message);
   }
 }
-
 </script>
 </body>
 </html>
