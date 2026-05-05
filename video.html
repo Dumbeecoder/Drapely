@@ -415,8 +415,20 @@ function downloadVideo() {
 function doDownload(url) {
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (isIOS) {
-    // iOS Safari: open directly → user taps Share → Save to Photos
-    window.open(url, '_blank');
+    if (navigator.share) {
+      showToast('Preparing...');
+      fetch(url).then(function(r){ return r.blob(); }).then(function(blob){
+        var file = new File([blob], 'drapely-video-' + Date.now() + '.mp4', { type: 'video/mp4' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'Drapely AI Video' })
+            .catch(function(e){ console.log('Share cancelled:', e); });
+        } else {
+          window.open(url, '_blank');
+        }
+      }).catch(function(){ window.open(url, '_blank'); });
+    } else {
+      window.open(url, '_blank');
+    }
     return;
   }
   // Android/desktop: blob download
