@@ -63,7 +63,7 @@
 
     
     .burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
-    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:155;}
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158;}
     .mobile-overlay.open{display:block;}
     .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0;overflow-y:auto;}
     .mobile-nav.open{left:0;}
@@ -329,8 +329,16 @@ async function downloadImage(url, num) {
 }
 
 function showToast(msg) { var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },3000); }
-function openMobileNav() { document.getElementById('mobile-nav').classList.add('open'); document.getElementById('mobile-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeMobileNav() { document.getElementById('mobile-nav').classList.remove('open'); document.getElementById('mobile-overlay').classList.remove('open'); document.body.style.overflow=''; }
+function openMobileNav() {
+  document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
 async function doSignOut() { await sb.auth.signOut(); window.location.href='auth.html'; }
 </script>
 </body>
