@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>How to Use Drapely</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
+
+    /* SIDEBAR */
+    .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
+    .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .sidebar-brand span{color:#E91E63;}
+    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
+    .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .nav-item.active{color:#E91E63;}
+    .sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
+    .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
+    .user-av{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+    /* MAIN */
+    .main{margin-left:220px;flex:1;padding:2.5rem 2rem;min-height:100vh;}
+
+    /* HERO */
+    .hero{background:#000;border-radius:20px;padding:2.5rem;margin-bottom:2.5rem;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(233,30,99,0.3),transparent 70%);pointer-events:none;}
+    .hero h1{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#fff;letter-spacing:1px;margin-bottom:8px;}
+    .hero h1 span{color:#E91E63;}
+    .hero p{font-size:14px;color:rgba(255,255,255,0.6);max-width:500px;line-height:1.6;}
+
+    /* TABS */
+    .tabs{display:flex;gap:8px;margin-bottom:2rem;flex-wrap:wrap;}
+    .tab{padding:10px 24px;border-radius:24px;border:1.5px solid rgba(233,30,99,0.25);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#555;cursor:pointer;transition:all 0.15s;}
+    .tab.active{background:#E91E63;border-color:#E91E63;color:#fff;}
+
+    /* SECTIONS */
+    .section{display:none;}
+    .section.active{display:block;}
+
+    /* SECTION HEADER */
+    .section-hero{background:linear-gradient(135deg,#fff0f5,#fff);border:1px solid rgba(233,30,99,0.15);border-radius:16px;padding:1.75rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.25rem;}
+    .section-icon{width:56px;height:56px;border-radius:14px;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+    .section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;margin-bottom:4px;}
+    .section-sub{font-size:13px;color:#555;}
+
+    /* STEPS */
+    .steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem;}
+    .step-card{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:14px;padding:1.25rem;position:relative;overflow:hidden;}
+    .step-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#E91E63,#ff6b9d);}
+    .step-num{width:28px;height:28px;border-radius:50%;background:#E91E63;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+    .step-title{font-size:14px;font-weight:600;margin-bottom:6px;}
+    .step-desc{font-size:12px;color:#555;line-height:1.6;}
+
+    /* TIPS */
+    .tips-box{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
+    .tips-title{font-size:14px;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+    .tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .tip{display:flex;gap:10px;align-items:flex-start;}
+    .tip-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+    .tip-text{font-size:12px;color:#444;line-height:1.6;}
+    .tip-text strong{color:#000;display:block;margin-bottom:2px;}
+
+    /* DO/DONT */
+    .do-dont{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+    .do-box,.dont-box{background:#fff;border-radius:14px;padding:1.25rem;}
+    .do-box{border:1px solid rgba(34,197,94,0.25);}
+    .dont-box{border:1px solid rgba(233,30,99,0.2);}
+    .box-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .do-box .box-label{color:#16a34a;}
+    .dont-box .box-label{color:#E91E63;}
+    .box-item{font-size:12px;color:#555;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.05);line-height:1.5;}
+    .box-item:last-child{border:none;}
+
+    /* FAQ */
+    .faq{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:14px;overflow:hidden;margin-bottom:1.5rem;}
+    .faq-item{padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.08);cursor:pointer;}
+    .faq-item:last-child{border:none;}
+    .faq-q{font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;}
+    .faq-a{font-size:12px;color:#555;margin-top:8px;line-height:1.6;display:none;}
+    .faq-item.open .faq-a{display:block;}
+    .faq-item.open .faq-arrow{transform:rotate(180deg);}
+    .faq-arrow{transition:transform 0.2s;font-size:12px;color:#E91E63;}
+
+    /* CTA */
+    .cta{background:#E91E63;border-radius:14px;padding:1.5rem;text-align:center;color:#fff;}
+    .cta h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:6px;}
+    .cta p{font-size:12px;opacity:0.85;margin-bottom:1rem;}
+    .cta a{display:inline-block;padding:10px 28px;background:#fff;color:#E91E63;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;}
+
+    /* MOBILE */
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
+    .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
+    .mobile-logo span{color:#E91E63;}
+    .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
+    .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158;}
+    .mobile-overlay.open{display:block;}
+    .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0;overflow-y:auto;}
+    .mobile-nav.open{left:0;}
+    .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .mobile-nav-brand span{color:#E91E63;}
+    .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2);}
+    .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);}
+    .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
+    .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
+
+    @media(max-width:900px){
+      .sidebar{display:none !important;}
+      .main{margin-left:0 !important;padding-top:70px !important;padding-left:1rem;padding-right:1rem;}
+      .mobile-header{display:flex !important;}
+      .burger{display:flex !important;}
+      .hero{padding:1.5rem;}
+      .hero h1{font-size:26px;}
+      .steps-grid{grid-template-columns:1fr;}
+      .tips-grid{grid-template-columns:1fr;}
+      .do-dont{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+  <a href="#" class="mobile-logo">Drape<span>ly</span></a>
+</div>
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#" class="mobile-nav-brand">Drape<span>ly</span></a>
+  <div class="mobile-nav-items">
+    <a class="mobile-nav-item" href="dashboard.html" onclick="closeMobileNav()">✨ New Photoshoot</a>
+    <a class="mobile-nav-item" href="video.html" onclick="closeMobileNav()">🎬 New Video</a>
+    <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
+    <a class="mobile-nav-item" href="backgrounds.html" onclick="closeMobileNav()">🌄 Backgrounds</a>
+    <a class="mobile-nav-item active" href="guide.html" onclick="closeMobileNav()">📖 How to Use</a>
+    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
+    <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
+    <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
+  </div>
+  <div class="mobile-nav-footer">
+    <div class="mobile-user">
+      <div class="mobile-user-avatar" id="m-avatar">?</div>
+      <div><div class="mobile-user-name" id="m-name">...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DESKTOP SIDEBAR -->
+<div class="sidebar">
+  <a href="#" onclick="location.reload();return false;" class="sidebar-brand">Drape<span>ly</span></a>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">STUDIO</div>
+    <a href="dashboard.html" class="nav-item">✨ New photoshoot</a>
+    <a href="video.html" class="nav-item">🎬 New video</a>
+    <a href="bulk.html" class="nav-item">⚡ Bulk Studio</a>
+    <a href="gallery.html" class="nav-item">🖼️ My gallery</a>
+    <a href="backgrounds.html" class="nav-item">🌄 Backgrounds</a>
+    <div class="nav-section-label">ACCOUNT</div>
+    <a href="guide.html" class="nav-item active">📖 How to Use</a>
+    <a href="settings.html" class="nav-item">⚙️ Settings</a>
+    <a href="credits.html" class="nav-item">💳 Credits</a>
+    <a href="#" onclick="doSignOut();return false;" class="nav-item">🚪 Sign out</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-av" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>How to use <span>Drapely</span></h1>
+    <p>Everything you need to know to get stunning AI fashion photos, videos and bulk shoots in minutes.</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('photos')">📷 AI Photoshoot</button>
+    <button class="tab" onclick="showTab('video')">🎬 AI Video</button>
+    <button class="tab" onclick="showTab('bulk')">⚡ Bulk Studio</button>
+  </div>
+
+  <!-- ========== PHOTOS SECTION ========== -->
+  <div class="section active" id="section-photos">
+
+    <div class="section-hero">
+      <div class="section-icon">📷</div>
+      <div>
+        <div class="section-title">AI Photoshoot</div>
+        <div class="section-sub">Upload a suit photo → choose model, scene & pose → generate professional photos in seconds</div>
+      </div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Upload your suit photo</div>
+        <div class="step-desc">Take a clear photo of your garment laid flat or on a hanger. Make sure the full outfit is visible with good lighting. JPG or PNG works best.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">Choose garment type</div>
+        <div class="step-desc">Select Salwar Suit (Kurta, Anarkali, Palazzo) or Saree (Silk, Chiffon, Cotton). This helps the AI understand how to drape the outfit correctly.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">Pick a model</div>
+        <div class="step-desc">Choose from 6 Indian models — Priya, Anjali, Kavya, Simran, Meera, Naina. Or upload your own model photo for a custom look.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">Choose scene & pose</div>
+        <div class="step-desc">Pick from 12 realistic photoshoot backgrounds (Marble Corridor, Garden, Palace, etc.) or write your own custom scene. Select a pose for the model.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">5</div>
+        <div class="step-title">Select image count & generate</div>
+        <div class="step-desc">Choose 1, 2 or 4 images. Each image = 1 credit (₹25). Click Generate and your photos will be ready in 30–60 seconds.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">6</div>
+        <div class="step-title">Download & share</div>
+        <div class="step-desc">Download HD photos directly. All photos are saved in My Gallery. You can also turn any photo into an AI fashion video.</div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-title">📸 What makes the best suit photos</div>
+      <div class="tips-grid">
+        <div class="tip"><div class="tip-icon">☀️</div><div class="tip-text"><strong>Good lighting</strong>Natural light or bright indoor light. Avoid dark or shadowy photos.</div></div>
+        <div class="tip"><div class="tip-icon">👗</div><div class="tip-text"><strong>Full outfit visible</strong>Make sure the entire garment — top, bottom and dupatta — is in frame.</div></div>
+        <div class="tip"><div class="tip-icon">🧹</div><div class="tip-text"><strong>Clean background</strong>White or plain background works best. Avoid cluttered backgrounds.</div></div>
+        <div class="tip"><div class="tip-icon">📐</div><div class="tip-text"><strong>Flat lay or hanger</strong>Lay the suit flat on a bed/table or hang it up. Both work great.</div></div>
+        <div class="tip"><div class="tip-icon">🎨</div><div class="tip-text"><strong>Show embroidery clearly</strong>Capture the embroidery, zari work and details — the AI will replicate them.</div></div>
+        <div class="tip"><div class="tip-icon">📱</div><div class="tip-text"><strong>High resolution</strong>Use your phone camera normally. Avoid blurry or zoomed-out photos.</div></div>
+      </div>
+    </div>
+
+    <div class="do-dont">
+      <div class="do-box">
+        <div class="box-label">✅ DO</div>
+        <div class="box-item">Upload the full suit including dupatta</div>
+        <div class="box-item">Use bright, even lighting</div>
+        <div class="box-item">Keep suit wrinkle-free if possible</div>
+        <div class="box-item">Use a plain white/light background</div>
+        <div class="box-item">Show the front of the garment clearly</div>
+      </div>
+      <div class="dont-box">
+        <div class="box-label">❌ DON'T</div>
+        <div class="box-item">Upload blurry or dark photos</div>
+        <div class="box-item">Crop out parts of the outfit</div>
+        <div class="box-item">Use heavily patterned backgrounds</div>
+        <div class="box-item">Upload photos of models wearing suits</div>
+        <div class="box-item">Upload very small or low-res images</div>
+      </div>
+    </div>
+
+    <div class="faq">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">How many credits does one photoshoot cost? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">1 image = 1 credit (₹25). You can generate 1, 2 or 4 images per photoshoot. So a 4-image shoot costs 4 credits (₹100).</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Can I use my own background? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Yes! In Step 3 click "Upload background" to upload any image. The AI will remove the generated background and place the model on your image. You can also download free backgrounds from the Backgrounds page.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">What if the result doesn't look right? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Try uploading a clearer photo of the garment with better lighting. Also try a different model or scene. The quality of the input photo greatly affects the output.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Where are my generated photos saved? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">All photos are automatically saved to My Gallery. You can view, download and share them anytime.</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h3>Ready to generate your first photo?</h3>
+      <p>Takes less than 2 minutes. Starts at ₹25 per image.</p>
+      <a href="dashboard.html">Start Photoshoot →</a>
+    </div>
+
+  </div>
+
+  <!-- ========== VIDEO SECTION ========== -->
+  <div class="section" id="section-video">
+
+    <div class="section-hero">
+      <div class="section-icon">🎬</div>
+      <div>
+        <div class="section-title">AI Fashion Video</div>
+        <div class="section-sub">Upload a suit photo or use a generated photo → describe movement → get a 5s or 10s fashion video</div>
+      </div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Upload a photo</div>
+        <div class="step-desc">Upload a suit photo directly, or go to My Gallery and click "Make Video" on any generated photo. Using a Drapely-generated photo gives better results.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">Describe what the model should do</div>
+        <div class="step-desc">Type or select what movement you want — walking, twirling, standing confidently, showing dupatta, doing a full turn. Be specific for best results.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">Choose video length</div>
+        <div class="step-desc">5 seconds = 2 credits (₹50). 10 seconds = 4 credits (₹100). Longer videos show more movement and are better for social media.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">Generate & download</div>
+        <div class="step-desc">Click Generate. Videos take 2–3 minutes to process. Once ready, download your video or share it directly on WhatsApp.</div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-title">🎬 Tips for the best videos</div>
+      <div class="tips-grid">
+        <div class="tip"><div class="tip-icon">🖼️</div><div class="tip-text"><strong>Use Drapely photos</strong>Videos made from Drapely-generated photos look much smoother and more realistic.</div></div>
+        <div class="tip"><div class="tip-icon">💃</div><div class="tip-text"><strong>Be specific about movement</strong>"Model walking gracefully showing full outfit" works better than just "walking".</div></div>
+        <div class="tip"><div class="tip-icon">🌀</div><div class="tip-text"><strong>Twirls show dupatta best</strong>For suits with flowing dupatta, twirling or arms-open poses show the fabric beautifully.</div></div>
+        <div class="tip"><div class="tip-icon">⏱️</div><div class="tip-text"><strong>10s for social media</strong>10-second videos are better for Instagram Reels and WhatsApp Status.</div></div>
+      </div>
+    </div>
+
+    <div class="do-dont">
+      <div class="do-box">
+        <div class="box-label">✅ Best movements to request</div>
+        <div class="box-item">Walking gracefully, showing full outfit</div>
+        <div class="box-item">Twirling, dupatta flowing beautifully</div>
+        <div class="box-item">Standing confidently, posing for camera</div>
+        <div class="box-item">Slow 360 degree turn showing full outfit</div>
+        <div class="box-item">Walking towards camera confidently</div>
+      </div>
+      <div class="dont-box">
+        <div class="box-label">⚠️ Avoid these</div>
+        <div class="box-item">Very complex multi-step movements</div>
+        <div class="box-item">Vague prompts like just "move"</div>
+        <div class="box-item">Requesting specific facial expressions</div>
+        <div class="box-item">Uploading very dark or blurry photos</div>
+        <div class="box-item">Expecting exact scene backgrounds in video</div>
+      </div>
+    </div>
+
+    <div class="faq">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">How long does video generation take? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Videos take 2–3 minutes to process. Don't close the page while waiting. Once done, the video appears automatically and is saved to My Gallery.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Can I use any photo for video? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Yes, you can upload any suit photo. But videos made from Drapely AI-generated photos look significantly better since the model and outfit are already optimized.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Where do my videos get saved? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">All videos are saved to My Gallery under the Videos tab. You can download them or share directly to WhatsApp.</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h3>Create your first fashion video</h3>
+      <p>5 seconds for just 2 credits (₹50). Perfect for Instagram & WhatsApp.</p>
+      <a href="video.html">Make a Video →</a>
+    </div>
+
+  </div>
+
+  <!-- ========== BULK SECTION ========== -->
+  <div class="section" id="section-bulk">
+
+    <div class="section-hero">
+      <div class="section-icon">⚡</div>
+      <div>
+        <div class="section-title">Bulk Studio</div>
+        <div class="section-sub">Upload up to 20 suit photos at once → generate all → download as ZIP</div>
+      </div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Upload multiple suit photos</div>
+        <div class="step-desc">Select up to 20 suit photos at once. Each photo = 1 credit. Make sure you have enough credits before starting. All photos should be clear with good lighting.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">Choose settings for all</div>
+        <div class="step-desc">Select garment type, scene/background, model and pose. These settings apply to all photos in the batch — choose what looks best for your collection.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">Generate all at once</div>
+        <div class="step-desc">Click Generate All. Each suit is processed one by one. You can see progress in real time as each photo is generated. Takes 1–2 minutes per photo.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">Download as ZIP</div>
+        <div class="step-desc">Once all photos are done, click Export ZIP to download all photos in one file. All photos are also saved to My Gallery automatically.</div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-title">⚡ Tips for bulk shoots</div>
+      <div class="tips-grid">
+        <div class="tip"><div class="tip-icon">🗂️</div><div class="tip-text"><strong>Batch by style</strong>Group similar suits together (all salwar suits in one batch, sarees in another) for consistent results.</div></div>
+        <div class="tip"><div class="tip-icon">💳</div><div class="tip-text"><strong>Check credits first</strong>Make sure you have enough credits before starting. 20 photos = 20 credits.</div></div>
+        <div class="tip"><div class="tip-icon">📸</div><div class="tip-text"><strong>Consistent photo style</strong>Take all garment photos the same way — same lighting, same angle — for a cohesive catalog.</div></div>
+        <div class="tip"><div class="tip-icon">🌅</div><div class="tip-text"><strong>Choose one scene</strong>Pick a single background scene that works for your whole collection (White Studio works for all).</div></div>
+      </div>
+    </div>
+
+    <div class="do-dont">
+      <div class="do-box">
+        <div class="box-label">✅ Bulk works best for</div>
+        <div class="box-item">Catalog shoots for online stores</div>
+        <div class="box-item">Festival collection launches</div>
+        <div class="box-item">WhatsApp catalogue for customers</div>
+        <div class="box-item">Instagram product grid photos</div>
+        <div class="box-item">Saree or suit set collections</div>
+      </div>
+      <div class="dont-box">
+        <div class="box-label">⚠️ Keep in mind</div>
+        <div class="box-item">Don't close the page during generation</div>
+        <div class="box-item">All photos use the same model & scene</div>
+        <div class="box-item">Max 20 photos per batch</div>
+        <div class="box-item">Credits are deducted per photo generated</div>
+        <div class="box-item">Poor quality photos = poor quality results</div>
+      </div>
+    </div>
+
+    <div class="faq">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Can I choose different models for each photo in bulk? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Not currently — bulk shoots use one model for the entire batch. For different models, use the regular photoshoot which lets you pick per photo.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">What if some photos in the batch fail? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Failed photos are skipped and only successful ones are included in the ZIP download. Credits are only deducted for successful generations.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">How long does a 20-photo bulk shoot take? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a">Each photo takes about 1–2 minutes, so a 20-photo batch can take 20–40 minutes. Keep the page open during generation.</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h3>Launch your bulk shoot</h3>
+      <p>Upload up to 20 suits and generate your entire catalog at once.</p>
+      <a href="bulk.html">Open Bulk Studio →</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
+  var initials = displayName.slice(0,2).toUpperCase();
+  var av = document.getElementById('user-avatar'); if(av) av.textContent = initials;
+  var nm = document.getElementById('user-name'); if(nm) nm.textContent = displayName;
+  var mav = document.getElementById('m-avatar'); if(mav) mav.textContent = initials;
+  var mnm = document.getElementById('m-name'); if(mnm) mnm.textContent = displayName;
+});
+
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  event.target.classList.add('active');
+  document.getElementById('section-' + tab).classList.add('active');
+}
+
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+
+function openMobileNav() {
+  document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('touchstart', function(e) {
+  var nav = document.getElementById('mobile-nav');
+  var burger = document.querySelector('.burger');
+  if (nav && nav.classList.contains('open')) {
+    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) {
+      closeMobileNav();
+    }
+  }
+}, { passive: true });
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+</script>
+</body>
+</html>
