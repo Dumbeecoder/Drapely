@@ -229,7 +229,7 @@
           </div>
           <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
             <div style="display:flex;gap:8px;">
-              <a id="v-download-btn" href="#" style="flex:1;display:block;padding:10px;background:#E91E63;color:#fff;text-align:center;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">↓ Download Video</a>
+              <button onclick="downloadVideo()" style="flex:1;padding:10px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Download Video</button>
               <button onclick="shareVideo()" style="padding:10px 16px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">💬 Share</button>
             </div>
           </div>
@@ -373,6 +373,29 @@ function selectDur(btn, dur) {
 function shareVideo() {
   if (!currentVideoUrl) return;
   window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video from Drapely! ' + currentVideoUrl), '_blank');
+}
+
+function downloadVideo() {
+  if (!currentVideoUrl) return;
+  showToast('Starting download...');
+  // iOS Safari: fetch as blob then create object URL
+  fetch(currentVideoUrl)
+    .then(function(res) { return res.blob(); })
+    .then(function(blob) {
+      var blobUrl = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'drapely-video-' + Date.now() + '.mp4';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 3000);
+    })
+    .catch(function() {
+      // Fallback: open directly — iOS will show native save prompt
+      window.open(currentVideoUrl, '_blank');
+    });
 }
 
 function showBuyCredits() {
@@ -535,23 +558,6 @@ async function startVideoGenerate() {
 
         if (resultEl) resultEl.innerHTML = '<video controls autoplay playsinline style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:10px;background:#000;max-height:500px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
 
-        var dlBtn = document.getElementById('v-download-btn');
-        if (dlBtn) {
-          dlBtn.href = '#';
-          dlBtn.onclick = function(e) {
-            e.preventDefault();
-            showToast('Preparing download...');
-            fetch(videoUrl)
-              .then(function(res){ return res.blob(); })
-              .then(function(blob) {
-                var a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'drapely-video-' + Date.now() + '.mp4';
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                URL.revokeObjectURL(a.href);
-              }).catch(function(){ window.open(videoUrl, '_blank'); });
-          };
-        }
         if (downloadWrap) downloadWrap.style.display = 'block';
 
         // Save to DB and deduct credits
