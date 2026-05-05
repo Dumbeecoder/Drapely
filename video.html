@@ -498,6 +498,19 @@ function showToast(msg) {
   setTimeout(function(){ t.classList.remove('show'); }, 3500);
 }
 
+var _wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      _wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake lock acquired');
+    }
+  } catch(e) { console.log('Wake lock failed:', e.message); }
+}
+function releaseWakeLock() {
+  if (_wakeLock) { _wakeLock.release(); _wakeLock = null; }
+}
+
 async function startVideoGenerate() {
   var suitFile = document.getElementById('v-suit-input').files[0];
   var fromPhotoUrl = window._videoFromPhotoUrl || null;
@@ -515,6 +528,7 @@ async function startVideoGenerate() {
   var resultEl = document.getElementById('v-result');
   if (progressEl) progressEl.style.display = 'block';
   if (downloadWrap) downloadWrap.style.display = 'none';
+  requestWakeLock();
   if (resultEl) resultEl.innerHTML = '<div style="text-align:center;color:#555;padding:2rem;"><div style="font-size:32px;margin-bottom:8px;">⏳</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;color:#aaa;">Keep screen on 📱 Takes 2-3 minutes</div></div>';
 
   var progress = 0;
@@ -645,6 +659,7 @@ async function startVideoGenerate() {
           });
         });
 
+        releaseWakeLock();
         showToast('Your fashion video is ready!');
       } else {
         showToast('No video returned. Try again.');
