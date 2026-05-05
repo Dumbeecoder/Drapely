@@ -8,8 +8,8 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--gold:#E91E63;--gold-light:#ffffff;--gold-pale:#ffffff;--deep:#000000;--muted:#444444;--text:#000000;--border:rgba(233,30,99,0.2);--border-mid:rgba(233,30,99,0.4);--surface:#ffffff;--white:#fff;--error:#dc2626;--success:#16a34a}
-    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
+    body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:10;padding:0 0 1.5rem}
     .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
     .sidebar-brand span{color:var(--gold)}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
@@ -23,7 +23,7 @@
     .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
     .user-name{font-size:12px;font-weight:500;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-plan{font-size:10px;color:var(--gold)}
-    .main{margin-left:220px;min-height:100vh}
+    .main{margin-left:220px;min-height:100vhoverflow-x:hidden;}
     .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
     .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--text)}
     .content{padding:2rem;max-width:700px}
@@ -89,7 +89,7 @@
     
     @media(max-width:600px){.content{padding:1rem}.field-row{grid-template-columns:1fr}}
 
-    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:200;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.2);}
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.2);}
     .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;}
     .mobile-logo span{color:#E91E63;}
     
