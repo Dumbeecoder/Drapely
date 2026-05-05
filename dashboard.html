@@ -1108,13 +1108,17 @@ async function startGenerate() {
       var data = null;
       var usedSync = false;
       try {
+        var syncController = new AbortController();
+        var syncTimeout = setTimeout(function(){ syncController.abort(); }, 100000);
         var syncRes = await fetch('/api/generate-sync', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: payload, signal: syncController.signal
         });
+        clearTimeout(syncTimeout);
         data = await syncRes.json();
         if (data.image_url) { results.push(data.image_url); usedSync = true; }
       } catch(syncErr) {
-        console.log('generate-sync failed, falling back:', syncErr.message);
+        console.log('generate-sync failed/timeout, falling back:', syncErr.message);
       }
       if (!usedSync) {
         // Fallback: old generate + client-side poll
