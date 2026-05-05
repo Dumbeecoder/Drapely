@@ -24,7 +24,7 @@
     .auth-box{width:100%;max-width:420px}
     .tabs{display:flex;background:rgba(233,30,99,0.08);border-radius:10px;padding:4px;margin-bottom:2rem;border:1px solid var(--border)}
     .tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:500;color:var(--muted);border-radius:7px;cursor:pointer;transition:all 0.2s}
-    .tab.active{background:var(--gold);color:var(--deep)}
+    .tab.active{background:var(--gold);color:#fff}
     .form-panel{display:none}
     .form-panel.active{display:block}
     .form-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text);margin-bottom:6px}
@@ -40,7 +40,7 @@
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .forgot{display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:16px}
     .forgot a{font-size:12px;color:var(--gold);text-decoration:none}
-    .btn{width:100%;padding:14px;background:var(--gold);color:var(--deep);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:1.5rem;transition:background 0.2s}
+    .btn{width:100%;padding:14px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:1.5rem;transition:background 0.2s}
     .btn:hover{background:#c2185b}
     .btn:disabled{background:#f06292;cursor:not-allowed}
     .terms{font-size:12px;color:var(--muted);text-align:center;line-height:1.8}
@@ -68,10 +68,9 @@
         <li><div class="dot"></div>10+ Indian model types and poses</li>
         <li><div class="dot"></div>Studio, heritage, and custom backgrounds</li>
         <li><div class="dot"></div>HD downloads for WhatsApp and Instagram</li>
-        <li><div class="dot"></div>100% free during beta</li>
       </ul>
     </div>
-    <div class="left-footer">© 2025 Drapely · Made for Indian fashion · Surat, Gujarat</div>
+    <div class="left-footer">&copy; 2025 Drapely &middot; Made for Indian fashion &middot; Surat, Gujarat</div>
   </div>
 
   <div class="right">
@@ -90,7 +89,7 @@
               <input type="password" id="si-pass" placeholder="Your password" style="width:100%;padding-right:44px;" onkeydown="if(event.key==='Enter')doSignIn()" />
               <button type="button" onclick="togglePass('si-pass','si-pass-eye')" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;color:#888;font-size:18px;padding:4px;line-height:1;" id="si-pass-eye">👁</button>
             </div><div class="field-error" id="e-si-pass">Enter your password</div></div>
-        <div class="forgot"><a href="#" onclick="forgotPassword()">Forgot password?</a></div>
+        <div class="forgot"><a href="#" onclick="forgotPassword();return false;">Forgot password?</a></div>
         <button class="btn" id="si-btn" onclick="doSignIn()">Sign in to Drapely</button>
         <div class="terms">No account? <a href="#" onclick="goTab('signup')">Create one free</a></div>
       </div>
@@ -98,7 +97,7 @@
       <!-- SIGN UP -->
       <div class="form-panel" id="panel-signup">
         <div class="form-title">Join Drapely free</div>
-        <div class="form-sub">No credit card needed during beta.</div>
+        <div class="form-sub">Start generating AI photos today.</div>
         <div class="field-row">
           <div class="field"><label>First name</label><input type="text" id="su-fname" placeholder="Priya" /><div class="field-error" id="e-su-fname">Required</div></div>
           <div class="field"><label>Last name</label><input type="text" id="su-lname" placeholder="Shah" /></div>
@@ -112,6 +111,18 @@
             </div><div class="field-error" id="e-su-pass">Min 8 characters</div></div>
         <button class="btn" id="su-btn" onclick="doSignUp()">Create free account</button>
         <div class="terms">Have an account? <a href="#" onclick="goTab('signin')">Sign in</a></div>
+      </div>
+
+      <!-- RESET PASSWORD (shown when user comes back from email link) -->
+      <div class="form-panel" id="panel-reset">
+        <div class="form-title">Set new password</div>
+        <div class="form-sub">Enter your new password below.</div>
+        <div class="field"><label>New password</label><div style="position:relative;display:flex;align-items:center;">
+              <input type="password" id="rp-pass" placeholder="Min 8 characters" style="width:100%;padding-right:44px;" />
+              <button type="button" onclick="togglePass('rp-pass','rp-pass-eye')" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;color:#888;font-size:18px;padding:4px;line-height:1;" id="rp-pass-eye">👁</button>
+            </div><div class="field-error" id="e-rp-pass">Min 8 characters</div></div>
+        <div class="field"><label>Confirm password</label><input type="password" id="rp-pass2" placeholder="Repeat password" /><div class="field-error" id="e-rp-pass2">Passwords don't match</div></div>
+        <button class="btn" id="rp-btn" onclick="doResetPassword()">Update password</button>
       </div>
 
       <!-- SUCCESS -->
@@ -133,13 +144,38 @@ var sb = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
 var curTab = 'signin';
-sb.auth.getSession().then(function(r){ if(r.data.session) window.location.href='dashboard.html'; });
+
+// Check if user arrived via password reset link (has access_token in URL hash)
+window.addEventListener('load', function() {
+  var hash = window.location.hash;
+  if (hash && hash.includes('type=recovery')) {
+    // Hide tabs, show reset panel
+    document.getElementById('tabs').style.display = 'none';
+    document.getElementById('panel-signin').classList.remove('active');
+    document.getElementById('panel-reset').classList.add('active');
+    return;
+  }
+  sb.auth.getSession().then(function(r){
+    if (r.data.session) window.location.href = 'dashboard.html';
+  });
+});
+
+// Also handle auth state change for recovery
+sb.auth.onAuthStateChange(function(event, session) {
+  if (event === 'PASSWORD_RECOVERY') {
+    document.getElementById('tabs').style.display = 'none';
+    document.getElementById('panel-signin').classList.remove('active');
+    document.getElementById('panel-signup').classList.remove('active');
+    document.getElementById('panel-reset').classList.add('active');
+  }
+});
 
 function goTab(t){
   curTab=t;
   document.querySelectorAll('.tab').forEach(function(el,i){ el.classList.toggle('active',(i===0&&t==='signin')||(i===1&&t==='signup')); });
   document.getElementById('panel-signin').classList.toggle('active',t==='signin');
   document.getElementById('panel-signup').classList.toggle('active',t==='signup');
+  document.getElementById('panel-reset').classList.remove('active');
   document.getElementById('success-box').classList.remove('show');
 }
 
@@ -151,13 +187,8 @@ function setBtn(id,on,lbl){ var b=document.getElementById(id); b.disabled=on; b.
 function togglePass(inputId, btnId) {
   var input = document.getElementById(inputId);
   var btn = document.getElementById(btnId);
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁';
-  }
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁'; }
   input.focus();
 }
 
@@ -210,11 +241,28 @@ async function forgotPassword(){
     document.getElementById('si-email').focus();
     return;
   }
+  toast('Sending reset link...');
   var r = await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://drapely.vercel.app/auth.html'
+    redirectTo: 'https://drapely.in/auth.html'
   });
   if(r.error){ toast('✗ ' + r.error.message); return; }
-  toast('✓ Password reset link sent to ' + email);
+  toast('✓ Reset link sent to ' + email + ' — check your inbox!');
+}
+
+async function doResetPassword(){
+  var pass = document.getElementById('rp-pass').value;
+  var pass2 = document.getElementById('rp-pass2').value;
+  if(!pass || pass.length < 8){ shErr('rp-pass','e-rp-pass'); return; }
+  if(pass !== pass2){ shErr('rp-pass2','e-rp-pass2'); return; }
+  setBtn('rp-btn', true, 'Update password');
+  var r = await sb.auth.updateUser({ password: pass });
+  setBtn('rp-btn', false, 'Update password');
+  if(r.error){ toast('✗ ' + r.error.message); return; }
+  document.getElementById('panel-reset').classList.remove('active');
+  document.getElementById('success-box').classList.add('show');
+  document.getElementById('success-title').textContent = 'Password updated!';
+  document.getElementById('success-msg').textContent = 'Your password has been changed. You can now sign in.';
+  setTimeout(function(){ window.location.href='dashboard.html'; }, 2000);
 }
 
 function goBack(){
