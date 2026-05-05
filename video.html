@@ -228,10 +228,7 @@
             </div>
           </div>
           <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
-            <div style="display:flex;gap:8px;">
-              <button onclick="downloadVideo()" style="flex:1;padding:10px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Download Video</button>
-              <button onclick="shareVideo()" style="padding:10px 16px;border:1px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">💬 Share</button>
-            </div>
+            <button onclick="downloadVideo()" style="width:100%;padding:12px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Download Video</button>
           </div>
         </div>
       </div>
@@ -393,16 +390,32 @@ function shareVideo() {
 }
 
 function downloadVideo() {
-  if (!currentVideoUrl) return;
-  showToast('Starting download...');
-  // Use server proxy to bypass CORS — same approach as photo download
-  var proxyUrl = '/api/download?url=' + encodeURIComponent(currentVideoUrl) + '&name=drapely-video-' + Date.now() + '.mp4';
-  fetch(proxyUrl)
-    .then(function(res) {
-      if (!res.ok) throw new Error('proxy failed');
-      return res.blob();
-    })
-    .then(function(blob) {
+  // Use permanent Supabase URL if ready, else wait up to 10s
+  var url = window._permanentVideoUrl;
+  if (url) {
+    triggerDownload(url);
+    return;
+  }
+  showToast('Preparing download...');
+  var waited = 0;
+  var check = setInterval(function() {
+    waited += 500;
+    if (window._permanentVideoUrl) {
+      clearInterval(check);
+      triggerDownload(window._permanentVideoUrl);
+    } else if (waited >= 10000) {
+      clearInterval(check);
+      // fallback to original fal URL via fetch blob
+      fetchBlobDownload(currentVideoUrl);
+    }
+  }, 500);
+}
+
+function triggerDownload(url) {
+  showToast('Downloading...');
+  fetch(url)
+    .then(function(r){ return r.blob(); })
+    .then(function(blob){
       var blobUrl = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = blobUrl;
@@ -413,9 +426,21 @@ function downloadVideo() {
       document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 3000);
     })
-    .catch(function() {
-      window.open(currentVideoUrl, '_blank');
-    });
+    .catch(function(){ showToast('Download failed — try from gallery'); });
+}
+
+function fetchBlobDownload(url) {
+  fetch(url)
+    .then(function(r){ return r.blob(); })
+    .then(function(blob){
+      var blobUrl = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'drapely-video-' + Date.now() + '.mp4';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 3000);
+    })
+    .catch(function(){ showToast('Download failed — try from gallery'); });
 }
 
 function showBuyCredits() {
