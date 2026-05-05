@@ -1592,8 +1592,15 @@ function convertToVideo(imageUrl) {
 }
 
 function downloadImg(url, num) {
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    // iOS Safari: open directly, user taps Share → Save to Photos
+    window.open(url, '_blank');
+    return;
+  }
+  // Android/desktop: blob download
   showToast('Downloading image ' + num + '...');
-  fetch(url, { mode: 'cors' })
+  fetch(url)
     .then(function(res){ return res.blob(); })
     .then(function(blob){
       var blobUrl = URL.createObjectURL(blob);
@@ -1605,9 +1612,7 @@ function downloadImg(url, num) {
       document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
     })
-    .catch(function(){
-      window.open(url, '_blank');
-    });
+    .catch(function(){ window.open(url, '_blank'); });
 }
 
 function addToGallery(images, collectionName) {
@@ -1694,11 +1699,10 @@ function renderVideoGallery() {
       var actions = document.createElement('div');
       actions.style.cssText = 'display:flex;gap:6px;';
 
-      var dlBtn = document.createElement('a');
-      dlBtn.href = url;
-      dlBtn.target = '_blank';
-      dlBtn.style.cssText = 'flex:1;padding:6px;background:#E91E63;color:#fff;border-radius:6px;font-size:11px;font-weight:500;text-decoration:none;text-align:center;';
+      var dlBtn = document.createElement('button');
+      dlBtn.style.cssText = 'flex:1;padding:6px;background:#E91E63;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;text-align:center;';
       dlBtn.textContent = '↓ Download';
+      dlBtn.onclick = (function(u){ return function(){ downloadImg(u, 'v'); }; })(url);
       actions.appendChild(dlBtn);
 
       var shareBtn = document.createElement('button');
