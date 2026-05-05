@@ -19,8 +19,8 @@
       --surface:#ffffff;
       --white:#ffffff;
     }
-    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#000;border-right:1px solid rgba(233,30,99,0.2);display:flex;flex-direction:column;z-index:50;padding:0 0 1.5rem}
+    body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:var(--text);min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:#000;border-right:1px solid rgba(233,30,99,0.2);display:flex;flex-direction:column;z-index:10;padding:0 0 1.5rem}
     .sidebar-brand{padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:block}
     .sidebar-brand span{color:#E91E63}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px}
@@ -34,7 +34,7 @@
     .user-avatar{width:30px;height:30px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
     .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-plan{font-size:10px;color:#E91E63}
-    .main{margin-left:220px;min-height:100vh}
+    .main{margin-left:220px;min-height:100vhoverflow-x:hidden;}
     .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
     .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
     .topbar-sub{font-size:12px;color:#555;margin-left:10px}
@@ -175,6 +175,7 @@
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
     .toast.show{transform:translateX(-50%) translateY(0)}
     
+    @media(max-width:900px){.studio-grid{grid-template-columns:1fr !important;}.results-panel{display:none;}}
     @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.bg-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
       .garment-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 8px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff}
     .garment-card:hover{border-color:#E91E63;background:#fff0f5}
@@ -193,7 +194,7 @@
     .video-progress{display:none;margin-top:1rem;}
     .video-progress.visible{display:block;}
 
-    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:200;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
     .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
     .mobile-logo span{color:#E91E63;}
     .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
