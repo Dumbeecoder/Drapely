@@ -526,8 +526,13 @@ async function addCredits() {
     document.getElementById('credit-amount').value = '';
     document.getElementById('credit-note').value = '';
     // Log topup
-    await sb.from('credit_topups').insert({ user_id: currentUserId, credits_added: amount, note: note });
-    showToast('✓ Added ' + amount + ' credits! New balance: ' + data.new_balance);
+    var topupRes = await sb.from('credit_topups').insert({ user_id: currentUserId, credits_added: amount, note: note });
+    if (topupRes.error) {
+      console.error('Topup log failed:', topupRes.error.message);
+      showToast('✓ Added credits but history log failed: ' + topupRes.error.message);
+    } else {
+      showToast('✓ Added ' + amount + ' credits! New balance: ' + data.new_balance);
+    }
     loadAllUsers();
     loadUserTopups(currentUserId);
   } catch(e) { showToast('✗ Error: ' + e.message); }
