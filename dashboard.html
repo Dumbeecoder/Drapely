@@ -1095,8 +1095,6 @@ async function startGenerate() {
 
     for (var i = 0; i < count; i++) {
       progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
-      // Try generate-sync first (server-side polling, works on Android)
-      // Falls back to generate + client poll if sync times out
       var payload = JSON.stringify({
         garment_img: compressed,
         model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
@@ -1105,48 +1103,32 @@ async function startGenerate() {
         prompt: buildPhotoPrompt(),
         garment_type: selectedGarmentType
       });
-      var data = null;
-      var usedSync = false;
-      try {
-        var syncController = new AbortController();
-        var syncTimeout = setTimeout(function(){ syncController.abort(); }, 100000);
-        var syncRes = await fetch('/api/generate-sync', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: payload, signal: syncController.signal
-        });
-        clearTimeout(syncTimeout);
-        data = await syncRes.json();
-        if (data.image_url) { results.push(data.image_url); usedSync = true; }
-      } catch(syncErr) {
-        console.log('generate-sync failed/timeout, falling back:', syncErr.message);
+      var response = await fetch('/api/generate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+      });
+      var data = await response.json();
+      if (data.error) {
+        clearInterval(interval);
+        progressWrap.classList.remove('visible');
+        activeStepEl.style.display = 'block';
+        releaseWakeLock();
+        showToast('Error: ' + String(data.error).substring(0, 80));
+        return;
       }
-      if (!usedSync) {
-        // Fallback: old generate + client-side poll
-        var response = await fetch('/api/generate', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
-        });
-        data = await response.json();
-        if (data.error) {
-          clearInterval(interval);
-          progressWrap.classList.remove('visible');
-          activeStepEl.style.display = 'block';
-          showToast('Error: ' + String(data.error).substring(0, 80));
-          return;
-        }
-        var predId = data.prediction_id;
-        if (!predId) {
-          clearInterval(interval);
-          progressWrap.classList.remove('visible');
-          activeStepEl.style.display = 'block';
-          showToast('No prediction ID returned');
-          return;
-        }
-        var pollResult = await androidSafePoll(predId, interval, progressWrap, activeStepEl);
-        if (!pollResult) return;
-        if (pollResult.output) {
-          var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
-          results = results.concat(imgs);
-        }
+      var predId = data.prediction_id;
+      if (!predId) {
+        clearInterval(interval);
+        progressWrap.classList.remove('visible');
+        activeStepEl.style.display = 'block';
+        releaseWakeLock();
+        showToast('No prediction ID returned');
+        return;
+      }
+      var pollResult = await androidSafePoll(predId, interval, progressWrap, activeStepEl);
+      if (!pollResult) return;
+      if (pollResult.output) {
+        var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
+        results = results.concat(imgs);
       }
     }
 
