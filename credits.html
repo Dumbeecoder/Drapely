@@ -63,6 +63,8 @@
     .history-title{font-size:13px;font-weight:500;color:#000;}
     .history-date{font-size:11px;color:#555;margin-top:2px;}
     .history-credits{font-size:14px;font-weight:500;color:#E91E63;white-space:nowrap;}
+    .history-credits.added{color:#16a34a;}
+    .history-icon.added{background:#f0fff4;}
     .empty-state{text-align:center;padding:3rem 2rem;color:#555;}
     .empty-icon{font-size:48px;opacity:0.3;margin-bottom:1rem;}
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
@@ -188,6 +190,7 @@
   </div>
   <div class="filter-tabs">
     <button class="filter-tab active" onclick="filterHistory('all',this)">All</button>
+    <button class="filter-tab" onclick="filterHistory('added',this)">💰 Added</button>
     <button class="filter-tab" onclick="filterHistory('photo',this)">📷 Photos</button>
     <button class="filter-tab" onclick="filterHistory('video',this)">🎬 Videos</button>
     <button class="filter-tab" onclick="filterHistory('bulk',this)">⚡ Bulk</button>
@@ -243,19 +246,27 @@ sb.auth.getSession().then(function(r) {
 
 function loadCredits(userId) {
   sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
-    var bal = r.data ? r.data.balance : 0;
-    document.getElementById('banner-credits').textContent = bal;
+    currentBalance = r.data ? r.data.balance : 0;
+    document.getElementById('banner-credits').textContent = currentBalance;
   });
 }
 
+var currentBalance = 0;
+var topupHistory = [];
+
 function loadHistory(userId) {
-  sb.from('photoshoots')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false }) // newest first for display
-    .then(function(r) {
-      if (r.error) { console.error('History error:', r.error.message); return; }
-      var data = r.data || [];
+  // Load both photoshoots and credit topups in parallel
+  Promise.all([
+    sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+    sb.from('credit_topups').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+  ]).then(function(results) {
+    var shootsResult = results[0];
+    var topupsResult = results[1];
+    var r = shootsResult;
+    if (r.error) { console.error('History error:', r.error.message); return; }
+    var data = r.data || [];
+    // Store topups (may fail if table doesn't exist - that's ok)
+    topupHistory = (!topupsResult.error && topupsResult.data) ? topupsResult.data : [];
 
       // Separate items by type for independent numbering (oldest=1 per type)
       var regularPhotos = data.filter(function(i){
@@ -324,6 +335,34 @@ function loadHistory(userId) {
 
       var total = allHistory.reduce(function(s,i){ return s + i.credits; }, 0);
       document.getElementById('total-spent').textContent = total + ' credits spent total';
+
+      // Add topup entries to history
+      var topupItems = topupHistory.map(function(t) {
+        return {
+          id: 'topup_' + t.id,
+          type: 'added',
+          title: 'Credits Added — ₹' + (t.amount || '') + (t.note ? ' · ' + t.note : ''),
+          date: new Date((t.created_at || '').replace(' ', 'T').replace(/Z?$/, 'Z')),
+          credits: t.credits_added || t.amount || 0
+        };
+      });
+
+      // If no topups table, infer total added from balance + spent
+      if (topupHistory.length === 0) {
+        var inferred = currentBalance + total;
+        if (inferred > 0) {
+          topupItems = [{
+            id: 'topup_inferred',
+            type: 'added',
+            title: 'Credits Added (total)',
+            date: new Date(),
+            credits: inferred
+          }];
+        }
+      }
+
+      // Merge and sort all history newest first
+      allHistory = allHistory.concat(topupItems).sort(function(a, b){ return b.date - a.date; });
       renderHistory(allHistory);
     });
 }
@@ -332,7 +371,12 @@ function filterHistory(type, btn) {
   currentFilter = type;
   document.querySelectorAll('.filter-tab').forEach(function(t){ t.classList.remove('active'); });
   btn.classList.add('active');
-  var filtered = type === 'all' ? allHistory : allHistory.filter(function(i){ return i.type === type; });
+  var filtered;
+  if (type === 'all') {
+    filtered = allHistory;
+  } else {
+    filtered = allHistory.filter(function(i){ return i.type === type; });
+  }
   renderHistory(filtered);
 }
 
@@ -346,17 +390,21 @@ function renderHistory(items) {
   items.forEach(function(item) {
     var row = document.createElement('div');
     row.className = 'history-row';
-    var icon = item.type === 'video' ? '🎬' : (item.type === 'bulk' ? '⚡' : '📷');
-    var iconClass = item.type === 'video' ? 'video' : (item.type === 'bulk' ? 'bulk' : 'photo');
+    var icon = item.type === 'video' ? '🎬' : item.type === 'bulk' ? '⚡' : item.type === 'added' ? '💰' : '📷';
+    var iconClass = item.type === 'video' ? 'video' : item.type === 'bulk' ? 'bulk' : item.type === 'added' ? 'added' : 'photo';
     var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata' });
     var timeStr = item.date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
+    var isAdded = item.type === 'added';
+    var creditsText = isAdded
+      ? '+' + item.credits + ' credit' + (item.credits !== 1 ? 's' : '')
+      : '-' + item.credits + ' credit' + (item.credits !== 1 ? 's' : '');
     row.innerHTML =
       '<div class="history-icon ' + iconClass + '">' + icon + '</div>' +
       '<div class="history-info">' +
         '<div class="history-title">' + item.title + '</div>' +
         '<div class="history-date">' + dateStr + ' · ' + timeStr + '</div>' +
       '</div>' +
-      '<div class="history-credits">-' + item.credits + ' credit' + (item.credits !== 1 ? 's' : '') + '</div>';
+      '<div class="history-credits' + (isAdded ? ' added' : '') + '">' + creditsText + '</div>';
     container.appendChild(row);
   });
 }
