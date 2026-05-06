@@ -342,18 +342,32 @@ function loadHistory(userId) {
         var credits = t.credits_added || 0;
         var isDeduct = credits < 0;
         var note = t.note || 'Credits added';
+        // Handle both ISO format and postgres format
+        var rawDate = t.created_at || '';
+        var parsedDate = new Date(rawDate);
+        if (isNaN(parsedDate.getTime())) {
+          parsedDate = new Date(rawDate.replace(' ', 'T').replace(/(\+\d{2}):(\d{2})$/, '$1$2'));
+        }
+        if (isNaN(parsedDate.getTime())) parsedDate = new Date();
         return {
           id: 'topup_' + t.id,
           type: isDeduct ? 'deducted' : 'added',
           title: note,
-          date: new Date((t.created_at || '').replace(' ', 'T').replace(/Z?$/, 'Z')),
+          date: parsedDate,
           credits: Math.abs(credits)
         };
       });
 
       // Merge and sort all history newest first
       allHistory = allHistory.concat(topupItems).sort(function(a, b){ return b.date - a.date; });
-      renderHistory(allHistory);
+      // Re-render with current active filter
+      var activeFilter = document.querySelector('.filter-tab.active');
+      var filterType = activeFilter ? activeFilter.textContent.trim().toLowerCase() : 'all';
+      if (filterType.includes('all') || filterType === 'all') {
+        renderHistory(allHistory);
+      } else if (filterType.includes('add')) {
+        renderHistory(allHistory.filter(function(i){ return i.type === 'added' || i.type === 'deducted'; }));
+      }
     });
 }
 
