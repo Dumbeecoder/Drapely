@@ -416,20 +416,16 @@ function downloadVideo() {
 function doDownload(url) {
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (isIOS) {
-    if (navigator.share) {
-      showToast('Preparing...');
-      fetch(url).then(function(r){ return r.blob(); }).then(function(blob){
-        var file = new File([blob], 'drapely-video-' + Date.now() + '.mp4', { type: 'video/mp4' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          navigator.share({ files: [file], title: 'Drapely AI Video' })
-            .catch(function(e){ console.log('Share cancelled:', e); });
-        } else {
-          window.open(url, '_blank');
-        }
-      }).catch(function(){ window.open(url, '_blank'); });
-    } else {
-      window.open(url, '_blank');
+    if (navigator.share && window._videoBlob) {
+      // Use pre-fetched blob — shows "Save Video" in share sheet
+      var file = new File([window._videoBlob], 'drapely-video-' + Date.now() + '.mp4', { type: 'video/mp4' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'Drapely AI Fashion Video' }).catch(function(){});
+        return;
+      }
     }
+    // Blob not ready — open in Safari
+    window.open(url, '_blank');
     return;
   }
   // Android/desktop: blob download
@@ -622,6 +618,12 @@ async function startVideoGenerate() {
         }
 
         if (resultEl) resultEl.innerHTML = '<video controls autoplay playsinline style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:10px;background:#000;max-height:500px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        // Pre-fetch blob in background so iOS share has "Save Video" option ready
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+          fetch(videoUrl).then(function(r){ return r.blob(); }).then(function(blob){
+            window._videoBlob = blob;
+          }).catch(function(){});
+        }
 
         if (downloadWrap) downloadWrap.style.display = 'block';
 
