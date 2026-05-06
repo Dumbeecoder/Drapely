@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Backgrounds — Drapely</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
-    .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .sidebar-brand{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
     .sidebar-brand span{color:#E91E63;}
     .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
     .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
@@ -18,16 +19,11 @@
     .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
     .user-av,.user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
     .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
-    .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff;}
-    .nav-icon{width:16px;height:16px;flex-shrink:0;}
-    .user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2);}
-    .user-plan{font-size:10px;color:#E91E63;}
+    body{font-family:"DM Sans",sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
     .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;overflow-x:hidden;}
     .hero{background:linear-gradient(135deg,#000 0%,#1a0010 100%);border-radius:16px;padding:1.75rem 2rem;margin-bottom:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-    .hero h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#fff;margin-bottom:5px;}
+    .hero h2{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:300;color:#fff;margin-bottom:5px;}
     .hero p{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:400px;}
     .hero-badge{padding:7px 16px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
     .how-to{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;}
@@ -42,11 +38,9 @@
     .bg-card:hover .bg-img-wrap img{transform:scale(1.04);}
     .bg-body{padding:10px 12px;}
     .bg-name{font-size:12px;font-weight:500;color:#000;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .dl-btn{width:100%;padding:8px;background:#E91E63;color:#fff;border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;text-decoration:none;}
+    .dl-btn{width:100%;padding:8px;background:#E91E63;color:#fff;border:none;border-radius:7px;font-family:"DM Sans",sans-serif;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;text-decoration:none;}
     .dl-btn:hover{background:#c2185b;}
     .empty{text-align:center;padding:4rem 2rem;color:#555;grid-column:1/-1;}
-    .empty-icon{font-size:48px;opacity:0.3;margin-bottom:1rem;}
-    /* LIGHTBOX */
     .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;align-items:center;justify-content:center;padding:1rem;}
     .lightbox.open{display:flex;}
     .lb-inner{background:#fff;border-radius:14px;overflow:hidden;max-width:680px;width:100%;position:relative;}
@@ -54,35 +48,30 @@
     .lb-body{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:10px;}
     .lb-name{font-size:14px;font-weight:500;}
     .lb-close{position:absolute;top:10px;right:10px;width:32px;height:32px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;font-size:14px;cursor:pointer;}
-    /* TOAST */
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    /* MOBILE */
-    .mobile-nav-item:hover{background:rgba(233,30,99,0.12);color:#fff;}
-  @media(max-width:900px){.sidebar{display:none !important;}.mobile-header{display:flex !important;}.burger{display:flex !important;}.main{margin-left:0 !important;padding-top:64px !important;}.bg-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px;}.bg-body{padding:6px 8px;}.bg-name{font-size:11px;}.dl-btn{padding:6px 8px;font-size:11px;}}
-  
+    @media(max-width:900px){.sidebar{display:none !important;}.mobile-header{display:flex !important;}.burger{display:flex !important;}.main{margin-left:0 !important;padding-top:64px !important;}.bg-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px;}.bg-body{padding:6px 8px;}.bg-name{font-size:11px;}.dl-btn{padding:6px 8px;font-size:11px;}}
     .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158}
     .mobile-overlay.open{display:block}
     .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0}
     .mobile-nav.open{left:0}
-    .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block}
+    .mobile-nav-brand{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block}
     .mobile-nav-brand span{color:#E91E63}
     .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px}
-    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:"DM Sans",sans-serif;cursor:pointer}
     .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff}
     .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2)}
     .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08)}
     .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
     .mobile-user-name{font-size:12px;font-weight:500;color:#fff}
     .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
-    .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
+    .mobile-logo{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
     .mobile-logo span{color:#E91E63;}
     .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
     .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-</style>
+  </style>
 </head>
 <body>
-<!-- BURGER -->
 <div class="mobile-header">
   <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
   <a href="#" onclick="location.reload();return false;" class="mobile-logo">Drape<span>ly</span></a>
@@ -108,7 +97,6 @@
     </div>
   </div>
 </div>
-
 <div class="sidebar">
   <a href="#" onclick="location.reload();return false;" class="sidebar-brand">Drape<span>ly</span></a>
   <div class="sidebar-nav">
@@ -134,11 +122,10 @@
 <div class="main">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
     <div>
-      <h1 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">🌄 Backgrounds</h1>
+      <h1 style="font-family:Cormorant Garamond,serif;font-size:28px;font-weight:300;">🌄 Backgrounds</h1>
       <div style="font-size:13px;color:#555;margin-top:3px;">Download and use in your AI photoshoots</div>
     </div>
   </div>
-
   <div class="hero">
     <div>
       <h2>Professional AI Backgrounds</h2>
@@ -146,7 +133,6 @@
     </div>
     <div class="hero-badge">✨ Free for all users</div>
   </div>
-
   <div class="how-to">
     <div class="step-pill"><div class="step-num">1</div> Download a background</div>
     <div class="step-arrow">→</div>
@@ -156,57 +142,55 @@
     <div class="step-arrow">→</div>
     <div class="step-pill"><div class="step-num">4</div> Upload the background</div>
   </div>
-
   <div class="bg-grid" id="bg-grid"></div>
 </div>
-
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
   <div class="lb-inner">
     <img class="lb-img" id="lb-img" src="" alt="" />
     <div class="lb-body">
       <div class="lb-name" id="lb-name"></div>
-      <a class="dl-btn" id="lb-dl" href="#" style="width:auto;padding:8px 20px;" download>
+      <button class="dl-btn" id="lb-dl" style="width:auto;padding:8px 20px;" onclick="downloadBg()">
         <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
         Download
-      </a>
+      </button>
     </div>
     <button class="lb-close" onclick="closeLightbox()">✕</button>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 var sb = window.supabase.createClient(
-  'https://oqmoneclnirnhqpcdeqy.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+  "https://oqmoneclnirnhqpcdeqy.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM"
 );
-
-var BUCKET = 'backgrounds';
-var BASE_URL = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/' + BUCKET + '/';
+var BUCKET = "backgrounds";
+var BASE_URL = "https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/" + BUCKET + "/";
+var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+var currentLbUrl = "";
+var currentLbName = "";
 
 sb.auth.getSession().then(function(r) {
-  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  if (!r.data.session) { window.location.href = "auth.html"; return; }
   var user = r.data.session.user;
   var meta = user.user_metadata || {};
-  var fname = (meta.first_name || '').trim();
-  var lname = (meta.last_name || '').trim();
-  var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
+  var fname = (meta.first_name || "").trim();
+  var lname = (meta.last_name || "").trim();
+  var displayName = (fname + " " + lname).trim() || user.email.split("@")[0];
   var initials = displayName.slice(0,2).toUpperCase();
-  document.getElementById('user-name').textContent = displayName;
-  document.getElementById('user-avatar').textContent = initials;
-  var ma = document.getElementById('m-avatar'); if(ma) ma.textContent = initials;
-  var mn = document.getElementById('m-name'); if(mn) mn.textContent = displayName;
+  document.getElementById("user-name").textContent = displayName;
+  document.getElementById("user-avatar").textContent = initials;
+  var ma = document.getElementById("m-avatar"); if(ma) ma.textContent = initials;
+  var mn = document.getElementById("m-name"); if(mn) mn.textContent = displayName;
   loadBackgrounds();
 });
 
 function loadBackgrounds() {
-  sb.storage.from(BUCKET).list('', { limit: 100, sortBy: { column: 'name', order: 'asc' } })
+  sb.storage.from(BUCKET).list("", { limit: 100, sortBy: { column: "name", order: "asc" } })
     .then(function(r) {
-      if (r.error) { showEmpty('Could not load backgrounds.'); return; }
+      if (r.error) { showEmpty("Could not load backgrounds."); return; }
       var files = (r.data || []).filter(function(f){
-        return f.name && f.name !== '.emptyFolderPlaceholder' && /\.(jpg|jpeg|png|webp)$/i.test(f.name);
+        return f.name && f.name !== ".emptyFolderPlaceholder" && /\.(jpg|jpeg|png|webp)$/i.test(f.name);
       });
       if (files.length === 0) { showEmpty(); return; }
       renderGrid(files);
@@ -214,112 +198,92 @@ function loadBackgrounds() {
 }
 
 function renderGrid(files) {
-  var grid = document.getElementById('bg-grid');
-  grid.innerHTML = '';
+  var grid = document.getElementById("bg-grid");
+  grid.innerHTML = "";
   files.forEach(function(file, idx) {
     var url = BASE_URL + encodeURIComponent(file.name);
-    var label = 'Background ' + (idx + 1);
-
-    var card = document.createElement('div');
-    card.className = 'bg-card';
-
-    // Image wrap
-    var imgWrap = document.createElement('div');
-    imgWrap.className = 'bg-img-wrap';
-    imgWrap.style.cursor = 'pointer';
+    var label = "Background " + (idx + 1);
+    var card = document.createElement("div"); card.className = "bg-card";
+    var imgWrap = document.createElement("div"); imgWrap.className = "bg-img-wrap"; imgWrap.style.cursor = "pointer";
     imgWrap.onclick = (function(u, l){ return function(){ openLightbox(u, l); }; })(url, label);
-    var img = document.createElement('img');
-    img.src = url; img.alt = label; img.loading = 'lazy';
-    imgWrap.appendChild(img);
-    card.appendChild(imgWrap);
-
-    // Body
-    var body = document.createElement('div');
-    body.className = 'bg-body';
-    var nameEl = document.createElement('div');
-    nameEl.className = 'bg-name';
-    nameEl.textContent = label;
+    var img = document.createElement("img");
+    img.src = url; img.alt = label; img.loading = "lazy";
+    imgWrap.appendChild(img); card.appendChild(imgWrap);
+    var body = document.createElement("div"); body.className = "bg-body";
+    var nameEl = document.createElement("div"); nameEl.className = "bg-name"; nameEl.textContent = label;
     body.appendChild(nameEl);
-
-    // Action buttons row
-    var btnRow = document.createElement('div');
-    btnRow.style.cssText = 'display:flex;gap:6px;';
-
-    var viewBtn = document.createElement('button');
-    viewBtn.className = 'dl-btn';
-    viewBtn.style.cssText = 'background:#fff;color:#E91E63;border:1.5px solid #E91E63;flex:0 0 auto;width:auto;padding:8px 14px;';
-    viewBtn.innerHTML = '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> View';
+    var btnRow = document.createElement("div"); btnRow.style.cssText = "display:flex;gap:6px;";
+    var viewBtn = document.createElement("button"); viewBtn.className = "dl-btn";
+    viewBtn.style.cssText = "background:#fff;color:#E91E63;border:1.5px solid #E91E63;flex:0 0 auto;width:auto;padding:8px 14px;";
+    viewBtn.innerHTML = "👁 View";
     viewBtn.onclick = (function(u, l){ return function(){ openLightbox(u, l); }; })(url, label);
     btnRow.appendChild(viewBtn);
-
-    var dlBtn = document.createElement('button');
-    dlBtn.className = 'dl-btn';
-    dlBtn.style.cssText = 'flex:1;';
-    dlBtn.innerHTML = '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg> Download';
-    dlBtn.onclick = (function(u, l){ return function(){
-      showToast('Preparing download...');
-      fetch(u).then(function(res){ return res.blob(); }).then(function(blob){
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = l.replace(/\s+/g,'-').toLowerCase() + '.jpg';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
-        showToast('Downloaded!');
-      }).catch(function(){ window.open(u,'_blank'); });
-    }; })(url, label);
+    var dlBtn = document.createElement("button"); dlBtn.className = "dl-btn"; dlBtn.style.flex = "1";
+    dlBtn.innerHTML = "↓ Download";
+    dlBtn.onclick = (function(u, l){ return function(){ downloadFile(u, l); }; })(url, label);
     btnRow.appendChild(dlBtn);
-    body.appendChild(btnRow);
-    card.appendChild(body);
-    grid.appendChild(card);
+    body.appendChild(btnRow); card.appendChild(body); grid.appendChild(card);
   });
 }
 
+function downloadFile(url, label) {
+  if (isIOS) { window.open(url, "_blank"); return; }
+  showToast("Downloading...");
+  fetch(url).then(function(res){ return res.blob(); }).then(function(blob){
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = label.replace(/\s+/g,"-").toLowerCase() + ".jpg";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    showToast("Downloaded!");
+  }).catch(function(){ window.open(url,"_blank"); });
+}
+
+function downloadBg() {
+  downloadFile(currentLbUrl, currentLbName);
+}
+
 function showEmpty(msg) {
-  document.getElementById('bg-grid').innerHTML = '<div class="empty"><div class="empty-icon">🌄</div><div style="font-size:14px;font-weight:500;margin-bottom:5px;">' + (msg || 'No backgrounds yet') + '</div><div style="font-size:12px;color:#888;">Check back soon — new backgrounds added regularly!</div></div>';
+  document.getElementById("bg-grid").innerHTML = "<div class="empty"><div style="font-size:48px;opacity:0.3;margin-bottom:1rem;">🌄</div><div style="font-size:14px;font-weight:500;margin-bottom:5px;">" + (msg || "No backgrounds yet") + "</div><div style="font-size:12px;color:#888;">Check back soon!</div></div>";
 }
 
 function openLightbox(url, name) {
-  document.getElementById('lb-img').src = url;
-  document.getElementById('lb-name').textContent = name;
-  var dl = document.getElementById('lb-dl');
-  dl.href = url; dl.download = name.toLowerCase().replace(/\s+/g,'-') + '.jpg';
-  dl.onclick = function(){ showToast('Downloading...'); };
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  currentLbUrl = url; currentLbName = name;
+  document.getElementById("lb-img").src = url;
+  document.getElementById("lb-name").textContent = name;
+  document.getElementById("lightbox").classList.add("open");
+  document.body.style.overflow = "hidden";
 }
 
 function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
+  document.getElementById("lightbox").classList.remove("open");
+  document.body.style.overflow = "";
 }
 
 function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2500);
-}
-function openMobileNav() {
-  document.getElementById('mobile-nav').classList.add('open');
-  document.getElementById('mobile-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2500);
 }
 
-function closeMobileNav() {
-  document.getElementById('mobile-nav').classList.remove('open');
-  document.getElementById('mobile-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+function openMobileNav() {
+  document.getElementById("mobile-nav").classList.add("open");
+  document.getElementById("mobile-overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
 }
-// Close nav when tapping anywhere outside on mobile
-document.addEventListener('touchstart', function(e) {
-  var nav = document.getElementById('mobile-nav');
-  var burger = document.querySelector('.burger');
-  if (nav && nav.classList.contains('open')) {
-    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) {
-      closeMobileNav();
-    }
+function closeMobileNav() {
+  document.getElementById("mobile-nav").classList.remove("open");
+  document.getElementById("mobile-overlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.addEventListener("touchstart", function(e) {
+  var nav = document.getElementById("mobile-nav");
+  var burger = document.querySelector(".burger");
+  if (nav && nav.classList.contains("open")) {
+    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) closeMobileNav();
   }
 }, { passive: true });
-async function doSignOut() { await sb.auth.signOut(); window.location.href='auth.html'; }
+async function doSignOut() { await sb.auth.signOut(); window.location.href = "auth.html"; }
 </script>
 </body>
 </html>
