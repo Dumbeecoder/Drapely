@@ -276,8 +276,12 @@ function renderVideos(videos) {
     var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
     var url = item.image_url || '';
     var card = document.createElement('div'); card.className = 'video-card';
-    var vid = document.createElement('video'); vid.className = 'video-el'; vid.src = url; vid.controls = true;
-    vid.setAttribute('playsinline',''); vid.setAttribute('preload','metadata');
+    var vid = document.createElement('video'); vid.className = 'video-el'; vid.controls = true;
+    vid.setAttribute('playsinline','');
+    vid.setAttribute('preload','none'); // don't load until user taps play
+    vid.setAttribute('loading','lazy');
+    // Only set src when video becomes visible (IntersectionObserver)
+    vid.dataset.src = url;
     card.appendChild(vid);
     var body = document.createElement('div'); body.className = 'video-card-body';
     var vidNum = videos.length - i;
@@ -286,22 +290,11 @@ function renderVideos(videos) {
     var dlBtn = document.createElement('button'); dlBtn.className = 'action-btn primary'; dlBtn.textContent = '↓ Download';
     dlBtn.onclick = (function(u, n){ return function() {
       if (isIOS) {
-        // iOS: use Web Share API to show native share sheet with Save to Photos
-        if (navigator.share) {
-          fetch(u).then(function(r){ return r.blob(); }).then(function(blob){
-            var file = new File([blob], 'drapely-video-' + n + '.mp4', { type: 'video/mp4' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              navigator.share({ files: [file], title: 'Drapely AI Video' })
-                .catch(function(e){ console.log('Share cancelled:', e); });
-            } else {
-              window.open(u, '_blank');
-            }
-          }).catch(function(){ window.open(u, '_blank'); });
-        } else {
-          window.open(u, '_blank');
-        }
+        // iOS: open directly in Safari — user taps Share → Save to Photos/Files
+        window.open(u, '_blank');
         return;
       }
+      // Android/desktop: blob download
       showToast('Downloading...');
       fetch(u).then(function(res){ return res.blob(); }).then(function(blob) {
         var blobUrl = URL.createObjectURL(blob);
@@ -315,6 +308,26 @@ function renderVideos(videos) {
     grid.appendChild(card);
   });
   container.innerHTML = ''; container.appendChild(grid);
+
+  // Lazy-load video src only when visible
+  var lazyVideos = grid.querySelectorAll('video[data-src]');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var v = entry.target;
+          if (v.dataset.src && !v.src) {
+            v.src = v.dataset.src;
+          }
+          observer.unobserve(v);
+        }
+      });
+    }, { rootMargin: '100px' });
+    lazyVideos.forEach(function(v){ observer.observe(v); });
+  } else {
+    // Fallback: set all src immediately
+    lazyVideos.forEach(function(v){ v.src = v.dataset.src; });
+  }
 }
 
 function openViewer(url) { document.getElementById('viewer-img').src = url; document.getElementById('viewer-modal').classList.add('open'); }
