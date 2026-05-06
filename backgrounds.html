@@ -190,7 +190,7 @@ function loadBackgrounds() {
     .then(function(r) {
       if (r.error) { showEmpty("Could not load backgrounds."); return; }
       var files = (r.data || []).filter(function(f){
-        return f.name && f.name !== ".emptyFolderPlaceholder" && /\.(jpg|jpeg|png|webp)$/i.test(f.name);
+        return f.name && f.name !== ".emptyFolderPlaceholder" && !f.name.startsWith(".");
       });
       if (files.length === 0) { showEmpty(); return; }
       renderGrid(files);
