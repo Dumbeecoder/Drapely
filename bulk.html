@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bulk Studio — Drapely</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
@@ -18,11 +19,9 @@
     .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
     .user-av,.user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
     .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
     *{box-sizing:border-box;margin:0;padding:0}
     body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;}
     .nav-icon{width:16px;height:16px;flex-shrink:0;}
-    .user-plan{font-size:10px;color:#E91E63;}
     .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;overflow-x:hidden;}
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
     .topbar h1{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:1px;}
@@ -32,8 +31,7 @@
     .bulk-card-title{font-size:15px;font-weight:500;margin-bottom:4px;}
     .bulk-card-sub{font-size:12px;color:#555;margin-bottom:1.5rem;}
     .bulk-upload-zone{border:2px dashed rgba(233,30,99,0.3);border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;transition:all 0.2s;background:#fff;}
-    .bulk-upload-zone:hover{border-color:#E91E63;background:#fff0f5;}
-    .bulk-upload-zone.dragover{border-color:#E91E63;background:#fff0f5;}
+    .bulk-upload-zone:hover,.bulk-upload-zone.dragover{border-color:#E91E63;background:#fff0f5;}
     .upload-icon{font-size:40px;margin-bottom:12px;}
     .upload-title{font-size:15px;font-weight:500;margin-bottom:4px;}
     .upload-hint{font-size:12px;color:#555;}
@@ -43,11 +41,9 @@
     .setting-label{font-size:12px;color:#555;font-weight:500;}
     .setting-select{width:100%;padding:10px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;}
     .setting-select:focus{border-color:#E91E63;}
-    .model-row{display:flex;gap:8px;margin-bottom:1.5rem;}
-    .model-chip{padding:8px 14px;border:1.5px solid rgba(233,30,99,0.2);border-radius:20px;font-size:12px;font-weight:500;color:#555;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-    .model-chip.selected{background:#E91E63;border-color:#E91E63;color:#fff;}
     .queue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem;}
     .queue-item{border:1px solid rgba(233,30,99,0.15);border-radius:10px;overflow:hidden;background:#fff;position:relative;}
+    .queue-item.current-processing{border-color:#E91E63;border-width:2px;box-shadow:0 0 0 3px rgba(233,30,99,0.15);}
     .queue-img{width:100%;height:140px;object-fit:cover;display:block;}
     .queue-status{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
     .queue-status.pending{background:#fff;color:#555;border:1px solid #ddd;}
@@ -67,10 +63,13 @@
     .progress-bar{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:12px 0;}
     .progress-fill{height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.3s;}
     .progress-text{font-size:12px;color:#555;text-align:center;}
+    .current-file-indicator{background:#fff0f5;border:1px solid rgba(233,30,99,0.2);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px;display:none;}
+    .current-file-indicator.visible{display:flex;align-items:center;gap:8px;}
+    .spinner{width:14px;height:14px;border:2px solid rgba(233,30,99,0.2);border-top-color:#E91E63;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  @media(max-width:900px){.sidebar{display:none !important;}.main{margin-left:0 !important;padding-top:64px !important;}.mobile-header{display:flex !important;}.burger{display:flex !important;}.settings-grid{grid-template-columns:1fr;}}
-  
+    @media(max-width:900px){.sidebar{display:none !important;}.main{margin-left:0 !important;padding-top:64px !important;}.mobile-header{display:flex !important;}.burger{display:flex !important;}.settings-grid{grid-template-columns:1fr;}}
     .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158}
     .mobile-overlay.open{display:block}
     .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0}
@@ -89,10 +88,9 @@
     .mobile-logo span{color:#E91E63;}
     .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
     .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-</style>
+  </style>
 </head>
 <body>
-<!-- BURGER -->
 <div class="mobile-header">
   <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
   <a href="#" onclick="location.reload();return false;" class="mobile-logo">Drape<span>ly</span></a>
@@ -141,6 +139,7 @@
     </div>
   </div>
 </div>
+
 <div class="main">
   <div class="topbar">
     <div>
@@ -156,7 +155,7 @@
 
   <div class="bulk-card">
     <div class="bulk-card-title">Step 1 — Upload your suit photos</div>
-    <div class="bulk-card-sub">Upload multiple suit photos at once. Each photo = 1 credit.</div>
+    <div class="bulk-card-sub">Upload multiple suit photos at once. Each photo = 1 credit (₹50).</div>
     <div class="bulk-upload-zone" id="bulk-upload-zone" onclick="document.getElementById('bulk-input').click()">
       <div class="upload-icon">📦</div>
       <div class="upload-title">Click or drag & drop your suits</div>
@@ -219,10 +218,7 @@
           <option value="elegant 3/4 turn, body angled, looking over shoulder gracefully, full outfit details visible">💃 3/4 Turn</option>
           <option value="hand on hip power stance, confident high fashion editorial pose, full length, weight shifted">👸 Power Stance</option>
           <option value="sitting gracefully on steps, legs to side, elegant seated fashion pose, full outfit visible">🪑 Seated</option>
-          <option value="arms crossed confidently over chest, strong editorial stance, full length, direct gaze">🤞 Crossed Arms</option>
-          <option value="leaning shoulder against wall, casual relaxed editorial pose, one knee slightly bent, full length">🫦 Leaning</option>
           <option value="twirling spinning gracefully, arms slightly raised, dupatta flowing and swirling, joyful movement">🌀 Twirl</option>
-          <option value="profile view side pose, showing silhouette and outfit details">🚺 Side Profile</option>
           <option value="one foot forward confident runway model walk, full outfit visible">👣 Runway Walk</option>
         </select>
       </div>
@@ -254,10 +250,17 @@
     <div class="bulk-card-title">Step 3 — Generate & Export</div>
     <div class="bulk-card-sub">All photos will be processed one by one. You can export all as ZIP when done.</div>
     <div id="bulk-progress-wrap" style="display:none;margin-bottom:1.5rem;">
+      <!-- Current file indicator -->
+      <div class="current-file-indicator" id="current-file-indicator">
+        <div class="spinner"></div>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:#E91E63;" id="current-file-name">Processing...</div>
+          <div style="font-size:11px;color:#555;" id="current-file-time">AI generating...</div>
+        </div>
+      </div>
       <div style="font-size:13px;font-weight:500;margin-bottom:8px;" id="bulk-progress-label">Processing...</div>
       <div class="progress-bar"><div class="progress-fill" id="bulk-progress-fill" style="width:0%"></div></div>
       <div class="progress-text" id="bulk-progress-text">0 / 0 done</div>
-      <div id="bulk-status-msg" style="font-size:11px;color:#555;margin-top:6px;text-align:center;"></div>
     </div>
     <div style="display:flex;gap:10px;">
       <button class="generate-btn" id="bulk-generate-btn" onclick="startBulkGenerate()" style="flex:1;">
@@ -290,6 +293,19 @@ var bulkQueue = [];
 var bulkResults = [];
 var bulkLogoUrl = null;
 var currentUserId = null;
+var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+var _wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      _wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch(e) {}
+}
+function releaseWakeLock() {
+  if (_wakeLock) { _wakeLock.release(); _wakeLock = null; }
+}
 
 sb.auth.getSession().then(function(r) {
   if (!r.data.session) { window.location.href = 'auth.html'; return; }
@@ -327,7 +343,10 @@ function processFiles(files) {
   if (bulkQueue.length + files.length > 20) { showToast('Max 20 photos allowed!'); files = files.slice(0, 20 - bulkQueue.length); }
   files.forEach(function(file) {
     var reader = new FileReader();
-    reader.onload = function(ev) { bulkQueue.push({ file: file, dataUrl: ev.target.result, name: file.name, status: 'pending', result: null }); renderQueue(); };
+    reader.onload = function(ev) {
+      bulkQueue.push({ file: file, dataUrl: ev.target.result, name: file.name, status: 'pending', result: null });
+      renderQueue();
+    };
     reader.readAsDataURL(file);
   });
 }
@@ -335,16 +354,21 @@ function processFiles(files) {
 function renderQueue() {
   var grid = document.getElementById('queue-grid');
   var wrap = document.getElementById('queue-wrap');
-  if (document.getElementById('queue-count')) document.getElementById('queue-count').textContent = bulkQueue.length;
-  if (document.getElementById('generate-count')) document.getElementById('generate-count').textContent = bulkQueue.length;
-  if (document.getElementById('cost-preview')) document.getElementById('cost-preview').textContent = bulkQueue.length;
-  if (wrap) wrap.style.display = bulkQueue.length > 0 ? 'block' : 'none';
+  document.getElementById('queue-count').textContent = bulkQueue.length;
+  document.getElementById('generate-count').textContent = bulkQueue.length;
+  document.getElementById('cost-preview').textContent = bulkQueue.length;
+  wrap.style.display = bulkQueue.length > 0 ? 'block' : 'none';
   grid.innerHTML = '';
-  bulkQueue.forEach(function(item) {
-    var div = document.createElement('div'); div.className = 'queue-item';
+  bulkQueue.forEach(function(item, idx) {
+    var div = document.createElement('div');
+    div.className = 'queue-item' + (item.status === 'processing' ? ' current-processing' : '');
     var statusMap = {pending:'⏳', processing:'⚙️', done:'✓', error:'✕'};
-    div.innerHTML = '<img class="queue-img" src="' + item.dataUrl + '" />' +
-      '<div class="queue-status ' + item.status + '">' + statusMap[item.status] + '</div>' +
+    var img = document.createElement('img');
+    img.className = 'queue-img';
+    img.src = item.dataUrl;
+    img.loading = 'lazy'; // lazy load queue images
+    div.appendChild(img);
+    div.innerHTML += '<div class="queue-status ' + item.status + '">' + statusMap[item.status] + '</div>' +
       '<div class="queue-label">' + item.name + '</div>';
     grid.appendChild(div);
   });
@@ -386,7 +410,7 @@ function compressImage(dataUrl) {
   });
 }
 
-function compressForImgur(dataUrl) {
+function compressForStorage(dataUrl) {
   return new Promise(function(resolve) {
     var img = new Image();
     img.onload = function() {
@@ -403,7 +427,7 @@ function compressForImgur(dataUrl) {
   });
 }
 
-async function uploadLogoedImageToStorage(base64DataUrl) {
+async function uploadToStorage(base64DataUrl) {
   try {
     var parts = base64DataUrl.split(',');
     var mimeType = parts[0].match(/:(.*?);/)[1];
@@ -411,11 +435,10 @@ async function uploadLogoedImageToStorage(base64DataUrl) {
     var array = new Uint8Array(binary.length);
     for (var i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
     var blob = new Blob([array], { type: mimeType });
-    var fileName = 'logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
+    var fileName = 'bulk_logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
     var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
-    if (uploadResult.error) { return null; }
-    var urlResult = sb.storage.from('photoshoots').getPublicUrl(fileName);
-    return urlResult.data.publicUrl;
+    if (uploadResult.error) return null;
+    return sb.storage.from('photoshoots').getPublicUrl(fileName).data.publicUrl;
   } catch(e) { return null; }
 }
 
@@ -437,10 +460,10 @@ function tryDirectCanvas(photoSrc, logoDataUrl, position) {
           var lw = Math.round(W * 0.20), scale = lw / logo.naturalWidth;
           var lh = Math.round(logo.naturalHeight * scale), pad = Math.round(W * 0.03);
           var x = W - lw - pad, y = H - lh - pad;
-          if (position === 'top-left')      { x=pad; y=pad; }
-          if (position === 'top-center')    { x=Math.round((W-lw)/2); y=pad; }
-          if (position === 'top-right')     { x=W-lw-pad; y=pad; }
-          if (position === 'bottom-left')   { x=pad; y=H-lh-pad; }
+          if (position === 'top-left') { x=pad; y=pad; }
+          if (position === 'top-center') { x=Math.round((W-lw)/2); y=pad; }
+          if (position === 'top-right') { x=W-lw-pad; y=pad; }
+          if (position === 'bottom-left') { x=pad; y=H-lh-pad; }
           if (position === 'bottom-center') { x=Math.round((W-lw)/2); y=H-lh-pad; }
           ctx.globalAlpha = 1.0;
           ctx.drawImage(logo, x, y, lw, lh);
@@ -474,31 +497,51 @@ async function startBulkGenerate() {
   if (bulkQueue.length === 0) { showToast('Upload some photos first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
   if (credits < bulkQueue.length) { showToast('Need ' + bulkQueue.length + ' credits, have ' + credits); return; }
-  var currentCredits = credits; // track running balance to avoid race conditions
+
+  await requestWakeLock(); // keep screen on during generation
+
+  var currentCredits = credits;
   var btn = document.getElementById('bulk-generate-btn');
-  btn.disabled = true; btn.textContent = 'Generating...';
+  btn.disabled = true; btn.innerHTML = '⏳ Generating...';
   var progressWrap = document.getElementById('bulk-progress-wrap');
   var progressFill = document.getElementById('bulk-progress-fill');
   var progressText = document.getElementById('bulk-progress-text');
   var progressLabel = document.getElementById('bulk-progress-label');
-  var statusMsg = document.getElementById('bulk-status-msg');
+  var currentFileIndicator = document.getElementById('current-file-indicator');
+  var currentFileName = document.getElementById('current-file-name');
+  var currentFileTime = document.getElementById('current-file-time');
   progressWrap.style.display = 'block';
   bulkResults = [];
   document.getElementById('bulk-results-wrap').style.display = 'none';
   document.getElementById('export-btn').style.display = 'none';
+
   var modelIndex = parseInt(document.getElementById('bulk-model').value);
   var scene = document.getElementById('bulk-scene').value;
   var pose = document.getElementById('bulk-pose').value;
   var garmentType = document.getElementById('bulk-garment').value;
   var logoPos = document.getElementById('bulk-logo-pos') ? document.getElementById('bulk-logo-pos').value : 'bottom-right';
-  var garmentDesc = garmentType === 'saree' ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length' : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+  var garmentDesc = garmentType === 'saree'
+    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
   var prompt = garmentDesc + ', ' + pose + ', ' + scene + ', professional Indian fashion photography, high quality';
 
   for (var i = 0; i < bulkQueue.length; i++) {
-    bulkQueue[i].status = 'processing'; renderQueue();
-    progressLabel.textContent = 'Processing ' + (i+1) + ' of ' + bulkQueue.length + ': ' + bulkQueue[i].name;
+    bulkQueue[i].status = 'processing';
+
+    // Show current file indicator
+    currentFileIndicator.classList.add('visible');
+    currentFileName.textContent = 'Processing: ' + bulkQueue[i].name;
+    currentFileTime.textContent = 'AI generating...';
+
+    renderQueue();
+    progressLabel.textContent = (i+1) + ' of ' + bulkQueue.length + ' — ' + bulkQueue[i].name;
     progressText.textContent = i + ' / ' + bulkQueue.length + ' done';
     progressFill.style.width = Math.round((i / bulkQueue.length) * 100) + '%';
+
+    // Scroll current item into view
+    var queueItems = document.querySelectorAll('.queue-item');
+    if (queueItems[i]) queueItems[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
     try {
       var compressedGarment = await compressImage(bulkQueue[i].dataUrl);
       var response = await fetch('/api/generate', {
@@ -507,72 +550,56 @@ async function startBulkGenerate() {
       });
       var data = await response.json();
       if (data.error || !data.prediction_id) { bulkQueue[i].status = 'error'; renderQueue(); continue; }
+
       var predId = data.prediction_id; var pollResult = null; var attempts = 0;
+      var startTime = Date.now();
       while (attempts < 80) {
         await new Promise(function(r){ setTimeout(r, 4000); });
         try {
           var pollRes = await fetch('/api/poll?id=' + predId + '&t=' + Date.now());
           pollResult = await pollRes.json();
-          if (statusMsg) statusMsg.textContent = 'AI generating... ' + Math.round((attempts+1)*4) + 's';
+          var elapsed = Math.round((Date.now() - startTime) / 1000);
+          currentFileTime.textContent = 'AI generating... ' + elapsed + 's';
           if (pollResult.status === 'succeeded' || pollResult.status === 'completed') break;
           if (pollResult.status === 'failed') break;
         } catch(pe) {}
         attempts++;
       }
+
       if (pollResult && pollResult.output) {
         var imgUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
         if (imgUrl) {
           var finalUrl = await overlayLogoOnImage(imgUrl, bulkLogoUrl, logoPos);
           var saveUrl = imgUrl;
-          // Always upload to Supabase storage so URL doesn't expire
+
+          // Upload to Supabase storage for permanent URL
           try {
             var imgRes = await fetch(imgUrl);
             var imgBlob = await imgRes.blob();
             var storageFileName = 'bulk_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
             var storageUpload = await sb.storage.from('photoshoots').upload(storageFileName, imgBlob, { contentType: 'image/jpeg', upsert: false });
             if (!storageUpload.error) {
-              var publicUrlResult = sb.storage.from('photoshoots').getPublicUrl(storageFileName);
-              saveUrl = publicUrlResult.data.publicUrl;
-              console.log('Uploaded to storage:', saveUrl.substring(0, 60));
-            } else {
-              console.error('Storage upload error:', storageUpload.error.message);
+              saveUrl = sb.storage.from('photoshoots').getPublicUrl(storageFileName).data.publicUrl;
             }
-          } catch(uploadErr) {
-            console.error('Upload failed:', uploadErr.message);
-          }
-          // If logo was applied as data URL, upload that instead
+          } catch(uploadErr) {}
+
           if (finalUrl && finalUrl.startsWith('data:')) {
-            var compressedLogo = await compressForImgur(finalUrl);
-            var storedLogoUrl = await uploadLogoedImageToStorage(compressedLogo);
-            if (storedLogoUrl) saveUrl = storedLogoUrl;
+            var compressed = await compressForStorage(finalUrl);
+            var storedUrl = await uploadToStorage(compressed);
+            if (storedUrl) saveUrl = storedUrl;
           }
+
           if (currentUserId) {
-            // Save to gallery with suit_type='Bulk'
-            var insertResult = await sb.from('photoshoots').insert({
-              user_id: currentUserId,
-              image_url: saveUrl,
-              collection_name: 'Drapely Bulk Photo',
-              suit_type: 'Bulk',
-              image_count: 1,
-              media_type: 'photo'
+            await sb.from('photoshoots').insert({
+              user_id: currentUserId, image_url: saveUrl,
+              collection_name: 'Drapely Bulk Photo', suit_type: 'Bulk',
+              image_count: 1, media_type: 'photo'
             });
-            if (insertResult.error) {
-              console.error('Photoshoot insert error:', insertResult.error.message);
-            } else {
-              console.log('Photoshoot saved OK for', saveUrl.substring(0, 60));
-            }
-            // Deduct 1 credit
             currentCredits = Math.max(0, currentCredits - 1);
-            var updateResult = await sb.from('credits').update({ balance: currentCredits }).eq('user_id', currentUserId);
-            if (updateResult.error) {
-              console.error('Credits update error:', updateResult.error.message);
-            } else {
-              console.log('Credits updated to', currentCredits);
-            }
+            await sb.from('credits').update({ balance: currentCredits }).eq('user_id', currentUserId);
             document.getElementById('stat-credits').textContent = currentCredits;
-          } else {
-            console.error('No currentUserId — not saving!');
           }
+
           bulkQueue[i].status = 'done';
           bulkResults.push({ name: bulkQueue[i].name.replace(/\.[^.]+$/, '') + '_drapely.jpg', url: finalUrl, original: saveUrl });
         } else { bulkQueue[i].status = 'error'; }
@@ -581,10 +608,13 @@ async function startBulkGenerate() {
     } catch(err) { bulkQueue[i].status = 'error'; renderQueue(); }
   }
 
+  currentFileIndicator.classList.remove('visible');
+  releaseWakeLock();
   progressFill.style.width = '100%';
   progressText.textContent = bulkResults.length + ' / ' + bulkQueue.length + ' done';
   progressLabel.textContent = '✅ ' + bulkResults.length + ' of ' + bulkQueue.length + ' done!';
-  btn.disabled = false; btn.textContent = '⚡ Generate All — ' + bulkQueue.length + ' photos';
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg> Generate All — ' + bulkQueue.length + ' photos';
   if (bulkResults.length > 0) { renderResults(); document.getElementById('export-btn').style.display = 'block'; if (currentUserId) loadCredits(currentUserId); }
   showToast('✅ ' + bulkResults.length + ' photos generated!');
 }
@@ -592,69 +622,59 @@ async function startBulkGenerate() {
 function renderResults() {
   var wrap = document.getElementById('bulk-results-wrap');
   var grid = document.getElementById('bulk-results-grid');
-  var count = document.getElementById('results-count');
   wrap.style.display = 'block';
-  count.textContent = '(' + bulkResults.length + ' photos)';
+  document.getElementById('results-count').textContent = '(' + bulkResults.length + ' photos)';
   grid.innerHTML = '';
-  bulkResults.forEach(function(item) {
+  bulkResults.forEach(function(item, i) {
     var card = document.createElement('div'); card.className = 'result-card';
     var img = document.createElement('img'); img.className = 'result-img';
     img.src = item.url || item.original;
+    img.loading = 'lazy';
     card.appendChild(img);
     var actions = document.createElement('div'); actions.className = 'result-actions';
-    var view = document.createElement('a');
-    view.href = item.original; view.target = '_blank';
-    view.className = 'result-btn primary';
-    view.textContent = '↓ Open & Save';
-    view.style.cssText = 'text-decoration:none;text-align:center;';
-    var share = document.createElement('button'); share.className = 'result-btn';
-    share.textContent = '💬';
-    share.onclick = (function(u){ return function(){ window.open('https://wa.me/?text=' + encodeURIComponent('AI Fashion Photo! ' + u), '_blank'); }; })(item.original);
-    actions.appendChild(view); actions.appendChild(share);
+    var dlBtn = document.createElement('button');
+    dlBtn.className = 'result-btn primary';
+    dlBtn.textContent = '↓ Download';
+    dlBtn.onclick = (function(u, n){ return function(){
+      if (isIOS) { window.open(u, '_blank'); return; }
+      fetch(u).then(function(r){ return r.blob(); }).then(function(blob){
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = n; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      }).catch(function(){ window.open(u, '_blank'); });
+    }; })(item.original, item.name);
+    actions.appendChild(dlBtn);
     card.appendChild(actions); grid.appendChild(card);
   });
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function exportAllAsZip() {
   if (bulkResults.length === 0) { showToast('No results!'); return; }
+  if (isIOS) { showToast('On iPhone, tap Download on each photo to save'); return; }
   showToast('Preparing ZIP...');
-
   try {
     var zip = new JSZip();
     var folder = zip.folder('drapely-bulk');
-
     for (var i = 0; i < bulkResults.length; i++) {
       var item = bulkResults[i];
       var url = item.url || item.original;
       try {
         if (url.startsWith('data:')) {
-          // Already a data URL — convert to blob
-          var base64 = url.split(',')[1];
-          folder.file(item.name || ('photo-' + (i+1) + '.jpg'), base64, { base64: true });
+          folder.file(item.name || ('photo-' + (i+1) + '.jpg'), url.split(',')[1], { base64: true });
         } else {
-          // Fetch from URL
           var res = await fetch(url);
-          var blob = await res.blob();
-          var arrBuf = await blob.arrayBuffer();
-          folder.file(item.name || ('photo-' + (i+1) + '.jpg'), arrBuf);
+          folder.file(item.name || ('photo-' + (i+1) + '.jpg'), await res.arrayBuffer());
         }
-      } catch(e) {
-        console.log('Skipping ' + item.name + ':', e.message);
-      }
+      } catch(e) {}
     }
-
     var zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(zipBlob);
     a.download = 'drapely-bulk-photos.zip';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
     showToast('✅ ZIP downloaded!');
   } catch(e) {
-    console.log('ZIP error:', e.message);
-    // Fallback: open all individually
     bulkResults.forEach(function(item){ window.open(item.original, '_blank'); });
     showToast('Opening images individually...');
   }
@@ -671,20 +691,16 @@ function openMobileNav() {
   document.getElementById('mobile-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-
 function closeMobileNav() {
   document.getElementById('mobile-nav').classList.remove('open');
   document.getElementById('mobile-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-// Close nav when tapping anywhere outside on mobile
 document.addEventListener('touchstart', function(e) {
   var nav = document.getElementById('mobile-nav');
   var burger = document.querySelector('.burger');
   if (nav && nav.classList.contains('open')) {
-    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) {
-      closeMobileNav();
-    }
+    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) closeMobileNav();
   }
 }, { passive: true });
 async function doSignOut() { await sb.auth.signOut(); window.location.href = 'auth.html'; }
