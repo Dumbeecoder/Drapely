@@ -275,51 +275,8 @@
 
 <!-- FEATURES -->
 
-  <!-- BEFORE/AFTER DEMO -->
-  <section style="padding:4rem 2rem;text-align:center;max-width:1200px;margin:0 auto;">
-    <div style="display:inline-block;background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.2);border-radius:20px;padding:6px 16px;font-size:12px;color:#E91E63;font-weight:500;margin-bottom:1rem;">✨ See the transformation</div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;margin-bottom:0.5rem;">From product photo<br/>to <em style="color:#E91E63;">professional model</em></h2>
-    <p style="font-size:14px;color:#555;margin-bottom:2.5rem;">Upload your suit → choose a model → download in 60 seconds</p>
-    <!-- Interactive Before/After Slider -->
-    <div style="max-width:380px;margin:0 auto;position:relative;border-radius:16px;overflow:hidden;border:2px solid #E91E63;box-shadow:0 8px 32px rgba(233,30,99,0.2);cursor:ew-resize;touch-action:none;" id="ba-slider">
-      <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/after-model.jpg" style="width:100%;height:480px;object-fit:cover;object-position:top;display:block;" alt="After" draggable="false" />
-      <div id="ba-before" style="position:absolute;top:0;left:0;width:50%;height:100%;overflow:hidden;border-right:3px solid #fff;">
-        <img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/before-suit.webp" style="width:380px;max-width:none;height:480px;object-fit:cover;object-position:top;display:block;" alt="Before" draggable="false" />
-      </div>
-      <div style="position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:1px;">BEFORE</div>
-      <div style="position:absolute;top:12px;right:12px;background:#E91E63;color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:1px;">AFTER</div>
-      <div id="ba-handle" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:44px;height:100%;display:flex;align-items:center;justify-content:center;cursor:ew-resize;">
-        <div style="width:44px;height:44px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.3);font-size:16px;user-select:none;">&#8596;</div>
-      </div>
-    </div>
-    <div style="font-size:12px;color:#aaa;margin-top:10px;">&#8592; drag to compare &#8594;</div>
-    <script>
-    (function(){
-      var slider = document.getElementById('ba-slider');
-      var before = document.getElementById('ba-before');
-      var handle = document.getElementById('ba-handle');
-      if (!slider) return;
-      var dragging = false;
-      function setPos(x) {
-        var rect = slider.getBoundingClientRect();
-        var pct = Math.min(Math.max((x - rect.left) / rect.width * 100, 2), 98);
-        before.style.width = pct + '%';
-        handle.style.left = pct + '%';
-      }
-      slider.addEventListener('mousedown', function(e){ dragging = true; setPos(e.clientX); });
-      document.addEventListener('mousemove', function(e){ if(dragging) setPos(e.clientX); });
-      document.addEventListener('mouseup', function(){ dragging = false; });
-      slider.addEventListener('touchstart', function(e){ dragging = true; setPos(e.touches[0].clientX); }, {passive:true});
-      document.addEventListener('touchmove', function(e){ if(dragging) setPos(e.touches[0].clientX); }, {passive:true});
-      document.addEventListener('touchend', function(){ dragging = false; });
-    })();
-    </script>
-    <div style="margin-top:2rem;">
-      <a href="auth.html" style="display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:#E91E63;color:#fff;border-radius:10px;text-decoration:none;font-size:15px;font-weight:500;">Try it free — 3 photos included →</a>
-    </div>
-  </section>
 
-  <section id="features" style="background: var(--light); border-radius: 24px; margin: 0 2rem;">
+    <section id="features" style="background: var(--light); border-radius: 24px; margin: 0 2rem;">
   <div class="section-eyebrow">Features</div>
   <h2 class="section-title">Everything you need<br/>to sell more suits</h2>
   <div class="features-grid">
