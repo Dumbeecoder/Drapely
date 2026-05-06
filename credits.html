@@ -64,6 +64,7 @@
     .history-date{font-size:11px;color:#555;margin-top:2px;}
     .history-credits{font-size:14px;font-weight:500;color:#E91E63;white-space:nowrap;}
     .history-credits.added{color:#16a34a;}
+    .history-credits.deducted{color:#d97706;}
     .history-icon.added{background:#f0fff4;}
     .empty-state{text-align:center;padding:3rem 2rem;color:#555;}
     .empty-icon{font-size:48px;opacity:0.3;margin-bottom:1rem;}
@@ -336,30 +337,19 @@ function loadHistory(userId) {
       var total = allHistory.reduce(function(s,i){ return s + i.credits; }, 0);
       document.getElementById('total-spent').textContent = total + ' credits spent total';
 
-      // Add topup entries to history
+      // Add individual topup entries — one row per credit addition
       var topupItems = topupHistory.map(function(t) {
+        var credits = t.credits_added || 0;
+        var isDeduct = credits < 0;
+        var note = t.note || 'Credits added';
         return {
           id: 'topup_' + t.id,
-          type: 'added',
-          title: 'Credits Added — ₹' + (t.amount || '') + (t.note ? ' · ' + t.note : ''),
+          type: isDeduct ? 'deducted' : 'added',
+          title: note,
           date: new Date((t.created_at || '').replace(' ', 'T').replace(/Z?$/, 'Z')),
-          credits: t.credits_added || t.amount || 0
+          credits: Math.abs(credits)
         };
       });
-
-      // If no topups table, infer total added from balance + spent
-      if (topupHistory.length === 0) {
-        var inferred = currentBalance + total;
-        if (inferred > 0) {
-          topupItems = [{
-            id: 'topup_inferred',
-            type: 'added',
-            title: 'Credits Added (total)',
-            date: new Date(),
-            credits: inferred
-          }];
-        }
-      }
 
       // Merge and sort all history newest first
       allHistory = allHistory.concat(topupItems).sort(function(a, b){ return b.date - a.date; });
@@ -374,6 +364,8 @@ function filterHistory(type, btn) {
   var filtered;
   if (type === 'all') {
     filtered = allHistory;
+  } else if (type === 'added') {
+    filtered = allHistory.filter(function(i){ return i.type === 'added' || i.type === 'deducted'; });
   } else {
     filtered = allHistory.filter(function(i){ return i.type === type; });
   }
@@ -390,21 +382,24 @@ function renderHistory(items) {
   items.forEach(function(item) {
     var row = document.createElement('div');
     row.className = 'history-row';
-    var icon = item.type === 'video' ? '🎬' : item.type === 'bulk' ? '⚡' : item.type === 'added' ? '💰' : '📷';
-    var iconClass = item.type === 'video' ? 'video' : item.type === 'bulk' ? 'bulk' : item.type === 'added' ? 'added' : 'photo';
+    var icon = item.type === 'video' ? '🎬' : item.type === 'bulk' ? '⚡' : item.type === 'added' ? '💰' : item.type === 'deducted' ? '↩️' : '📷';
+    var iconClass = item.type === 'video' ? 'video' : item.type === 'bulk' ? 'bulk' : (item.type === 'added' || item.type === 'deducted') ? 'added' : 'photo';
     var dateStr = item.date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata' });
     var timeStr = item.date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
     var isAdded = item.type === 'added';
+    var isDeducted = item.type === 'deducted';
     var creditsText = isAdded
       ? '+' + item.credits + ' credit' + (item.credits !== 1 ? 's' : '')
-      : '-' + item.credits + ' credit' + (item.credits !== 1 ? 's' : '');
+      : isDeducted
+        ? '-' + item.credits + ' credit' + (item.credits !== 1 ? 's' : '')
+        : '-' + item.credits + ' credit' + (item.credits !== 1 ? 's' : '');
     row.innerHTML =
       '<div class="history-icon ' + iconClass + '">' + icon + '</div>' +
       '<div class="history-info">' +
         '<div class="history-title">' + item.title + '</div>' +
         '<div class="history-date">' + dateStr + ' · ' + timeStr + '</div>' +
       '</div>' +
-      '<div class="history-credits' + (isAdded ? ' added' : '') + '">' + creditsText + '</div>';
+      '<div class="history-credits' + (isAdded ? ' added' : isDeducted ? ' deducted' : '') + '">' + creditsText + '</div>';
     container.appendChild(row);
   });
 }
