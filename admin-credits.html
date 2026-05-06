@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh;padding:2rem;max-width:860px;margin:0 auto;}
-    .header{background:#000;border-radius:14px;padding:1.25rem 1.75rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh;padding:2rem;max-width:1000px;margin:0 auto;}
+    .header{background:#000;border-radius:14px;padding:1.25rem 1.75rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
     .header h1{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:2px;}
     .header h1 span{color:#E91E63;}
     .badge{padding:5px 12px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;font-weight:500;}
@@ -22,13 +22,13 @@
     .card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
     .card-title{font-size:15px;font-weight:500;margin-bottom:4px;}
     .card-sub{font-size:12px;color:#555;margin-bottom:1.25rem;}
-    .search-row{display:flex;gap:10px;}
-    .search-input{flex:1;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+    .search-row{display:flex;gap:10px;flex-wrap:wrap;}
+    .search-input{flex:1;min-width:200px;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
     .search-input:focus{border-color:#E91E63;}
     .search-btn{padding:10px 22px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
     .user-result{background:#f9f9f9;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:1.25rem;margin-top:1rem;display:none;}
     .user-result.show{display:block;}
-    .user-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem;}
+    .user-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap;}
     .user-av{width:40px;height:40px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#fff;flex-shrink:0;}
     .user-name{font-size:14px;font-weight:500;}
     .user-email{font-size:12px;color:#555;}
@@ -41,12 +41,17 @@
     .amount-input:focus{border-color:#E91E63;}
     .add-btn{padding:9px 20px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
     .add-btn:hover{background:#E91E63;}
-    .quick-btns{display:flex;gap:6px;margin-bottom:8px;}
+    .deduct-btn{padding:9px 20px;background:#fff;color:#dc2626;border:1px solid #dc2626;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .deduct-btn:hover{background:#dc2626;color:#fff;}
+    .quick-btns{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
     .quick-btn{padding:6px 12px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#E91E63;cursor:pointer;}
     .quick-btn:hover{background:#E91E63;color:#fff;}
-    /* ALL USERS TABLE */
+    .copy-btn{padding:4px 10px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:#555;}
+    .copy-btn:hover{background:#E91E63;color:#fff;border-color:#E91E63;}
     .users-table{width:100%;border-collapse:collapse;}
-    .users-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(233,30,99,0.1);}
+    .users-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(233,30,99,0.1);cursor:pointer;user-select:none;}
+    .users-table th:hover{color:#E91E63;}
+    .users-table th.sorted{color:#E91E63;}
     .users-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(233,30,99,0.06);vertical-align:middle;}
     .users-table tr:last-child td{border-bottom:none;}
     .users-table tr:hover td{background:#fafafa;}
@@ -56,13 +61,29 @@
     .bal-low{background:#fee2e2;color:#dc2626;}
     .edit-btn{padding:4px 12px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;font-size:11px;font-weight:500;color:#E91E63;cursor:pointer;font-family:'DM Sans',sans-serif;}
     .edit-btn:hover{background:#E91E63;color:#fff;}
-    /* TOAST */
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem;}
     .stat-box{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:1rem;text-align:center;}
     .stat-num{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:#E91E63;}
     .stat-lbl{font-size:11px;color:#555;margin-top:2px;}
+    .filter-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
+    .filter-select{padding:7px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+    .filter-select:focus{border-color:#E91E63;}
+    .export-btn{padding:7px 16px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;margin-left:auto;}
+    .export-btn:hover{background:#E91E63;}
+    .user-history{margin-top:1rem;border-top:1px solid rgba(233,30,99,0.1);padding-top:1rem;}
+    .user-history-title{font-size:12px;font-weight:600;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+    .user-history-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(233,30,99,0.06);font-size:12px;}
+    .user-history-row:last-child{border-bottom:none;}
+    .user-history-icon{font-size:14px;width:24px;text-align:center;}
+    .user-history-info{flex:1;color:#555;}
+    .user-history-credits{font-weight:500;white-space:nowrap;}
+    .user-history-credits.added{color:#16a34a;}
+    .user-history-credits.spent{color:#E91E63;}
+    .topup-history-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(233,30,99,0.06);font-size:12px;}
+    .topup-history-row:last-child{border-bottom:none;}
+    @media(max-width:600px){.stat-row{grid-template-columns:1fr 1fr;}.users-table th:nth-child(3),.users-table td:nth-child(3){display:none;}}
   </style>
 </head>
 <body>
@@ -73,7 +94,6 @@
   <button id="signout-btn" onclick="adminSignOut()" style="display:none;padding:6px 16px;background:rgba(233,30,99,0.15);color:#E91E63;border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;">Sign out</button>
 </div>
 
-<!-- GATE -->
 <div class="gate" id="gate">
   <h2>Admin Access</h2>
   <p>Enter admin password to manage user credits</p>
@@ -86,33 +106,42 @@
   <!-- STATS -->
   <div class="stat-row">
     <div class="stat-box"><div class="stat-num" id="stat-users">—</div><div class="stat-lbl">Total Users</div></div>
-    <div class="stat-box"><div class="stat-num" id="stat-credits-total">—</div><div class="stat-lbl">Total Credits Issued</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-revenue">—</div><div class="stat-lbl">Est. Revenue (credits sold × ₹50)</div></div>
     <div class="stat-box"><div class="stat-num" id="stat-photos">—</div><div class="stat-lbl">Photos Generated</div></div>
   </div>
 
   <!-- SEARCH -->
   <div class="card">
-    <div class="card-title">Find User & Add Credits</div>
-    <div class="card-sub">Search by email address or phone number to find a user and manage their credits</div>
+    <div class="card-title">Find User & Manage Credits</div>
+    <div class="card-sub">Search by email or phone number</div>
     <div class="search-row">
-      <input class="search-input" id="search-input" type="text" placeholder="email@example.com or +91 98765 43210" onkeydown="if(event.key==='Enter')searchUser()" />
+      <input class="search-input" id="search-input" type="text" placeholder="email@example.com or phone number" onkeydown="if(event.key==='Enter')searchUser()" />
       <button class="search-btn" onclick="searchUser()">Search</button>
     </div>
 
     <div class="user-result" id="user-result">
       <div class="user-row">
         <div class="user-av" id="res-av">?</div>
-        <div>
+        <div style="flex:1;">
           <div class="user-name" id="res-name">—</div>
           <div class="user-email" id="res-email">—</div>
           <div class="user-meta" id="res-meta">—</div>
         </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="copy-btn" onclick="copyField('res-email')">📋 Copy Email</button>
+          <button class="copy-btn" id="copy-phone-btn" onclick="copyPhone()" style="display:none;">📋 Copy Phone</button>
+        </div>
       </div>
+
       <div class="credits-row">
         <div class="credits-label">Current balance</div>
         <div class="credits-val" id="res-credits">—</div>
         <div style="font-size:11px;color:#555;">credits</div>
       </div>
+
+      <div style="font-size:11px;color:#555;margin-bottom:4px;">Note (shown in user's credit history)</div>
+      <input class="amount-input" id="credit-note" type="text" placeholder="e.g. Payment received ₹500 via GPay" style="width:100%;margin-bottom:8px;text-align:left;padding:9px 12px;" />
+
       <div class="quick-btns">
         <button class="quick-btn" onclick="setAmount(10)">+10</button>
         <button class="quick-btn" onclick="setAmount(20)">+20</button>
@@ -121,31 +150,65 @@
         <button class="quick-btn" onclick="setAmount(100)">+100</button>
       </div>
       <div class="add-row">
-        <input class="amount-input" id="credit-amount" type="number" placeholder="Credits to add" min="1" max="1000" />
-        <button class="add-btn" onclick="addCredits()">Add Credits</button>
+        <input class="amount-input" id="credit-amount" type="number" placeholder="Credits" min="1" max="1000" />
+        <button class="add-btn" onclick="addCredits()">+ Add Credits</button>
+        <button class="deduct-btn" onclick="deductCredits()">− Deduct</button>
+      </div>
+
+      <!-- USER ACTIVITY HISTORY -->
+      <div class="user-history" id="user-history-section" style="display:none;">
+        <div class="user-history-title">Recent Activity</div>
+        <div id="user-history-list"></div>
+      </div>
+
+      <!-- TOPUP HISTORY -->
+      <div class="user-history" id="user-topup-section" style="display:none;">
+        <div class="user-history-title">Payment History</div>
+        <div id="user-topup-list" class="history-table" style="background:#fff;border:1px solid rgba(233,30,99,0.1);border-radius:8px;overflow:hidden;"></div>
       </div>
     </div>
   </div>
 
   <!-- ALL USERS -->
   <div class="card">
-    <div class="card-title">All Users</div>
-    <div class="card-sub">Click any user to select them above for credit management</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px;">
+      <div class="card-title">All Users</div>
+    </div>
+    <div class="card-sub">Click any row to manage credits. Click column headers to sort.</div>
+    <div class="filter-row">
+      <select class="filter-select" id="filter-balance" onchange="applyFilters()">
+        <option value="all">All balances</option>
+        <option value="zero">0 credits (follow up)</option>
+        <option value="low">Low (1–5 credits)</option>
+        <option value="mid">Mid (6–20 credits)</option>
+        <option value="high">High (20+ credits)</option>
+      </select>
+      <select class="filter-select" id="filter-sort" onchange="applyFilters()">
+        <option value="joined-desc">Newest first</option>
+        <option value="joined-asc">Oldest first</option>
+        <option value="credits-desc">Most credits</option>
+        <option value="credits-asc">Least credits</option>
+        <option value="photos-desc">Most active</option>
+      </select>
+      <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
     <table class="users-table">
       <thead>
         <tr>
           <th>Name / Store</th>
           <th>Email</th>
           <th>Phone</th>
-          <th>Credits</th>
-          <th>Joined</th>
+          <th onclick="sortBy('credits')">Credits ↕</th>
+          <th onclick="sortBy('photos')">Photos ↕</th>
+          <th onclick="sortBy('joined')">Joined ↕</th>
           <th></th>
         </tr>
       </thead>
       <tbody id="users-tbody">
-        <tr><td colspan="5" style="text-align:center;color:#555;padding:2rem;">Loading users...</td></tr>
+        <tr><td colspan="7" style="text-align:center;color:#555;padding:2rem;">Loading users...</td></tr>
       </tbody>
     </table>
+    <div id="users-count" style="font-size:12px;color:#555;margin-top:10px;text-align:right;"></div>
   </div>
 
 </div>
@@ -161,7 +224,12 @@ var sb = window.supabase.createClient(
 var ADMIN_PASS = 'drapely2025admin';
 var currentUserId = null;
 var currentBalance = 0;
+var currentPhone = '';
 var allUsers = [];
+var creditsMap = {};
+var photoMap = {};
+var sortField = 'joined';
+var sortDir = 'desc';
 
 function checkPass() {
   if (document.getElementById('admin-pass').value === ADMIN_PASS) {
@@ -191,144 +259,242 @@ async function loadStats() {
 
 async function loadAllUsers() {
   var tbody = document.getElementById('users-tbody');
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;padding:1.5rem;">Loading...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:1.5rem;">Loading...</td></tr>';
   try {
     var res = await fetch('/api/admin-user?list=true');
     var data = await res.json();
-    var authUsers = data.users || [];
-    // Fetch credits using service key via admin API
-    var creditsMap = {};
+    allUsers = data.users || [];
+
+    creditsMap = {};
     try {
       var cr = await fetch('/api/admin-user?credits=true');
       var crData = await cr.json();
       (crData.credits || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
     } catch(e) {
-      // fallback to anon key
       var cr = await sb.from('credits').select('*');
       (cr.data || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
     }
+
+    // Load topups to calculate total credits ever issued
+    var topupsRes = await sb.from('credit_topups').select('credits_added');
+    var totalTopups = (topupsRes.data || []).reduce(function(s,t){ return s + (t.credits_added||0); }, 0);
+    // Also count initial 3 credits per user
+    var totalIssued = totalTopups + (allUsers.length * 3);
+    document.getElementById('stat-users').textContent = allUsers.length;
+    document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
+
     var ph = await sb.from('photoshoots').select('user_id');
-    var photoMap = {};
+    photoMap = {};
     (ph.data || []).forEach(function(p){ photoMap[p.user_id] = (photoMap[p.user_id] || 0) + 1; });
-    document.getElementById('stat-users').textContent = authUsers.length;
-    var totalCr = Object.values(creditsMap).reduce(function(s,v){ return s+v; }, 0);
-    document.getElementById('stat-credits-total').textContent = totalCr;
-    tbody.innerHTML = '';
-    if (!authUsers.length) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc2626;padding:1.5rem;">No users — add SUPABASE_SERVICE_KEY to Vercel env vars then redeploy</td></tr>';
-      return;
-    }
-    authUsers.forEach(function(user) {
-      var meta = user.user_metadata || {};
-      var fname = (meta.first_name || '').trim();
-      var lname = (meta.last_name || '').trim();
-      var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
-      var phone = meta.phone || user.phone || '—';
-      var store = meta.store_name || '';
-      var bal = creditsMap[user.id] || 0;
-      var balClass = bal >= 20 ? 'bal-high' : bal >= 5 ? 'bal-mid' : 'bal-low';
-      var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
-      var photoCount = photoMap[user.id] || 0;
-      var tr = document.createElement('tr');
-      var btn = document.createElement('button');
-      btn.className = 'edit-btn'; btn.textContent = '+ Credits';
-      btn.onclick = (function(id,em,nm,b){ return function(){ selectUserById(id,em,nm,b); }; })(user.id, user.email||'', name, bal);
-      tr.innerHTML =
-        '<td><div style="font-size:13px;font-weight:500;">' + name + '</div>' + (store ? '<div style="font-size:10px;color:#888;">' + store + '</div>' : '') + '</td>' +
-        '<td style="font-size:12px;color:#555;">' + (user.email||'—') + '</td>' +
-        '<td style="font-size:12px;color:#555;">' + phone + '</td>' +
-        '<td><span class="bal-badge ' + balClass + '">' + bal + '</span><span style="font-size:10px;color:#999;margin-left:4px;">' + photoCount + ' photos</span></td>' +
-        '<td style="font-size:12px;color:#555;">' + joined + '</td><td></td>';
-      tr.querySelector('td:last-child').appendChild(btn);
-      tbody.appendChild(tr);
-    });
+
+    applyFilters();
   } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc2626;padding:1.5rem;">Error: ' + e.message + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:1.5rem;">Error: ' + e.message + '</td></tr>';
   }
 }
 
-function selectUserById(userId, email, name, balance) {
+function applyFilters() {
+  var balFilter = document.getElementById('filter-balance').value;
+  var sortVal = document.getElementById('filter-sort').value;
+
+  var filtered = allUsers.filter(function(user) {
+    var bal = creditsMap[user.id] || 0;
+    if (balFilter === 'zero') return bal === 0;
+    if (balFilter === 'low') return bal >= 1 && bal <= 5;
+    if (balFilter === 'mid') return bal > 5 && bal <= 20;
+    if (balFilter === 'high') return bal > 20;
+    return true;
+  });
+
+  filtered.sort(function(a, b) {
+    if (sortVal === 'credits-desc') return (creditsMap[b.id]||0) - (creditsMap[a.id]||0);
+    if (sortVal === 'credits-asc') return (creditsMap[a.id]||0) - (creditsMap[b.id]||0);
+    if (sortVal === 'photos-desc') return (photoMap[b.id]||0) - (photoMap[a.id]||0);
+    if (sortVal === 'joined-asc') return new Date(a.created_at) - new Date(b.created_at);
+    return new Date(b.created_at) - new Date(a.created_at); // newest first default
+  });
+
+  renderUsersTable(filtered);
+}
+
+function sortBy(field) {
+  var sel = document.getElementById('filter-sort');
+  if (field === 'credits') sel.value = sel.value === 'credits-desc' ? 'credits-asc' : 'credits-desc';
+  if (field === 'photos') sel.value = 'photos-desc';
+  if (field === 'joined') sel.value = sel.value === 'joined-desc' ? 'joined-asc' : 'joined-desc';
+  applyFilters();
+}
+
+function renderUsersTable(users) {
+  var tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = '';
+  document.getElementById('users-count').textContent = users.length + ' user' + (users.length !== 1 ? 's' : '');
+
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:2rem;">No users match filter</td></tr>';
+    return;
+  }
+
+  users.forEach(function(user) {
+    var meta = user.user_metadata || {};
+    var fname = (meta.first_name || '').trim();
+    var lname = (meta.last_name || '').trim();
+    var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
+    var phone = meta.phone || user.phone || '—';
+    var store = meta.store_name || '';
+    var bal = creditsMap[user.id] || 0;
+    var balClass = bal >= 20 ? 'bal-high' : bal >= 5 ? 'bal-mid' : 'bal-low';
+    var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+    var photoCount = photoMap[user.id] || 0;
+
+    var tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.onclick = (function(id, em, nm, b, ph){ return function(){ selectUserById(id, em, nm, b, ph); }; })(user.id, user.email||'', name, bal, phone);
+
+    var btn = document.createElement('button');
+    btn.className = 'edit-btn'; btn.textContent = '+ Credits';
+    btn.onclick = (function(id, em, nm, b, ph){ return function(e){ e.stopPropagation(); selectUserById(id, em, nm, b, ph); }; })(user.id, user.email||'', name, bal, phone);
+
+    tr.innerHTML =
+      '<td><div style="font-size:13px;font-weight:500;">' + name + '</div>' + (store ? '<div style="font-size:10px;color:#888;">' + store + '</div>' : '') + '</td>' +
+      '<td style="font-size:12px;color:#555;">' + (user.email||'—') + '</td>' +
+      '<td style="font-size:12px;color:#555;">' + phone + '</td>' +
+      '<td><span class="bal-badge ' + balClass + '">' + bal + '</span></td>' +
+      '<td style="font-size:12px;color:#555;">' + photoCount + '</td>' +
+      '<td style="font-size:12px;color:#555;">' + joined + '</td>' +
+      '<td></td>';
+    tr.querySelector('td:last-child').appendChild(btn);
+    tbody.appendChild(tr);
+  });
+}
+
+function selectUserById(userId, email, name, balance, phone) {
   currentUserId = userId;
   currentBalance = balance;
+  currentPhone = phone || '';
   document.getElementById('res-av').textContent = (name || email || '?').slice(0,2).toUpperCase();
   document.getElementById('res-name').textContent = name || email || userId.substring(0,16);
   document.getElementById('res-email').textContent = email || '—';
-  document.getElementById('res-meta').textContent = 'User ID: ' + userId.substring(0,16) + '...';
+  document.getElementById('res-meta').textContent = '☎️ ' + (phone || '—') + ' · ID: ' + userId.substring(0,12) + '...';
   document.getElementById('res-credits').textContent = balance;
   document.getElementById('user-result').classList.add('show');
+
+  // Show copy phone button if phone exists
+  var copyPhoneBtn = document.getElementById('copy-phone-btn');
+  if (phone && phone !== '—') {
+    copyPhoneBtn.style.display = 'inline-block';
+  } else {
+    copyPhoneBtn.style.display = 'none';
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  loadUserHistory(userId);
+  loadUserTopups(userId);
+}
+
+async function loadUserHistory(userId) {
+  var section = document.getElementById('user-history-section');
+  var list = document.getElementById('user-history-list');
+  list.innerHTML = '<div style="font-size:12px;color:#555;padding:8px 0;">Loading...</div>';
+  section.style.display = 'block';
+
+  var res = await sb.from('photoshoots')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  if (!res.data || res.data.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 0;">No activity yet</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  res.data.forEach(function(item) {
+    var isVideo = item.media_type === 'video' || item.suit_type === 'Video';
+    var isBulk = item.suit_type === 'Bulk' || (item.collection_name && item.collection_name.toLowerCase().includes('bulk'));
+    var icon = isVideo ? '🎬' : isBulk ? '⚡' : '📷';
+    var credits = isVideo ? (item.image_count === 4 ? 4 : 2) : (item.image_count || 1);
+    var title = item.collection_name || (isVideo ? 'AI Video' : 'AI Photo');
+    var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z'))
+      .toLocaleDateString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+    var row = document.createElement('div');
+    row.className = 'user-history-row';
+    row.innerHTML = '<div class="user-history-icon">' + icon + '</div>' +
+      '<div class="user-history-info">' + title + ' · ' + date + '</div>' +
+      '<div class="user-history-credits spent">-' + credits + ' cr</div>';
+    list.appendChild(row);
+  });
+}
+
+async function loadUserTopups(userId) {
+  var section = document.getElementById('user-topup-section');
+  var list = document.getElementById('user-topup-list');
+  section.style.display = 'block';
+  list.innerHTML = '<div style="font-size:12px;color:#555;padding:8px 12px;">Loading...</div>';
+
+  var res = await sb.from('credit_topups')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (!res.data || res.data.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 12px;">No payments recorded yet</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  res.data.forEach(function(t) {
+    var date = new Date((t.created_at||'').replace(' ','T').replace(/Z?$/,'Z'))
+      .toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+    var row = document.createElement('div');
+    row.className = 'topup-history-row';
+    row.innerHTML = '<div style="font-size:14px;">💰</div>' +
+      '<div style="flex:1;font-size:12px;color:#555;">' + (t.note || 'Credits added') + '<br><span style="font-size:10px;color:#aaa;">' + date + '</span></div>' +
+      '<div style="font-size:13px;font-weight:500;color:#16a34a;">+' + t.credits_added + ' credits</div>';
+    list.appendChild(row);
+  });
 }
 
 async function searchUser() {
   var query = document.getElementById('search-input').value.trim();
   if (!query) { showToast('Enter an email or phone number'); return; }
-
   showToast('Searching...');
-
-  // Detect if phone or email
   var isPhone = /^[+\d\s\-()]{7,}$/.test(query) && !query.includes('@');
-  var url = isPhone
-    ? '/api/admin-user?phone=' + encodeURIComponent(query)
-    : '/api/admin-user?email=' + encodeURIComponent(query);
-
+  var url = isPhone ? '/api/admin-user?phone=' + encodeURIComponent(query) : '/api/admin-user?email=' + encodeURIComponent(query);
   var res = await fetch(url);
   var data = await res.json();
-
-  if (data.error || !data.user) {
-    showToast('✗ User not found');
-    return;
-  }
-
+  if (data.error || !data.user) { showToast('✗ User not found'); return; }
   var user = data.user;
   var meta = user.user_metadata || {};
   var fname = (meta.first_name || '').trim();
   var lname = (meta.last_name || '').trim();
   var email = user.email || query;
   var displayName = (fname + ' ' + lname).trim() || email.split('@')[0];
-  var initials = displayName.slice(0, 2).toUpperCase();
-  var phone = meta.phone || '—';
+  var phone = meta.phone || user.phone || '—';
   var joined = new Date(user.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-
-  // Get credits
-  var { data: credRow } = await sb.from('credits').select('balance').eq('user_id', user.id).single();
-  var balance = credRow ? credRow.balance : 0;
-
-  currentUserId = user.id;
-  currentBalance = balance;
-
-  document.getElementById('res-av').textContent = initials;
-  document.getElementById('res-name').textContent = displayName;
-  document.getElementById('res-email').textContent = email;
-  document.getElementById('res-meta').textContent = '☎️ ' + phone + ' · Joined ' + joined + ' · ID: ' + user.id.substring(0, 12) + '...';
-  document.getElementById('res-credits').textContent = balance;
-  document.getElementById('user-result').classList.add('show');
+  var credRow = await sb.from('credits').select('balance').eq('user_id', user.id).single();
+  var balance = credRow.data ? credRow.data.balance : 0;
+  selectUserById(user.id, email, displayName, balance, phone);
   showToast('✓ Found: ' + displayName);
-
-  // Also update the table row to show email
-  updateTableRow(user.id, displayName, email, balance);
 }
 
-function updateTableRow(userId, name, email, balance) {
-  var rows = document.querySelectorAll('#users-tbody tr');
-  rows.forEach(function(row) {
-    var btn = row.querySelector('.edit-btn');
-    if (btn && btn.onclick && btn.onclick.toString().includes(userId.substring(0, 8))) {
-      var cells = row.querySelectorAll('td');
-      if (cells[0]) cells[0].innerHTML = '<div style="font-size:13px;font-weight:500;">' + name + '</div>';
-      if (cells[1]) cells[1].innerHTML = '<div style="font-size:12px;color:#555;">' + email + '</div>';
-    }
-  });
+function setAmount(n) { document.getElementById('credit-amount').value = n; }
+
+function copyField(id) {
+  var text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(function(){ showToast('✓ Copied: ' + text); });
 }
 
-function setAmount(n) {
-  document.getElementById('credit-amount').value = n;
+function copyPhone() {
+  navigator.clipboard.writeText(currentPhone).then(function(){ showToast('✓ Copied: ' + currentPhone); });
 }
 
 async function addCredits() {
-  if (!currentUserId) { showToast('Search for a user first'); return; }
+  if (!currentUserId) { showToast('Select a user first'); return; }
   var amount = parseInt(document.getElementById('credit-amount').value) || 0;
   if (amount <= 0) { showToast('Enter a valid amount'); return; }
-
+  var note = (document.getElementById('credit-note').value || '').trim() || 'Added by admin';
   showToast('Adding credits...');
   try {
     var res = await fetch('/api/admin-user', {
@@ -338,15 +504,61 @@ async function addCredits() {
     });
     var data = await res.json();
     if (!res.ok || data.error) { showToast('✗ Error: ' + (data.error || 'Failed')); return; }
-
     currentBalance = data.new_balance;
     document.getElementById('res-credits').textContent = data.new_balance;
     document.getElementById('credit-amount').value = '';
+    document.getElementById('credit-note').value = '';
+    // Log topup
+    await sb.from('credit_topups').insert({ user_id: currentUserId, credits_added: amount, note: note });
     showToast('✓ Added ' + amount + ' credits! New balance: ' + data.new_balance);
     loadAllUsers();
-  } catch(e) {
-    showToast('✗ Error: ' + e.message);
-  }
+    loadUserTopups(currentUserId);
+  } catch(e) { showToast('✗ Error: ' + e.message); }
+}
+
+async function deductCredits() {
+  if (!currentUserId) { showToast('Select a user first'); return; }
+  var amount = parseInt(document.getElementById('credit-amount').value) || 0;
+  if (amount <= 0) { showToast('Enter amount to deduct'); return; }
+  if (!confirm('Deduct ' + amount + ' credits from this user?')) return;
+  showToast('Deducting credits...');
+  try {
+    // Deduct by adding negative
+    var newBal = Math.max(0, currentBalance - amount);
+    var res = await sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', currentUserId);
+    if (res.error) { showToast('✗ Error: ' + res.error.message); return; }
+    currentBalance = newBal;
+    document.getElementById('res-credits').textContent = newBal;
+    document.getElementById('credit-amount').value = '';
+    // Log as negative topup
+    var note = (document.getElementById('credit-note').value || '').trim() || 'Deducted by admin';
+    await sb.from('credit_topups').insert({ user_id: currentUserId, credits_added: -amount, note: note });
+    showToast('✓ Deducted ' + amount + ' credits. New balance: ' + newBal);
+    loadAllUsers();
+    loadUserTopups(currentUserId);
+  } catch(e) { showToast('✗ Error: ' + e.message); }
+}
+
+function exportCSV() {
+  var rows = [['Name', 'Email', 'Phone', 'Credits', 'Photos', 'Joined']];
+  allUsers.forEach(function(user) {
+    var meta = user.user_metadata || {};
+    var fname = (meta.first_name || '').trim();
+    var lname = (meta.last_name || '').trim();
+    var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
+    var phone = meta.phone || user.phone || '';
+    var bal = creditsMap[user.id] || 0;
+    var photos = photoMap[user.id] || 0;
+    var joined = new Date(user.created_at).toLocaleDateString('en-IN');
+    rows.push([name, user.email||'', phone, bal, photos, joined]);
+  });
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'drapely-users-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  showToast('✓ CSV exported');
 }
 
 function showToast(msg) {
