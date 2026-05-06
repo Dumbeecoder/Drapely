@@ -168,6 +168,7 @@ var sb = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
 var allPhotos = [], allVideos = [], currentTab = 'photos';
+var videoBlobCache = {};
 var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 sb.auth.getSession().then(function(r) {
@@ -290,15 +291,16 @@ function renderVideos(videos) {
     var dlBtn = document.createElement('button'); dlBtn.className = 'action-btn primary'; dlBtn.textContent = '↓ Download';
     dlBtn.onclick = (function(u, n){ return function() {
       if (isIOS) {
-        showToast('Preparing...');
-        fetch(u).then(function(r){ return r.blob(); }).then(function(blob){
-          var file = new File([blob], 'drapely-video-' + n + '.mp4', { type: 'video/mp4' });
+        if (navigator.share && videoBlobCache[u]) {
+          // Blob pre-fetched — share as file for "Save Video" option
+          var file = new File([videoBlobCache[u]], 'drapely-video-' + n + '.mp4', { type: 'video/mp4' });
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({ files: [file], title: 'Drapely AI Video ' + n });
-          } else {
-            window.open(u, '_blank');
+            navigator.share({ files: [file], title: 'Drapely AI Video ' + n }).catch(function(){});
+            return;
           }
-        }).catch(function(){ window.open(u, '_blank'); });
+        }
+        // Blob not ready yet or share not supported — open in Safari
+        window.open(u, '_blank');
         return;
       }
       // Android/desktop: blob download
@@ -326,13 +328,18 @@ function renderVideos(videos) {
           if (v.dataset.src && !v.src) {
             v.src = v.dataset.src;
           }
+          // Pre-fetch blob in background for iOS share
+          if (isIOS && v.dataset.src && !videoBlobCache[v.dataset.src]) {
+            fetch(v.dataset.src).then(function(r){ return r.blob(); }).then(function(blob){
+              videoBlobCache[v.dataset.src] = blob;
+            }).catch(function(){});
+          }
           observer.unobserve(v);
         }
       });
     }, { rootMargin: '100px' });
     lazyVideos.forEach(function(v){ observer.observe(v); });
   } else {
-    // Fallback: set all src immediately
     lazyVideos.forEach(function(v){ v.src = v.dataset.src; });
   }
 }
