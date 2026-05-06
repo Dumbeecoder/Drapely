@@ -186,12 +186,20 @@ sb.auth.getSession().then(function(r) {
 });
 
 function loadBackgrounds() {
-  sb.storage.from(BUCKET).list("", { limit: 100, sortBy: { column: "name", order: "asc" } })
+  sb.storage.from(BUCKET).list("", { limit: 200 })
     .then(function(r) {
-      if (r.error) { showEmpty("Could not load backgrounds."); return; }
-      var files = (r.data || []).filter(function(f){
+      console.log('Storage list result:', r);
+      if (r.error) { 
+        console.error('Storage error:', r.error);
+        showEmpty("Could not load backgrounds: " + r.error.message); 
+        return; 
+      }
+      var allFiles = r.data || [];
+      console.log('All files:', allFiles.length, allFiles.map(function(f){ return f.name; }));
+      var files = allFiles.filter(function(f){
         return f.name && f.name !== ".emptyFolderPlaceholder" && !f.name.startsWith(".");
       });
+      console.log('Filtered files:', files.length);
       if (files.length === 0) { showEmpty(); return; }
       renderGrid(files);
     });
