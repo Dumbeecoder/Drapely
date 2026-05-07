@@ -447,10 +447,46 @@
           <!-- AI ENHANCEMENTS -->
           <div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#999;">AI ENHANCEMENTS</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:0.7rem;">
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Professional lighting</label>
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Dupatta styling</label>
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" checked style="accent-color:#E91E63;" /> Jewellery suggestion</label>
-            <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;font-size:12px;"><input type="checkbox" style="accent-color:#E91E63;" /> Soft shadow effect</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-lighting" checked style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">💡 Better Lighting</div><div style="font-size:10px;color:#888;margin-top:1px;">Makes photo look bright & clear</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-dupatta" checked style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">🧣 Dupatta Flow</div><div style="font-size:10px;color:#888;margin-top:1px;">Dupatta draped beautifully</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-jewellery" checked style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">💎 Add Jewellery</div><div style="font-size:10px;color:#888;margin-top:1px;">Matching necklace, earrings</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-skin" checked style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">✨ Smooth Skin</div><div style="font-size:10px;color:#888;margin-top:1px;">Clean glowing skin tone</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-embroidery" checked style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">🪡 Show Embroidery</div><div style="font-size:10px;color:#888;margin-top:1px;">Suit details sharp & visible</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-hair" checked style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">💄 Hair & Makeup</div><div style="font-size:10px;color:#888;margin-top:1px;">Styled hair, light makeup</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-bokeh" style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">🌸 Blurred Background</div><div style="font-size:10px;color:#888;margin-top:1px;">Model pops out more</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-shadow" style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">🌤️ Natural Shadow</div><div style="font-size:10px;color:#888;margin-top:1px;">Adds depth & realism</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-footwear" style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">👡 Add Heels</div><div style="font-size:10px;color:#888;margin-top:1px;">Matching traditional footwear</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;">
+              <input type="checkbox" id="enh-golden" style="accent-color:#E91E63;flex-shrink:0;" />
+              <div><div style="font-size:12px;font-weight:500;">🌅 Golden Glow</div><div style="font-size:10px;color:#888;margin-top:1px;">Warm festive golden light</div></div>
+            </label>
           </div>
 
           <!-- NUMBER OF IMAGES -->
@@ -671,6 +707,20 @@ function buildPhotoPrompt() {
 
   var parts = [garmentDesc, selectedPosePrompt || poseDesc];
   if (bgPrompt) parts.push(bgPrompt);
+  // Add AI enhancements based on checked options
+  var enhancements = [];
+  if (document.getElementById('enh-lighting') && document.getElementById('enh-lighting').checked) enhancements.push('professional studio lighting');
+  if (document.getElementById('enh-dupatta') && document.getElementById('enh-dupatta').checked) enhancements.push('dupatta elegantly styled and draped');
+  if (document.getElementById('enh-jewellery') && document.getElementById('enh-jewellery').checked) enhancements.push('traditional Indian jewellery');
+  if (document.getElementById('enh-shadow') && document.getElementById('enh-shadow').checked) enhancements.push('soft natural shadows');
+  if (document.getElementById('enh-skin') && document.getElementById('enh-skin').checked) enhancements.push('flawless skin retouching');
+  if (document.getElementById('enh-embroidery') && document.getElementById('enh-embroidery').checked) enhancements.push('intricate embroidery details sharp and visible');
+  if (document.getElementById('enh-hair') && document.getElementById('enh-hair').checked) enhancements.push('styled hair and subtle makeup');
+  if (document.getElementById('enh-bokeh') && document.getElementById('enh-bokeh').checked) enhancements.push('beautiful bokeh background blur');
+  if (document.getElementById('enh-footwear') && document.getElementById('enh-footwear').checked) enhancements.push('matching traditional footwear');
+  if (document.getElementById('enh-golden') && document.getElementById('enh-golden').checked) enhancements.push('warm golden hour glow');
+  if (enhancements.length > 0) parts.push(enhancements.join(', '));
+
   parts.push('professional Indian fashion photography, 4K ultra-high quality, sharp details, full outfit visible, photorealistic');
 
   var finalPrompt = parts.join(', ');
