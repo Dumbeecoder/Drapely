@@ -303,16 +303,36 @@
           <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
 
           <div style="font-size:10px;color:#999;margin-bottom:6px;margin-top:0.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;">GARMENT TYPE</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0.75rem;">
-            <div class="garment-card selected" id="garment-suit" onclick="selectGarment('suit',this)">
-              <div style="font-size:28px;margin-bottom:6px;">👗</div>
-              <div style="font-weight:500;font-size:13px;">Salwar Suit</div>
-              <div style="font-size:11px;color:#555;margin-top:2px;">Kurta, Anarkali, Palazzo</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:0.75rem;">
+            <div class="garment-card selected" id="garment-salwar" onclick="selectGarment('salwar',this)">
+              <div style="font-size:22px;margin-bottom:4px;">👗</div>
+              <div style="font-weight:500;font-size:12px;">Salwar Suit</div>
+              <div style="font-size:10px;color:#555;margin-top:1px;">Churidar, Patiala</div>
+            </div>
+            <div class="garment-card" id="garment-kurta" onclick="selectGarment('kurta',this)">
+              <div style="font-size:22px;margin-bottom:4px;">🧣</div>
+              <div style="font-weight:500;font-size:12px;">Kurti / Kurta</div>
+              <div style="font-size:10px;color:#555;margin-top:1px;">Short, Long, A-line</div>
+            </div>
+            <div class="garment-card" id="garment-palazzo" onclick="selectGarment('palazzo',this)">
+              <div style="font-size:22px;margin-bottom:4px;">🩱</div>
+              <div style="font-weight:500;font-size:12px;">Palazzo Set</div>
+              <div style="font-size:10px;color:#555;margin-top:1px;">Wide leg, flowy</div>
+            </div>
+            <div class="garment-card" id="garment-anarkali" onclick="selectGarment('anarkali',this)">
+              <div style="font-size:22px;margin-bottom:4px;">👸</div>
+              <div style="font-weight:500;font-size:12px;">Anarkali</div>
+              <div style="font-size:10px;color:#555;margin-top:1px;">Flared, floor-length</div>
+            </div>
+            <div class="garment-card" id="garment-lehenga" onclick="selectGarment('lehenga',this)">
+              <div style="font-size:22px;margin-bottom:4px;">🌸</div>
+              <div style="font-weight:500;font-size:12px;">Lehenga</div>
+              <div style="font-size:10px;color:#555;margin-top:1px;">Choli, ghagra</div>
             </div>
             <div class="garment-card" id="garment-saree" onclick="selectGarment('saree',this)">
-              <div style="font-size:28px;margin-bottom:6px;">🥻</div>
-              <div style="font-weight:500;font-size:13px;">Saree</div>
-              <div style="font-size:11px;color:#555;margin-top:2px;">Silk, Chiffon, Cotton</div>
+              <div style="font-size:22px;margin-bottom:4px;">🥻</div>
+              <div style="font-weight:500;font-size:12px;">Saree</div>
+              <div style="font-size:10px;color:#555;margin-top:1px;">Silk, Chiffon, Cotton</div>
             </div>
           </div>
 
@@ -701,9 +721,16 @@ function buildPhotoPrompt() {
   }
 
   // Build garment-specific prompt
-  var garmentDesc = selectedGarmentType === 'saree'
-    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
-    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+  var garmentDescMap = {
+    'salwar':   'Indian woman wearing a beautiful salwar suit with churidar and dupatta, full length',
+    'kurta':    'Indian woman wearing an elegant kurti with leggings and dupatta, full length',
+    'palazzo':  'Indian woman wearing a stylish palazzo set with wide leg pants and dupatta, full length',
+    'anarkali': 'Indian woman wearing a stunning anarkali suit with flared floor-length kameez and dupatta, full length',
+    'lehenga':  'Indian woman wearing a gorgeous lehenga choli with flared skirt and dupatta, full length',
+    'saree':    'Indian woman wearing an elegant saree with pallu draped gracefully over shoulder, full length',
+    'suit':     'Indian woman wearing a beautiful salwar suit with dupatta, full length',
+  };
+  var garmentDesc = garmentDescMap[selectedGarmentType] || garmentDescMap['suit'];
 
   var parts = [garmentDesc, selectedPosePrompt || poseDesc];
   if (bgPrompt) parts.push(bgPrompt);
@@ -1301,7 +1328,7 @@ function showRealResults(images) {
 // LOGO FUNCTIONS
 // GARMENT TYPE
 var selectedDuration = '5';
-var selectedGarmentType = 'suit';
+var selectedGarmentType = 'salwar';
 
 function newShoot() {
   goStep(0);
