@@ -37,7 +37,16 @@ export default async function handler(req, res) {
     // Handle mannequin (index 98 or 6) — use actual mannequin model image
     if (modelIdx === 98 || modelIdx === 6) {
       const mannequinImg = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/mannequin.jpg';
-      const garmentDesc = isSaree ? 'elegant saree on mannequin' : 'salwar suit on mannequin';
+      const mannequinDescMap = {
+        'salwar':   'salwar suit with churidar on mannequin',
+        'kurta':    'kurti with leggings on mannequin',
+        'palazzo':  'palazzo set with wide leg pants on mannequin',
+        'anarkali': 'anarkali suit flared floor-length on mannequin',
+        'lehenga':  'lehenga choli with flared skirt on mannequin',
+        'saree':    'elegant saree on mannequin',
+        'suit':     'salwar suit on mannequin',
+      };
+      const garmentDesc = mannequinDescMap[garment_type] || mannequinDescMap['suit'];
       const scenePrompt = prompt || 'clean white studio background, soft studio lighting';
       const mannequinPrompt = garmentDesc + ', ' + scenePrompt + ', professional fashion photography, full length, high quality';
       const mannequinBody = {
@@ -77,9 +86,16 @@ export default async function handler(req, res) {
       console.log('Using model:', modelIdx, humanImg);
     }
 
-    const garmentDesc = isSaree
-      ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
-      : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+  const garmentDescMap = {
+    'salwar':   'Indian woman wearing a beautiful salwar suit with churidar and dupatta, full length',
+    'kurta':    'Indian woman wearing an elegant kurti with leggings and dupatta, full length',
+    'palazzo':  'Indian woman wearing a stylish palazzo set with wide leg pants and dupatta, full length',
+    'anarkali': 'Indian woman wearing a stunning anarkali suit with flared floor-length kameez and dupatta, full length',
+    'lehenga':  'Indian woman wearing a gorgeous lehenga choli with flared skirt and dupatta, full length',
+    'saree':    'Indian woman wearing an elegant saree with pallu draped gracefully over shoulder, full length',
+    'suit':     'Indian woman wearing a beautiful salwar suit with dupatta, full length',
+  };
+  const garmentDesc = garmentDescMap[garment_type] || garmentDescMap['suit'];
 
     // Handle custom background image
     // Use the full prompt built on frontend (includes pose + scene)
