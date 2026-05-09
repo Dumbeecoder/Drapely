@@ -280,10 +280,13 @@
       <!-- STYLE -->
       <div class="ctrl-section">
         <div class="ctrl-label">Poster Style</div>
-        <div class="style-options">
+        <div class="style-options" style="grid-template-columns:repeat(3,1fr);">
           <div class="style-opt selected" onclick="selectStyle('dark',this)">🖤 Dark Luxury</div>
           <div class="style-opt" onclick="selectStyle('white',this)">🤍 Clean White</div>
           <div class="style-opt" onclick="selectStyle('gold',this)">✨ Gold Royal</div>
+          <div class="style-opt" onclick="selectStyle('maroon',this)">🍷 Deep Maroon</div>
+          <div class="style-opt" onclick="selectStyle('navy',this)">🌊 Royal Navy</div>
+          <div class="style-opt" onclick="selectStyle('blush',this)">🌸 Blush Pink</div>
         </div>
       </div>
 
@@ -340,6 +343,7 @@ var selectedTags = [];
 function addTag(el) {
   var text = el.textContent.trim();
   if (selectedTags.includes(text)) return;
+  if (selectedTags.length >= 3) { alert('Maximum 3 taglines allowed'); return; }
   selectedTags.push(text);
   renderTags();
   scheduleRender();
@@ -349,6 +353,7 @@ function addCustomTag() {
   var input = document.getElementById('custom-tag-input');
   var text = input.value.trim();
   if (!text || selectedTags.includes(text)) return;
+  if (selectedTags.length >= 3) { alert('Maximum 3 taglines allowed'); return; }
   selectedTags.push(text);
   input.value = '';
   renderTags();
@@ -454,201 +459,246 @@ function renderPoster() {
   canvas.width = W; canvas.height = H;
 
   var styles = {
-    dark:  { bg: '#0a0a0a', accent: '#c8902a', text: '#ffffff', sub: 'rgba(255,255,255,0.6)', border: 'rgba(200,144,42,0.4)', varBg: '#1a1a1a' },
-    white: { bg: '#ffffff', accent: '#E91E63', text: '#000000', sub: '#555555', border: 'rgba(233,30,99,0.3)', varBg: '#f9f9f9' },
-    gold:  { bg: '#1a0f00', accent: '#d4a017', text: '#fff8e7', sub: 'rgba(255,248,231,0.6)', border: 'rgba(212,160,23,0.5)', varBg: '#2a1f00' },
+    dark:    { bg: '#0a0a0a', accent: '#c8902a', text: '#ffffff', sub: 'rgba(255,255,255,0.55)', border: 'rgba(200,144,42,0.5)', labelBg: 'rgba(200,144,42,0.15)' },
+    white:   { bg: '#ffffff', accent: '#E91E63', text: '#111111', sub: '#666666', border: 'rgba(233,30,99,0.35)', labelBg: 'rgba(233,30,99,0.08)' },
+    gold:    { bg: '#13090a', accent: '#d4a017', text: '#fff8e7', sub: 'rgba(255,248,231,0.55)', border: 'rgba(212,160,23,0.5)', labelBg: 'rgba(212,160,23,0.12)' },
+    maroon:  { bg: '#1a0005', accent: '#c0392b', text: '#ffffff', sub: 'rgba(255,255,255,0.55)', border: 'rgba(192,57,43,0.5)', labelBg: 'rgba(192,57,43,0.15)' },
+    navy:    { bg: '#04091a', accent: '#4a90d9', text: '#ffffff', sub: 'rgba(255,255,255,0.55)', border: 'rgba(74,144,217,0.5)', labelBg: 'rgba(74,144,217,0.12)' },
+    blush:   { bg: '#fff5f7', accent: '#c2185b', text: '#1a0008', sub: '#888888', border: 'rgba(194,24,91,0.3)', labelBg: 'rgba(194,24,91,0.08)' },
   };
-  var s = styles[currentStyle];
+  var s = styles[currentStyle] || styles['dark'];
 
   var title = document.getElementById('poster-title').value || 'Timeless Elegance';
   var storeName = document.getElementById('store-name').value || '';
   var phone = document.getElementById('store-phone').value || '';
-  var tagline = selectedTags.join('  ·  ');
+  // Limit taglines to 3
+  var tags = selectedTags.slice(0, 3);
   var colorLabels = [
-    document.getElementById('clabel-0').value,
-    document.getElementById('clabel-1').value,
-    document.getElementById('clabel-2').value,
-    document.getElementById('clabel-3').value,
+    document.getElementById('clabel-0').value || '',
+    document.getElementById('clabel-1').value || '',
+    document.getElementById('clabel-2').value || '',
+    document.getElementById('clabel-3').value || '',
   ];
 
-  // Count active variants
-  var activeVars = varImgs.filter(function(v){ return v !== null; });
-  var hasVariants = activeVars.length > 0;
+  // Active variants with their original indices (for correct color labels)
+  var varImgsToLoad = varImgs.map(function(v, i) { return { src: v, idx: i }; }).filter(function(v) { return v.src !== null; });
+  var numVars = varImgsToLoad.length;
+  var hasVariants = numVars > 0;
 
-  // Layout: hero takes left 65%, variants in bottom-right
-  var heroW = hasVariants ? Math.floor(W * 0.62) : W;
-  var heroH = H;
+  var heroW = hasVariants ? Math.floor(W * 0.615) : W;
+  var panelX = heroW;
+  var panelW = W - heroW;
 
-  // Draw background
+  // Background
   ctx.fillStyle = s.bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Draw hero image
   var heroImgEl = new Image();
   heroImgEl.onload = function() {
-    // Draw hero (left side or full width)
+    // Hero image
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, 0, heroW, H);
-    ctx.clip();
+    ctx.beginPath(); ctx.rect(0, 0, heroW, H); ctx.clip();
     var hScale = Math.max(heroW / heroImgEl.width, H / heroImgEl.height);
-    var hW = heroImgEl.width * hScale;
-    var hH = heroImgEl.height * hScale;
+    var hW = heroImgEl.width * hScale, hH = heroImgEl.height * hScale;
     ctx.drawImage(heroImgEl, (heroW - hW) / 2, (H - hH) / 2, hW, hH);
     ctx.restore();
 
-    // Gradient overlay on hero for text readability
-    var grad = ctx.createLinearGradient(heroW * 0.5, 0, heroW, 0);
-    grad.addColorStop(0, 'rgba(0,0,0,0)');
-    grad.addColorStop(1, s.bg + 'ee');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, heroW, H);
+    // Hero right-edge fade
+    if (hasVariants) {
+      var fadeGrad = ctx.createLinearGradient(heroW * 0.6, 0, heroW, 0);
+      fadeGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      fadeGrad.addColorStop(1, s.bg + 'f0');
+      ctx.fillStyle = fadeGrad;
+      ctx.fillRect(0, 0, heroW, H);
+    }
 
-    // Bottom overlay on hero
-    var botGrad = ctx.createLinearGradient(0, H * 0.7, 0, H);
+    // Hero bottom fade
+    var botGrad = ctx.createLinearGradient(0, H * 0.75, 0, H);
     botGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    botGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
-    ctx.fillStyle = botGrad;
-    ctx.fillRect(0, 0, heroW, H);
+    botGrad.addColorStop(1, 'rgba(0,0,0,0.65)');
+    ctx.fillStyle = botGrad; ctx.fillRect(0, 0, heroW, H);
 
     if (hasVariants) {
-      // Right panel
-      var panelX = heroW;
-      var panelW = W - heroW;
-
-      // Decorative top accent line
+      // Accent top bar
       ctx.fillStyle = s.accent;
-      ctx.fillRect(panelX, 0, panelW, 4);
+      ctx.fillRect(panelX, 0, panelW, 5);
 
-      // Store name at top right
+      // Vertical separator line
+      ctx.strokeStyle = s.border;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(panelX, 5); ctx.lineTo(panelX, H);
+      ctx.stroke();
+
+      var cy = 30; // current Y cursor
+
+      // Store name
       if (storeName) {
         ctx.fillStyle = s.accent;
-        ctx.font = 'bold 22px DM Sans, sans-serif';
+        ctx.font = '600 18px DM Sans, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(storeName.toUpperCase(), panelX + panelW / 2, 60);
+        ctx.fillText(storeName.toUpperCase(), panelX + panelW / 2, cy + 20);
+        cy += 42;
       }
 
-      // Title
+      // Title (Cormorant, wrapped, max 2 lines)
       ctx.fillStyle = s.text;
-      ctx.font = '300 52px Cormorant Garamond, serif';
+      ctx.font = '300 46px Cormorant Garamond, serif';
       ctx.textAlign = 'center';
-      var titleLines = wrapText(ctx, title, panelW - 40);
-      var titleY = storeName ? 110 : 80;
+      var titleLines = wrapText(ctx, title, panelW - 30);
+      if (titleLines.length > 2) titleLines = titleLines.slice(0,2);
       titleLines.forEach(function(line) {
-        ctx.fillText(line, panelX + panelW / 2, titleY);
-        titleY += 58;
+        ctx.fillText(line, panelX + panelW / 2, cy + 46);
+        cy += 52;
       });
+      cy += 8;
 
-      // Accent divider
+      // Divider
       ctx.strokeStyle = s.accent;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(panelX + 40, titleY + 10);
-      ctx.lineTo(panelX + panelW - 40, titleY + 10);
+      ctx.moveTo(panelX + 30, cy); ctx.lineTo(panelX + panelW - 30, cy);
       ctx.stroke();
-      titleY += 30;
+      cy += 16;
 
-      // Tagline
-      if (tagline) {
-        ctx.fillStyle = s.sub;
-        ctx.font = '300 20px DM Sans, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(tagline, panelX + panelW / 2, titleY + 10);
-        titleY += 40;
+      // Taglines — each on its own line, max 3, small font
+      if (tags.length > 0) {
+        tags.forEach(function(tag) {
+          ctx.fillStyle = s.sub;
+          ctx.font = '300 16px DM Sans, sans-serif';
+          ctx.textAlign = 'center';
+          // Truncate if too wide
+          var maxTagW = panelW - 24;
+          while (ctx.measureText(tag).width > maxTagW && tag.length > 6) tag = tag.slice(0, -1);
+          ctx.fillText(tag, panelX + panelW / 2, cy + 16);
+          cy += 26;
+        });
+        cy += 8;
       }
 
-      // Variants grid (2x2 in right panel)
-      var varTop = titleY + 20;
-      var varAvail = H - varTop - 160; // leave room for phone
-      var varGap = 10;
-      var varCols = 2;
-      var varRows = 2;
-      var varW2 = (panelW - 40 - varGap * (varCols - 1)) / varCols;
-      var varH2 = (varAvail - varGap * (varRows - 1)) / varRows;
+      // ---- VARIANT LAYOUT ----
+      var labelH = 28;           // height for color label below each variant
+      var varGap = 8;
+      var padH = 20;             // horizontal padding each side
+      var availW = panelW - padH * 2;
+      var bottomReserve = phone ? 90 : 60; // space for phone + bottom bar
+      var availH = H - cy - bottomReserve;
 
-      var loadedVars = 0;
-      var totalVars = activeVars.length;
+      // Layout rules per count:
+      // 1 → 1×1 full width
+      // 2 → 1×2 stacked
+      // 3 → top row: 2, bottom row: 1 centered
+      // 4 → 2×2
 
-      function drawVariants(idx, vImg) {
-        var col = idx % varCols;
-        var row = Math.floor(idx / varCols);
-        var vx = panelX + 20 + col * (varW2 + varGap);
-        var vy = varTop + row * (varH2 + varGap);
+      var positions = [];
+      if (numVars === 1) {
+        var vw = availW, vh = availH - labelH;
+        positions.push({ x: panelX + padH, y: cy, w: vw, h: vh });
+      } else if (numVars === 2) {
+        var vw2 = availW;
+        var vh2 = (availH - labelH * 2 - varGap) / 2;
+        positions.push({ x: panelX + padH, y: cy, w: vw2, h: vh2 });
+        positions.push({ x: panelX + padH, y: cy + vh2 + labelH + varGap, w: vw2, h: vh2 });
+      } else if (numVars === 3) {
+        var vw3 = (availW - varGap) / 2;
+        var vh3top = (availH - labelH * 2 - varGap) * 0.52;
+        var vh3bot = (availH - labelH * 2 - varGap) * 0.44;
+        positions.push({ x: panelX + padH, y: cy, w: vw3, h: vh3top });
+        positions.push({ x: panelX + padH + vw3 + varGap, y: cy, w: vw3, h: vh3top });
+        // Bottom center
+        var bw = availW * 0.65;
+        positions.push({ x: panelX + padH + (availW - bw) / 2, y: cy + vh3top + labelH + varGap, w: bw, h: vh3bot });
+      } else {
+        // 4 → 2×2
+        var vw4 = (availW - varGap) / 2;
+        var vh4 = (availH - labelH * 2 - varGap) / 2;
+        positions.push({ x: panelX + padH, y: cy, w: vw4, h: vh4 });
+        positions.push({ x: panelX + padH + vw4 + varGap, y: cy, w: vw4, h: vh4 });
+        positions.push({ x: panelX + padH, y: cy + vh4 + labelH + varGap, w: vw4, h: vh4 });
+        positions.push({ x: panelX + padH + vw4 + varGap, y: cy + vh4 + labelH + varGap, w: vw4, h: vh4 });
+      }
+
+      function drawOneVariant(orderIdx, img) {
+        var pos = positions[orderIdx];
+        if (!pos) return;
+        var origIdx = varImgsToLoad[orderIdx].idx;
 
         ctx.save();
-        // Rounded rect clip
-        roundRect(ctx, vx, vy, varW2, varH2, 8);
+        roundRect(ctx, pos.x, pos.y, pos.w, pos.h, 6);
         ctx.clip();
-
-        var vScale = Math.max(varW2 / vImg.width, varH2 / vImg.height);
-        var vW = vImg.width * vScale;
-        var vH = vImg.height * vScale;
-        ctx.drawImage(vImg, vx + (varW2 - vW) / 2, vy + (varH2 - vH) / 2, vW, vH);
+        var sc = Math.max(pos.w / img.width, pos.h / img.height);
+        var dw = img.width * sc, dh = img.height * sc;
+        ctx.drawImage(img, pos.x + (pos.w - dw) / 2, pos.y + (pos.h - dh) / 2, dw, dh);
         ctx.restore();
 
         // Border
         ctx.strokeStyle = s.border;
         ctx.lineWidth = 1.5;
-        roundRect(ctx, vx, vy, varW2, varH2, 8);
+        roundRect(ctx, pos.x, pos.y, pos.w, pos.h, 6);
         ctx.stroke();
 
-        // Color label
-        var label = colorLabels[idx] || ('Color ' + (idx + 1));
+        // Color label — pill below image
+        var label = colorLabels[origIdx] || ('Color ' + (origIdx + 1));
+        label = label.toUpperCase();
+        ctx.font = 'bold 14px DM Sans, sans-serif';
+        var lw = Math.min(ctx.measureText(label).width + 20, pos.w);
+        var lx = pos.x + (pos.w - lw) / 2;
+        var ly = pos.y + pos.h + 4;
         ctx.fillStyle = s.accent;
-        ctx.font = 'bold 16px DM Sans, sans-serif';
+        ctx.font = 'bold 13px DM Sans, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(label.toUpperCase(), vx + varW2 / 2, vy + varH2 + 20);
+        ctx.fillText(label, pos.x + pos.w / 2, ly + 16);
       }
 
-      // Sizes indicator (only show for active count)
-      var varImgsToLoad = varImgs.map(function(v, i) { return { src: v, idx: i }; }).filter(function(v) { return v.src !== null; });
-      var varLoadCount = 0;
-
-      varImgsToLoad.forEach(function(item) {
+      var loadCount = 0;
+      varImgsToLoad.forEach(function(item, orderIdx) {
         var img = new Image();
         img.onload = function() {
-          drawVariants(item.idx, img);
-          varLoadCount++;
-          if (varLoadCount === varImgsToLoad.length) drawBottomInfo();
+          drawOneVariant(orderIdx, img);
+          loadCount++;
+          if (loadCount === numVars) drawBottom();
         };
         img.src = item.src;
       });
 
-      if (varImgsToLoad.length === 0) drawBottomInfo();
+      if (numVars === 0) drawBottom();
 
-      function drawBottomInfo() {
-        // Phone number
+      function drawBottom() {
         if (phone) {
           ctx.fillStyle = s.accent;
-          ctx.font = 'bold 26px DM Sans, sans-serif';
+          ctx.font = 'bold 22px DM Sans, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('📞 ' + phone, panelX + panelW / 2, H - 80);
+          ctx.fillText('\u260e ' + phone, panelX + panelW / 2, H - bottomReserve + 28);
         }
-        // Bottom bar
-        ctx.fillStyle = s.accent + '22';
-        ctx.fillRect(panelX, H - 50, panelW, 50);
+        ctx.fillStyle = s.accent + '25';
+        ctx.fillRect(panelX, H - 38, panelW, 38);
         ctx.fillStyle = s.accent;
-        ctx.font = '500 16px DM Sans, sans-serif';
+        ctx.font = '500 13px DM Sans, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Available in These Elegant Colours', panelX + panelW / 2, H - 20);
+        ctx.fillText('Available in These Elegant Colours', panelX + panelW / 2, H - 14);
         finalize();
       }
 
     } else {
-      // Full width — overlay text at bottom
+      // No variants — full width, text at bottom
       ctx.fillStyle = s.accent;
       ctx.font = '300 72px Cormorant Garamond, serif';
       ctx.textAlign = 'center';
-      ctx.fillText(title, W / 2, H - 200);
+      ctx.fillText(title, W / 2, H - 220);
       if (storeName) {
         ctx.fillStyle = s.text;
         ctx.font = 'bold 28px DM Sans, sans-serif';
-        ctx.fillText(storeName.toUpperCase(), W / 2, H - 140);
+        ctx.fillText(storeName.toUpperCase(), W / 2, H - 160);
+      }
+      if (tags.length > 0) {
+        ctx.fillStyle = s.sub;
+        ctx.font = '300 20px DM Sans, sans-serif';
+        ctx.fillText(tags.join(' · '), W / 2, H - 120);
       }
       if (phone) {
         ctx.fillStyle = s.accent;
         ctx.font = '500 24px DM Sans, sans-serif';
-        ctx.fillText('📞 ' + phone, W / 2, H - 90);
+        ctx.fillText('\u260e ' + phone, W / 2, H - 70);
       }
       finalize();
     }
