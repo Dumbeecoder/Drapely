@@ -687,10 +687,10 @@ function renderLandscape() {
 
   var n = activeLs.length;
   // Header area height
-  var headerH = 160;
-  var footerH = 90;
+  var headerH = 200;
+  var footerH = 100;
   var imgAreaH = H - headerH - footerH;
-  var gap = 6;
+  var gap = 8;
   var imgW = (W - gap * (n - 1)) / n;
 
   // Background
@@ -699,40 +699,50 @@ function renderLandscape() {
 
   // Top accent bar
   ctx.fillStyle = s.accent;
-  ctx.fillRect(0, 0, W, 5);
+  ctx.fillRect(0, 0, W, 8);
 
   // Header text
   var cx = W / 2;
-  var cy = 30;
+  var cy = 18;
 
-  drawOrnament(ctx, cx, cy + 10, 400, s.accent);
-  cy += 32;
+  drawOrnament(ctx, cx, cy + 14, 500, s.accent);
+  cy += 38;
 
   if (storeName) {
     ctx.fillStyle = s.accent;
-    ctx.font = '600 13px DM Sans, sans-serif';
+    ctx.font = '600 24px DM Sans, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(storeName.toUpperCase().split('').join('  '), cx, cy + 14);
-    cy += 30;
+    ctx.fillText(storeName.toUpperCase().split('').join('  '), cx, cy + 24);
+    cy += 42;
   }
 
+  // Title — large, fits landscape width
   ctx.fillStyle = s.text;
-  ctx.font = 'italic 300 52px Cormorant Garamond, serif';
   ctx.textAlign = 'center';
-  ctx.shadowColor = s.accent + '44'; ctx.shadowBlur = 16;
-  ctx.fillText(title, cx, cy + 52);
+  ctx.shadowColor = s.accent + '55'; ctx.shadowBlur = 20;
+  var titleLines = wrapText(ctx, title, W * 0.7);
+  ctx.font = 'italic 300 ' + (titleLines.length > 1 ? '52' : '64') + 'px Cormorant Garamond, serif';
+  // Remeasure with correct font
+  titleLines = wrapText(ctx, title, W * 0.7);
+  if (titleLines.length > 1) titleLines = titleLines.slice(0, 2);
+  var titleSize = titleLines.length > 1 ? 52 : 64;
+  ctx.font = 'italic 300 ' + titleSize + 'px Cormorant Garamond, serif';
+  titleLines.forEach(function(line) {
+    ctx.fillText(line, cx, cy + titleSize);
+    cy += titleSize + 6;
+  });
   ctx.shadowBlur = 0;
-  cy += 58;
+  cy += 10;
 
-  drawDivider(ctx, cx, cy, 380, s.accent);
-  cy += 20;
+  drawDivider(ctx, cx, cy, 500, s.accent);
+  cy += 24;
 
-  // Taglines inline with dots
+  // Taglines inline
   if (tags.length > 0) {
     ctx.fillStyle = s.sub;
-    ctx.font = '300 15px DM Sans, sans-serif';
+    ctx.font = '300 22px DM Sans, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(tags.join('   ·   '), cx, cy + 16);
+    ctx.fillText(tags.join('   ·   '), cx, cy + 22);
   }
 
   // Load all images then draw
@@ -781,20 +791,20 @@ function renderLandscape() {
       var label = (lsLabels[imgs[i].origIdx] || '').toUpperCase();
       if (label) {
         ctx.save();
-        ctx.font = '600 14px DM Sans, sans-serif';
-        var lw2 = ctx.measureText(label).width + 24;
+        ctx.font = '600 20px DM Sans, sans-serif';
+        var lw2 = ctx.measureText(label).width + 30;
         var lx2 = ix + (iw - lw2) / 2;
-        var ly2 = iy + ih - 38;
+        var ly2 = iy + ih - 50;
         ctx.fillStyle = s.accent + '33';
-        roundRect(ctx, lx2, ly2, lw2, 26, 13);
+        roundRect(ctx, lx2, ly2, lw2, 34, 17);
         ctx.fill();
         ctx.strokeStyle = s.accent + '88';
-        ctx.lineWidth = 1;
-        roundRect(ctx, lx2, ly2, lw2, 26, 13);
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, lx2, ly2, lw2, 34, 17);
         ctx.stroke();
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'center';
-        ctx.fillText(label, ix + iw / 2, ly2 + 18);
+        ctx.fillText(label, ix + iw / 2, ly2 + 23);
         ctx.restore();
       }
     }
@@ -813,14 +823,14 @@ function renderLandscape() {
     var fy = footerY + footerH / 2;
     if (phone) {
       ctx.fillStyle = s.text;
-      ctx.font = '600 22px DM Sans, sans-serif';
+      ctx.font = '600 32px DM Sans, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('☎  ' + phone, W / 2, fy - 6);
+      ctx.fillText('\u260e  ' + phone, W / 2, fy - 8);
     }
     ctx.fillStyle = s.accent;
-    ctx.font = '400 13px DM Sans, sans-serif';
+    ctx.font = '400 18px DM Sans, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S', W / 2, fy + 20);
+    ctx.fillText('A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S', W / 2, fy + 26);
 
     drawLogo(ctx, W, H, function() {
       document.getElementById('preview-empty').style.display = 'none';
