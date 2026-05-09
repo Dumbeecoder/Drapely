@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Poster Builder — Drapely</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;overflow-x:hidden;}
@@ -20,7 +20,7 @@
     .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
     .user-av{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
     .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;overflow-x:hidden;}
+    .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;}
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
     .topbar-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;}
     .topbar-sub{font-size:13px;color:#555;}
@@ -29,12 +29,11 @@
     .ctrl-section{border-bottom:1px solid rgba(233,30,99,0.08);padding-bottom:1.25rem;}
     .ctrl-section:last-child{border:none;padding-bottom:0;}
     .ctrl-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:10px;}
-    .ctrl-input{width:100%;padding:10px 12px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;outline:none;}
+    .ctrl-input{width:100%;padding:10px 12px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;outline:none;background:#fff;}
     .ctrl-input:focus{border-color:#E91E63;}
-    .upload-zone{border:2px dashed rgba(233,30,99,0.25);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;position:relative;overflow:hidden;}
+    .upload-zone{border:2px dashed rgba(233,30,99,0.25);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
     .upload-zone:hover{border-color:#E91E63;background:#fff0f5;}
-    .upload-zone.has-img{border-style:solid;border-color:rgba(233,30,99,0.4);padding:0;}
-    .upload-zone img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;}
+    .upload-zone.has-img{border-style:solid;border-color:rgba(233,30,99,0.4);}
     .upload-icon{font-size:24px;margin-bottom:6px;}
     .upload-text{font-size:12px;color:#777;}
     .upload-text strong{color:#E91E63;}
@@ -43,10 +42,10 @@
     .variant-slot{aspect-ratio:3/4;border:2px dashed rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fafafa;transition:all 0.15s;}
     .variant-slot:hover{border-color:#E91E63;background:#fff0f5;}
     .variant-slot.has-img{border-style:solid;border-color:rgba(233,30,99,0.3);}
-    .variant-slot img{width:100%;height:100%;object-fit:cover;}
-    .variant-slot .slot-num{font-size:11px;color:#ccc;font-weight:500;}
-    .variant-slot .remove-btn{position:absolute;top:4px;right:4px;width:18px;height:18px;font-size:10px;}
-    .color-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px;}
+    .variant-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+    .variant-slot .slot-num{font-size:11px;color:#ccc;font-weight:500;position:relative;z-index:1;}
+    .variant-slot .remove-btn{top:4px;right:4px;width:18px;height:18px;font-size:10px;}
+    .color-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
     .color-label-input{width:100%;padding:5px 6px;border:1px solid rgba(233,30,99,0.15);border-radius:6px;font-size:11px;font-family:'DM Sans',sans-serif;text-align:center;color:#555;outline:none;}
     .color-label-input:focus{border-color:#E91E63;}
     .style-opt{border:2px solid rgba(233,30,99,0.15);border-radius:8px;padding:8px 6px;cursor:pointer;text-align:center;transition:all 0.15s;background:#fff;font-size:11px;color:#555;}
@@ -55,17 +54,17 @@
     .gen-btn:hover{background:#c2185b;}
     .preview-panel{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:16px;padding:1.5rem;position:sticky;top:2rem;}
     .preview-title{font-size:13px;font-weight:500;color:#333;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
-    .preview-canvas-wrap{background:#f0f0f0;border-radius:10px;overflow:hidden;position:relative;}
+    .preview-canvas-wrap{background:#f0f0f0;border-radius:10px;overflow:hidden;}
     .preview-empty{text-align:center;padding:3rem 1rem;color:#bbb;}
-    .preview-empty-icon{font-size:40px;margin-bottom:10px;}
     .download-btn{width:100%;padding:12px;background:#000;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:1rem;transition:background 0.2s;display:none;}
     .download-btn:hover{background:#222;}
     .download-btn.show{display:block;}
     .tag-preset{padding:5px 12px;border:1.5px solid rgba(233,30,99,0.25);border-radius:20px;font-size:11px;color:#555;cursor:pointer;transition:all 0.15s;background:#fff;user-select:none;}
     .tag-preset:hover{border-color:#E91E63;color:#E91E63;background:#fff0f5;}
-    .tag-selected{padding:5px 10px 5px 12px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;display:flex;align-items:center;gap:6px;cursor:default;}
-    .tag-selected .tag-x{cursor:pointer;opacity:0.7;font-size:13px;line-height:1;}
-    #poster-canvas{display:block;width:100%;height:auto;border-radius:10px;}
+    .tag-selected{padding:5px 10px 5px 12px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;display:inline-flex;align-items:center;gap:6px;}
+    .tag-selected .tag-x{cursor:pointer;opacity:0.8;font-size:13px;}
+    #poster-canvas{display:block;width:100%;height:auto;border-radius:8px;}
+    /* MOBILE */
     .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
     .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
     .mobile-logo span{color:#E91E63;}
@@ -78,19 +77,27 @@
     .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
     .mobile-nav-brand span{color:#E91E63;}
     .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .mobile-nav-section{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:8px 14px 4px;font-weight:500;}
     .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
     .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .mobile-nav-item.active{color:#E91E63;}
     .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2);}
     .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);}
     .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
     .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
     @media(max-width:900px){
-      .sidebar{display:none !important;}
-      .main{margin-left:0 !important;padding-top:70px !important;padding:70px 1rem 1rem;}
-      .mobile-header{display:flex !important;}
-      .burger{display:flex !important;}
-      .builder-layout{grid-template-columns:1fr;}
-      .preview-panel{position:static;}
+      .sidebar{display:none!important;}
+      .main{margin-left:0!important;padding:70px 1rem 2rem!important;}
+      .mobile-header{display:flex!important;}
+      .burger{display:flex!important;}
+      .builder-layout{grid-template-columns:1fr!important;}
+      .preview-panel{position:static!important;}
+    }
+    @media(max-width:500px){
+      .controls{padding:1rem;}
+      .variant-grid{gap:5px;}
+      .color-labels{grid-template-columns:repeat(2,1fr);}
+      .style-opt{padding:7px 4px;}
     }
   </style>
 </head>
@@ -98,21 +105,23 @@
 
 <div class="mobile-header">
   <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
-  <a href="#" class="mobile-logo">Drape<span>ly</span></a>
+  <a href="dashboard.html" class="mobile-logo">Drape<span>ly</span></a>
 </div>
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
 <div class="mobile-nav" id="mobile-nav">
-  <a href="#" class="mobile-nav-brand">Drape<span>ly</span></a>
+  <a href="dashboard.html" class="mobile-nav-brand">Drape<span>ly</span></a>
   <div class="mobile-nav-items">
-    <a class="mobile-nav-item" href="dashboard.html" onclick="closeMobileNav()">✨ New Photoshoot</a>
-    <a class="mobile-nav-item" href="video.html" onclick="closeMobileNav()">🎬 New Video</a>
-    <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
-    <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
-    <a class="mobile-nav-item" href="backgrounds.html" onclick="closeMobileNav()">🌄 Backgrounds</a>
-    <a class="mobile-nav-item active" href="poster.html" onclick="closeMobileNav()">🎨 Poster Builder</a>
-    <a class="mobile-nav-item" href="guide.html" onclick="closeMobileNav()">📖 How to Use</a>
-    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
-    <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
+    <div class="mobile-nav-section">STUDIO</div>
+    <a class="mobile-nav-item" href="dashboard.html">✨ New Photoshoot</a>
+    <a class="mobile-nav-item" href="video.html">🎬 New Video</a>
+    <a class="mobile-nav-item" href="bulk.html">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item" href="gallery.html">🖼️ My Gallery</a>
+    <a class="mobile-nav-item" href="backgrounds.html">🌄 Backgrounds</a>
+    <a class="mobile-nav-item active" href="poster.html">🎨 Poster Builder</a>
+    <div class="mobile-nav-section">ACCOUNT</div>
+    <a class="mobile-nav-item" href="guide.html">📖 How to Use</a>
+    <a class="mobile-nav-item" href="settings.html">⚙️ Settings</a>
+    <a class="mobile-nav-item" href="credits.html">💳 Credits</a>
     <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
   </div>
   <div class="mobile-nav-footer">
@@ -124,7 +133,7 @@
 </div>
 
 <div class="sidebar">
-  <a href="#" onclick="location.reload();return false;" class="sidebar-brand">Drape<span>ly</span></a>
+  <a href="dashboard.html" class="sidebar-brand">Drape<span>ly</span></a>
   <div class="sidebar-nav">
     <div class="nav-section-label">STUDIO</div>
     <a href="dashboard.html" class="nav-item">✨ New photoshoot</a>
@@ -151,14 +160,12 @@
   <div class="topbar">
     <div>
       <div class="topbar-title">🎨 Poster Builder</div>
-      <div class="topbar-sub">Create a catalogue poster with hero photo + color variants</div>
+      <div class="topbar-sub">Create stunning catalogue posters for your store</div>
     </div>
   </div>
-
   <div class="builder-layout">
     <div class="controls">
 
-      <!-- LAYOUT MODE -->
       <div class="ctrl-section">
         <div class="ctrl-label">Poster Layout</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -175,47 +182,29 @@
         </div>
       </div>
 
-      <!-- PORTRAIT SECTION -->
       <div id="portrait-section">
         <div class="ctrl-section">
-          <div class="ctrl-label">Hero Photo (Main large image)</div>
-          <div class="upload-zone" id="hero-zone" onclick="triggerUpload('hero-input')" style="height:180px;">
+          <div class="ctrl-label">Hero Photo</div>
+          <div class="upload-zone" id="hero-zone" onclick="triggerUpload('hero-input')" style="height:160px;">
             <div id="hero-empty"><div class="upload-icon">📸</div><div class="upload-text">Click to upload<br/><strong>Main model photo</strong></div></div>
-            <img id="hero-preview" style="display:none;width:100%;height:180px;object-fit:contain;border-radius:10px;background:#f0f0f0;" />
-            <button class="remove-btn" id="hero-remove" style="display:none;" onclick="removeImg(event,'hero')">✕</button>
+            <img id="hero-preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#f5f5f5;border-radius:10px;"/>
+            <button class="remove-btn" id="hero-remove" style="display:none;" onclick="removeImg(event)">✕</button>
           </div>
-          <input type="file" id="hero-input" accept="image/*" style="display:none;" onchange="loadImg(this,'hero')"/>
+          <input type="file" id="hero-input" accept="image/*" style="display:none;" onchange="loadImg(this)"/>
         </div>
-
         <div class="ctrl-section">
           <div class="ctrl-label">Color Variants (up to 4)</div>
           <div class="variant-grid">
-            <div class="variant-slot" id="slot-0" onclick="triggerUpload('var-input-0')">
-              <span class="slot-num">1</span>
-              <img id="var-preview-0" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="var-remove-0" style="display:none;" onclick="removeVar(event,0)">✕</button>
-            </div>
-            <div class="variant-slot" id="slot-1" onclick="triggerUpload('var-input-1')">
-              <span class="slot-num">2</span>
-              <img id="var-preview-1" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="var-remove-1" style="display:none;" onclick="removeVar(event,1)">✕</button>
-            </div>
-            <div class="variant-slot" id="slot-2" onclick="triggerUpload('var-input-2')">
-              <span class="slot-num">3</span>
-              <img id="var-preview-2" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="var-remove-2" style="display:none;" onclick="removeVar(event,2)">✕</button>
-            </div>
-            <div class="variant-slot" id="slot-3" onclick="triggerUpload('var-input-3')">
-              <span class="slot-num">4</span>
-              <img id="var-preview-3" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="var-remove-3" style="display:none;" onclick="removeVar(event,3)">✕</button>
-            </div>
+            <div class="variant-slot" id="slot-0" onclick="triggerUpload('var-input-0')"><span class="slot-num">1</span><img id="var-preview-0" style="display:none;"/><button class="remove-btn" id="var-remove-0" style="display:none;" onclick="removeVar(event,0)">✕</button></div>
+            <div class="variant-slot" id="slot-1" onclick="triggerUpload('var-input-1')"><span class="slot-num">2</span><img id="var-preview-1" style="display:none;"/><button class="remove-btn" id="var-remove-1" style="display:none;" onclick="removeVar(event,1)">✕</button></div>
+            <div class="variant-slot" id="slot-2" onclick="triggerUpload('var-input-2')"><span class="slot-num">3</span><img id="var-preview-2" style="display:none;"/><button class="remove-btn" id="var-remove-2" style="display:none;" onclick="removeVar(event,2)">✕</button></div>
+            <div class="variant-slot" id="slot-3" onclick="triggerUpload('var-input-3')"><span class="slot-num">4</span><img id="var-preview-3" style="display:none;"/><button class="remove-btn" id="var-remove-3" style="display:none;" onclick="removeVar(event,3)">✕</button></div>
           </div>
           <input type="file" id="var-input-0" accept="image/*" style="display:none;" onchange="loadVar(this,0)"/>
           <input type="file" id="var-input-1" accept="image/*" style="display:none;" onchange="loadVar(this,1)"/>
           <input type="file" id="var-input-2" accept="image/*" style="display:none;" onchange="loadVar(this,2)"/>
           <input type="file" id="var-input-3" accept="image/*" style="display:none;" onchange="loadVar(this,3)"/>
-          <div class="color-labels" style="margin-top:8px;">
+          <div class="color-labels">
             <input class="color-label-input" id="clabel-0" placeholder="Color 1" oninput="scheduleRender()"/>
             <input class="color-label-input" id="clabel-1" placeholder="Color 2" oninput="scheduleRender()"/>
             <input class="color-label-input" id="clabel-2" placeholder="Color 3" oninput="scheduleRender()"/>
@@ -224,49 +213,29 @@
         </div>
       </div>
 
-      <!-- LANDSCAPE SECTION -->
       <div id="landscape-section" style="display:none;">
-        <!-- Background upload for landscape -->
         <div class="ctrl-section">
           <div class="ctrl-label">Background Image (optional)</div>
-          <div class="upload-zone" id="ls-bg-zone" onclick="triggerUpload('ls-bg-input')" style="height:100px;">
-            <div id="ls-bg-empty"><div class="upload-icon">🌄</div><div class="upload-text">Click to upload background<br/><strong>Will show behind models</strong></div></div>
-            <img id="ls-bg-preview" style="display:none;width:100%;height:100px;object-fit:cover;border-radius:10px;"/>
+          <div class="upload-zone" id="ls-bg-zone" onclick="triggerUpload('ls-bg-input')" style="height:90px;">
+            <div id="ls-bg-empty"><div style="font-size:20px;">🌄</div><div class="upload-text" style="margin-top:4px;font-size:11px;">Upload background — models blend on top</div></div>
+            <img id="ls-bg-preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;"/>
             <button class="remove-btn" id="ls-bg-remove" style="display:none;" onclick="removeLsBg(event)">✕</button>
           </div>
           <input type="file" id="ls-bg-input" accept="image/*" style="display:none;" onchange="loadLsBg(this)"/>
-          <div style="font-size:10px;color:#aaa;margin-top:6px;line-height:1.6;">💡 If no background uploaded, a gradient from your selected style will be used. Models are blended into the background — no box effect.</div>
         </div>
-
         <div class="ctrl-section">
-          <div class="ctrl-label">Model Photos (2–4 side by side)</div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;">
-            <div class="variant-slot" id="ls-slot-0" onclick="triggerUpload('ls-input-0')" style="aspect-ratio:2/5;">
-              <span class="slot-num">1</span>
-              <img id="ls-preview-0" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="ls-remove-0" style="display:none;" onclick="removeLs(event,0)">✕</button>
-            </div>
-            <div class="variant-slot" id="ls-slot-1" onclick="triggerUpload('ls-input-1')" style="aspect-ratio:2/5;">
-              <span class="slot-num">2</span>
-              <img id="ls-preview-1" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="ls-remove-1" style="display:none;" onclick="removeLs(event,1)">✕</button>
-            </div>
-            <div class="variant-slot" id="ls-slot-2" onclick="triggerUpload('ls-input-2')" style="aspect-ratio:2/5;">
-              <span class="slot-num">3</span>
-              <img id="ls-preview-2" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="ls-remove-2" style="display:none;" onclick="removeLs(event,2)">✕</button>
-            </div>
-            <div class="variant-slot" id="ls-slot-3" onclick="triggerUpload('ls-input-3')" style="aspect-ratio:2/5;">
-              <span class="slot-num">4</span>
-              <img id="ls-preview-3" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-              <button class="remove-btn" id="ls-remove-3" style="display:none;" onclick="removeLs(event,3)">✕</button>
-            </div>
+          <div class="ctrl-label">Model Photos (2–4)</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+            <div class="variant-slot" id="ls-slot-0" onclick="triggerUpload('ls-input-0')" style="aspect-ratio:2/5;"><span class="slot-num">1</span><img id="ls-preview-0" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/><button class="remove-btn" id="ls-remove-0" style="display:none;" onclick="removeLs(event,0)">✕</button></div>
+            <div class="variant-slot" id="ls-slot-1" onclick="triggerUpload('ls-input-1')" style="aspect-ratio:2/5;"><span class="slot-num">2</span><img id="ls-preview-1" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/><button class="remove-btn" id="ls-remove-1" style="display:none;" onclick="removeLs(event,1)">✕</button></div>
+            <div class="variant-slot" id="ls-slot-2" onclick="triggerUpload('ls-input-2')" style="aspect-ratio:2/5;"><span class="slot-num">3</span><img id="ls-preview-2" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/><button class="remove-btn" id="ls-remove-2" style="display:none;" onclick="removeLs(event,2)">✕</button></div>
+            <div class="variant-slot" id="ls-slot-3" onclick="triggerUpload('ls-input-3')" style="aspect-ratio:2/5;"><span class="slot-num">4</span><img id="ls-preview-3" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/><button class="remove-btn" id="ls-remove-3" style="display:none;" onclick="removeLs(event,3)">✕</button></div>
           </div>
           <input type="file" id="ls-input-0" accept="image/*" style="display:none;" onchange="loadLs(this,0)"/>
           <input type="file" id="ls-input-1" accept="image/*" style="display:none;" onchange="loadLs(this,1)"/>
           <input type="file" id="ls-input-2" accept="image/*" style="display:none;" onchange="loadLs(this,2)"/>
           <input type="file" id="ls-input-3" accept="image/*" style="display:none;" onchange="loadLs(this,3)"/>
-          <div class="color-labels" style="margin-top:6px;">
+          <div class="color-labels">
             <input class="color-label-input" id="ls-label-0" placeholder="Color 1" oninput="scheduleRender()"/>
             <input class="color-label-input" id="ls-label-1" placeholder="Color 2" oninput="scheduleRender()"/>
             <input class="color-label-input" id="ls-label-2" placeholder="Color 3" oninput="scheduleRender()"/>
@@ -275,18 +244,17 @@
         </div>
       </div>
 
-      <!-- SHARED STORE INFO -->
       <div class="ctrl-section">
         <div class="ctrl-label">Store Info</div>
         <input class="ctrl-input" id="store-name" placeholder="Your Store Name" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="store-phone" placeholder="Phone / WhatsApp Number" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. Timeless Elegance)" oninput="scheduleRender()"/>
+        <input class="ctrl-input" id="store-phone" placeholder="Phone / WhatsApp" oninput="scheduleRender()" style="margin-bottom:8px;"/>
+        <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. New Collection)" oninput="scheduleRender()"/>
       </div>
 
       <div class="ctrl-section">
-        <div class="ctrl-label">Taglines — click to add (max 3)</div>
+        <div class="ctrl-label">Taglines (max 3)</div>
         <div id="selected-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;margin-bottom:10px;padding:8px;border:1.5px dashed rgba(233,30,99,0.2);border-radius:8px;"></div>
-        <div style="font-size:10px;color:#aaa;margin-bottom:8px;font-weight:500;letter-spacing:0.5px;">QUICK PICKS — click to add</div>
+        <div style="font-size:10px;color:#aaa;margin-bottom:8px;font-weight:500;letter-spacing:0.5px;">QUICK PICKS</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
           <span class="tag-preset" onclick="addTag(this)">Wholesale Only</span>
           <span class="tag-preset" onclick="addTag(this)">Ready Delivery</span>
@@ -302,8 +270,8 @@
           <span class="tag-preset" onclick="addTag(this)">Exquisite Craftsmanship</span>
         </div>
         <div style="display:flex;gap:6px;">
-          <input class="ctrl-input" id="custom-tag-input" placeholder="Type custom tagline..." style="flex:1;" onkeydown="if(event.key==='Enter')addCustomTag()"/>
-          <button onclick="addCustomTag()" style="padding:10px 14px;background:#E91E63;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap;">+ Add</button>
+          <input class="ctrl-input" id="custom-tag-input" placeholder="Custom tagline..." style="flex:1;" onkeydown="if(event.key==='Enter')addCustomTag()"/>
+          <button onclick="addCustomTag()" style="padding:10px 14px;background:#E91E63;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;">+ Add</button>
         </div>
       </div>
 
@@ -311,74 +279,72 @@
         <div class="ctrl-label">Poster Style</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
           <div class="style-opt selected" onclick="selectStyle('dark',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#0a0a0a,#1a1a1a);border-radius:4px;margin-bottom:5px;border:1px solid rgba(200,144,42,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🖤 Dark Luxury</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold accents · Bold title</div>
+            <div style="width:100%;height:24px;background:linear-gradient(135deg,#0a0a0a,#1a1a1a);border-radius:4px;margin-bottom:5px;border:1px solid rgba(200,144,42,0.5);"></div>
+            <div style="font-size:10px;font-weight:600;">🖤 Dark Luxury</div>
+            <div style="font-size:9px;color:#aaa;">Gold · Bold</div>
           </div>
           <div class="style-opt" onclick="selectStyle('white',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff,#f9f0f3);border-radius:4px;margin-bottom:5px;border:1px solid rgba(233,30,99,0.25);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🤍 Clean White</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Pink accents · Centered</div>
+            <div style="width:100%;height:24px;background:linear-gradient(135deg,#fff,#f9f0f3);border-radius:4px;margin-bottom:5px;border:1px solid rgba(233,30,99,0.3);"></div>
+            <div style="font-size:10px;font-weight:600;">🤍 Clean White</div>
+            <div style="font-size:9px;color:#aaa;">Pink · Minimal</div>
           </div>
           <div class="style-opt" onclick="selectStyle('gold',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#13090a,#2a1500);border-radius:4px;margin-bottom:5px;border:1px solid rgba(212,160,23,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">✨ Gold Royal</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold shimmer · Serif heavy</div>
+            <div style="width:100%;height:24px;background:linear-gradient(135deg,#13090a,#2a1500);border-radius:4px;margin-bottom:5px;border:1px solid rgba(212,160,23,0.5);"></div>
+            <div style="font-size:10px;font-weight:600;">✨ Gold Royal</div>
+            <div style="font-size:9px;color:#aaa;">Gold · Serif</div>
           </div>
           <div class="style-opt" onclick="selectStyle('maroon',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#1a0005,#3d0010);border-radius:4px;margin-bottom:5px;border:1px solid rgba(192,57,43,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🍷 Deep Maroon</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Red accents · Dramatic</div>
+            <div style="width:100%;height:24px;background:linear-gradient(135deg,#1a0005,#3d0010);border-radius:4px;margin-bottom:5px;border:1px solid rgba(192,57,43,0.5);"></div>
+            <div style="font-size:10px;font-weight:600;">🍷 Deep Maroon</div>
+            <div style="font-size:9px;color:#aaa;">Red · Dramatic</div>
           </div>
           <div class="style-opt" onclick="selectStyle('navy',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#04091a,#0a1a3d);border-radius:4px;margin-bottom:5px;border:1px solid rgba(74,144,217,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🌊 Royal Navy</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Blue accents · Editorial</div>
+            <div style="width:100%;height:24px;background:linear-gradient(135deg,#04091a,#0a1a3d);border-radius:4px;margin-bottom:5px;border:1px solid rgba(74,144,217,0.5);"></div>
+            <div style="font-size:10px;font-weight:600;">🌊 Royal Navy</div>
+            <div style="font-size:9px;color:#aaa;">Blue · Editorial</div>
           </div>
           <div class="style-opt" onclick="selectStyle('blush',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff5f7,#ffe0ea);border-radius:4px;margin-bottom:5px;border:1px solid rgba(194,24,91,0.2);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🌸 Blush Pink</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Soft pink · Feminine</div>
+            <div style="width:100%;height:24px;background:linear-gradient(135deg,#fff5f7,#ffe0ea);border-radius:4px;margin-bottom:5px;border:1px solid rgba(194,24,91,0.25);"></div>
+            <div style="font-size:10px;font-weight:600;">🌸 Blush Pink</div>
+            <div style="font-size:9px;color:#aaa;">Soft · Feminine</div>
           </div>
         </div>
       </div>
 
-      <!-- LOGO -->
       <div class="ctrl-section">
         <div class="ctrl-label">Store Logo (optional)</div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div class="upload-zone" id="logo-zone" onclick="triggerUpload('logo-input')" style="width:90px;height:70px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;">
-            <div id="logo-empty" style="text-align:center;"><div style="font-size:20px;">🏪</div><div style="font-size:10px;color:#aaa;margin-top:2px;">Logo</div></div>
-            <img id="logo-preview" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:6px;" />
+          <div class="upload-zone" id="logo-zone" onclick="triggerUpload('logo-input')" style="width:80px;height:64px;flex-shrink:0;">
+            <div id="logo-empty"><div style="font-size:18px;">🏪</div><div style="font-size:9px;color:#aaa;margin-top:2px;">Logo</div></div>
+            <img id="logo-preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:4px;border-radius:8px;"/>
             <button class="remove-btn" id="logo-remove" style="display:none;" onclick="removeLogo(event)">✕</button>
           </div>
-          <div style="font-size:11px;color:#888;line-height:1.6;">Upload your store logo.<br/>PNG with transparent<br/>background works best.</div>
+          <div style="font-size:11px;color:#888;line-height:1.6;">PNG with transparent background works best.</div>
         </div>
         <div class="ctrl-label" style="margin-bottom:6px;">Logo Position</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
           <div class="style-opt" id="logo-pos-tl" onclick="selectLogoPos('top-left',this)" style="font-size:10px;">↖ Top Left</div>
           <div class="style-opt selected" id="logo-pos-tr" onclick="selectLogoPos('top-right',this)" style="font-size:10px;">↗ Top Right</div>
           <div class="style-opt" id="logo-pos-tc" onclick="selectLogoPos('top-center',this)" style="font-size:10px;">↑ Top Center</div>
-          <div class="style-opt" id="logo-pos-bl" onclick="selectLogoPos('bot-left',this)" style="font-size:10px;">↙ Bottom Left</div>
-          <div class="style-opt" id="logo-pos-br" onclick="selectLogoPos('bot-right',this)" style="font-size:10px;">↘ Bottom Right</div>
-          <div class="style-opt" id="logo-pos-bc" onclick="selectLogoPos('bot-center',this)" style="font-size:10px;">↓ Bottom Center</div>
+          <div class="style-opt" id="logo-pos-bl" onclick="selectLogoPos('bot-left',this)" style="font-size:10px;">↙ Bot Left</div>
+          <div class="style-opt" id="logo-pos-br" onclick="selectLogoPos('bot-right',this)" style="font-size:10px;">↘ Bot Right</div>
+          <div class="style-opt" id="logo-pos-bc" onclick="selectLogoPos('bot-center',this)" style="font-size:10px;">↓ Bot Center</div>
         </div>
         <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(this)"/>
       </div>
 
-      <button class="gen-btn" id="gen-btn" onclick="renderPoster()">🎨 Generate Poster</button>
+      <button class="gen-btn" onclick="renderPoster()">🎨 Generate Poster</button>
     </div>
 
-    <!-- PREVIEW -->
     <div class="preview-panel">
       <div class="preview-title">
         <span>Preview</span>
         <span style="font-size:11px;color:#aaa;" id="size-label">1080 × 1350px</span>
       </div>
-      <div class="preview-canvas-wrap" id="preview-wrap">
+      <div class="preview-canvas-wrap">
         <div class="preview-empty" id="preview-empty">
-          <div class="preview-empty-icon">🎨</div>
-          <div style="font-size:13px;color:#aaa;">Upload photos and click<br/>Generate Poster to preview</div>
+          <div style="font-size:40px;margin-bottom:10px;">🎨</div>
+          <div style="font-size:13px;color:#aaa;">Upload photos and click Generate Poster</div>
         </div>
         <canvas id="poster-canvas" width="1080" height="1350" style="display:none;"></canvas>
       </div>
@@ -389,981 +355,428 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-var sb = window.supabase.createClient(
-  'https://oqmoneclnirnhqpcdeqy.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
-);
-
-sb.auth.getSession().then(function(r) {
-  if (!r.data.session) { window.location.href = 'auth.html'; return; }
-  var user = r.data.session.user;
-  var meta = user.user_metadata || {};
-  var fname = (meta.first_name || '').trim();
-  var lname = (meta.last_name || '').trim();
-  var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
-  var initials = displayName.slice(0,2).toUpperCase();
-  document.getElementById('user-avatar').textContent = initials;
-  document.getElementById('user-name').textContent = displayName;
-  document.getElementById('m-avatar').textContent = initials;
-  document.getElementById('m-name').textContent = displayName;
-  if (meta.store_name) document.getElementById('store-name').value = meta.store_name;
-  if (meta.phone) document.getElementById('store-phone').value = meta.phone;
+var sb=window.supabase.createClient('https://oqmoneclnirnhqpcdeqy.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM');
+sb.auth.getSession().then(function(r){
+  if(!r.data.session){window.location.href='auth.html';return;}
+  var u=r.data.session.user,m=u.user_metadata||{};
+  var dn=((m.first_name||'')+' '+(m.last_name||'')).trim()||u.email.split('@')[0];
+  var ini=dn.slice(0,2).toUpperCase();
+  ['user-avatar','m-avatar'].forEach(function(id){document.getElementById(id).textContent=ini;});
+  ['user-name','m-name'].forEach(function(id){document.getElementById(id).textContent=dn;});
+  if(m.store_name)document.getElementById('store-name').value=m.store_name;
+  if(m.phone)document.getElementById('store-phone').value=m.phone;
 });
 
-var selectedTags = [];
-var varImgs = [null, null, null, null];
-var lsImgs = [null, null, null, null];
-var lsBgImg = null;
-var currentStyle = 'dark';
-var currentMode = 'portrait';
-var logoImg = null;
-var logoPos = 'top-right';
-var heroImg = null;
-var renderTimer = null;
+var heroImg=null,varImgs=[null,null,null,null],lsImgs=[null,null,null,null],lsBgImg=null,logoImg=null;
+var selectedTags=[],currentStyle='dark',currentMode='portrait',logoPos='top-right',renderTimer=null;
 
-// ─── TAGS ───
-function addTag(el) {
-  var text = el.textContent.trim();
-  if (selectedTags.includes(text)) return;
-  if (selectedTags.length >= 3) { alert('Maximum 3 taglines allowed'); return; }
-  selectedTags.push(text);
-  renderTags(); scheduleRender();
-}
-function addCustomTag() {
-  var input = document.getElementById('custom-tag-input');
-  var text = input.value.trim();
-  if (!text || selectedTags.includes(text)) return;
-  if (selectedTags.length >= 3) { alert('Maximum 3 taglines allowed'); return; }
-  selectedTags.push(text); input.value = '';
-  renderTags(); scheduleRender();
-}
-function removeTag(idx) { selectedTags.splice(idx, 1); renderTags(); scheduleRender(); }
-function renderTags() {
-  var container = document.getElementById('selected-tags');
-  container.innerHTML = '';
-  selectedTags.forEach(function(tag, i) {
-    var el = document.createElement('span');
-    el.className = 'tag-selected';
-    el.innerHTML = tag + '<span class="tag-x" onclick="removeTag(' + i + ')">✕</span>';
-    container.appendChild(el);
-  });
-}
+function addTag(el){var t=el.textContent.trim();if(selectedTags.includes(t)||selectedTags.length>=3)return;selectedTags.push(t);renderTags();scheduleRender();}
+function addCustomTag(){var i=document.getElementById('custom-tag-input'),t=i.value.trim();if(!t||selectedTags.includes(t)||selectedTags.length>=3)return;selectedTags.push(t);i.value='';renderTags();scheduleRender();}
+function removeTag(i){selectedTags.splice(i,1);renderTags();scheduleRender();}
+function renderTags(){var c=document.getElementById('selected-tags');c.innerHTML='';selectedTags.forEach(function(t,i){var el=document.createElement('span');el.className='tag-selected';el.innerHTML=t+'<span class="tag-x" onclick="removeTag('+i+')">✕</span>';c.appendChild(el);});}
 
-// ─── UPLOADS ───
-function triggerUpload(id) { document.getElementById(id).click(); }
+function triggerUpload(id){document.getElementById(id).click();}
+function fu(input,cb){var f=input.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){cb(e.target.result);};r.readAsDataURL(f);input.value='';}
 
-function loadImg(input) {
-  var file = input.files[0]; if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    heroImg = e.target.result;
-    var img = document.getElementById('hero-preview');
-    img.src = heroImg; img.style.display = 'block';
-    document.getElementById('hero-empty').style.display = 'none';
-    document.getElementById('hero-remove').style.display = 'flex';
-    document.getElementById('hero-zone').classList.add('has-img');
-    scheduleRender();
-  };
-  reader.readAsDataURL(file); input.value = '';
-}
-function removeImg(e) {
-  e.stopPropagation(); heroImg = null;
-  document.getElementById('hero-preview').style.display = 'none';
-  document.getElementById('hero-empty').style.display = 'block';
-  document.getElementById('hero-remove').style.display = 'none';
-  document.getElementById('hero-zone').classList.remove('has-img');
-  scheduleRender();
-}
-function loadVar(input, idx) {
-  var file = input.files[0]; if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    varImgs[idx] = e.target.result;
-    var img = document.getElementById('var-preview-' + idx);
-    img.src = e.target.result; img.style.display = 'block';
-    document.getElementById('slot-' + idx).querySelector('.slot-num').style.display = 'none';
-    document.getElementById('var-remove-' + idx).style.display = 'flex';
-    document.getElementById('slot-' + idx).classList.add('has-img');
-    scheduleRender();
-  };
-  reader.readAsDataURL(file); input.value = '';
-}
-function removeVar(e, idx) {
-  e.stopPropagation(); varImgs[idx] = null;
-  document.getElementById('var-preview-' + idx).style.display = 'none';
-  document.getElementById('slot-' + idx).querySelector('.slot-num').style.display = 'block';
-  document.getElementById('var-remove-' + idx).style.display = 'none';
-  document.getElementById('slot-' + idx).classList.remove('has-img');
-  scheduleRender();
-}
-function loadLs(input, idx) {
-  var file = input.files[0]; if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    lsImgs[idx] = e.target.result;
-    var img = document.getElementById('ls-preview-' + idx);
-    img.src = e.target.result; img.style.display = 'block';
-    document.getElementById('ls-slot-' + idx).querySelector('.slot-num').style.display = 'none';
-    document.getElementById('ls-remove-' + idx).style.display = 'flex';
-    scheduleRender();
-  };
-  reader.readAsDataURL(file); input.value = '';
-}
-function removeLs(e, idx) {
-  e.stopPropagation(); lsImgs[idx] = null;
-  document.getElementById('ls-preview-' + idx).style.display = 'none';
-  document.getElementById('ls-slot-' + idx).querySelector('.slot-num').style.display = 'block';
-  document.getElementById('ls-remove-' + idx).style.display = 'none';
-  scheduleRender();
-}
-function loadLsBg(input) {
-  var file = input.files[0]; if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    lsBgImg = e.target.result;
-    var img = document.getElementById('ls-bg-preview');
-    img.src = lsBgImg; img.style.display = 'block';
-    document.getElementById('ls-bg-empty').style.display = 'none';
-    document.getElementById('ls-bg-remove').style.display = 'flex';
-    document.getElementById('ls-bg-zone').classList.add('has-img');
-    scheduleRender();
-  };
-  reader.readAsDataURL(file); input.value = '';
-}
-function removeLsBg(e) {
-  e.stopPropagation(); lsBgImg = null;
-  document.getElementById('ls-bg-preview').style.display = 'none';
-  document.getElementById('ls-bg-empty').style.display = 'block';
-  document.getElementById('ls-bg-remove').style.display = 'none';
-  document.getElementById('ls-bg-zone').classList.remove('has-img');
-  scheduleRender();
-}
-function loadLogo(input) {
-  var file = input.files[0]; if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    logoImg = e.target.result;
-    var img = document.getElementById('logo-preview');
-    img.src = logoImg; img.style.display = 'block';
-    document.getElementById('logo-empty').style.display = 'none';
-    document.getElementById('logo-remove').style.display = 'flex';
-    scheduleRender();
-  };
-  reader.readAsDataURL(file); input.value = '';
-}
-function removeLogo(e) {
-  e.stopPropagation(); logoImg = null;
-  document.getElementById('logo-preview').style.display = 'none';
-  document.getElementById('logo-empty').style.display = 'block';
-  document.getElementById('logo-remove').style.display = 'none';
-  scheduleRender();
-}
+function loadImg(input){fu(input,function(d){heroImg=d;var img=document.getElementById('hero-preview');img.src=d;img.style.display='block';document.getElementById('hero-empty').style.display='none';document.getElementById('hero-remove').style.display='flex';document.getElementById('hero-zone').classList.add('has-img');scheduleRender();});}
+function removeImg(e){e.stopPropagation();heroImg=null;document.getElementById('hero-preview').style.display='none';document.getElementById('hero-empty').style.display='flex';document.getElementById('hero-remove').style.display='none';document.getElementById('hero-zone').classList.remove('has-img');scheduleRender();}
+function loadVar(input,i){fu(input,function(d){varImgs[i]=d;document.getElementById('var-preview-'+i).src=d;document.getElementById('var-preview-'+i).style.display='block';document.getElementById('slot-'+i).querySelector('.slot-num').style.display='none';document.getElementById('var-remove-'+i).style.display='flex';document.getElementById('slot-'+i).classList.add('has-img');scheduleRender();});}
+function removeVar(e,i){e.stopPropagation();varImgs[i]=null;document.getElementById('var-preview-'+i).style.display='none';document.getElementById('slot-'+i).querySelector('.slot-num').style.display='block';document.getElementById('var-remove-'+i).style.display='none';document.getElementById('slot-'+i).classList.remove('has-img');scheduleRender();}
+function loadLs(input,i){fu(input,function(d){lsImgs[i]=d;document.getElementById('ls-preview-'+i).src=d;document.getElementById('ls-preview-'+i).style.display='block';document.getElementById('ls-slot-'+i).querySelector('.slot-num').style.display='none';document.getElementById('ls-remove-'+i).style.display='flex';scheduleRender();});}
+function removeLs(e,i){e.stopPropagation();lsImgs[i]=null;document.getElementById('ls-preview-'+i).style.display='none';document.getElementById('ls-slot-'+i).querySelector('.slot-num').style.display='block';document.getElementById('ls-remove-'+i).style.display='none';scheduleRender();}
+function loadLsBg(input){fu(input,function(d){lsBgImg=d;document.getElementById('ls-bg-preview').src=d;document.getElementById('ls-bg-preview').style.display='block';document.getElementById('ls-bg-empty').style.display='none';document.getElementById('ls-bg-remove').style.display='flex';document.getElementById('ls-bg-zone').classList.add('has-img');scheduleRender();});}
+function removeLsBg(e){e.stopPropagation();lsBgImg=null;document.getElementById('ls-bg-preview').style.display='none';document.getElementById('ls-bg-empty').style.display='flex';document.getElementById('ls-bg-remove').style.display='none';document.getElementById('ls-bg-zone').classList.remove('has-img');scheduleRender();}
+function loadLogo(input){fu(input,function(d){logoImg=d;document.getElementById('logo-preview').src=d;document.getElementById('logo-preview').style.display='block';document.getElementById('logo-empty').style.display='none';document.getElementById('logo-remove').style.display='flex';scheduleRender();});}
+function removeLogo(e){e.stopPropagation();logoImg=null;document.getElementById('logo-preview').style.display='none';document.getElementById('logo-empty').style.display='block';document.getElementById('logo-remove').style.display='none';scheduleRender();}
 
-// ─── MODE / STYLE / LOGO POS ───
-function switchMode(mode, el) {
-  currentMode = mode;
-  document.querySelectorAll('.layout-mode-btn').forEach(function(b) {
-    b.style.border = '2px solid rgba(233,30,99,0.2)';
-    b.style.background = '#fff';
-    b.querySelector('div:nth-child(2)').style.color = '#555';
-  });
-  el.style.border = '2px solid #E91E63';
-  el.style.background = '#fff0f5';
-  el.querySelector('div:nth-child(2)').style.color = '#E91E63';
-  document.getElementById('portrait-section').style.display = mode === 'portrait' ? '' : 'none';
-  document.getElementById('landscape-section').style.display = mode === 'landscape' ? '' : 'none';
-  document.getElementById('size-label').textContent = mode === 'landscape' ? '1350 × 1080px' : '1080 × 1350px';
+function switchMode(mode,el){
+  currentMode=mode;
+  document.querySelectorAll('.layout-mode-btn').forEach(function(b){b.style.border='2px solid rgba(233,30,99,0.2)';b.style.background='#fff';b.querySelector('div:nth-child(2)').style.color='#555';});
+  el.style.border='2px solid #E91E63';el.style.background='#fff0f5';el.querySelector('div:nth-child(2)').style.color='#E91E63';
+  document.getElementById('portrait-section').style.display=mode==='portrait'?'':'none';
+  document.getElementById('landscape-section').style.display=mode==='landscape'?'':'none';
+  document.getElementById('size-label').textContent=mode==='landscape'?'1350 × 1080px':'1080 × 1350px';
   scheduleRender();
 }
-function selectStyle(style, el) {
-  currentStyle = style;
-  document.querySelectorAll('.style-opt').forEach(function(o){ o.classList.remove('selected'); });
-  el.classList.add('selected');
-  scheduleRender();
-}
-function selectLogoPos(pos, el) {
-  logoPos = pos;
-  document.querySelectorAll('[id^="logo-pos-"]').forEach(function(b){ b.classList.remove('selected'); });
-  el.classList.add('selected');
-  scheduleRender();
-}
+function selectStyle(s,el){currentStyle=s;document.querySelectorAll('.style-opt').forEach(function(o){o.classList.remove('selected');});el.classList.add('selected');scheduleRender();}
+function selectLogoPos(p,el){logoPos=p;document.querySelectorAll('[id^="logo-pos-"]').forEach(function(b){b.classList.remove('selected');});el.classList.add('selected');scheduleRender();}
+function scheduleRender(){clearTimeout(renderTimer);renderTimer=setTimeout(function(){if(currentMode==='landscape'){if(lsImgs.some(function(v){return v;}))renderLandscape();}else{if(heroImg)renderPoster();}},500);}
 
-function scheduleRender() {
-  clearTimeout(renderTimer);
-  renderTimer = setTimeout(function() {
-    if (currentMode === 'landscape') {
-      var hasAny = lsImgs.some(function(v){return v!==null;});
-      if (hasAny) renderLandscape();
+/* ── CANVAS UTILS ── */
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+function wrap(ctx,text,maxW){var words=text.split(' '),lines=[],cur='';words.forEach(function(w){var t=cur?cur+' '+w:w;if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t;});if(cur)lines.push(cur);return lines;}
+function h2r(hex,a){if(!hex||!hex.startsWith('#'))return 'rgba(0,0,0,'+a+')';var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return'rgba('+r+','+g+','+b+','+a+')';}
+function drawLogo(ctx,W,H,cb){if(!logoImg){cb();return;}var img=new Image();img.onload=function(){var mw=W*0.18,mh=H*0.08,sc=Math.min(mw/img.width,mh/img.height),lw=img.width*sc,lh=img.height*sc,m=28,p=10,lx,ly;switch(logoPos){case'top-left':lx=m;ly=m;break;case'top-right':lx=W-lw-m;ly=m;break;case'top-center':lx=(W-lw)/2;ly=m;break;case'bot-left':lx=m;ly=H-lh-m;break;case'bot-right':lx=W-lw-m;ly=H-lh-m;break;case'bot-center':lx=(W-lw)/2;ly=H-lh-m;break;default:lx=W-lw-m;ly=m;}ctx.save();ctx.fillStyle='rgba(255,255,255,0.93)';rr(ctx,lx-p,ly-p,lw+p*2,lh+p*2,8);ctx.fill();ctx.strokeStyle='rgba(0,0,0,0.06)';ctx.lineWidth=1;rr(ctx,lx-p,ly-p,lw+p*2,lh+p*2,8);ctx.stroke();ctx.drawImage(img,lx,ly,lw,lh);ctx.restore();cb();};img.src=logoImg;}
+function showCanvas(){document.getElementById('preview-empty').style.display='none';document.getElementById('poster-canvas').style.display='block';document.getElementById('download-btn').classList.add('show');}
+
+var STYLES={
+  dark:{bg:'#080808',bg2:'#181818',accent:'#c8902a',text:'#fff',sub:'rgba(255,255,255,0.5)'},
+  white:{bg:'#f5f0eb',bg2:'#fff',accent:'#E91E63',text:'#0d0d0d',sub:'#666'},
+  gold:{bg:'#0e0700',bg2:'#1e0f00',accent:'#d4a017',text:'#fff8e1',sub:'rgba(255,248,225,0.55)'},
+  maroon:{bg:'#110002',bg2:'#2a0008',accent:'#c0392b',text:'#fff',sub:'rgba(255,255,255,0.5)'},
+  navy:{bg:'#020614',bg2:'#06102a',accent:'#4a90d9',text:'#fff',sub:'rgba(255,255,255,0.5)'},
+  blush:{bg:'#fff3f6',bg2:'#ffe4ee',accent:'#c2185b',text:'#1a0008',sub:'#777'},
+};
+
+/* ═══════════════════════════════════════
+   PORTRAIT
+═══════════════════════════════════════ */
+function renderPoster(){
+  if(currentMode==='landscape'){renderLandscape();return;}
+  if(!heroImg){alert('Upload a hero photo first');return;}
+  var canvas=document.getElementById('poster-canvas'),ctx=canvas.getContext('2d');
+  var W=1080,H=1350;canvas.width=W;canvas.height=H;
+  var s=STYLES[currentStyle]||STYLES.dark;
+  var title=document.getElementById('poster-title').value||'Timeless Elegance';
+  var sname=document.getElementById('store-name').value||'';
+  var phone=document.getElementById('store-phone').value||'';
+  var tags=selectedTags.slice(0,3);
+  var cl=[0,1,2,3].map(function(i){return document.getElementById('clabel-'+i).value||'';});
+  var vl=varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
+  var nv=vl.length;
+
+  // Hero takes 60% width when variants present
+  var heroW=nv>0?Math.round(W*0.60):W;
+  var pX=heroW,pW=W-heroW,pCx=pX+pW/2;
+
+  // Solid BG
+  ctx.fillStyle=s.bg;ctx.fillRect(0,0,W,H);
+
+  var hEl=new Image();
+  hEl.onload=function(){
+    // Draw hero image — fit height, center horizontally
+    ctx.save();ctx.beginPath();ctx.rect(0,0,heroW,H);ctx.clip();
+    var sc;
+    if(hEl.height/hEl.width >= H/heroW){
+      // Portrait photo — fit width
+      sc=heroW/hEl.width;
     } else {
-      if (heroImg) renderPoster();
+      // Landscape photo — fit height
+      sc=H/hEl.height;
     }
-  }, 600);
-}
-
-// ─── HELPERS ───
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
-function wrapText(ctx, text, maxW) {
-  var words = text.split(' '), lines = [], current = '';
-  words.forEach(function(word) {
-    var test = current ? current + ' ' + word : word;
-    if (ctx.measureText(test).width > maxW && current) { lines.push(current); current = word; }
-    else current = test;
-  });
-  if (current) lines.push(current);
-  return lines;
-}
-function drawDivider(ctx, cx, y, width, color) {
-  var hw = width / 2;
-  ctx.save();
-  ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.globalAlpha = 0.65;
-  ctx.beginPath(); ctx.moveTo(cx - hw, y); ctx.lineTo(cx - 16, y); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(cx + 16, y); ctx.lineTo(cx + hw, y); ctx.stroke();
-  ctx.globalAlpha = 1; ctx.fillStyle = color;
-  ctx.save(); ctx.translate(cx, y); ctx.rotate(Math.PI / 4); ctx.fillRect(-5, -5, 10, 10); ctx.restore();
-  ctx.globalAlpha = 0.45; ctx.fillStyle = color;
-  ctx.beginPath(); ctx.arc(cx - 22, y, 2.5, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(cx + 22, y, 2.5, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-}
-function drawOrnament(ctx, cx, y, width, color) {
-  var hw = width / 2;
-  ctx.save();
-  ctx.strokeStyle = color; ctx.globalAlpha = 0.35; ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(cx - hw, y);
-  ctx.bezierCurveTo(cx - hw * 0.6, y - 7, cx - hw * 0.3, y + 5, cx - 7, y);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx + hw, y);
-  ctx.bezierCurveTo(cx + hw * 0.6, y - 7, cx + hw * 0.3, y + 5, cx + 7, y);
-  ctx.stroke();
-  ctx.globalAlpha = 0.8; ctx.fillStyle = color;
-  ctx.beginPath(); ctx.arc(cx, y, 2.5, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-}
-function drawLogo(ctx, W, H, callback) {
-  if (!logoImg) { callback(); return; }
-  var img = new Image();
-  img.onload = function() {
-    var maxW = W * 0.20, maxH = H * 0.09;
-    var scale = Math.min(maxW / img.width, maxH / img.height);
-    var lw = img.width * scale, lh = img.height * scale;
-    var m = 24, pad = 10, lx, ly;
-    switch(logoPos) {
-      case 'top-left':   lx = m; ly = m; break;
-      case 'top-right':  lx = W - lw - m; ly = m; break;
-      case 'top-center': lx = (W - lw) / 2; ly = m; break;
-      case 'bot-left':   lx = m; ly = H - lh - m; break;
-      case 'bot-right':  lx = W - lw - m; ly = H - lh - m; break;
-      case 'bot-center': lx = (W - lw) / 2; ly = H - lh - m; break;
-      default:           lx = W - lw - m; ly = m;
-    }
-    ctx.save();
-    ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    roundRect(ctx, lx - pad, ly - pad, lw + pad*2, lh + pad*2, 10); ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.08)'; ctx.lineWidth = 1;
-    roundRect(ctx, lx - pad, ly - pad, lw + pad*2, lh + pad*2, 10); ctx.stroke();
-    ctx.drawImage(img, lx, ly, lw, lh);
-    ctx.restore();
-    callback();
-  };
-  img.src = logoImg;
-}
-
-// ══════════════════════════════════════════════
-// LANDSCAPE RENDER — blended models, bg upload
-// ══════════════════════════════════════════════
-function renderLandscape() {
-  var activeLs = lsImgs.map(function(v,i){return {src:v,idx:i};}).filter(function(v){return v.src!==null;});
-  if (activeLs.length === 0) return;
-
-  var canvas = document.getElementById('poster-canvas');
-  var ctx = canvas.getContext('2d');
-  var W = 1350, H = 1080;
-  canvas.width = W; canvas.height = H;
-
-  var styles = {
-    dark:   {bg:'#0a0a0a',bg2:'#1c1c1c',accent:'#c8902a',text:'#ffffff',sub:'rgba(255,255,255,0.6)'},
-    white:  {bg:'#f0ebe5',bg2:'#fff8f4',accent:'#E91E63',text:'#111111',sub:'#555555'},
-    gold:   {bg:'#13090a',bg2:'#2a1500',accent:'#d4a017',text:'#fff8e7',sub:'rgba(255,248,231,0.6)'},
-    maroon: {bg:'#1a0005',bg2:'#3d0010',accent:'#c0392b',text:'#ffffff',sub:'rgba(255,255,255,0.6)'},
-    navy:   {bg:'#04091a',bg2:'#0a1a3d',accent:'#4a90d9',text:'#ffffff',sub:'rgba(255,255,255,0.6)'},
-    blush:  {bg:'#fff5f7',bg2:'#ffe0ea',accent:'#c2185b',text:'#1a0008',sub:'#666666'},
-  };
-  var s = styles[currentStyle] || styles['dark'];
-
-  var title = document.getElementById('poster-title').value || 'New Collection';
-  var storeName = document.getElementById('store-name').value || '';
-  var phone = document.getElementById('store-phone').value || '';
-  var tags = selectedTags.slice(0, 3);
-  var lsLabels = [0,1,2,3].map(function(i){ return document.getElementById('ls-label-'+i).value || ''; });
-
-  var n = activeLs.length;
-
-  // LAYOUT: header at top, footer at bottom, models fill the middle
-  var headerH = 170;
-  var footerH = 120;
-  var modelAreaY = headerH;
-  var modelAreaH = H - headerH - footerH;
-  var gap = 0; // no gap — seamless
-  var modelW = Math.floor(W / n);
-
-  function drawAll(bgImageEl) {
-    // ── BACKGROUND ──
-    if (bgImageEl) {
-      // Draw uploaded background covering entire canvas
-      var sc = Math.max(W / bgImageEl.width, H / bgImageEl.height);
-      var bw = bgImageEl.width * sc, bh = bgImageEl.height * sc;
-      ctx.drawImage(bgImageEl, (W - bw) / 2, (H - bh) / 2, bw, bh);
-      // Dark overlay so text is readable
-      ctx.fillStyle = 'rgba(0,0,0,0.38)';
-      ctx.fillRect(0, 0, W, H);
-    } else {
-      // Gradient background
-      var bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      bgGrad.addColorStop(0, s.bg);
-      bgGrad.addColorStop(1, s.bg2);
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    // ── HEADER ──
-    // Semi-transparent header overlay
-    var hGrad = ctx.createLinearGradient(0, 0, 0, headerH);
-    hGrad.addColorStop(0, bgImageEl ? 'rgba(0,0,0,0.75)' : (s.bg + 'ff'));
-    hGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = hGrad;
-    ctx.fillRect(0, 0, W, headerH + 40);
-
-    // Top accent line
-    ctx.fillStyle = s.accent;
-    ctx.fillRect(0, 0, W, 5);
-
-    var cx = W / 2;
-    var cy = 18;
-
-    if (storeName) {
-      ctx.fillStyle = bgImageEl ? '#fff' : s.accent;
-      ctx.font = '600 22px DM Sans, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(storeName.toUpperCase().split('').join('  '), cx, cy + 22);
-      cy += 38;
-    }
-
-    // Title
-    ctx.fillStyle = bgImageEl ? '#ffffff' : s.text;
-    ctx.textAlign = 'center';
-    ctx.shadowColor = s.accent + '66'; ctx.shadowBlur = 22;
-    var titleLines = wrapText(ctx, title, W * 0.65);
-    if (titleLines.length > 2) titleLines = titleLines.slice(0, 2);
-    var ts = titleLines.length > 1 ? 50 : 64;
-    ctx.font = 'italic 300 ' + ts + 'px Cormorant Garamond, serif';
-    titleLines = wrapText(ctx, title, W * 0.65);
-    if (titleLines.length > 2) titleLines = titleLines.slice(0, 2);
-    titleLines.forEach(function(line) { ctx.fillText(line, cx, cy + ts); cy += ts + 4; });
-    ctx.shadowBlur = 0;
-    cy += 8;
-    drawDivider(ctx, cx, cy, 480, bgImageEl ? '#fff' : s.accent);
-
-    // ── MODELS — draw with feathered edges ──
-    var loadedImgs = [];
-    var loadCount = 0;
-
-    activeLs.forEach(function(item, i) {
-      var img = new Image();
-      img.onload = function() {
-        loadedImgs[i] = {img: img, origIdx: item.idx};
-        loadCount++;
-        if (loadCount === n) drawModels();
-      };
-      img.src = item.src;
-    });
-
-    function drawModels() {
-      for (var i = 0; i < n; i++) {
-        var ix = i * modelW;
-        var iy = modelAreaY;
-        var iw = modelW;
-        var ih = modelAreaH;
-
-        // Draw model image — contain so full body shows
-        var img = loadedImgs[i].img;
-
-        // Create offscreen canvas for the model with feathering
-        var offscreen = document.createElement('canvas');
-        offscreen.width = iw;
-        offscreen.height = ih;
-        var octx = offscreen.getContext('2d');
-
-        // Draw model onto offscreen
-        var sc = Math.min(iw / img.width, ih / img.height);
-        var dw = img.width * sc, dh = img.height * sc;
-        var dx = (iw - dw) / 2, dy = Math.max(0, ih - dh); // sit at bottom
-        octx.drawImage(img, dx, dy, dw, dh);
-
-        // Apply feathering: fade left and right edges + fade top
-        // Left fade
-        var leftFade = octx.createLinearGradient(0, 0, iw * 0.18, 0);
-        leftFade.addColorStop(0, 'rgba(0,0,0,1)');
-        leftFade.addColorStop(1, 'rgba(0,0,0,0)');
-        octx.globalCompositeOperation = 'destination-out';
-        octx.fillStyle = leftFade;
-        octx.fillRect(0, 0, iw * 0.18, ih);
-
-        // Right fade
-        var rightFade = octx.createLinearGradient(iw * 0.82, 0, iw, 0);
-        rightFade.addColorStop(0, 'rgba(0,0,0,0)');
-        rightFade.addColorStop(1, 'rgba(0,0,0,1)');
-        octx.fillStyle = rightFade;
-        octx.fillRect(iw * 0.82, 0, iw * 0.18, ih);
-
-        // Top fade (blend into header)
-        var topFade = octx.createLinearGradient(0, 0, 0, ih * 0.25);
-        topFade.addColorStop(0, 'rgba(0,0,0,1)');
-        topFade.addColorStop(1, 'rgba(0,0,0,0)');
-        octx.fillStyle = topFade;
-        octx.fillRect(0, 0, iw, ih * 0.25);
-
-        octx.globalCompositeOperation = 'source-over';
-
-        // Compose onto main canvas
-        ctx.drawImage(offscreen, ix, iy);
-
-        // Color label — floating above footer
-        var label = (lsLabels[loadedImgs[i].origIdx] || '').toUpperCase();
-        if (label) {
-          ctx.save();
-          ctx.font = '600 18px DM Sans, sans-serif';
-          var lw2 = ctx.measureText(label).width + 28;
-          var lx2 = ix + (iw - lw2) / 2;
-          var ly2 = iy + ih - 44;
-          ctx.fillStyle = s.accent + '33';
-          roundRect(ctx, lx2, ly2, lw2, 30, 15); ctx.fill();
-          ctx.strokeStyle = s.accent + '99'; ctx.lineWidth = 1.5;
-          roundRect(ctx, lx2, ly2, lw2, 30, 15); ctx.stroke();
-          ctx.fillStyle = '#fff';
-          ctx.textAlign = 'center';
-          ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 6;
-          ctx.fillText(label, ix + iw / 2, ly2 + 21);
-          ctx.shadowBlur = 0;
-          ctx.restore();
-        }
-      }
-
-      drawFooter();
-    }
-
-    function drawFooter() {
-      var footerY = H - footerH;
-
-      // Footer background
-      var fGrad = ctx.createLinearGradient(0, footerY - 30, 0, H);
-      fGrad.addColorStop(0, 'rgba(0,0,0,0)');
-      fGrad.addColorStop(0.3, bgImageEl ? 'rgba(0,0,0,0.85)' : (s.bg + 'dd'));
-      fGrad.addColorStop(1, bgImageEl ? 'rgba(0,0,0,0.95)' : s.bg);
-      ctx.fillStyle = fGrad;
-      ctx.fillRect(0, footerY - 30, W, footerH + 30);
-
-      // Accent top border of footer
-      ctx.fillStyle = s.accent;
-      ctx.fillRect(0, footerY, W, 2);
-
-      var fy = footerY + 22;
-
-      // TAGLINES in footer — centered, spaced nicely
-      if (tags.length > 0) {
-        ctx.textAlign = 'center';
-        if (tags.length === 1) {
-          ctx.fillStyle = bgImageEl ? '#fff' : s.text;
-          ctx.font = '300 22px DM Sans, sans-serif';
-          ctx.fillText(tags[0], W / 2, fy + 14);
-          fy += 36;
-        } else {
-          // Multiple tags side by side with dot separators
-          ctx.fillStyle = bgImageEl ? 'rgba(255,255,255,0.9)' : s.sub;
-          ctx.font = '300 20px DM Sans, sans-serif';
-          var tagLine = tags.join('   ·   ');
-          ctx.fillText(tagLine, W / 2, fy + 14);
-          fy += 34;
-        }
-        // Thin accent line under taglines
-        ctx.save();
-        ctx.strokeStyle = s.accent; ctx.lineWidth = 1; ctx.globalAlpha = 0.4;
-        ctx.beginPath(); ctx.moveTo(W/2 - 200, fy); ctx.lineTo(W/2 + 200, fy); ctx.stroke();
-        ctx.restore();
-        fy += 14;
-      }
-
-      // Phone
-      if (phone) {
-        ctx.fillStyle = s.accent;
-        ctx.font = '600 28px DM Sans, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('☎  ' + phone, W / 2, fy + 28);
-        fy += 40;
-      }
-
-      // Bottom available tagline
-      ctx.fillStyle = bgImageEl ? 'rgba(255,255,255,0.5)' : s.sub;
-      ctx.font = '400 15px DM Sans, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S', W / 2, H - 16);
-
-      drawLogo(ctx, W, H, function() {
-        document.getElementById('preview-empty').style.display = 'none';
-        document.getElementById('poster-canvas').style.display = 'block';
-        document.getElementById('download-btn').classList.add('show');
-      });
-    }
-  }
-
-  // Load background if present
-  if (lsBgImg) {
-    var bgEl = new Image();
-    bgEl.onload = function() { drawAll(bgEl); };
-    bgEl.src = lsBgImg;
-  } else {
-    drawAll(null);
-  }
-}
-
-// ══════════════════════════════════════════════
-// PORTRAIT RENDER — borderless floating variants
-// ══════════════════════════════════════════════
-function renderPoster() {
-  if (currentMode === 'landscape') { renderLandscape(); return; }
-  if (!heroImg) { alert('Please upload a hero photo first'); return; }
-
-  var canvas = document.getElementById('poster-canvas');
-  var ctx = canvas.getContext('2d');
-  var W = 1080, H = 1350;
-  canvas.width = W; canvas.height = H;
-
-  var styles = {
-    dark:    {bg:'#0a0a0a', accent:'#c8902a', text:'#ffffff', sub:'rgba(255,255,255,0.55)', border:'rgba(200,144,42,0.5)', labelBg:'rgba(200,144,42,0.15)'},
-    white:   {bg:'#ffffff', accent:'#E91E63', text:'#111111', sub:'#666666',                border:'rgba(233,30,99,0.35)',  labelBg:'rgba(233,30,99,0.08)'},
-    gold:    {bg:'#13090a', accent:'#d4a017', text:'#fff8e7', sub:'rgba(255,248,231,0.55)', border:'rgba(212,160,23,0.5)', labelBg:'rgba(212,160,23,0.12)'},
-    maroon:  {bg:'#1a0005', accent:'#c0392b', text:'#ffffff', sub:'rgba(255,255,255,0.55)', border:'rgba(192,57,43,0.5)',  labelBg:'rgba(192,57,43,0.15)'},
-    navy:    {bg:'#04091a', accent:'#4a90d9', text:'#ffffff', sub:'rgba(255,255,255,0.55)', border:'rgba(74,144,217,0.5)', labelBg:'rgba(74,144,217,0.12)'},
-    blush:   {bg:'#fff5f7', accent:'#c2185b', text:'#1a0008', sub:'#888888',                border:'rgba(194,24,91,0.3)',  labelBg:'rgba(194,24,91,0.08)'},
-  };
-  var s = styles[currentStyle] || styles['dark'];
-
-  var title = document.getElementById('poster-title').value || 'Timeless Elegance';
-  var storeName = document.getElementById('store-name').value || '';
-  var phone = document.getElementById('store-phone').value || '';
-  var tags = selectedTags.slice(0, 3);
-  var colorLabels = [0,1,2,3].map(function(i){ return document.getElementById('clabel-'+i).value || ''; });
-
-  var varImgsToLoad = varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src!==null;});
-  var numVars = varImgsToLoad.length;
-  var hasVariants = numVars > 0;
-
-  var heroW = hasVariants ? Math.floor(W * 0.615) : W;
-  var panelX = heroW;
-  var panelW = W - heroW;
-
-  // Background
-  ctx.fillStyle = s.bg;
-  ctx.fillRect(0, 0, W, H);
-
-  var heroImgEl = new Image();
-  heroImgEl.onload = function() {
-    // Hero image — contain full body
-    ctx.save();
-    ctx.beginPath(); ctx.rect(0, 0, heroW, H); ctx.clip();
-    var hScale = H / heroImgEl.height;
-    if (heroImgEl.width * hScale < heroW * 0.7) hScale = heroW / heroImgEl.width;
-    var hW = heroImgEl.width * hScale, hH = heroImgEl.height * hScale;
-    ctx.drawImage(heroImgEl, (heroW - hW) / 2, Math.max(0, (H - hH) / 2), hW, hH);
+    var dw=hEl.width*sc,dh=hEl.height*sc;
+    ctx.drawImage(hEl,(heroW-dw)/2,(H-dh)/2,dw,dh);
     ctx.restore();
 
-    // Hero right-edge fade into panel
-    if (hasVariants) {
-      var fadeGrad = ctx.createLinearGradient(heroW * 0.6, 0, heroW, 0);
-      fadeGrad.addColorStop(0, 'rgba(0,0,0,0)');
-      fadeGrad.addColorStop(1, s.bg + 'f0');
-      ctx.fillStyle = fadeGrad;
-      ctx.fillRect(0, 0, heroW, H);
+    // Fade hero into right panel
+    if(nv>0){
+      var fg=ctx.createLinearGradient(heroW*0.5,0,heroW,0);
+      fg.addColorStop(0,'rgba(0,0,0,0)');fg.addColorStop(1,h2r(s.bg,1));
+      ctx.fillStyle=fg;ctx.fillRect(heroW*0.35,0,heroW*0.65,H);
     }
+    // Bottom fade on hero (for text legibility if no variants)
+    var bg=ctx.createLinearGradient(0,H*0.65,0,H);
+    bg.addColorStop(0,'rgba(0,0,0,0)');bg.addColorStop(1,'rgba(0,0,0,0.72)');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,heroW,H);
 
-    // Hero bottom fade
-    var botGrad = ctx.createLinearGradient(0, H * 0.75, 0, H);
-    botGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    botGrad.addColorStop(1, 'rgba(0,0,0,0.65)');
-    ctx.fillStyle = botGrad; ctx.fillRect(0, 0, heroW, H);
-
-    if (hasVariants) {
-      var cx = panelX + panelW / 2;
-
-      // Top accent
-      ctx.fillStyle = s.accent;
-      ctx.fillRect(panelX, 0, panelW, 6);
-      ctx.fillStyle = s.accent + '40';
-      ctx.fillRect(panelX, 6, panelW, 2);
-
-      var cy = 16;
-
-      // Style-specific header
-      if (currentStyle === 'dark') {
-        cy = 22;
-        if (storeName) {
-          ctx.fillStyle = s.accent; ctx.font = '500 11px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(storeName.toUpperCase().split('').join('  '), cx, cy + 12); cy += 28;
-        }
-        ctx.fillStyle = s.text; ctx.textAlign = 'center';
-        var tl = wrapText(ctx, title, panelW - 20); if (tl.length > 2) tl = tl.slice(0,2);
-        var ts = tl.length > 1 ? 38 : 48;
-        ctx.shadowColor = s.accent + '55'; ctx.shadowBlur = 20;
-        ctx.font = 'italic 300 ' + ts + 'px Cormorant Garamond, serif';
-        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; });
-        ctx.shadowBlur = 0; cy += 8;
-        drawDivider(ctx, cx, cy, panelW * 0.75, s.accent); cy += 24;
-        tags.forEach(function(tag, ti) {
-          ctx.fillStyle = ti === 0 ? s.accent : s.sub;
-          ctx.font = ti === 0 ? '600 13px DM Sans' : '300 12px DM Sans';
-          ctx.textAlign = 'center';
-          ctx.fillText((ti > 0 ? '· ' : '') + tag.toUpperCase(), cx, cy + 14); cy += ti === 0 ? 22 : 20;
-        });
-        cy += 8; drawOrnament(ctx, cx, cy + 6, panelW * 0.5, s.accent); cy += 20;
-
-      } else if (currentStyle === 'white') {
-        cy = 18;
-        if (storeName) {
-          var sn = storeName.toUpperCase(); ctx.font = '700 11px DM Sans';
-          var snw = ctx.measureText(sn).width + 24;
-          ctx.fillStyle = s.accent + '18'; roundRect(ctx, cx - snw/2, cy, snw, 22, 11); ctx.fill();
-          ctx.fillStyle = s.accent; ctx.textAlign = 'center'; ctx.fillText(sn, cx, cy + 15); cy += 32;
-        }
-        ctx.fillStyle = s.text; ctx.textAlign = 'center';
-        var tl = wrapText(ctx, title, panelW - 16); if (tl.length > 2) tl = tl.slice(0,2);
-        var ts = tl.length > 1 ? 36 : 44;
-        ctx.font = '300 ' + ts + 'px Cormorant Garamond, serif';
-        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; }); cy += 6;
-        var ulw = panelW * 0.65;
-        var ulg = ctx.createLinearGradient(cx - ulw/2, cy, cx + ulw/2, cy);
-        ulg.addColorStop(0,'rgba(233,30,99,0)'); ulg.addColorStop(0.5,'rgba(233,30,99,0.8)'); ulg.addColorStop(1,'rgba(233,30,99,0)');
-        ctx.strokeStyle = ulg; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(cx - ulw/2, cy); ctx.lineTo(cx + ulw/2, cy); ctx.stroke(); cy += 18;
-        tags.forEach(function(tag, ti) {
-          ctx.font = '500 12px DM Sans';
-          var tw = ctx.measureText(tag).width + 22, tx = cx - tw/2;
-          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(233,30,99,0.1)'; roundRect(ctx, tx, cy, tw, 24, 12); ctx.fill();
-          ctx.fillStyle = ti === 0 ? '#fff' : s.accent; ctx.textAlign = 'center';
-          ctx.fillText(tag.toUpperCase(), cx, cy + 16); cy += 30;
-        }); cy += 4;
-
-      } else if (currentStyle === 'gold') {
-        cy = 14;
-        ctx.save(); ctx.strokeStyle = s.accent; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
-        ['TL','TR','BL','BR'].forEach(function(c) {
-          var fx = c.includes('L') ? panelX + 14 : panelX + panelW - 14;
-          var fy = c.includes('T') ? 8 : H - 8;
-          ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx + (c.includes('L') ? 16 : -16), fy);
-          ctx.moveTo(fx, fy); ctx.lineTo(fx, fy + (c.includes('T') ? 16 : -16)); ctx.stroke();
-        }); ctx.restore();
-        drawOrnament(ctx, cx, cy + 14, panelW * 0.7, s.accent); cy += 36;
-        if (storeName) {
-          ctx.fillStyle = s.accent; ctx.font = 'italic 300 15px Cormorant Garamond'; ctx.textAlign = 'center';
-          ctx.fillText(storeName, cx, cy + 16); cy += 30;
-        }
-        var tl = wrapText(ctx, title, panelW - 14); if (tl.length > 2) tl = tl.slice(0,2);
-        var ts = tl.length > 1 ? 42 : 52;
-        ctx.fillStyle = s.accent; ctx.shadowColor = s.accent + '60'; ctx.shadowBlur = 22;
-        ctx.font = 'italic 400 ' + ts + 'px Cormorant Garamond, serif'; ctx.textAlign = 'center';
-        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 6; });
-        ctx.shadowBlur = 0; cy += 6;
-        drawDivider(ctx, cx, cy, panelW * 0.7, s.accent); cy += 22;
-        tags.forEach(function(tag) {
-          ctx.fillStyle = s.sub; ctx.font = '300 12px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(tag, cx, cy + 14); cy += 22;
-        }); cy += 6; drawOrnament(ctx, cx, cy + 4, panelW * 0.5, s.accent); cy += 18;
-
-      } else if (currentStyle === 'maroon') {
-        ctx.fillStyle = s.accent; ctx.fillRect(panelX, 0, panelW, 8); cy = 20;
-        if (storeName) {
-          ctx.fillStyle = '#fff'; ctx.font = '700 12px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(storeName.toUpperCase(), cx, cy + 12); cy += 28;
-          ctx.strokeStyle = s.accent; ctx.lineWidth = 1; ctx.globalAlpha = 0.4;
-          ctx.beginPath(); ctx.moveTo(panelX+20, cy); ctx.lineTo(panelX+panelW-20, cy); ctx.stroke();
-          ctx.globalAlpha = 1; cy += 14;
-        }
-        var tl = wrapText(ctx, title, panelW - 16); if (tl.length > 2) tl = tl.slice(0,2);
-        var ts = tl.length > 1 ? 40 : 50;
-        ctx.fillStyle = '#fff'; ctx.shadowColor = s.accent + '80'; ctx.shadowBlur = 25;
-        ctx.font = 'italic 300 ' + ts + 'px Cormorant Garamond, serif'; ctx.textAlign = 'center';
-        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; });
-        ctx.shadowBlur = 0; cy += 10;
-        ctx.strokeStyle = s.accent; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(panelX+20, cy); ctx.lineTo(panelX+panelW-20, cy); ctx.stroke(); cy += 16;
-        tags.forEach(function(tag, ti) {
-          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(255,255,255,0.6)';
-          ctx.font = ti === 0 ? '700 13px DM Sans' : '300 11px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(tag.toUpperCase(), cx, cy + 14); cy += 22;
-        }); cy += 8;
-        ctx.strokeStyle = s.accent; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(panelX+20, cy); ctx.lineTo(panelX+panelW-20, cy); ctx.stroke(); cy += 18;
-
-      } else if (currentStyle === 'navy') {
-        cy = 16;
-        ctx.strokeStyle = s.accent; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(panelX+16, cy); ctx.lineTo(panelX+panelW-16, cy); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(panelX+16, cy+4); ctx.lineTo(panelX+panelW-16, cy+4); ctx.stroke(); cy += 20;
-        if (storeName) {
-          ctx.fillStyle = s.accent; ctx.font = '300 11px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(storeName.toUpperCase(), cx, cy + 12); cy += 28;
-        }
-        var tl = wrapText(ctx, title, panelW - 14); if (tl.length > 2) tl = tl.slice(0,2);
-        var ts = tl.length > 1 ? 36 : 44;
-        ctx.fillStyle = s.text; ctx.font = '300 ' + ts + 'px Cormorant Garamond, serif'; ctx.textAlign = 'center';
-        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; }); cy += 8;
-        ctx.strokeStyle = s.accent; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.7;
-        ctx.beginPath(); ctx.moveTo(panelX+16, cy); ctx.lineTo(panelX+panelW-16, cy); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(panelX+24, cy+5); ctx.lineTo(panelX+panelW-24, cy+5); ctx.stroke();
-        ctx.globalAlpha = 1; cy += 18;
-        tags.forEach(function(tag, ti) {
-          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(255,255,255,0.5)';
-          ctx.font = ti === 0 ? '500 13px DM Sans' : '300 11px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(tag, cx, cy + 14); cy += ti === 0 ? 24 : 18;
-        }); cy += 10;
-        ctx.strokeStyle = s.accent; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(panelX+16, cy); ctx.lineTo(panelX+panelW-16, cy); ctx.stroke(); cy += 18;
-
-      } else { // blush
-        cy = 20;
-        drawOrnament(ctx, cx, cy + 8, panelW * 0.55, s.accent); cy += 28;
-        if (storeName) {
-          ctx.fillStyle = s.accent; ctx.font = '500 12px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(storeName.toUpperCase().split('').join(' '), cx, cy + 12); cy += 28;
-        }
-        var tl = wrapText(ctx, title, panelW - 18); if (tl.length > 2) tl = tl.slice(0,2);
-        var ts = tl.length > 1 ? 38 : 46;
-        ctx.fillStyle = s.text; ctx.font = 'italic 300 ' + ts + 'px Cormorant Garamond, serif'; ctx.textAlign = 'center';
-        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; }); cy += 10;
-        ctx.strokeStyle = s.accent; ctx.globalAlpha = 0.4; ctx.lineWidth = 1.5;
-        var ww = panelW * 0.7;
-        ctx.beginPath(); ctx.moveTo(cx - ww/2, cy);
-        for (var wx = 0; wx < ww; wx += 20) {
-          ctx.quadraticCurveTo(cx - ww/2 + wx + 10, cy - 4, cx - ww/2 + wx + 20, cy);
-        }
-        ctx.stroke(); ctx.globalAlpha = 1; cy += 16;
-        tags.forEach(function(tag, ti) {
-          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(194,24,91,0.5)';
-          ctx.font = ti === 0 ? '500 13px DM Sans' : '300 12px DM Sans'; ctx.textAlign = 'center';
-          ctx.fillText(tag, cx, cy + 14); cy += 22;
-        }); cy += 8;
-        drawOrnament(ctx, cx, cy + 6, panelW * 0.45, s.accent); cy += 22;
-      }
-
-      // ── VARIANTS — NO BOX, floating with soft shadow ──
-      var labelH = 26;
-      var varGap = 10;
-      var padH = 14;
-      var availW = panelW - padH * 2;
-      var bottomReserve = phone ? 88 : 52;
-      var availH = H - cy - bottomReserve;
-
-      var positions = [];
-      if (numVars === 1) {
-        positions.push({x: panelX + padH, y: cy, w: availW, h: availH - labelH});
-      } else if (numVars === 2) {
-        var vh2 = (availH - labelH * 2 - varGap) / 2;
-        positions.push({x: panelX + padH, y: cy, w: availW, h: vh2});
-        positions.push({x: panelX + padH, y: cy + vh2 + labelH + varGap, w: availW, h: vh2});
-      } else if (numVars === 3) {
-        var vw3 = (availW - varGap) / 2;
-        var vh3t = (availH - labelH * 2 - varGap) * 0.53;
-        var vh3b = (availH - labelH * 2 - varGap) * 0.43;
-        positions.push({x: panelX + padH, y: cy, w: vw3, h: vh3t});
-        positions.push({x: panelX + padH + vw3 + varGap, y: cy, w: vw3, h: vh3t});
-        var bw3 = availW * 0.65;
-        positions.push({x: panelX + padH + (availW - bw3) / 2, y: cy + vh3t + labelH + varGap, w: bw3, h: vh3b});
-      } else {
-        var vw4 = (availW - varGap) / 2;
-        var vh4 = (availH - labelH * 2 - varGap) / 2;
-        positions.push({x: panelX + padH, y: cy, w: vw4, h: vh4});
-        positions.push({x: panelX + padH + vw4 + varGap, y: cy, w: vw4, h: vh4});
-        positions.push({x: panelX + padH, y: cy + vh4 + labelH + varGap, w: vw4, h: vh4});
-        positions.push({x: panelX + padH + vw4 + varGap, y: cy + vh4 + labelH + varGap, w: vw4, h: vh4});
-      }
-
-      function drawOneVariant(orderIdx, img) {
-        var pos = positions[orderIdx];
-        if (!pos) return;
-        var origIdx = varImgsToLoad[orderIdx].idx;
-
-        // ── NO BOX: just draw the image with soft shadow + feathered edges ──
-        var offscreen = document.createElement('canvas');
-        offscreen.width = Math.ceil(pos.w);
-        offscreen.height = Math.ceil(pos.h);
-        var octx = offscreen.getContext('2d');
-
-        // Draw model — contain (show full garment)
-        var sc = Math.min(pos.w / img.width, pos.h / img.height);
-        var dw = img.width * sc, dh = img.height * sc;
-        var dx = (pos.w - dw) / 2;
-        var dy = pos.h - dh; // sit at bottom of slot
-        if (dy < 0) dy = 0;
-        octx.drawImage(img, dx, dy, dw, dh);
-
-        // Feather all 4 edges — soft fade out
-        var fadeSize = 0.12;
-        octx.globalCompositeOperation = 'destination-out';
-
-        // Top
-        var topF = octx.createLinearGradient(0, 0, 0, pos.h * fadeSize * 1.5);
-        topF.addColorStop(0, 'rgba(0,0,0,0.9)'); topF.addColorStop(1, 'rgba(0,0,0,0)');
-        octx.fillStyle = topF; octx.fillRect(0, 0, pos.w, pos.h * fadeSize * 1.5);
-
-        // Bottom (lighter — garment hem should show)
-        var botF = octx.createLinearGradient(0, pos.h * 0.88, 0, pos.h);
-        botF.addColorStop(0, 'rgba(0,0,0,0)'); botF.addColorStop(1, 'rgba(0,0,0,0.4)');
-        octx.fillStyle = botF; octx.fillRect(0, pos.h * 0.88, pos.w, pos.h * 0.12);
-
-        // Left
-        var leftF = octx.createLinearGradient(0, 0, pos.w * fadeSize, 0);
-        leftF.addColorStop(0, 'rgba(0,0,0,0.7)'); leftF.addColorStop(1, 'rgba(0,0,0,0)');
-        octx.fillStyle = leftF; octx.fillRect(0, 0, pos.w * fadeSize, pos.h);
-
-        // Right
-        var rightF = octx.createLinearGradient(pos.w * (1 - fadeSize), 0, pos.w, 0);
-        rightF.addColorStop(0, 'rgba(0,0,0,0)'); rightF.addColorStop(1, 'rgba(0,0,0,0.7)');
-        octx.fillStyle = rightF; octx.fillRect(pos.w * (1 - fadeSize), 0, pos.w * fadeSize, pos.h);
-
-        octx.globalCompositeOperation = 'source-over';
-
-        // Soft drop shadow on main canvas before drawing
-        ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.35)';
-        ctx.shadowBlur = 18;
-        ctx.shadowOffsetX = 3;
-        ctx.shadowOffsetY = 5;
-        ctx.drawImage(offscreen, pos.x, pos.y);
-        ctx.restore();
-
-        // Color label — clean pill, no box around image
-        var label = (colorLabels[origIdx] || ('Color ' + (origIdx + 1))).toUpperCase();
-        ctx.font = '600 11px DM Sans, sans-serif';
-        var lw = Math.min(ctx.measureText(label).width + 20, pos.w);
-        var lx = pos.x + (pos.w - lw) / 2;
-        var ly = pos.y + pos.h + 2;
-        ctx.save();
-        // Pill with accent bg (no border box around image)
-        ctx.fillStyle = s.accent + '28';
-        roundRect(ctx, lx, ly, lw, 20, 10); ctx.fill();
-        ctx.strokeStyle = s.accent; ctx.lineWidth = 1; ctx.globalAlpha = 0.6;
-        roundRect(ctx, lx, ly, lw, 20, 10); ctx.stroke();
-        ctx.globalAlpha = 1; ctx.fillStyle = s.accent; ctx.textAlign = 'center';
-        ctx.fillText(label, pos.x + pos.w / 2, ly + 14);
-        ctx.restore();
-      }
-
-      var loadCount = 0;
-      varImgsToLoad.forEach(function(item, orderIdx) {
-        var img = new Image();
-        img.onload = function() {
-          drawOneVariant(orderIdx, img);
-          loadCount++;
-          if (loadCount === numVars) drawBottom();
-        };
-        img.src = item.src;
-      });
-      if (numVars === 0) drawBottom();
-
-      function drawBottom() {
-        if (phone) {
-          var pw = panelW - 32, px2 = panelX + 16;
-          ctx.fillStyle = s.accent + '18';
-          roundRect(ctx, px2, H - bottomReserve + 6, pw, 36, 18); ctx.fill();
-          ctx.strokeStyle = s.accent + '55'; ctx.lineWidth = 1;
-          roundRect(ctx, px2, H - bottomReserve + 6, pw, 36, 18); ctx.stroke();
-          ctx.fillStyle = s.accent; ctx.font = '600 18px DM Sans, sans-serif'; ctx.textAlign = 'center';
-          ctx.fillText('☎  ' + phone, cx, H - bottomReserve + 30);
-        }
-        ctx.fillStyle = s.accent;
-        ctx.fillRect(panelX, H - 40, panelW, 40);
-        ctx.fillStyle = 'rgba(0,0,0,0.25)';
-        ctx.fillRect(panelX, H - 40, panelW, 40);
-        ctx.fillStyle = '#ffffff'; ctx.font = '500 12px DM Sans, sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('A V A I L A B L E  I N  T H E S E  C O L O U R S', cx, H - 16);
-        finalize();
-      }
-
+    if(nv>0){
+      var cy=drawHeader(ctx,pX,pW,pCx,s,title,sname,tags);
+      drawVariants(ctx,pX,pW,pCx,s,cy,H,phone,cl,vl,nv);
     } else {
-      // Full width, no variants
-      var botY = H - 60;
-      ctx.fillStyle = s.accent; ctx.font = 'italic 300 68px Cormorant Garamond, serif'; ctx.textAlign = 'center';
-      ctx.fillText(title, W / 2, botY - 180);
-      drawDivider(ctx, W / 2, botY - 155, 400, s.accent);
-      if (storeName) {
-        ctx.fillStyle = s.text; ctx.font = '600 24px DM Sans, sans-serif';
-        ctx.fillText(storeName.toUpperCase().split('').join(' '), W / 2, botY - 110);
-      }
-      if (tags.length > 0) {
-        ctx.fillStyle = s.sub; ctx.font = '300 18px DM Sans, sans-serif';
-        ctx.fillText(tags.join('  ·  '), W / 2, botY - 70);
-      }
-      if (phone) {
-        ctx.fillStyle = s.accent; ctx.font = '600 22px DM Sans, sans-serif';
-        ctx.fillText('☎  ' + phone, W / 2, botY - 20);
-      }
-      finalize();
+      // No variants — overlay text on bottom of hero
+      drawFullWidthOverlay(ctx,W,H,s,title,sname,phone,tags,function(){drawLogo(ctx,W,H,showCanvas);});
     }
   };
-  heroImgEl.src = heroImg;
+  hEl.src=heroImg;
+}
 
-  function finalize() {
-    drawLogo(ctx, W, H, function() {
-      document.getElementById('preview-empty').style.display = 'none';
-      document.getElementById('poster-canvas').style.display = 'block';
-      document.getElementById('download-btn').classList.add('show');
+function drawHeader(ctx,pX,pW,pCx,s,title,sname,tags){
+  var cy=0;
+  // Each style gets a distinct header
+  if(currentStyle==='dark'){
+    ctx.fillStyle=s.accent;ctx.fillRect(pX,0,pW,5);
+    cy=18;
+    if(sname){ctx.fillStyle=s.accent;ctx.font='500 10px DM Sans';ctx.textAlign='center';ctx.letterSpacing='3px';ctx.fillText(sname.toUpperCase(),pCx,cy+12);ctx.letterSpacing='0px';cy+=28;}
+    // BIG italic title
+    var tl=wrap(ctx,title,pW-20);if(tl.length>2)tl=tl.slice(0,2);
+    var ts=tl.length>1?46:60;
+    ctx.font='italic 300 '+ts+'px Cormorant Garamond,serif';
+    tl=wrap(ctx,title,pW-20);if(tl.length>2)tl=tl.slice(0,2);
+    ctx.fillStyle=s.text;ctx.textAlign='center';ctx.shadowColor=s.accent+'66';ctx.shadowBlur=20;
+    tl.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+4;});ctx.shadowBlur=0;cy+=10;
+    // Diamond divider
+    drawDiamond(ctx,pCx,cy,pW*0.72,s.accent);cy+=20;
+    // Tags — gold bullets
+    tags.forEach(function(t,i){ctx.fillStyle=i===0?s.accent:'rgba(200,144,42,0.55)';ctx.font=i===0?'600 12px DM Sans':'300 11px DM Sans';ctx.textAlign='center';ctx.fillText((i>0?'· ':'')+t.toUpperCase(),pCx,cy+13);cy+=i===0?22:19;});
+    cy+=6;drawOrn(ctx,pCx,cy+6,pW*0.48,s.accent);cy+=18;
+
+  } else if(currentStyle==='white'){
+    ctx.fillStyle=s.accent;ctx.fillRect(pX,0,pW,4);cy=14;
+    if(sname){ctx.font='700 10px DM Sans';var sw=ctx.measureText(sname.toUpperCase()).width+20;ctx.fillStyle=s.accent+'20';rr(ctx,pCx-sw/2,cy,sw,21,10);ctx.fill();ctx.fillStyle=s.accent;ctx.textAlign='center';ctx.fillText(sname.toUpperCase(),pCx,cy+14);cy+=30;}
+    var tl=wrap(ctx,title,pW-18);if(tl.length>2)tl=tl.slice(0,2);
+    var ts=tl.length>1?42:56;
+    ctx.font=ts+'px Cormorant Garamond,serif';
+    tl=wrap(ctx,title,pW-18);if(tl.length>2)tl=tl.slice(0,2);
+    ctx.fillStyle=s.text;ctx.textAlign='center';
+    tl.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+4;});cy+=6;
+    // Pink gradient underline
+    var ulw=pW*0.7,ulg=ctx.createLinearGradient(pCx-ulw/2,cy,pCx+ulw/2,cy);
+    ulg.addColorStop(0,'rgba(233,30,99,0)');ulg.addColorStop(0.5,'rgba(233,30,99,0.9)');ulg.addColorStop(1,'rgba(233,30,99,0)');
+    ctx.strokeStyle=ulg;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pCx-ulw/2,cy);ctx.lineTo(pCx+ulw/2,cy);ctx.stroke();cy+=16;
+    // Filled pill tags
+    tags.forEach(function(t,i){ctx.font='500 11px DM Sans';var tw=ctx.measureText(t).width+20;ctx.fillStyle=i===0?s.accent:'rgba(233,30,99,0.1)';rr(ctx,pCx-tw/2,cy,tw,23,11);ctx.fill();ctx.fillStyle=i===0?'#fff':s.accent;ctx.textAlign='center';ctx.fillText(t.toUpperCase(),pCx,cy+15);cy+=27;});cy+=2;
+
+  } else if(currentStyle==='gold'){
+    cy=10;
+    // Corner flourishes
+    ctx.save();ctx.strokeStyle=s.accent;ctx.globalAlpha=0.45;ctx.lineWidth=1.2;
+    [[pX+14,8,14,14],[pX+pW-14,8,-14,14]].forEach(function(m){ctx.beginPath();ctx.moveTo(m[0],m[1]);ctx.lineTo(m[0]+m[2],m[1]);ctx.moveTo(m[0],m[1]);ctx.lineTo(m[0],m[1]+m[3]);ctx.stroke();});
+    ctx.restore();
+    drawOrn(ctx,pCx,cy+12,pW*0.65,s.accent);cy+=32;
+    if(sname){ctx.fillStyle=s.accent;ctx.font='italic 300 14px Cormorant Garamond';ctx.textAlign='center';ctx.fillText(sname,pCx,cy+14);cy+=26;}
+    // BIG gold title
+    var tl=wrap(ctx,title,pW-14);if(tl.length>2)tl=tl.slice(0,2);
+    var ts=tl.length>1?48:62;
+    ctx.font='italic 400 '+ts+'px Cormorant Garamond,serif';
+    tl=wrap(ctx,title,pW-14);if(tl.length>2)tl=tl.slice(0,2);
+    ctx.fillStyle=s.accent;ctx.textAlign='center';ctx.shadowColor=s.accent+'77';ctx.shadowBlur=24;
+    tl.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+6;});ctx.shadowBlur=0;cy+=6;
+    drawDiamond(ctx,pCx,cy,pW*0.65,s.accent);cy+=20;
+    tags.forEach(function(t){ctx.fillStyle=s.sub;ctx.font='300 11px DM Sans';ctx.textAlign='center';ctx.fillText(t,pCx,cy+13);cy+=20;});
+    cy+=6;drawOrn(ctx,pCx,cy+4,pW*0.4,s.accent);cy+=16;
+
+  } else if(currentStyle==='maroon'){
+    ctx.fillStyle=s.accent;ctx.fillRect(pX,0,pW,9);cy=22;
+    if(sname){ctx.fillStyle='#fff';ctx.font='700 11px DM Sans';ctx.textAlign='center';ctx.fillText(sname.toUpperCase(),pCx,cy+12);cy+=26;ctx.strokeStyle=s.accent+'55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pX+16,cy);ctx.lineTo(pX+pW-16,cy);ctx.stroke();cy+=12;}
+    var tl=wrap(ctx,title,pW-16);if(tl.length>2)tl=tl.slice(0,2);
+    var ts=tl.length>1?46:60;
+    ctx.font='italic 300 '+ts+'px Cormorant Garamond,serif';
+    tl=wrap(ctx,title,pW-16);if(tl.length>2)tl=tl.slice(0,2);
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.shadowColor=s.accent+'88';ctx.shadowBlur=28;
+    tl.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+4;});ctx.shadowBlur=0;cy+=10;
+    ctx.strokeStyle=s.accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pX+16,cy);ctx.lineTo(pX+pW-16,cy);ctx.stroke();cy+=14;
+    tags.forEach(function(t,i){ctx.fillStyle=i===0?s.accent:'rgba(255,255,255,0.55)';ctx.font=i===0?'700 12px DM Sans':'300 11px DM Sans';ctx.textAlign='center';ctx.fillText(t.toUpperCase(),pCx,cy+13);cy+=20;});
+    cy+=6;ctx.strokeStyle=s.accent+'44';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pX+16,cy);ctx.lineTo(pX+pW-16,cy);ctx.stroke();cy+=16;
+
+  } else if(currentStyle==='navy'){
+    cy=12;
+    ctx.strokeStyle=s.accent;ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(pX+12,cy);ctx.lineTo(pX+pW-12,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pX+12,cy+5);ctx.lineTo(pX+pW-12,cy+5);ctx.stroke();cy+=22;
+    if(sname){ctx.fillStyle=s.accent;ctx.font='300 10px DM Sans';ctx.textAlign='center';ctx.fillText(sname.toUpperCase(),pCx,cy+12);cy+=26;}
+    var tl=wrap(ctx,title,pW-12);if(tl.length>2)tl=tl.slice(0,2);
+    var ts=tl.length>1?42:54;
+    ctx.font='300 '+ts+'px Cormorant Garamond,serif';
+    tl=wrap(ctx,title,pW-12);if(tl.length>2)tl=tl.slice(0,2);
+    ctx.fillStyle=s.text;ctx.textAlign='center';
+    tl.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+4;});cy+=8;
+    ctx.strokeStyle=s.accent;ctx.lineWidth=0.8;ctx.globalAlpha=0.55;
+    ctx.beginPath();ctx.moveTo(pX+12,cy);ctx.lineTo(pX+pW-12,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pX+20,cy+5);ctx.lineTo(pX+pW-20,cy+5);ctx.stroke();ctx.globalAlpha=1;cy+=18;
+    tags.forEach(function(t,i){ctx.fillStyle=i===0?s.accent:'rgba(255,255,255,0.45)';ctx.font=i===0?'500 12px DM Sans':'300 11px DM Sans';ctx.textAlign='center';ctx.fillText(t,pCx,cy+13);cy+=i===0?22:18;});
+    cy+=8;ctx.strokeStyle=s.accent;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pX+12,cy);ctx.lineTo(pX+pW-12,cy);ctx.stroke();cy+=16;
+
+  } else { // blush
+    cy=16;
+    drawOrn(ctx,pCx,cy+8,pW*0.55,s.accent);cy+=26;
+    if(sname){ctx.fillStyle=s.accent;ctx.font='500 11px DM Sans';ctx.textAlign='center';ctx.fillText(sname.toUpperCase().split('').join(' '),pCx,cy+12);cy+=26;}
+    var tl=wrap(ctx,title,pW-16);if(tl.length>2)tl=tl.slice(0,2);
+    var ts=tl.length>1?44:56;
+    ctx.font='italic 300 '+ts+'px Cormorant Garamond,serif';
+    tl=wrap(ctx,title,pW-16);if(tl.length>2)tl=tl.slice(0,2);
+    ctx.fillStyle=s.text;ctx.textAlign='center';
+    tl.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+4;});cy+=10;
+    // Wavy line
+    ctx.strokeStyle=s.accent;ctx.globalAlpha=0.4;ctx.lineWidth=1.5;
+    var ww=pW*0.65;ctx.beginPath();ctx.moveTo(pCx-ww/2,cy);
+    for(var wx=0;wx<ww;wx+=18){ctx.quadraticCurveTo(pCx-ww/2+wx+9,cy-4,pCx-ww/2+wx+18,cy);}
+    ctx.stroke();ctx.globalAlpha=1;cy+=14;
+    tags.forEach(function(t,i){ctx.fillStyle=i===0?s.accent:'rgba(194,24,91,0.45)';ctx.font=i===0?'500 12px DM Sans':'300 11px DM Sans';ctx.textAlign='center';ctx.fillText(t,pCx,cy+13);cy+=20;});
+    cy+=6;drawOrn(ctx,pCx,cy+6,pW*0.4,s.accent);cy+=20;
+  }
+  return cy;
+}
+
+function drawVariants(ctx,pX,pW,pCx,s,cy,H,phone,cl,vl,nv){
+  var bottomH=phone?88:50,padX=12,gap=8,availW=pW-padX*2,availH=H-cy-bottomH;
+  var pos=[];
+  if(nv===1){pos.push({x:pX+padX,y:cy,w:availW,h:availH-26});}
+  else if(nv===2){var h2=(availH-28-gap)/2;pos.push({x:pX+padX,y:cy,w:availW,h:h2});pos.push({x:pX+padX,y:cy+h2+gap+26,w:availW,h:h2});}
+  else if(nv===3){var w3=(availW-gap)/2,ht=(availH-56-gap)*0.54,hb=(availH-56-gap)*0.42;pos.push({x:pX+padX,y:cy,w:w3,h:ht});pos.push({x:pX+padX+w3+gap,y:cy,w:w3,h:ht});var bw=availW*0.72;pos.push({x:pX+padX+(availW-bw)/2,y:cy+ht+gap+26,w:bw,h:hb});}
+  else{var w4=(availW-gap)/2,h4=(availH-56-gap)/2;pos.push({x:pX+padX,y:cy,w:w4,h:h4});pos.push({x:pX+padX+w4+gap,y:cy,w:w4,h:h4});pos.push({x:pX+padX,y:cy+h4+gap+26,w:w4,h:h4});pos.push({x:pX+padX+w4+gap,y:cy+h4+gap+26,w:w4,h:h4});}
+
+  var loaded=0;
+  vl.forEach(function(item,oi){
+    var img=new Image();
+    img.onload=function(){
+      var p=pos[oi];if(!p){loaded++;if(loaded===nv)drawBottom(ctx,H,pX,pW,pCx,s,phone,function(){drawLogo(ctx,1080,H,showCanvas);});return;}
+      var os=document.createElement('canvas');os.width=Math.ceil(p.w);os.height=Math.ceil(p.h);
+      var oc=os.getContext('2d');
+      // Contain image — show full outfit anchored to bottom
+      var sc=Math.min(p.w/img.width,p.h/img.height);
+      var dw=img.width*sc,dh=img.height*sc,dx=(p.w-dw)/2,dy=p.h-dh;if(dy<0)dy=0;
+      oc.drawImage(img,dx,dy,dw,dh);
+      // Feather edges so no box
+      oc.globalCompositeOperation='destination-out';
+      var fs=0.14;
+      var tg=oc.createLinearGradient(0,0,0,p.h*fs*1.8);tg.addColorStop(0,'rgba(0,0,0,0.9)');tg.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=tg;oc.fillRect(0,0,p.w,p.h*fs*1.8);
+      var lg=oc.createLinearGradient(0,0,p.w*fs,0);lg.addColorStop(0,'rgba(0,0,0,0.75)');lg.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=lg;oc.fillRect(0,0,p.w*fs,p.h);
+      var rg=oc.createLinearGradient(p.w*(1-fs),0,p.w,0);rg.addColorStop(0,'rgba(0,0,0,0)');rg.addColorStop(1,'rgba(0,0,0,0.75)');oc.fillStyle=rg;oc.fillRect(p.w*(1-fs),0,p.w*fs,p.h);
+      var bog=oc.createLinearGradient(0,p.h*0.86,0,p.h);bog.addColorStop(0,'rgba(0,0,0,0)');bog.addColorStop(1,'rgba(0,0,0,0.4)');oc.fillStyle=bog;oc.fillRect(0,p.h*0.86,p.w,p.h*0.14);
+      oc.globalCompositeOperation='source-over';
+      ctx.save();ctx.shadowColor='rgba(0,0,0,0.45)';ctx.shadowBlur=18;ctx.shadowOffsetY=5;ctx.drawImage(os,p.x,p.y);ctx.restore();
+      // Label pill
+      var lbl=(cl[item.idx]||('Color '+(item.idx+1))).toUpperCase();
+      ctx.save();ctx.font='600 10px DM Sans';var lw2=Math.min(ctx.measureText(lbl).width+18,p.w-4),lx2=p.x+(p.w-lw2)/2,ly2=p.y+p.h+3;
+      ctx.fillStyle=s.accent+'28';rr(ctx,lx2,ly2,lw2,19,9);ctx.fill();
+      ctx.strokeStyle=s.accent;ctx.lineWidth=1;ctx.globalAlpha=0.65;rr(ctx,lx2,ly2,lw2,19,9);ctx.stroke();
+      ctx.globalAlpha=1;ctx.fillStyle=s.accent;ctx.textAlign='center';ctx.fillText(lbl,p.x+p.w/2,ly2+13);ctx.restore();
+      loaded++;if(loaded===nv)drawBottom(ctx,H,pX,pW,pCx,s,phone,function(){drawLogo(ctx,1080,H,showCanvas);});
+    };img.src=item.src;
+  });
+}
+
+function drawBottom(ctx,H,pX,pW,pCx,s,phone,cb){
+  if(phone){var py=H-80,pw2=pW-24,px2=pX+12;ctx.fillStyle=s.accent+'22';rr(ctx,px2,py,pw2,36,18);ctx.fill();ctx.strokeStyle=s.accent+'66';ctx.lineWidth=1.5;rr(ctx,px2,py,pw2,36,18);ctx.stroke();ctx.fillStyle=s.accent;ctx.font='600 16px DM Sans';ctx.textAlign='center';ctx.fillText('☎  '+phone,pCx,py+24);}
+  ctx.fillStyle=s.accent;ctx.fillRect(pX,H-38,pW,38);ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(pX,H-38,pW,38);
+  ctx.fillStyle='#fff';ctx.font='500 10px DM Sans';ctx.textAlign='center';ctx.fillText('A V A I L A B L E  I N  T H E S E  C O L O U R S',pCx,H-13);
+  cb();
+}
+
+function drawFullWidthOverlay(ctx,W,H,s,title,sname,phone,tags,cb){
+  var cx=W/2,cy=H*0.74;
+  ctx.fillStyle=s.accent;ctx.font='italic 300 72px Cormorant Garamond,serif';ctx.textAlign='center';
+  ctx.shadowColor=s.accent+'66';ctx.shadowBlur=26;ctx.fillText(title,cx,cy);ctx.shadowBlur=0;
+  if(sname){ctx.fillStyle=s.text;ctx.font='500 22px DM Sans';ctx.fillText(sname.toUpperCase().split('').join('  '),cx,cy+46);}
+  if(tags.length>0){ctx.fillStyle=s.sub;ctx.font='300 16px DM Sans';ctx.fillText(tags.join('  ·  '),cx,cy+74);}
+  if(phone){ctx.fillStyle=s.accent;ctx.font='600 20px DM Sans';ctx.fillText('☎  '+phone,cx,cy+108);}
+  cb();
+}
+
+/* ═══════════════════════════════════════
+   LANDSCAPE
+═══════════════════════════════════════ */
+function renderLandscape(){
+  var active=lsImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
+  if(!active.length)return;
+  var canvas=document.getElementById('poster-canvas'),ctx=canvas.getContext('2d');
+  var W=1350,H=1080;canvas.width=W;canvas.height=H;
+  var s=STYLES[currentStyle]||STYLES.dark;
+  var title=document.getElementById('poster-title').value||'New Collection';
+  var sname=document.getElementById('store-name').value||'';
+  var phone=document.getElementById('store-phone').value||'';
+  var tags=selectedTags.slice(0,3);
+  var lsLbl=[0,1,2,3].map(function(i){return document.getElementById('ls-label-'+i).value||'';});
+  var n=active.length;
+  var headerH=155,footerH=125;
+
+  function doRender(bgEl){
+    // BG
+    if(bgEl){
+      var sc=Math.max(W/bgEl.width,H/bgEl.height);
+      ctx.drawImage(bgEl,(W-bgEl.width*sc)/2,(H-bgEl.height*sc)/2,bgEl.width*sc,bgEl.height*sc);
+      ctx.fillStyle='rgba(0,0,0,0.32)';ctx.fillRect(0,0,W,H);
+    } else {
+      var grd=ctx.createLinearGradient(0,0,W*0.4,H);grd.addColorStop(0,s.bg);grd.addColorStop(1,s.bg2);
+      ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+    }
+
+    var loaded=0,mImgs=[];
+    active.forEach(function(item,i){
+      var img=new Image();img.onload=function(){mImgs[i]={img:img,oi:item.idx};loaded++;if(loaded===n)drawModels();};img.src=item.src;
     });
+
+    function drawModels(){
+      var mw=Math.floor(W/n);
+      for(var i=0;i<n;i++){
+        var mx=i*mw,im=mImgs[i].img;
+        // Offscreen: model fills full height
+        var os=document.createElement('canvas');os.width=mw;os.height=H;
+        var oc=os.getContext('2d');
+        // Scale model to fill height
+        var sc2=H/im.height;
+        if(im.width*sc2<mw*0.6)sc2=mw/im.width; // prevent too narrow
+        var dw=im.width*sc2,dh=im.height*sc2;
+        oc.drawImage(im,(mw-dw)/2,H-dh,dw,dh);
+        // Feather
+        oc.globalCompositeOperation='destination-out';
+        // Left (between models, not on outer edges)
+        if(i>0){var lf=oc.createLinearGradient(0,0,mw*0.1,0);lf.addColorStop(0,'rgba(0,0,0,0.85)');lf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=lf;oc.fillRect(0,0,mw*0.1,H);}
+        if(i<n-1){var rf=oc.createLinearGradient(mw*0.9,0,mw,0);rf.addColorStop(0,'rgba(0,0,0,0)');rf.addColorStop(1,'rgba(0,0,0,0.85)');oc.fillStyle=rf;oc.fillRect(mw*0.9,0,mw*0.1,H);}
+        // Top — blend into header
+        var tf=oc.createLinearGradient(0,0,0,headerH*1.3);tf.addColorStop(0,'rgba(0,0,0,1)');tf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=tf;oc.fillRect(0,0,mw,headerH*1.3);
+        // Bottom — blend into footer
+        var bf=oc.createLinearGradient(0,H-footerH*1.3,0,H);bf.addColorStop(0,'rgba(0,0,0,0)');bf.addColorStop(1,'rgba(0,0,0,0.92)');oc.fillStyle=bf;oc.fillRect(0,H-footerH*1.3,mw,footerH*1.3);
+        oc.globalCompositeOperation='source-over';
+        ctx.drawImage(os,mx,0);
+        // Color label above footer
+        var lbl=(lsLbl[mImgs[i].oi]||'').toUpperCase();
+        if(lbl){
+          ctx.save();ctx.font='600 15px DM Sans';var ll=ctx.measureText(lbl).width+22,lx3=mx+(mw-ll)/2,ly3=H-footerH-38;
+          ctx.fillStyle='rgba(0,0,0,0.45)';rr(ctx,lx3,ly3,ll,28,14);ctx.fill();
+          ctx.strokeStyle=s.accent+'88';ctx.lineWidth=1.5;rr(ctx,lx3,ly3,ll,28,14);ctx.stroke();
+          ctx.fillStyle='#fff';ctx.textAlign='center';ctx.shadowColor='rgba(0,0,0,0.7)';ctx.shadowBlur=8;
+          ctx.fillText(lbl,mx+mw/2,ly3+19);ctx.shadowBlur=0;ctx.restore();
+        }
+      }
+      drawHeader2();
+    }
+
+    function drawHeader2(){
+      // Header overlay
+      var hg=ctx.createLinearGradient(0,0,0,headerH+50);
+      hg.addColorStop(0,bgEl?'rgba(0,0,0,0.85)':h2r(s.bg,0.98));hg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=hg;ctx.fillRect(0,0,W,headerH+50);
+      ctx.fillStyle=s.accent;ctx.fillRect(0,0,W,6);
+      var hcx=W/2,hcy=18;
+      if(sname){var col=bgEl?'#fff':s.accent;ctx.fillStyle=col;ctx.font='600 19px DM Sans';ctx.textAlign='center';ctx.fillText(sname.toUpperCase().split('').join('  '),hcx,hcy+20);hcy+=38;}
+      // BIG title
+      ctx.fillStyle=bgEl?'#fff':s.text;ctx.textAlign='center';ctx.shadowColor=s.accent+'66';ctx.shadowBlur=20;
+      var htl=wrap(ctx,title,W*0.58);if(htl.length>2)htl=htl.slice(0,2);
+      var hts=htl.length>1?50:66;
+      ctx.font='italic 300 '+hts+'px Cormorant Garamond,serif';
+      htl=wrap(ctx,title,W*0.58);if(htl.length>2)htl=htl.slice(0,2);
+      htl.forEach(function(l){ctx.fillText(l,hcx,hcy+hts);hcy+=hts+4;});ctx.shadowBlur=0;
+      drawFooter2();
+    }
+
+    function drawFooter2(){
+      var fg=ctx.createLinearGradient(0,H-footerH-50,0,H);
+      fg.addColorStop(0,'rgba(0,0,0,0)');fg.addColorStop(0.35,bgEl?'rgba(0,0,0,0.9)':h2r(s.bg,0.97));fg.addColorStop(1,bgEl?'rgba(0,0,0,0.98)':h2r(s.bg,1));
+      ctx.fillStyle=fg;ctx.fillRect(0,H-footerH-50,W,footerH+50);
+      ctx.fillStyle=s.accent;ctx.fillRect(0,H-footerH,W,2);
+      var fy=H-footerH+20;
+      // Taglines
+      if(tags.length>0){
+        ctx.fillStyle=bgEl?'rgba(255,255,255,0.88)':s.sub;ctx.font='300 19px DM Sans';ctx.textAlign='center';
+        ctx.fillText(tags.join('   ·   '),W/2,fy+14);fy+=36;
+        ctx.save();ctx.strokeStyle=s.accent;ctx.lineWidth=1;ctx.globalAlpha=0.3;ctx.beginPath();ctx.moveTo(W/2-200,fy);ctx.lineTo(W/2+200,fy);ctx.stroke();ctx.restore();fy+=14;
+      }
+      if(phone){ctx.fillStyle=s.accent;ctx.font='600 26px DM Sans';ctx.textAlign='center';ctx.fillText('☎  '+phone,W/2,fy+24);fy+=36;}
+      ctx.fillStyle=bgEl?'rgba(255,255,255,0.35)':s.sub;ctx.font='400 12px DM Sans';ctx.textAlign='center';
+      ctx.fillText('A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S',W/2,H-12);
+      drawLogo(ctx,W,H,showCanvas);
+    }
   }
+
+  if(lsBgImg){var bi=new Image();bi.onload=function(){doRender(bi);};bi.src=lsBgImg;}
+  else doRender(null);
 }
 
-function downloadPoster() {
-  var canvas = document.getElementById('poster-canvas');
-  var link = document.createElement('a');
-  var storeName = document.getElementById('store-name').value || 'Drapely';
-  link.download = storeName.replace(/\s+/g, '_') + '_Poster.jpg';
-  link.href = canvas.toDataURL('image/jpeg', 0.95);
-  link.click();
+/* ── DECORATIVE ── */
+function drawDiamond(ctx,cx,y,width,color){
+  var hw=width/2;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=0.6;
+  ctx.beginPath();ctx.moveTo(cx-hw,y);ctx.lineTo(cx-14,y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+14,y);ctx.lineTo(cx+hw,y);ctx.stroke();
+  ctx.globalAlpha=1;ctx.fillStyle=color;ctx.save();ctx.translate(cx,y);ctx.rotate(Math.PI/4);ctx.fillRect(-4,-4,8,8);ctx.restore();
+  ctx.globalAlpha=0.4;ctx.beginPath();ctx.arc(cx-20,y,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+20,y,2,0,Math.PI*2);ctx.fill();ctx.restore();
+}
+function drawOrn(ctx,cx,y,width,color){
+  var hw=width/2;ctx.save();ctx.strokeStyle=color;ctx.globalAlpha=0.3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-hw,y);ctx.bezierCurveTo(cx-hw*0.6,y-6,cx-hw*0.3,y+4,cx-6,y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+hw,y);ctx.bezierCurveTo(cx+hw*0.6,y-6,cx+hw*0.3,y+4,cx+6,y);ctx.stroke();
+  ctx.globalAlpha=0.8;ctx.fillStyle=color;ctx.beginPath();ctx.arc(cx,y,2,0,Math.PI*2);ctx.fill();ctx.restore();
 }
 
-function openMobileNav() {
-  document.getElementById('mobile-nav').classList.add('open');
-  document.getElementById('mobile-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+function downloadPoster(){
+  var canvas=document.getElementById('poster-canvas'),link=document.createElement('a');
+  var sn=document.getElementById('store-name').value||'Drapely';
+  link.download=sn.replace(/\s+/g,'_')+'_Poster.jpg';link.href=canvas.toDataURL('image/jpeg',0.95);link.click();
 }
-function closeMobileNav() {
-  document.getElementById('mobile-nav').classList.remove('open');
-  document.getElementById('mobile-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-document.addEventListener('touchstart', function(e) {
-  var nav = document.getElementById('mobile-nav');
-  var burger = document.querySelector('.burger');
-  if (nav && nav.classList.contains('open')) {
-    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) closeMobileNav();
-  }
-}, {passive: true});
-
-async function doSignOut() {
-  await sb.auth.signOut();
-  window.location.href = 'auth.html';
-}
+function openMobileNav(){document.getElementById('mobile-nav').classList.add('open');document.getElementById('mobile-overlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeMobileNav(){document.getElementById('mobile-nav').classList.remove('open');document.getElementById('mobile-overlay').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('touchstart',function(e){var nav=document.getElementById('mobile-nav');if(nav&&nav.classList.contains('open')&&!nav.contains(e.target))closeMobileNav();},{passive:true});
+async function doSignOut(){await sb.auth.signOut();window.location.href='auth.html';}
 </script>
 </body>
 </html>
