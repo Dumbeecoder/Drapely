@@ -298,14 +298,38 @@
 
       <!-- STYLE -->
       <div class="ctrl-section">
-        <div class="ctrl-label">Poster Style</div>
-        <div class="style-options" style="grid-template-columns:repeat(3,1fr);">
-          <div class="style-opt selected" onclick="selectStyle('dark',this)">🖤 Dark Luxury</div>
-          <div class="style-opt" onclick="selectStyle('white',this)">🤍 Clean White</div>
-          <div class="style-opt" onclick="selectStyle('gold',this)">✨ Gold Royal</div>
-          <div class="style-opt" onclick="selectStyle('maroon',this)">🍷 Deep Maroon</div>
-          <div class="style-opt" onclick="selectStyle('navy',this)">🌊 Royal Navy</div>
-          <div class="style-opt" onclick="selectStyle('blush',this)">🌸 Blush Pink</div>
+        <div class="ctrl-label">Poster Style — each has a unique layout</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div class="style-opt selected" onclick="selectStyle('dark',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#0a0a0a,#1a1a1a);border-radius:4px;margin-bottom:5px;border:1px solid rgba(200,144,42,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🖤 Dark Luxury</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold accents · Bold title</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('white',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff,#f9f0f3);border-radius:4px;margin-bottom:5px;border:1px solid rgba(233,30,99,0.25);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🤍 Clean White</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Pink accents · Centered</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('gold',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#13090a,#2a1500);border-radius:4px;margin-bottom:5px;border:1px solid rgba(212,160,23,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">✨ Gold Royal</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold shimmer · Serif heavy</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('maroon',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#1a0005,#3d0010);border-radius:4px;margin-bottom:5px;border:1px solid rgba(192,57,43,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🍷 Deep Maroon</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Red accents · Dramatic</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('navy',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#04091a,#0a1a3d);border-radius:4px;margin-bottom:5px;border:1px solid rgba(74,144,217,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🌊 Royal Navy</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Blue accents · Editorial</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('blush',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff5f7,#ffe0ea);border-radius:4px;margin-bottom:5px;border:1px solid rgba(194,24,91,0.2);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🌸 Blush Pink</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Soft pink · Feminine</div>
+          </div>
         </div>
       </div>
 
@@ -350,13 +374,26 @@
             <input class="color-label-input" id="ls-label-3" placeholder="Color 4" oninput="scheduleRender()"/>
           </div>
         </div>
+
+        <!-- Landscape Style (same options) -->
+        <div class="ctrl-section">
+          <div class="ctrl-label">Landscape Style</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <div class="style-opt selected" id="ls-style-dark" onclick="selectStyle('dark',this)">🖤 Dark</div>
+            <div class="style-opt" id="ls-style-white" onclick="selectStyle('white',this)">🤍 White</div>
+            <div class="style-opt" id="ls-style-gold" onclick="selectStyle('gold',this)">✨ Gold</div>
+            <div class="style-opt" id="ls-style-maroon" onclick="selectStyle('maroon',this)">🍷 Maroon</div>
+            <div class="style-opt" id="ls-style-navy" onclick="selectStyle('navy',this)">🌊 Navy</div>
+            <div class="style-opt" id="ls-style-blush" onclick="selectStyle('blush',this)">🌸 Blush</div>
+          </div>
+        </div>
       </div>
 
 
-      <!-- LOGO UPLOAD -->
+      <!-- LOGO UPLOAD + POSITION -->
       <div class="ctrl-section">
         <div class="ctrl-label">Store Logo (optional)</div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
           <div class="upload-zone" id="logo-zone" onclick="triggerUpload('logo-input')" style="width:90px;height:70px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;">
             <div id="logo-empty" style="text-align:center;"><div style="font-size:20px;">🏪</div><div style="font-size:10px;color:#aaa;margin-top:2px;">Logo</div></div>
             <img id="logo-preview" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:6px;" />
@@ -364,8 +401,18 @@
           </div>
           <div style="font-size:11px;color:#888;line-height:1.6;">Upload your store logo.<br/>PNG with transparent<br/>background works best.</div>
         </div>
+        <div class="ctrl-label" style="margin-bottom:6px;">Logo Position</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+          <div class="style-opt" id="logo-pos-tl" onclick="selectLogoPos('top-left',this)" style="font-size:10px;">↖ Top Left</div>
+          <div class="style-opt selected" id="logo-pos-tr" onclick="selectLogoPos('top-right',this)" style="font-size:10px;">↗ Top Right</div>
+          <div class="style-opt" id="logo-pos-tc" onclick="selectLogoPos('top-center',this)" style="font-size:10px;">↑ Top Center</div>
+          <div class="style-opt" id="logo-pos-bl" onclick="selectLogoPos('bot-left',this)" style="font-size:10px;">↙ Bottom Left</div>
+          <div class="style-opt" id="logo-pos-br" onclick="selectLogoPos('bot-right',this)" style="font-size:10px;">↘ Bottom Right</div>
+          <div class="style-opt" id="logo-pos-bc" onclick="selectLogoPos('bot-center',this)" style="font-size:10px;">↓ Bottom Center</div>
+        </div>
         <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(this)"/>
       </div>
+
 
 
       <button class="gen-btn" id="gen-btn" onclick="renderPoster()">🎨 Generate Poster</button>
@@ -591,22 +638,34 @@ function removeLs(e, idx) {
   scheduleRender();
 }
 
-// ── DRAW LOGO on canvas ──
+// ── DRAW LOGO on canvas with position ──
 function drawLogo(ctx, W, H, callback) {
   if (!logoImg) { callback(); return; }
   var img = new Image();
   img.onload = function() {
-    var maxW = W * 0.22, maxH = H * 0.1;
+    var maxW = W * 0.20, maxH = H * 0.09;
     var scale = Math.min(maxW / img.width, maxH / img.height);
     var lw = img.width * scale, lh = img.height * scale;
-    var margin = 28;
-    // Top-right corner
-    var lx = W - lw - margin, ly = margin;
-    // White rounded backing
+    var m = 24; // margin
+    var pad = 10; // padding around logo
+    var lx, ly;
+    switch(logoPos) {
+      case 'top-left':   lx = m; ly = m; break;
+      case 'top-right':  lx = W - lw - m; ly = m; break;
+      case 'top-center': lx = (W - lw) / 2; ly = m; break;
+      case 'bot-left':   lx = m; ly = H - lh - m; break;
+      case 'bot-right':  lx = W - lw - m; ly = H - lh - m; break;
+      case 'bot-center': lx = (W - lw) / 2; ly = H - lh - m; break;
+      default:           lx = W - lw - m; ly = m;
+    }
     ctx.save();
     ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    roundRect(ctx, lx - 8, ly - 8, lw + 16, lh + 16, 10);
+    roundRect(ctx, lx - pad, ly - pad, lw + pad*2, lh + pad*2, 10);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+    ctx.lineWidth = 1;
+    roundRect(ctx, lx - pad, ly - pad, lw + pad*2, lh + pad*2, 10);
+    ctx.stroke();
     ctx.drawImage(img, lx, ly, lw, lh);
     ctx.restore();
     callback();
@@ -785,6 +844,14 @@ function renderLandscape() {
   }
 }
 
+var logoPos = 'top-right';
+function selectLogoPos(pos, el) {
+  logoPos = pos;
+  document.querySelectorAll('[id^="logo-pos-"]').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+  scheduleRender();
+}
+
 function scheduleRender() {
   clearTimeout(renderTimer);
   renderTimer = setTimeout(function() {
@@ -870,103 +937,240 @@ function renderPoster() {
       ctx.fillStyle = s.accent + '40';
       ctx.fillRect(panelX, 6, panelW, 2);
 
-      var cy = 20;
+      var cy = 16;
 
-      // ── TOP ORNAMENT ──
-      drawOrnament(ctx, cx, cy + 12, panelW * 0.6, s.accent);
-      cy += 32;
-
-      // ── STORE NAME — spaced caps with underline ──
-      if (storeName) {
-        ctx.save();
+      // ── STYLE-SPECIFIC HEADER LAYOUT ──
+      if (currentStyle === 'dark') {
+        // DARK: Top accent bar, wide spaced store name, huge italic title, gold tags
         ctx.fillStyle = s.accent;
-        ctx.font = '600 12px DM Sans, sans-serif';
+        ctx.fillRect(panelX, 0, panelW, 4);
+        cy = 22;
+        if (storeName) {
+          ctx.fillStyle = s.accent;
+          ctx.font = '500 11px DM Sans, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(storeName.toUpperCase().split('').join('  '), cx, cy + 12);
+          cy += 28;
+        }
+        ctx.fillStyle = s.text;
         ctx.textAlign = 'center';
-        var spaced = storeName.toUpperCase().split('').join('  ');
-        ctx.fillText(spaced, cx, cy + 14);
-        // Thin underline
-        var sw = ctx.measureText(spaced).width;
-        ctx.strokeStyle = s.accent;
-        ctx.globalAlpha = 0.4;
-        ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        ctx.moveTo(cx - sw/2, cy + 19);
-        ctx.lineTo(cx + sw/2, cy + 19);
-        ctx.stroke();
-        ctx.restore();
-        cy += 32;
-      }
+        var tl = wrapText(ctx, title, panelW - 20);
+        if (tl.length > 2) tl = tl.slice(0,2);
+        var ts = tl.length > 1 ? 38 : 48;
+        ctx.shadowColor = s.accent + '55'; ctx.shadowBlur = 20;
+        ctx.font = 'italic 300 ' + ts + 'px Cormorant Garamond, serif';
+        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; });
+        ctx.shadowBlur = 0;
+        cy += 8;
+        drawDivider(ctx, cx, cy, panelW * 0.75, s.accent); cy += 24;
+        // Tags: gold text with bullet, no pill
+        tags.forEach(function(tag, ti) {
+          ctx.fillStyle = ti === 0 ? s.accent : s.sub;
+          ctx.font = ti === 0 ? '600 13px DM Sans' : '300 12px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.fillText((ti > 0 ? '· ' : '') + tag.toUpperCase(), cx, cy + 14);
+          cy += ti === 0 ? 22 : 20;
+        });
+        cy += 8;
+        drawOrnament(ctx, cx, cy + 6, panelW * 0.5, s.accent); cy += 20;
 
-      // ── MAIN TITLE — elegant Cormorant, mixed weight ──
-      ctx.save();
-      ctx.textAlign = 'center';
-      var titleLines = wrapText(ctx, title, panelW - 24);
-      if (titleLines.length > 2) titleLines = titleLines.slice(0, 2);
-      var titleSize = titleLines.length > 1 ? 36 : 42;
-      // Shadow glow on title
-      ctx.shadowColor = s.accent + '44';
-      ctx.shadowBlur = 18;
-      ctx.fillStyle = s.text;
-      ctx.font = 'italic 300 ' + titleSize + 'px Cormorant Garamond, serif';
-      ctx.fillText(titleLines[0], cx, cy + titleSize);
-      cy += titleSize + 6;
-      if (titleLines[1]) {
-        ctx.font = '400 ' + (titleSize - 4) + 'px Cormorant Garamond, serif';
-        ctx.fillText(titleLines[1], cx, cy + titleSize - 4);
-        cy += titleSize;
-      }
-      ctx.shadowBlur = 0;
-      ctx.restore();
-
-      // ── DIAMOND DIVIDER ──
-      cy += 10;
-      drawDivider(ctx, cx, cy, panelW * 0.72, s.accent);
-      cy += 26;
-
-      // ── TAGLINES — styled as elegant badges ──
-      if (tags.length > 0) {
-        // First tag: bold accent pill
-        ctx.save();
-        ctx.font = '600 13px DM Sans, sans-serif';
-        var t0 = tags[0];
-        var tw0 = ctx.measureText(t0).width;
-        var pw0 = Math.min(tw0 + 30, panelW - 20);
-        var ph0 = 28;
-        var px0 = cx - pw0 / 2;
-        ctx.fillStyle = s.accent;
-        roundRect(ctx, px0, cy, pw0, ph0, 14);
-        ctx.fill();
-        ctx.fillStyle = s.bg === '#ffffff' || s.bg === '#fff5f7' ? '#fff' : '#fff';
+      } else if (currentStyle === 'white') {
+        // WHITE: Clean top, small store badge, centered bold title, pink gradient underline, pill tags
+        cy = 18;
+        if (storeName) {
+          var sn = storeName.toUpperCase();
+          ctx.font = '700 11px DM Sans';
+          var snw = ctx.measureText(sn).width + 24;
+          ctx.fillStyle = s.accent + '18';
+          roundRect(ctx, cx - snw/2, cy, snw, 22, 11); ctx.fill();
+          ctx.fillStyle = s.accent;
+          ctx.textAlign = 'center';
+          ctx.fillText(sn, cx, cy + 15);
+          cy += 32;
+        }
+        ctx.fillStyle = s.text;
         ctx.textAlign = 'center';
-        ctx.fillText(t0.toUpperCase(), cx, cy + 19);
-        ctx.restore();
-        cy += 38;
-
-        // Remaining tags: outline pills
-        tags.slice(1).forEach(function(tag) {
-          ctx.save();
-          ctx.font = '400 12px DM Sans, sans-serif';
-          var tw = ctx.measureText(tag).width;
-          var pw = Math.min(tw + 26, panelW - 20);
-          var px = cx - pw / 2;
-          ctx.strokeStyle = s.accent;
-          ctx.globalAlpha = 0.6;
-          ctx.lineWidth = 1;
-          roundRect(ctx, px, cy, pw, 24, 12);
-          ctx.stroke();
-          ctx.globalAlpha = 1;
-          ctx.fillStyle = s.sub;
+        var tl = wrapText(ctx, title, panelW - 16);
+        if (tl.length > 2) tl = tl.slice(0,2);
+        var ts = tl.length > 1 ? 36 : 44;
+        ctx.font = '300 ' + ts + 'px Cormorant Garamond, serif';
+        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; });
+        cy += 6;
+        // Pink gradient underline
+        var ulw = panelW * 0.65;
+        var ulg = ctx.createLinearGradient(cx - ulw/2, cy, cx + ulw/2, cy);
+        ulg.addColorStop(0,'rgba(233,30,99,0)'); ulg.addColorStop(0.5,'rgba(233,30,99,0.8)'); ulg.addColorStop(1,'rgba(233,30,99,0)');
+        ctx.strokeStyle = ulg; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx - ulw/2, cy); ctx.lineTo(cx + ulw/2, cy); ctx.stroke();
+        cy += 18;
+        // Filled pill tags
+        tags.forEach(function(tag, ti) {
+          ctx.font = '500 12px DM Sans';
+          var tw = ctx.measureText(tag).width + 22;
+          var tx = cx - tw/2;
+          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(233,30,99,0.1)';
+          roundRect(ctx, tx, cy, tw, 24, 12); ctx.fill();
+          ctx.fillStyle = ti === 0 ? '#fff' : s.accent;
           ctx.textAlign = 'center';
           ctx.fillText(tag.toUpperCase(), cx, cy + 16);
-          ctx.restore();
-          cy += 32;
+          cy += 30;
         });
         cy += 4;
-      }
 
-      // ── BOTTOM FLOURISH ──
-      drawOrnament(ctx, cx, cy + 8, panelW * 0.5, s.accent);
-      cy += 24;
+      } else if (currentStyle === 'gold') {
+        // GOLD: Corner flourishes, huge display title, serif-heavy all gold
+        cy = 14;
+        // Corner flourishes
+        ctx.save();
+        ctx.strokeStyle = s.accent; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
+        ['TL','TR','BL','BR'].forEach(function(c) {
+          var fx = c.includes('L') ? panelX + 14 : panelX + panelW - 14;
+          var fy = c.includes('T') ? 8 : H - 8;
+          ctx.beginPath();
+          ctx.moveTo(fx, fy); ctx.lineTo(fx + (c.includes('L') ? 16 : -16), fy);
+          ctx.moveTo(fx, fy); ctx.lineTo(fx, fy + (c.includes('T') ? 16 : -16));
+          ctx.stroke();
+        });
+        ctx.restore();
+        drawOrnament(ctx, cx, cy + 14, panelW * 0.7, s.accent); cy += 36;
+        if (storeName) {
+          ctx.fillStyle = s.accent;
+          ctx.font = 'italic 300 15px Cormorant Garamond';
+          ctx.textAlign = 'center';
+          ctx.fillText(storeName, cx, cy + 16); cy += 30;
+        }
+        var tl = wrapText(ctx, title, panelW - 14);
+        if (tl.length > 2) tl = tl.slice(0,2);
+        var ts = tl.length > 1 ? 42 : 52;
+        ctx.fillStyle = s.accent;
+        ctx.shadowColor = s.accent + '60'; ctx.shadowBlur = 22;
+        ctx.font = 'italic 400 ' + ts + 'px Cormorant Garamond, serif';
+        ctx.textAlign = 'center';
+        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 6; });
+        ctx.shadowBlur = 0;
+        cy += 6;
+        drawDivider(ctx, cx, cy, panelW * 0.7, s.accent); cy += 22;
+        tags.forEach(function(tag) {
+          ctx.fillStyle = s.sub;
+          ctx.font = '300 12px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.fillText(tag, cx, cy + 14); cy += 22;
+        });
+        cy += 6;
+        drawOrnament(ctx, cx, cy + 4, panelW * 0.5, s.accent); cy += 18;
+
+      } else if (currentStyle === 'maroon') {
+        // MAROON: Bold top bar, dramatic large title, thin line tags
+        ctx.fillStyle = s.accent;
+        ctx.fillRect(panelX, 0, panelW, 8);
+        cy = 20;
+        if (storeName) {
+          ctx.fillStyle = '#fff';
+          ctx.font = '700 12px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.fillText(storeName.toUpperCase(), cx, cy + 12); cy += 28;
+          ctx.strokeStyle = s.accent; ctx.lineWidth = 1; ctx.globalAlpha = 0.4;
+          ctx.beginPath(); ctx.moveTo(panelX+20, cy); ctx.lineTo(panelX+panelW-20, cy); ctx.stroke();
+          ctx.globalAlpha = 1; cy += 14;
+        }
+        var tl = wrapText(ctx, title, panelW - 16);
+        if (tl.length > 2) tl = tl.slice(0,2);
+        var ts = tl.length > 1 ? 40 : 50;
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = s.accent + '80'; ctx.shadowBlur = 25;
+        ctx.font = 'italic 300 ' + ts + 'px Cormorant Garamond, serif';
+        ctx.textAlign = 'center';
+        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; });
+        ctx.shadowBlur = 0; cy += 10;
+        // Red line + tags
+        ctx.strokeStyle = s.accent; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(panelX+20, cy); ctx.lineTo(panelX+panelW-20, cy); ctx.stroke();
+        cy += 16;
+        tags.forEach(function(tag, ti) {
+          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(255,255,255,0.6)';
+          ctx.font = ti === 0 ? '700 13px DM Sans' : '300 11px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.fillText(tag.toUpperCase(), cx, cy + 14); cy += 22;
+        });
+        cy += 8;
+        ctx.strokeStyle = s.accent; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(panelX+20, cy); ctx.lineTo(panelX+panelW-20, cy); ctx.stroke();
+        cy += 18;
+
+      } else if (currentStyle === 'navy') {
+        // NAVY: Editorial — thin lines, geometric, clean layout
+        cy = 16;
+        ctx.strokeStyle = s.accent; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(panelX+16, cy); ctx.lineTo(panelX+panelW-16, cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(panelX+16, cy+4); ctx.lineTo(panelX+panelW-16, cy+4); ctx.stroke();
+        cy += 20;
+        if (storeName) {
+          ctx.fillStyle = s.accent;
+          ctx.font = '300 11px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.letterSpacing = '3px';
+          ctx.fillText(storeName.toUpperCase(), cx, cy + 12); cy += 28;
+        }
+        var tl = wrapText(ctx, title, panelW - 14);
+        if (tl.length > 2) tl = tl.slice(0,2);
+        var ts = tl.length > 1 ? 36 : 44;
+        ctx.fillStyle = s.text;
+        ctx.font = '300 ' + ts + 'px Cormorant Garamond, serif';
+        ctx.textAlign = 'center';
+        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; });
+        cy += 8;
+        // Double thin lines
+        ctx.strokeStyle = s.accent; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.7;
+        ctx.beginPath(); ctx.moveTo(panelX+16, cy); ctx.lineTo(panelX+panelW-16, cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(panelX+24, cy+5); ctx.lineTo(panelX+panelW-24, cy+5); ctx.stroke();
+        ctx.globalAlpha = 1; cy += 18;
+        tags.forEach(function(tag, ti) {
+          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(255,255,255,0.5)';
+          ctx.font = ti === 0 ? '500 13px DM Sans' : '300 11px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.fillText(tag, cx, cy + 14); cy += ti === 0 ? 24 : 18;
+        });
+        cy += 10;
+        ctx.strokeStyle = s.accent; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(panelX+16, cy); ctx.lineTo(panelX+panelW-16, cy); ctx.stroke();
+        cy += 18;
+
+      } else {
+        // BLUSH: Soft, feminine — large light serif, gentle underlines, soft tags
+        cy = 20;
+        drawOrnament(ctx, cx, cy + 8, panelW * 0.55, s.accent); cy += 28;
+        if (storeName) {
+          ctx.fillStyle = s.accent;
+          ctx.font = '500 12px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.fillText(storeName.toUpperCase().split('').join(' '), cx, cy + 12); cy += 28;
+        }
+        var tl = wrapText(ctx, title, panelW - 18);
+        if (tl.length > 2) tl = tl.slice(0,2);
+        var ts = tl.length > 1 ? 38 : 46;
+        ctx.fillStyle = s.text;
+        ctx.font = 'italic 300 ' + ts + 'px Cormorant Garamond, serif';
+        ctx.textAlign = 'center';
+        tl.forEach(function(l){ ctx.fillText(l, cx, cy + ts); cy += ts + 4; });
+        cy += 10;
+        // Soft wavy line (using bezier)
+        ctx.strokeStyle = s.accent; ctx.globalAlpha = 0.4; ctx.lineWidth = 1.5;
+        var ww = panelW * 0.7;
+        ctx.beginPath();
+        ctx.moveTo(cx - ww/2, cy);
+        for (var wx = 0; wx < ww; wx += 20) {
+          ctx.quadraticCurveTo(cx - ww/2 + wx + 10, cy - 4, cx - ww/2 + wx + 20, cy);
+        }
+        ctx.stroke(); ctx.globalAlpha = 1; cy += 16;
+        tags.forEach(function(tag, ti) {
+          ctx.fillStyle = ti === 0 ? s.accent : 'rgba(194,24,91,0.5)';
+          ctx.font = ti === 0 ? '500 13px DM Sans' : '300 12px DM Sans';
+          ctx.textAlign = 'center';
+          ctx.fillText(tag, cx, cy + 14); cy += 22;
+        });
+        cy += 8;
+        drawOrnament(ctx, cx, cy + 6, panelW * 0.45, s.accent); cy += 22;
+      }
 
       // ── VARIANTS ──
       var labelH = 26;
