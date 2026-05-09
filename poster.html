@@ -196,6 +196,25 @@
     <!-- CONTROLS -->
     <div class="controls">
 
+      <!-- LAYOUT MODE -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Poster Layout</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="layout-mode-btn selected" id="mode-portrait" onclick="switchMode('portrait',this)" style="border:2px solid #E91E63;background:#fff0f5;border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;">
+            <div style="font-size:22px;margin-bottom:4px;">🖼️</div>
+            <div style="font-size:12px;font-weight:600;color:#E91E63;">Portrait</div>
+            <div style="font-size:10px;color:#888;margin-top:2px;">Hero + variants</div>
+          </div>
+          <div class="layout-mode-btn" id="mode-landscape" onclick="switchMode('landscape',this)" style="border:2px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;background:#fff;">
+            <div style="font-size:22px;margin-bottom:4px;">🗂️</div>
+            <div style="font-size:12px;font-weight:600;color:#555;">Landscape</div>
+            <div style="font-size:10px;color:#888;margin-top:2px;">2–4 models side by side</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PORTRAIT MODE -->
+      <div id="portrait-section">
       <!-- HERO PHOTO -->
       <div class="ctrl-section">
         <div class="ctrl-label">Hero Photo (Main large image)</div>
@@ -291,6 +310,64 @@
       </div>
 
       <!-- GENERATE -->
+      </div><!-- end portrait-section -->
+
+
+      <!-- LANDSCAPE MODELS (shown in landscape mode) -->
+      <div id="landscape-section" style="display:none;">
+        <div class="ctrl-section">
+          <div class="ctrl-label">Model Photos (2–4 side by side)</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;">
+            <div class="variant-slot" id="ls-slot-0" onclick="triggerUpload('ls-input-0')" style="aspect-ratio:2/5;">
+              <span class="slot-num">1</span>
+              <img id="ls-preview-0" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+              <button class="remove-btn" id="ls-remove-0" style="display:none;" onclick="removeLs(event,0)">✕</button>
+            </div>
+            <div class="variant-slot" id="ls-slot-1" onclick="triggerUpload('ls-input-1')" style="aspect-ratio:2/5;">
+              <span class="slot-num">2</span>
+              <img id="ls-preview-1" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+              <button class="remove-btn" id="ls-remove-1" style="display:none;" onclick="removeLs(event,1)">✕</button>
+            </div>
+            <div class="variant-slot" id="ls-slot-2" onclick="triggerUpload('ls-input-2')" style="aspect-ratio:2/5;">
+              <span class="slot-num">3</span>
+              <img id="ls-preview-2" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+              <button class="remove-btn" id="ls-remove-2" style="display:none;" onclick="removeLs(event,2)">✕</button>
+            </div>
+            <div class="variant-slot" id="ls-slot-3" onclick="triggerUpload('ls-input-3')" style="aspect-ratio:2/5;">
+              <span class="slot-num">4</span>
+              <img id="ls-preview-3" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+              <button class="remove-btn" id="ls-remove-3" style="display:none;" onclick="removeLs(event,3)">✕</button>
+            </div>
+          </div>
+          <input type="file" id="ls-input-0" accept="image/*" style="display:none;" onchange="loadLs(this,0)"/>
+          <input type="file" id="ls-input-1" accept="image/*" style="display:none;" onchange="loadLs(this,1)"/>
+          <input type="file" id="ls-input-2" accept="image/*" style="display:none;" onchange="loadLs(this,2)"/>
+          <input type="file" id="ls-input-3" accept="image/*" style="display:none;" onchange="loadLs(this,3)"/>
+          <div class="color-labels" style="margin-top:6px;">
+            <input class="color-label-input" id="ls-label-0" placeholder="Color 1" oninput="scheduleRender()"/>
+            <input class="color-label-input" id="ls-label-1" placeholder="Color 2" oninput="scheduleRender()"/>
+            <input class="color-label-input" id="ls-label-2" placeholder="Color 3" oninput="scheduleRender()"/>
+            <input class="color-label-input" id="ls-label-3" placeholder="Color 4" oninput="scheduleRender()"/>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- LOGO UPLOAD -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Store Logo (optional)</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="upload-zone" id="logo-zone" onclick="triggerUpload('logo-input')" style="width:90px;height:70px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;">
+            <div id="logo-empty" style="text-align:center;"><div style="font-size:20px;">🏪</div><div style="font-size:10px;color:#aaa;margin-top:2px;">Logo</div></div>
+            <img id="logo-preview" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:6px;" />
+            <button class="remove-btn" id="logo-remove" style="display:none;" onclick="removeLogo(event)">✕</button>
+          </div>
+          <div style="font-size:11px;color:#888;line-height:1.6;">Upload your store logo.<br/>PNG with transparent<br/>background works best.</div>
+        </div>
+        <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="loadLogo(this)"/>
+      </div>
+
+
       <button class="gen-btn" id="gen-btn" onclick="renderPoster()">🎨 Generate Poster</button>
     </div>
 
@@ -443,6 +520,271 @@ function selectStyle(style, el) {
   scheduleRender();
 }
 
+
+// ── MODE ──
+var currentMode = 'portrait';
+var logoImg = null;
+var lsImgs = [null, null, null, null];
+
+function switchMode(mode, el) {
+  currentMode = mode;
+  document.querySelectorAll('.layout-mode-btn').forEach(function(b) {
+    b.style.border = '2px solid rgba(233,30,99,0.2)';
+    b.style.background = '#fff';
+    b.querySelector('div:nth-child(2)').style.color = '#555';
+  });
+  el.style.border = '2px solid #E91E63';
+  el.style.background = '#fff0f5';
+  el.querySelector('div:nth-child(2)').style.color = '#E91E63';
+  document.getElementById('portrait-section').style.display = mode === 'portrait' ? '' : 'none';
+  document.getElementById('landscape-section').style.display = mode === 'landscape' ? '' : 'none';
+  // Update canvas size label
+  document.querySelector('.preview-title span:last-child').textContent = mode === 'landscape' ? '1350 × 1080px' : '1080 × 1350px';
+  scheduleRender();
+}
+
+// ── LOGO ──
+function loadLogo(input) {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    logoImg = e.target.result;
+    var img = document.getElementById('logo-preview');
+    img.src = logoImg; img.style.display = 'block';
+    document.getElementById('logo-empty').style.display = 'none';
+    document.getElementById('logo-remove').style.display = 'flex';
+    scheduleRender();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function removeLogo(e) {
+  e.stopPropagation();
+  logoImg = null;
+  document.getElementById('logo-preview').style.display = 'none';
+  document.getElementById('logo-empty').style.display = 'block';
+  document.getElementById('logo-remove').style.display = 'none';
+  scheduleRender();
+}
+
+// ── LANDSCAPE SLOTS ──
+function loadLs(input, idx) {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    lsImgs[idx] = e.target.result;
+    var img = document.getElementById('ls-preview-' + idx);
+    img.src = e.target.result; img.style.display = 'block';
+    document.getElementById('ls-slot-' + idx).querySelector('.slot-num').style.display = 'none';
+    document.getElementById('ls-remove-' + idx).style.display = 'flex';
+    scheduleRender();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function removeLs(e, idx) {
+  e.stopPropagation();
+  lsImgs[idx] = null;
+  document.getElementById('ls-preview-' + idx).style.display = 'none';
+  document.getElementById('ls-slot-' + idx).querySelector('.slot-num').style.display = 'block';
+  document.getElementById('ls-remove-' + idx).style.display = 'none';
+  scheduleRender();
+}
+
+// ── DRAW LOGO on canvas ──
+function drawLogo(ctx, W, H, callback) {
+  if (!logoImg) { callback(); return; }
+  var img = new Image();
+  img.onload = function() {
+    var maxW = W * 0.22, maxH = H * 0.1;
+    var scale = Math.min(maxW / img.width, maxH / img.height);
+    var lw = img.width * scale, lh = img.height * scale;
+    var margin = 28;
+    // Top-right corner
+    var lx = W - lw - margin, ly = margin;
+    // White rounded backing
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    roundRect(ctx, lx - 8, ly - 8, lw + 16, lh + 16, 10);
+    ctx.fill();
+    ctx.drawImage(img, lx, ly, lw, lh);
+    ctx.restore();
+    callback();
+  };
+  img.src = logoImg;
+}
+
+// ── LANDSCAPE RENDER ──
+function renderLandscape() {
+  var activeLs = lsImgs.map(function(v,i){return {src:v,idx:i};}).filter(function(v){return v.src!==null;});
+  if (activeLs.length === 0) { alert('Upload at least 2 model photos'); return; }
+
+  var canvas = document.getElementById('poster-canvas');
+  var ctx = canvas.getContext('2d');
+  // Landscape: wider than tall
+  var W = 1350, H = 1080;
+  canvas.width = W; canvas.height = H;
+
+  var styles = {
+    dark:   {bg:'#0a0a0a',accent:'#c8902a',text:'#ffffff',sub:'rgba(255,255,255,0.55)',border:'rgba(200,144,42,0.5)'},
+    white:  {bg:'#f8f4f0',accent:'#E91E63',text:'#111111',sub:'#666666',border:'rgba(233,30,99,0.35)'},
+    gold:   {bg:'#13090a',accent:'#d4a017',text:'#fff8e7',sub:'rgba(255,248,231,0.55)',border:'rgba(212,160,23,0.5)'},
+    maroon: {bg:'#1a0005',accent:'#c0392b',text:'#ffffff',sub:'rgba(255,255,255,0.55)',border:'rgba(192,57,43,0.5)'},
+    navy:   {bg:'#04091a',accent:'#4a90d9',text:'#ffffff',sub:'rgba(255,255,255,0.55)',border:'rgba(74,144,217,0.5)'},
+    blush:  {bg:'#fff5f7',accent:'#c2185b',text:'#1a0008',sub:'#888888',border:'rgba(194,24,91,0.3)'},
+  };
+  var s = styles[currentStyle] || styles['dark'];
+
+  var title   = document.getElementById('poster-title').value || 'New Collection';
+  var storeName = document.getElementById('store-name').value || '';
+  var phone   = document.getElementById('store-phone').value || '';
+  var tags    = selectedTags.slice(0, 3);
+  var lsLabels = [0,1,2,3].map(function(i){ return document.getElementById('ls-label-'+i).value || ''; });
+
+  var n = activeLs.length;
+  // Header area height
+  var headerH = 160;
+  var footerH = 90;
+  var imgAreaH = H - headerH - footerH;
+  var gap = 6;
+  var imgW = (W - gap * (n - 1)) / n;
+
+  // Background
+  ctx.fillStyle = s.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Top accent bar
+  ctx.fillStyle = s.accent;
+  ctx.fillRect(0, 0, W, 5);
+
+  // Header text
+  var cx = W / 2;
+  var cy = 30;
+
+  drawOrnament(ctx, cx, cy + 10, 400, s.accent);
+  cy += 32;
+
+  if (storeName) {
+    ctx.fillStyle = s.accent;
+    ctx.font = '600 13px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(storeName.toUpperCase().split('').join('  '), cx, cy + 14);
+    cy += 30;
+  }
+
+  ctx.fillStyle = s.text;
+  ctx.font = 'italic 300 52px Cormorant Garamond, serif';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = s.accent + '44'; ctx.shadowBlur = 16;
+  ctx.fillText(title, cx, cy + 52);
+  ctx.shadowBlur = 0;
+  cy += 58;
+
+  drawDivider(ctx, cx, cy, 380, s.accent);
+  cy += 20;
+
+  // Taglines inline with dots
+  if (tags.length > 0) {
+    ctx.fillStyle = s.sub;
+    ctx.font = '300 15px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(tags.join('   ·   '), cx, cy + 16);
+  }
+
+  // Load all images then draw
+  var loaded = 0;
+  var imgs = [];
+
+  activeLs.forEach(function(item, i) {
+    var img = new Image();
+    img.onload = function() {
+      imgs[i] = {img: img, origIdx: item.idx};
+      loaded++;
+      if (loaded === n) drawModels();
+    };
+    img.src = item.src;
+  });
+
+  function drawModels() {
+    for (var i = 0; i < n; i++) {
+      var ix = i * (imgW + gap);
+      var iy = headerH;
+      var iw = imgW, ih = imgAreaH;
+
+      ctx.save();
+      ctx.beginPath(); ctx.rect(ix, iy, iw, ih); ctx.clip();
+      var img = imgs[i].img;
+      var sc = Math.max(iw / img.width, ih / img.height);
+      var dw = img.width * sc, dh = img.height * sc;
+      ctx.drawImage(img, ix + (iw - dw) / 2, iy + (ih - dh) / 2, dw, dh);
+
+      // Subtle bottom gradient per model for label readability
+      var mGrad = ctx.createLinearGradient(ix, iy + ih * 0.7, ix, iy + ih);
+      mGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      mGrad.addColorStop(1, 'rgba(0,0,0,0.55)');
+      ctx.fillStyle = mGrad;
+      ctx.fillRect(ix, iy, iw, ih);
+      ctx.restore();
+
+      // Vertical divider between images
+      if (i < n - 1) {
+        ctx.fillStyle = s.accent + '60';
+        ctx.fillRect(ix + iw, iy, gap, ih);
+      }
+
+      // Color label at bottom of each model
+      var label = (lsLabels[imgs[i].origIdx] || '').toUpperCase();
+      if (label) {
+        ctx.save();
+        ctx.font = '600 14px DM Sans, sans-serif';
+        var lw2 = ctx.measureText(label).width + 24;
+        var lx2 = ix + (iw - lw2) / 2;
+        var ly2 = iy + ih - 38;
+        ctx.fillStyle = s.accent + '33';
+        roundRect(ctx, lx2, ly2, lw2, 26, 13);
+        ctx.fill();
+        ctx.strokeStyle = s.accent + '88';
+        ctx.lineWidth = 1;
+        roundRect(ctx, lx2, ly2, lw2, 26, 13);
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, ix + iw / 2, ly2 + 18);
+        ctx.restore();
+      }
+    }
+
+    // Footer
+    var footerY = headerH + imgAreaH;
+    var footerGrad = ctx.createLinearGradient(0, footerY, W, footerY);
+    footerGrad.addColorStop(0, s.accent + '22');
+    footerGrad.addColorStop(0.5, s.accent + '66');
+    footerGrad.addColorStop(1, s.accent + '22');
+    ctx.fillStyle = footerGrad;
+    ctx.fillRect(0, footerY, W, footerH);
+    ctx.fillStyle = s.accent;
+    ctx.fillRect(0, footerY, W, 2);
+
+    var fy = footerY + footerH / 2;
+    if (phone) {
+      ctx.fillStyle = s.text;
+      ctx.font = '600 22px DM Sans, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('☎  ' + phone, W / 2, fy - 6);
+    }
+    ctx.fillStyle = s.accent;
+    ctx.font = '400 13px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S', W / 2, fy + 20);
+
+    drawLogo(ctx, W, H, function() {
+      document.getElementById('preview-empty').style.display = 'none';
+      document.getElementById('poster-canvas').style.display = 'block';
+      document.getElementById('download-btn').classList.add('show');
+    });
+  }
+}
+
 function scheduleRender() {
   clearTimeout(renderTimer);
   renderTimer = setTimeout(function() {
@@ -451,6 +793,7 @@ function scheduleRender() {
 }
 
 function renderPoster() {
+  if (currentMode === 'landscape') { renderLandscape(); return; }
   if (!heroImg) { alert('Please upload a hero photo first'); return; }
 
   var canvas = document.getElementById('poster-canvas');
@@ -519,97 +862,136 @@ function renderPoster() {
     ctx.fillStyle = botGrad; ctx.fillRect(0, 0, heroW, H);
 
     if (hasVariants) {
-      // Accent top bar
+      var cx = panelX + panelW / 2; // center X of right panel
+
+      // ── TOP ACCENT BAR with double line ──
       ctx.fillStyle = s.accent;
-      ctx.fillRect(panelX, 0, panelW, 5);
+      ctx.fillRect(panelX, 0, panelW, 6);
+      ctx.fillStyle = s.accent + '40';
+      ctx.fillRect(panelX, 6, panelW, 2);
 
-      // Vertical separator line
-      ctx.strokeStyle = s.border;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(panelX, 5); ctx.lineTo(panelX, H);
-      ctx.stroke();
+      var cy = 20;
 
-      var cy = 30; // current Y cursor
+      // ── TOP ORNAMENT ──
+      drawOrnament(ctx, cx, cy + 12, panelW * 0.6, s.accent);
+      cy += 32;
 
-      // Store name
+      // ── STORE NAME — spaced caps with underline ──
       if (storeName) {
+        ctx.save();
         ctx.fillStyle = s.accent;
-        ctx.font = '600 18px DM Sans, sans-serif';
+        ctx.font = '600 12px DM Sans, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(storeName.toUpperCase(), panelX + panelW / 2, cy + 20);
-        cy += 42;
+        var spaced = storeName.toUpperCase().split('').join('  ');
+        ctx.fillText(spaced, cx, cy + 14);
+        // Thin underline
+        var sw = ctx.measureText(spaced).width;
+        ctx.strokeStyle = s.accent;
+        ctx.globalAlpha = 0.4;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(cx - sw/2, cy + 19);
+        ctx.lineTo(cx + sw/2, cy + 19);
+        ctx.stroke();
+        ctx.restore();
+        cy += 32;
       }
 
-      // Title (Cormorant, wrapped, max 2 lines)
-      ctx.fillStyle = s.text;
-      ctx.font = '300 46px Cormorant Garamond, serif';
+      // ── MAIN TITLE — elegant Cormorant, mixed weight ──
+      ctx.save();
       ctx.textAlign = 'center';
-      var titleLines = wrapText(ctx, title, panelW - 30);
-      if (titleLines.length > 2) titleLines = titleLines.slice(0,2);
-      titleLines.forEach(function(line) {
-        ctx.fillText(line, panelX + panelW / 2, cy + 46);
-        cy += 52;
-      });
-      cy += 8;
+      var titleLines = wrapText(ctx, title, panelW - 24);
+      if (titleLines.length > 2) titleLines = titleLines.slice(0, 2);
+      var titleSize = titleLines.length > 1 ? 36 : 42;
+      // Shadow glow on title
+      ctx.shadowColor = s.accent + '44';
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = s.text;
+      ctx.font = 'italic 300 ' + titleSize + 'px Cormorant Garamond, serif';
+      ctx.fillText(titleLines[0], cx, cy + titleSize);
+      cy += titleSize + 6;
+      if (titleLines[1]) {
+        ctx.font = '400 ' + (titleSize - 4) + 'px Cormorant Garamond, serif';
+        ctx.fillText(titleLines[1], cx, cy + titleSize - 4);
+        cy += titleSize;
+      }
+      ctx.shadowBlur = 0;
+      ctx.restore();
 
-      // Divider
-      ctx.strokeStyle = s.accent;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(panelX + 30, cy); ctx.lineTo(panelX + panelW - 30, cy);
-      ctx.stroke();
-      cy += 16;
+      // ── DIAMOND DIVIDER ──
+      cy += 10;
+      drawDivider(ctx, cx, cy, panelW * 0.72, s.accent);
+      cy += 26;
 
-      // Taglines — each on its own line, max 3, small font
+      // ── TAGLINES — styled as elegant badges ──
       if (tags.length > 0) {
-        tags.forEach(function(tag) {
+        // First tag: bold accent pill
+        ctx.save();
+        ctx.font = '600 13px DM Sans, sans-serif';
+        var t0 = tags[0];
+        var tw0 = ctx.measureText(t0).width;
+        var pw0 = Math.min(tw0 + 30, panelW - 20);
+        var ph0 = 28;
+        var px0 = cx - pw0 / 2;
+        ctx.fillStyle = s.accent;
+        roundRect(ctx, px0, cy, pw0, ph0, 14);
+        ctx.fill();
+        ctx.fillStyle = s.bg === '#ffffff' || s.bg === '#fff5f7' ? '#fff' : '#fff';
+        ctx.textAlign = 'center';
+        ctx.fillText(t0.toUpperCase(), cx, cy + 19);
+        ctx.restore();
+        cy += 38;
+
+        // Remaining tags: outline pills
+        tags.slice(1).forEach(function(tag) {
+          ctx.save();
+          ctx.font = '400 12px DM Sans, sans-serif';
+          var tw = ctx.measureText(tag).width;
+          var pw = Math.min(tw + 26, panelW - 20);
+          var px = cx - pw / 2;
+          ctx.strokeStyle = s.accent;
+          ctx.globalAlpha = 0.6;
+          ctx.lineWidth = 1;
+          roundRect(ctx, px, cy, pw, 24, 12);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
           ctx.fillStyle = s.sub;
-          ctx.font = '300 16px DM Sans, sans-serif';
           ctx.textAlign = 'center';
-          // Truncate if too wide
-          var maxTagW = panelW - 24;
-          while (ctx.measureText(tag).width > maxTagW && tag.length > 6) tag = tag.slice(0, -1);
-          ctx.fillText(tag, panelX + panelW / 2, cy + 16);
-          cy += 26;
+          ctx.fillText(tag.toUpperCase(), cx, cy + 16);
+          ctx.restore();
+          cy += 32;
         });
-        cy += 8;
+        cy += 4;
       }
 
-      // ---- VARIANT LAYOUT ----
-      var labelH = 28;           // height for color label below each variant
-      var varGap = 8;
-      var padH = 20;             // horizontal padding each side
-      var availW = panelW - padH * 2;
-      var bottomReserve = phone ? 90 : 60; // space for phone + bottom bar
-      var availH = H - cy - bottomReserve;
+      // ── BOTTOM FLOURISH ──
+      drawOrnament(ctx, cx, cy + 8, panelW * 0.5, s.accent);
+      cy += 24;
 
-      // Layout rules per count:
-      // 1 → 1×1 full width
-      // 2 → 1×2 stacked
-      // 3 → top row: 2, bottom row: 1 centered
-      // 4 → 2×2
+      // ── VARIANTS ──
+      var labelH = 26;
+      var varGap = 8;
+      var padH = 18;
+      var availW = panelW - padH * 2;
+      var bottomReserve = phone ? 88 : 52;
+      var availH = H - cy - bottomReserve;
 
       var positions = [];
       if (numVars === 1) {
-        var vw = availW, vh = availH - labelH;
-        positions.push({ x: panelX + padH, y: cy, w: vw, h: vh });
+        positions.push({ x: panelX + padH, y: cy, w: availW, h: availH - labelH });
       } else if (numVars === 2) {
-        var vw2 = availW;
         var vh2 = (availH - labelH * 2 - varGap) / 2;
-        positions.push({ x: panelX + padH, y: cy, w: vw2, h: vh2 });
-        positions.push({ x: panelX + padH, y: cy + vh2 + labelH + varGap, w: vw2, h: vh2 });
+        positions.push({ x: panelX + padH, y: cy, w: availW, h: vh2 });
+        positions.push({ x: panelX + padH, y: cy + vh2 + labelH + varGap, w: availW, h: vh2 });
       } else if (numVars === 3) {
         var vw3 = (availW - varGap) / 2;
-        var vh3top = (availH - labelH * 2 - varGap) * 0.52;
-        var vh3bot = (availH - labelH * 2 - varGap) * 0.44;
-        positions.push({ x: panelX + padH, y: cy, w: vw3, h: vh3top });
-        positions.push({ x: panelX + padH + vw3 + varGap, y: cy, w: vw3, h: vh3top });
-        // Bottom center
-        var bw = availW * 0.65;
-        positions.push({ x: panelX + padH + (availW - bw) / 2, y: cy + vh3top + labelH + varGap, w: bw, h: vh3bot });
+        var vh3t = (availH - labelH * 2 - varGap) * 0.53;
+        var vh3b = (availH - labelH * 2 - varGap) * 0.43;
+        positions.push({ x: panelX + padH, y: cy, w: vw3, h: vh3t });
+        positions.push({ x: panelX + padH + vw3 + varGap, y: cy, w: vw3, h: vh3t });
+        var bw3 = availW * 0.65;
+        positions.push({ x: panelX + padH + (availW - bw3) / 2, y: cy + vh3t + labelH + varGap, w: bw3, h: vh3b });
       } else {
-        // 4 → 2×2
         var vw4 = (availW - varGap) / 2;
         var vh4 = (availH - labelH * 2 - varGap) / 2;
         positions.push({ x: panelX + padH, y: cy, w: vw4, h: vh4 });
@@ -623,31 +1005,49 @@ function renderPoster() {
         if (!pos) return;
         var origIdx = varImgsToLoad[orderIdx].idx;
 
+        // Subtle shadow
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+
         ctx.save();
-        roundRect(ctx, pos.x, pos.y, pos.w, pos.h, 6);
+        roundRect(ctx, pos.x, pos.y, pos.w, pos.h, 8);
         ctx.clip();
+        ctx.shadowColor = 'transparent';
         var sc = Math.max(pos.w / img.width, pos.h / img.height);
         var dw = img.width * sc, dh = img.height * sc;
         ctx.drawImage(img, pos.x + (pos.w - dw) / 2, pos.y + (pos.h - dh) / 2, dw, dh);
         ctx.restore();
 
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+
         // Border
         ctx.strokeStyle = s.border;
         ctx.lineWidth = 1.5;
-        roundRect(ctx, pos.x, pos.y, pos.w, pos.h, 6);
+        roundRect(ctx, pos.x, pos.y, pos.w, pos.h, 8);
         ctx.stroke();
 
-        // Color label — pill below image
-        var label = colorLabels[origIdx] || ('Color ' + (origIdx + 1));
-        label = label.toUpperCase();
-        ctx.font = 'bold 14px DM Sans, sans-serif';
+        // Color label — elegant pill with border + inner text
+        var label = (colorLabels[origIdx] || ('Color ' + (origIdx + 1))).toUpperCase();
+        ctx.font = '600 11px DM Sans, sans-serif';
         var lw = Math.min(ctx.measureText(label).width + 20, pos.w);
         var lx = pos.x + (pos.w - lw) / 2;
-        var ly = pos.y + pos.h + 4;
+        var ly = pos.y + pos.h + 3;
+        // Pill outline
+        ctx.save();
+        ctx.strokeStyle = s.accent;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.7;
+        roundRect(ctx, lx, ly, lw, 20, 10);
+        ctx.stroke();
+        // Label text
+        ctx.globalAlpha = 1;
         ctx.fillStyle = s.accent;
-        ctx.font = 'bold 13px DM Sans, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(label, pos.x + pos.w / 2, ly + 16);
+        ctx.fillText(label, pos.x + pos.w / 2, ly + 14);
+        ctx.restore();
       }
 
       var loadCount = 0;
@@ -660,45 +1060,61 @@ function renderPoster() {
         };
         img.src = item.src;
       });
-
       if (numVars === 0) drawBottom();
 
       function drawBottom() {
+        // Phone — styled with icon
         if (phone) {
+          // Phone pill background
+          var pw = panelW - 32;
+          var px2 = panelX + 16;
+          ctx.fillStyle = s.accent + '18';
+          roundRect(ctx, px2, H - bottomReserve + 6, pw, 36, 18);
+          ctx.fill();
+          ctx.strokeStyle = s.accent + '55';
+          ctx.lineWidth = 1;
+          roundRect(ctx, px2, H - bottomReserve + 6, pw, 36, 18);
+          ctx.stroke();
           ctx.fillStyle = s.accent;
-          ctx.font = 'bold 22px DM Sans, sans-serif';
+          ctx.font = '600 18px DM Sans, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('\u260e ' + phone, panelX + panelW / 2, H - bottomReserve + 28);
+          ctx.fillText('\u260e  ' + phone, cx, H - bottomReserve + 30);
         }
-        ctx.fillStyle = s.accent + '25';
-        ctx.fillRect(panelX, H - 38, panelW, 38);
+        // Bottom bar
         ctx.fillStyle = s.accent;
-        ctx.font = '500 13px DM Sans, sans-serif';
+        ctx.fillRect(panelX, H - 40, panelW, 40);
+        // Ornament in bottom bar
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.fillRect(panelX, H - 40, panelW, 40);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '500 12px DM Sans, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Available in These Elegant Colours', panelX + panelW / 2, H - 14);
+        ctx.fillText('A V A I L A B L E  I N  T H E S E  C O L O U R S', cx, H - 16);
         finalize();
       }
 
     } else {
-      // No variants — full width, text at bottom
+      // Full width no variants
+      var botY = H - 60;
       ctx.fillStyle = s.accent;
-      ctx.font = '300 72px Cormorant Garamond, serif';
+      ctx.font = 'italic 300 68px Cormorant Garamond, serif';
       ctx.textAlign = 'center';
-      ctx.fillText(title, W / 2, H - 220);
+      ctx.fillText(title, W / 2, botY - 180);
+      drawDivider(ctx, W / 2, botY - 155, 400, s.accent);
       if (storeName) {
         ctx.fillStyle = s.text;
-        ctx.font = 'bold 28px DM Sans, sans-serif';
-        ctx.fillText(storeName.toUpperCase(), W / 2, H - 160);
+        ctx.font = '600 24px DM Sans, sans-serif';
+        ctx.fillText(storeName.toUpperCase().split('').join(' '), W / 2, botY - 110);
       }
       if (tags.length > 0) {
         ctx.fillStyle = s.sub;
-        ctx.font = '300 20px DM Sans, sans-serif';
-        ctx.fillText(tags.join(' · '), W / 2, H - 120);
+        ctx.font = '300 18px DM Sans, sans-serif';
+        ctx.fillText(tags.join('  ·  '), W / 2, botY - 70);
       }
       if (phone) {
         ctx.fillStyle = s.accent;
-        ctx.font = '500 24px DM Sans, sans-serif';
-        ctx.fillText('\u260e ' + phone, W / 2, H - 70);
+        ctx.font = '600 22px DM Sans, sans-serif';
+        ctx.fillText('\u260e  ' + phone, W / 2, botY - 20);
       }
       finalize();
     }
@@ -706,11 +1122,56 @@ function renderPoster() {
   heroImgEl.src = heroImg;
 
   function finalize() {
-    document.getElementById('preview-empty').style.display = 'none';
-    document.getElementById('poster-canvas').style.display = 'block';
-    document.getElementById('download-btn').classList.add('show');
+    drawLogo(ctx, W, H, function() {
+      document.getElementById('preview-empty').style.display = 'none';
+      document.getElementById('poster-canvas').style.display = 'block';
+      document.getElementById('download-btn').classList.add('show');
+    });
   }
 }
+
+// ── ORNAMENTAL DIVIDER: lines + diamond ──
+function drawDivider(ctx, cx, y, width, color) {
+  var hw = width / 2;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.65;
+  ctx.beginPath(); ctx.moveTo(cx - hw, y); ctx.lineTo(cx - 16, y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + 16, y); ctx.lineTo(cx + hw, y); ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = color;
+  ctx.save();
+  ctx.translate(cx, y); ctx.rotate(Math.PI / 4);
+  ctx.fillRect(-5, -5, 10, 10);
+  ctx.restore();
+  ctx.globalAlpha = 0.45;
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(cx - 22, y, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 22, y, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function drawOrnament(ctx, cx, y, width, color) {
+  var hw = width / 2;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.globalAlpha = 0.35;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - hw, y);
+  ctx.bezierCurveTo(cx - hw * 0.6, y - 7, cx - hw * 0.3, y + 5, cx - 7, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + hw, y);
+  ctx.bezierCurveTo(cx + hw * 0.6, y - 7, cx + hw * 0.3, y + 5, cx + 7, y);
+  ctx.stroke();
+  ctx.globalAlpha = 0.8;
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(cx, y, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
 
 function wrapText(ctx, text, maxW) {
   var words = text.split(' ');
