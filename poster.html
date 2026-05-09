@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Poster Builder — Drapely</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;overflow-x:hidden;}
+
+    /* SIDEBAR */
+    .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
+    .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .sidebar-brand span{color:#E91E63;}
+    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
+    .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .nav-item.active{color:#E91E63;}
+    .sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
+    .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
+    .user-av{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+    /* MAIN */
+    .main{margin-left:220px;flex:1;padding:2rem;min-height:100vh;overflow-x:hidden;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;}
+    .topbar-sub{font-size:13px;color:#555;}
+
+    /* LAYOUT */
+    .builder-layout{display:grid;grid-template-columns:380px 1fr;gap:1.5rem;align-items:start;}
+
+    /* CONTROLS */
+    .controls{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
+    .ctrl-section{border-bottom:1px solid rgba(233,30,99,0.08);padding-bottom:1.25rem;}
+    .ctrl-section:last-child{border:none;padding-bottom:0;}
+    .ctrl-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:10px;}
+    .ctrl-input{width:100%;padding:10px 12px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;outline:none;}
+    .ctrl-input:focus{border-color:#E91E63;}
+
+    /* UPLOAD ZONES */
+    .upload-zone{border:2px dashed rgba(233,30,99,0.25);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;position:relative;overflow:hidden;}
+    .upload-zone:hover{border-color:#E91E63;background:#fff0f5;}
+    .upload-zone.has-img{border-style:solid;border-color:rgba(233,30,99,0.4);padding:0;}
+    .upload-zone img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;}
+    .upload-icon{font-size:24px;margin-bottom:6px;}
+    .upload-text{font-size:12px;color:#777;}
+    .upload-text strong{color:#E91E63;}
+    .remove-btn{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;z-index:2;}
+
+    /* VARIANT GRID */
+    .variant-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .variant-slot{aspect-ratio:3/4;border:2px dashed rgba(233,30,99,0.2);border-radius:8px;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fafafa;transition:all 0.15s;}
+    .variant-slot:hover{border-color:#E91E63;background:#fff0f5;}
+    .variant-slot.has-img{border-style:solid;border-color:rgba(233,30,99,0.3);}
+    .variant-slot img{width:100%;height:100%;object-fit:cover;}
+    .variant-slot .slot-num{font-size:11px;color:#ccc;font-weight:500;}
+    .variant-slot .remove-btn{position:absolute;top:4px;right:4px;width:18px;height:18px;font-size:10px;}
+
+    /* COLOR LABELS */
+    .color-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px;}
+    .color-label-input{width:100%;padding:5px 6px;border:1px solid rgba(233,30,99,0.15);border-radius:6px;font-size:11px;font-family:'DM Sans',sans-serif;text-align:center;color:#555;outline:none;}
+    .color-label-input:focus{border-color:#E91E63;}
+
+    /* LAYOUT SELECTOR */
+    .layout-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .layout-opt{border:2px solid rgba(233,30,99,0.15);border-radius:8px;padding:8px;cursor:pointer;text-align:center;transition:all 0.15s;background:#fff;}
+    .layout-opt.selected{border-color:#E91E63;background:#fff0f5;}
+    .layout-opt svg{width:100%;height:44px;display:block;margin-bottom:4px;}
+    .layout-opt span{font-size:10px;color:#555;}
+
+    /* STYLE SELECTOR */
+    .style-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .style-opt{border:2px solid rgba(233,30,99,0.15);border-radius:8px;padding:8px 6px;cursor:pointer;text-align:center;transition:all 0.15s;background:#fff;font-size:11px;color:#555;}
+    .style-opt.selected{border-color:#E91E63;background:#fff0f5;color:#E91E63;font-weight:600;}
+
+    /* GENERATE BTN */
+    .gen-btn{width:100%;padding:14px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+    .gen-btn:hover{background:#c2185b;}
+    .gen-btn:disabled{background:#f9a8c9;cursor:not-allowed;}
+
+    /* PREVIEW PANEL */
+    .preview-panel{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:16px;padding:1.5rem;position:sticky;top:2rem;}
+    .preview-title{font-size:13px;font-weight:500;color:#333;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+    .preview-canvas-wrap{background:#f0f0f0;border-radius:10px;overflow:hidden;position:relative;}
+    .preview-empty{text-align:center;padding:3rem 1rem;color:#bbb;}
+    .preview-empty-icon{font-size:40px;margin-bottom:10px;}
+    .download-btn{width:100%;padding:12px;background:#000;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:1rem;transition:background 0.2s;display:none;}
+    .download-btn:hover{background:#222;}
+    .download-btn.show{display:block;}
+
+    /* CANVAS */
+    #poster-canvas{display:block;width:100%;height:auto;border-radius:10px;}
+
+    /* MOBILE */
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
+    .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
+    .mobile-logo span{color:#E91E63;}
+    .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
+    .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158;}
+    .mobile-overlay.open{display:block;}
+    .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0;overflow-y:auto;}
+    .mobile-nav.open{left:0;}
+    .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .mobile-nav-brand span{color:#E91E63;}
+    .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
+    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2);}
+    .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08);}
+    .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
+    .mobile-user-name{font-size:12px;font-weight:500;color:#fff;}
+
+    @media(max-width:900px){
+      .sidebar{display:none !important;}
+      .main{margin-left:0 !important;padding-top:70px !important;padding:70px 1rem 1rem;}
+      .mobile-header{display:flex !important;}
+      .burger{display:flex !important;}
+      .builder-layout{grid-template-columns:1fr;}
+      .preview-panel{position:static;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+  <a href="#" class="mobile-logo">Drape<span>ly</span></a>
+</div>
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#" class="mobile-nav-brand">Drape<span>ly</span></a>
+  <div class="mobile-nav-items">
+    <a class="mobile-nav-item" href="dashboard.html" onclick="closeMobileNav()">✨ New Photoshoot</a>
+    <a class="mobile-nav-item" href="video.html" onclick="closeMobileNav()">🎬 New Video</a>
+    <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
+    <a class="mobile-nav-item" href="backgrounds.html" onclick="closeMobileNav()">🌄 Backgrounds</a>
+    <a class="mobile-nav-item active" href="poster.html" onclick="closeMobileNav()">🎨 Poster Builder</a>
+    <a class="mobile-nav-item" href="guide.html" onclick="closeMobileNav()">📖 How to Use</a>
+    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
+    <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
+    <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
+  </div>
+  <div class="mobile-nav-footer">
+    <div class="mobile-user">
+      <div class="mobile-user-avatar" id="m-avatar">?</div>
+      <div><div class="mobile-user-name" id="m-name">...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <a href="#" onclick="location.reload();return false;" class="sidebar-brand">Drape<span>ly</span></a>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">STUDIO</div>
+    <a href="dashboard.html" class="nav-item">✨ New photoshoot</a>
+    <a href="video.html" class="nav-item">🎬 New video</a>
+    <a href="bulk.html" class="nav-item">⚡ Bulk Studio</a>
+    <a href="gallery.html" class="nav-item">🖼️ My gallery</a>
+    <a href="backgrounds.html" class="nav-item">🌄 Backgrounds</a>
+    <a href="poster.html" class="nav-item active">🎨 Poster Builder</a>
+    <div class="nav-section-label">ACCOUNT</div>
+    <a href="guide.html" class="nav-item">📖 How to Use</a>
+    <a href="settings.html" class="nav-item">⚙️ Settings</a>
+    <a href="credits.html" class="nav-item">💳 Credits</a>
+    <a href="#" onclick="doSignOut();return false;" class="nav-item">🚪 Sign out</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-av" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">🎨 Poster Builder</div>
+      <div class="topbar-sub">Create a catalogue poster with hero photo + color variants</div>
+    </div>
+  </div>
+
+  <div class="builder-layout">
+
+    <!-- CONTROLS -->
+    <div class="controls">
+
+      <!-- HERO PHOTO -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Hero Photo (Main large image)</div>
+        <div class="upload-zone" id="hero-zone" onclick="triggerUpload('hero-input')" style="height:180px;">
+          <div id="hero-empty"><div class="upload-icon">📸</div><div class="upload-text">Click to upload<br/><strong>Main model photo</strong></div></div>
+          <img id="hero-preview" style="display:none;width:100%;height:180px;object-fit:cover;border-radius:10px;" />
+          <button class="remove-btn" id="hero-remove" style="display:none;" onclick="removeImg(event,'hero')">✕</button>
+        </div>
+        <input type="file" id="hero-input" accept="image/*" style="display:none;" onchange="loadImg(this,'hero')"/>
+      </div>
+
+      <!-- COLOR VARIANTS -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Color Variants (up to 4)</div>
+        <div class="variant-grid">
+          <div class="variant-slot" id="slot-0" onclick="triggerUpload('var-input-0')">
+            <span class="slot-num">1</span>
+            <img id="var-preview-0" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+            <button class="remove-btn" id="var-remove-0" style="display:none;" onclick="removeVar(event,0)">✕</button>
+          </div>
+          <div class="variant-slot" id="slot-1" onclick="triggerUpload('var-input-1')">
+            <span class="slot-num">2</span>
+            <img id="var-preview-1" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+            <button class="remove-btn" id="var-remove-1" style="display:none;" onclick="removeVar(event,1)">✕</button>
+          </div>
+          <div class="variant-slot" id="slot-2" onclick="triggerUpload('var-input-2')">
+            <span class="slot-num">3</span>
+            <img id="var-preview-2" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+            <button class="remove-btn" id="var-remove-2" style="display:none;" onclick="removeVar(event,2)">✕</button>
+          </div>
+          <div class="variant-slot" id="slot-3" onclick="triggerUpload('var-input-3')">
+            <span class="slot-num">4</span>
+            <img id="var-preview-3" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+            <button class="remove-btn" id="var-remove-3" style="display:none;" onclick="removeVar(event,3)">✕</button>
+          </div>
+        </div>
+        <input type="file" id="var-input-0" accept="image/*" style="display:none;" onchange="loadVar(this,0)"/>
+        <input type="file" id="var-input-1" accept="image/*" style="display:none;" onchange="loadVar(this,1)"/>
+        <input type="file" id="var-input-2" accept="image/*" style="display:none;" onchange="loadVar(this,2)"/>
+        <input type="file" id="var-input-3" accept="image/*" style="display:none;" onchange="loadVar(this,3)"/>
+        <div class="color-labels" style="margin-top:8px;">
+          <input class="color-label-input" id="clabel-0" placeholder="Color 1" oninput="scheduleRender()"/>
+          <input class="color-label-input" id="clabel-1" placeholder="Color 2" oninput="scheduleRender()"/>
+          <input class="color-label-input" id="clabel-2" placeholder="Color 3" oninput="scheduleRender()"/>
+          <input class="color-label-input" id="clabel-3" placeholder="Color 4" oninput="scheduleRender()"/>
+        </div>
+      </div>
+
+      <!-- STORE INFO -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Store Info</div>
+        <input class="ctrl-input" id="store-name" placeholder="Your Store Name" oninput="scheduleRender()" style="margin-bottom:8px;"/>
+        <input class="ctrl-input" id="store-phone" placeholder="Phone / WhatsApp Number" oninput="scheduleRender()" style="margin-bottom:8px;"/>
+        <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. Timeless Elegance)" oninput="scheduleRender()"/>
+      </div>
+
+      <!-- TAGLINE -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Tagline (optional)</div>
+        <input class="ctrl-input" id="tagline" placeholder="e.g. Wholesale Only · Premium Quality" oninput="scheduleRender()"/>
+      </div>
+
+      <!-- STYLE -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Poster Style</div>
+        <div class="style-options">
+          <div class="style-opt selected" onclick="selectStyle('dark',this)">🖤 Dark Luxury</div>
+          <div class="style-opt" onclick="selectStyle('white',this)">🤍 Clean White</div>
+          <div class="style-opt" onclick="selectStyle('gold',this)">✨ Gold Royal</div>
+        </div>
+      </div>
+
+      <!-- GENERATE -->
+      <button class="gen-btn" id="gen-btn" onclick="renderPoster()">🎨 Generate Poster</button>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-panel">
+      <div class="preview-title">
+        <span>Preview</span>
+        <span style="font-size:11px;color:#aaa;">1080 × 1350px</span>
+      </div>
+      <div class="preview-canvas-wrap" id="preview-wrap">
+        <div class="preview-empty" id="preview-empty">
+          <div class="preview-empty-icon">🎨</div>
+          <div style="font-size:13px;color:#aaa;">Upload photos and click<br/>Generate Poster to preview</div>
+        </div>
+        <canvas id="poster-canvas" width="1080" height="1350" style="display:none;"></canvas>
+      </div>
+      <button class="download-btn" id="download-btn" onclick="downloadPoster()">⬇️ Download Poster (HD)</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
+  var initials = displayName.slice(0,2).toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('m-avatar').textContent = initials;
+  document.getElementById('m-name').textContent = displayName;
+  // Pre-fill store info from profile
+  if (meta.store_name) document.getElementById('store-name').value = meta.store_name;
+  if (meta.phone) document.getElementById('store-phone').value = meta.phone;
+});
+
+// Images state
+var heroImg = null;
+var varImgs = [null, null, null, null];
+var currentStyle = 'dark';
+var renderTimer = null;
+
+function triggerUpload(id) { document.getElementById(id).click(); }
+
+function loadImg(input, type) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    heroImg = e.target.result;
+    var img = document.getElementById('hero-preview');
+    img.src = heroImg; img.style.display = 'block';
+    document.getElementById('hero-empty').style.display = 'none';
+    document.getElementById('hero-remove').style.display = 'flex';
+    document.getElementById('hero-zone').classList.add('has-img');
+    scheduleRender();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function loadVar(input, idx) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    varImgs[idx] = e.target.result;
+    var img = document.getElementById('var-preview-' + idx);
+    img.src = e.target.result; img.style.display = 'block';
+    document.getElementById('slot-' + idx).querySelector('.slot-num').style.display = 'none';
+    document.getElementById('var-remove-' + idx).style.display = 'flex';
+    document.getElementById('slot-' + idx).classList.add('has-img');
+    scheduleRender();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function removeImg(e, type) {
+  e.stopPropagation();
+  heroImg = null;
+  document.getElementById('hero-preview').style.display = 'none';
+  document.getElementById('hero-empty').style.display = 'block';
+  document.getElementById('hero-remove').style.display = 'none';
+  document.getElementById('hero-zone').classList.remove('has-img');
+  scheduleRender();
+}
+
+function removeVar(e, idx) {
+  e.stopPropagation();
+  varImgs[idx] = null;
+  document.getElementById('var-preview-' + idx).style.display = 'none';
+  document.getElementById('slot-' + idx).querySelector('.slot-num').style.display = 'block';
+  document.getElementById('var-remove-' + idx).style.display = 'none';
+  document.getElementById('slot-' + idx).classList.remove('has-img');
+  scheduleRender();
+}
+
+function selectStyle(style, el) {
+  currentStyle = style;
+  document.querySelectorAll('.style-opt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  scheduleRender();
+}
+
+function scheduleRender() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(function() {
+    if (heroImg) renderPoster();
+  }, 600);
+}
+
+function renderPoster() {
+  if (!heroImg) { alert('Please upload a hero photo first'); return; }
+
+  var canvas = document.getElementById('poster-canvas');
+  var ctx = canvas.getContext('2d');
+  var W = 1080, H = 1350;
+  canvas.width = W; canvas.height = H;
+
+  var styles = {
+    dark:  { bg: '#0a0a0a', accent: '#c8902a', text: '#ffffff', sub: 'rgba(255,255,255,0.6)', border: 'rgba(200,144,42,0.4)', varBg: '#1a1a1a' },
+    white: { bg: '#ffffff', accent: '#E91E63', text: '#000000', sub: '#555555', border: 'rgba(233,30,99,0.3)', varBg: '#f9f9f9' },
+    gold:  { bg: '#1a0f00', accent: '#d4a017', text: '#fff8e7', sub: 'rgba(255,248,231,0.6)', border: 'rgba(212,160,23,0.5)', varBg: '#2a1f00' },
+  };
+  var s = styles[currentStyle];
+
+  var title = document.getElementById('poster-title').value || 'Timeless Elegance';
+  var storeName = document.getElementById('store-name').value || '';
+  var phone = document.getElementById('store-phone').value || '';
+  var tagline = document.getElementById('tagline').value || '';
+  var colorLabels = [
+    document.getElementById('clabel-0').value,
+    document.getElementById('clabel-1').value,
+    document.getElementById('clabel-2').value,
+    document.getElementById('clabel-3').value,
+  ];
+
+  // Count active variants
+  var activeVars = varImgs.filter(function(v){ return v !== null; });
+  var hasVariants = activeVars.length > 0;
+
+  // Layout: hero takes left 65%, variants in bottom-right
+  var heroW = hasVariants ? Math.floor(W * 0.62) : W;
+  var heroH = H;
+
+  // Draw background
+  ctx.fillStyle = s.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw hero image
+  var heroImgEl = new Image();
+  heroImgEl.onload = function() {
+    // Draw hero (left side or full width)
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, heroW, H);
+    ctx.clip();
+    var hScale = Math.max(heroW / heroImgEl.width, H / heroImgEl.height);
+    var hW = heroImgEl.width * hScale;
+    var hH = heroImgEl.height * hScale;
+    ctx.drawImage(heroImgEl, (heroW - hW) / 2, (H - hH) / 2, hW, hH);
+    ctx.restore();
+
+    // Gradient overlay on hero for text readability
+    var grad = ctx.createLinearGradient(heroW * 0.5, 0, heroW, 0);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, s.bg + 'ee');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, heroW, H);
+
+    // Bottom overlay on hero
+    var botGrad = ctx.createLinearGradient(0, H * 0.7, 0, H);
+    botGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    botGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
+    ctx.fillStyle = botGrad;
+    ctx.fillRect(0, 0, heroW, H);
+
+    if (hasVariants) {
+      // Right panel
+      var panelX = heroW;
+      var panelW = W - heroW;
+
+      // Decorative top accent line
+      ctx.fillStyle = s.accent;
+      ctx.fillRect(panelX, 0, panelW, 4);
+
+      // Store name at top right
+      if (storeName) {
+        ctx.fillStyle = s.accent;
+        ctx.font = 'bold 22px DM Sans, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(storeName.toUpperCase(), panelX + panelW / 2, 60);
+      }
+
+      // Title
+      ctx.fillStyle = s.text;
+      ctx.font = '300 52px Cormorant Garamond, serif';
+      ctx.textAlign = 'center';
+      var titleLines = wrapText(ctx, title, panelW - 40);
+      var titleY = storeName ? 110 : 80;
+      titleLines.forEach(function(line) {
+        ctx.fillText(line, panelX + panelW / 2, titleY);
+        titleY += 58;
+      });
+
+      // Accent divider
+      ctx.strokeStyle = s.accent;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(panelX + 40, titleY + 10);
+      ctx.lineTo(panelX + panelW - 40, titleY + 10);
+      ctx.stroke();
+      titleY += 30;
+
+      // Tagline
+      if (tagline) {
+        ctx.fillStyle = s.sub;
+        ctx.font = '300 20px DM Sans, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(tagline, panelX + panelW / 2, titleY + 10);
+        titleY += 40;
+      }
+
+      // Variants grid (2x2 in right panel)
+      var varTop = titleY + 20;
+      var varAvail = H - varTop - 160; // leave room for phone
+      var varGap = 10;
+      var varCols = 2;
+      var varRows = 2;
+      var varW2 = (panelW - 40 - varGap * (varCols - 1)) / varCols;
+      var varH2 = (varAvail - varGap * (varRows - 1)) / varRows;
+
+      var loadedVars = 0;
+      var totalVars = activeVars.length;
+
+      function drawVariants(idx, vImg) {
+        var col = idx % varCols;
+        var row = Math.floor(idx / varCols);
+        var vx = panelX + 20 + col * (varW2 + varGap);
+        var vy = varTop + row * (varH2 + varGap);
+
+        ctx.save();
+        // Rounded rect clip
+        roundRect(ctx, vx, vy, varW2, varH2, 8);
+        ctx.clip();
+
+        var vScale = Math.max(varW2 / vImg.width, varH2 / vImg.height);
+        var vW = vImg.width * vScale;
+        var vH = vImg.height * vScale;
+        ctx.drawImage(vImg, vx + (varW2 - vW) / 2, vy + (varH2 - vH) / 2, vW, vH);
+        ctx.restore();
+
+        // Border
+        ctx.strokeStyle = s.border;
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, vx, vy, varW2, varH2, 8);
+        ctx.stroke();
+
+        // Color label
+        var label = colorLabels[idx] || ('Color ' + (idx + 1));
+        ctx.fillStyle = s.accent;
+        ctx.font = 'bold 16px DM Sans, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(label.toUpperCase(), vx + varW2 / 2, vy + varH2 + 20);
+      }
+
+      // Sizes indicator (only show for active count)
+      var varImgsToLoad = varImgs.map(function(v, i) { return { src: v, idx: i }; }).filter(function(v) { return v.src !== null; });
+      var varLoadCount = 0;
+
+      varImgsToLoad.forEach(function(item) {
+        var img = new Image();
+        img.onload = function() {
+          drawVariants(item.idx, img);
+          varLoadCount++;
+          if (varLoadCount === varImgsToLoad.length) drawBottomInfo();
+        };
+        img.src = item.src;
+      });
+
+      if (varImgsToLoad.length === 0) drawBottomInfo();
+
+      function drawBottomInfo() {
+        // Phone number
+        if (phone) {
+          ctx.fillStyle = s.accent;
+          ctx.font = 'bold 26px DM Sans, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('📞 ' + phone, panelX + panelW / 2, H - 80);
+        }
+        // Bottom bar
+        ctx.fillStyle = s.accent + '22';
+        ctx.fillRect(panelX, H - 50, panelW, 50);
+        ctx.fillStyle = s.accent;
+        ctx.font = '500 16px DM Sans, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Available in These Elegant Colours', panelX + panelW / 2, H - 20);
+        finalize();
+      }
+
+    } else {
+      // Full width — overlay text at bottom
+      ctx.fillStyle = s.accent;
+      ctx.font = '300 72px Cormorant Garamond, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(title, W / 2, H - 200);
+      if (storeName) {
+        ctx.fillStyle = s.text;
+        ctx.font = 'bold 28px DM Sans, sans-serif';
+        ctx.fillText(storeName.toUpperCase(), W / 2, H - 140);
+      }
+      if (phone) {
+        ctx.fillStyle = s.accent;
+        ctx.font = '500 24px DM Sans, sans-serif';
+        ctx.fillText('📞 ' + phone, W / 2, H - 90);
+      }
+      finalize();
+    }
+  };
+  heroImgEl.src = heroImg;
+
+  function finalize() {
+    document.getElementById('preview-empty').style.display = 'none';
+    document.getElementById('poster-canvas').style.display = 'block';
+    document.getElementById('download-btn').classList.add('show');
+  }
+}
+
+function wrapText(ctx, text, maxW) {
+  var words = text.split(' ');
+  var lines = [];
+  var current = '';
+  words.forEach(function(word) {
+    var test = current ? current + ' ' + word : word;
+    if (ctx.measureText(test).width > maxW && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  });
+  if (current) lines.push(current);
+  return lines;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function downloadPoster() {
+  var canvas = document.getElementById('poster-canvas');
+  var link = document.createElement('a');
+  var storeName = document.getElementById('store-name').value || 'Drapely';
+  link.download = storeName.replace(/\s+/g, '_') + '_Poster.jpg';
+  link.href = canvas.toDataURL('image/jpeg', 0.95);
+  link.click();
+}
+
+function openMobileNav() {
+  document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('touchstart', function(e) {
+  var nav = document.getElementById('mobile-nav');
+  var burger = document.querySelector('.burger');
+  if (nav && nav.classList.contains('open')) {
+    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) closeMobileNav();
+  }
+}, { passive: true });
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+</script>
+</body>
+</html>
