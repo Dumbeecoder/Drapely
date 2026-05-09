@@ -220,7 +220,7 @@
         <div class="ctrl-label">Hero Photo (Main large image)</div>
         <div class="upload-zone" id="hero-zone" onclick="triggerUpload('hero-input')" style="height:180px;">
           <div id="hero-empty"><div class="upload-icon">📸</div><div class="upload-text">Click to upload<br/><strong>Main model photo</strong></div></div>
-          <img id="hero-preview" style="display:none;width:100%;height:180px;object-fit:cover;border-radius:10px;" />
+          <img id="hero-preview" style="display:none;width:100%;height:180px;object-fit:contain;border-radius:10px;background:#f0f0f0;" />
           <button class="remove-btn" id="hero-remove" style="display:none;" onclick="removeImg(event,'hero')">✕</button>
         </div>
         <input type="file" id="hero-input" accept="image/*" style="display:none;" onchange="loadImg(this,'hero')"/>
@@ -261,79 +261,7 @@
           <input class="color-label-input" id="clabel-2" placeholder="Color 3" oninput="scheduleRender()"/>
           <input class="color-label-input" id="clabel-3" placeholder="Color 4" oninput="scheduleRender()"/>
         </div>
-      </div>
-
-      <!-- STORE INFO -->
-      <div class="ctrl-section">
-        <div class="ctrl-label">Store Info</div>
-        <input class="ctrl-input" id="store-name" placeholder="Your Store Name" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="store-phone" placeholder="Phone / WhatsApp Number" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. Timeless Elegance)" oninput="scheduleRender()"/>
-      </div>
-
-      <!-- TAGLINES -->
-      <div class="ctrl-section">
-        <div class="ctrl-label">Taglines — click to add, drag to reorder</div>
-        <div id="selected-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;margin-bottom:10px;padding:8px;border:1.5px dashed rgba(233,30,99,0.2);border-radius:8px;"></div>
-        <div style="font-size:10px;color:#aaa;margin-bottom:8px;font-weight:500;letter-spacing:0.5px;">QUICK PICKS — click to add</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
-          <span class="tag-preset" onclick="addTag(this)">Wholesale Only</span>
-          <span class="tag-preset" onclick="addTag(this)">Ready Delivery</span>
-          <span class="tag-preset" onclick="addTag(this)">Premium Quality</span>
-          <span class="tag-preset" onclick="addTag(this)">New Collection</span>
-          <span class="tag-preset" onclick="addTag(this)">Limited Stock</span>
-          <span class="tag-preset" onclick="addTag(this)">Festival Special</span>
-          <span class="tag-preset" onclick="addTag(this)">Bulk Orders Welcome</span>
-          <span class="tag-preset" onclick="addTag(this)">Best Price</span>
-          <span class="tag-preset" onclick="addTag(this)">Free Shipping</span>
-          <span class="tag-preset" onclick="addTag(this)">Trusted by Retailers</span>
-          <span class="tag-preset" onclick="addTag(this)">Pure Fabric</span>
-          <span class="tag-preset" onclick="addTag(this)">Exquisite Craftsmanship</span>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <input class="ctrl-input" id="custom-tag-input" placeholder="Type custom tagline..." style="flex:1;" onkeydown="if(event.key==='Enter')addCustomTag()"/>
-          <button onclick="addCustomTag()" style="padding:10px 14px;background:#E91E63;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap;">+ Add</button>
-        </div>
-      </div>
-
-      <!-- STYLE -->
-      <div class="ctrl-section">
-        <div class="ctrl-label">Poster Style — each has a unique layout</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-          <div class="style-opt selected" onclick="selectStyle('dark',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#0a0a0a,#1a1a1a);border-radius:4px;margin-bottom:5px;border:1px solid rgba(200,144,42,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🖤 Dark Luxury</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold accents · Bold title</div>
-          </div>
-          <div class="style-opt" onclick="selectStyle('white',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff,#f9f0f3);border-radius:4px;margin-bottom:5px;border:1px solid rgba(233,30,99,0.25);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🤍 Clean White</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Pink accents · Centered</div>
-          </div>
-          <div class="style-opt" onclick="selectStyle('gold',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#13090a,#2a1500);border-radius:4px;margin-bottom:5px;border:1px solid rgba(212,160,23,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">✨ Gold Royal</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold shimmer · Serif heavy</div>
-          </div>
-          <div class="style-opt" onclick="selectStyle('maroon',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#1a0005,#3d0010);border-radius:4px;margin-bottom:5px;border:1px solid rgba(192,57,43,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🍷 Deep Maroon</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Red accents · Dramatic</div>
-          </div>
-          <div class="style-opt" onclick="selectStyle('navy',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#04091a,#0a1a3d);border-radius:4px;margin-bottom:5px;border:1px solid rgba(74,144,217,0.4);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🌊 Royal Navy</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Blue accents · Editorial</div>
-          </div>
-          <div class="style-opt" onclick="selectStyle('blush',this)" style="padding:10px 6px;">
-            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff5f7,#ffe0ea);border-radius:4px;margin-bottom:5px;border:1px solid rgba(194,24,91,0.2);"></div>
-            <div style="font-size:10px;font-weight:600;color:#555;">🌸 Blush Pink</div>
-            <div style="font-size:9px;color:#aaa;margin-top:1px;">Soft pink · Feminine</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- GENERATE -->
+      </div><!-- GENERATE -->
       </div><!-- end portrait-section -->
 
 
@@ -375,16 +303,73 @@
           </div>
         </div>
 
-        <!-- Landscape Style (same options) -->
-        <div class="ctrl-section">
-          <div class="ctrl-label">Landscape Style</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-            <div class="style-opt selected" id="ls-style-dark" onclick="selectStyle('dark',this)">🖤 Dark</div>
-            <div class="style-opt" id="ls-style-white" onclick="selectStyle('white',this)">🤍 White</div>
-            <div class="style-opt" id="ls-style-gold" onclick="selectStyle('gold',this)">✨ Gold</div>
-            <div class="style-opt" id="ls-style-maroon" onclick="selectStyle('maroon',this)">🍷 Maroon</div>
-            <div class="style-opt" id="ls-style-navy" onclick="selectStyle('navy',this)">🌊 Navy</div>
-            <div class="style-opt" id="ls-style-blush" onclick="selectStyle('blush',this)">🌸 Blush</div>
+      </div>
+
+
+      <!-- SHARED: STORE INFO, TAGLINES, STYLE (shown for both modes) -->
+      <div class="ctrl-section">
+        <div class="ctrl-label">Store Info</div>
+        <input class="ctrl-input" id="store-name" placeholder="Your Store Name" oninput="scheduleRender()" style="margin-bottom:8px;"/>
+        <input class="ctrl-input" id="store-phone" placeholder="Phone / WhatsApp Number" oninput="scheduleRender()" style="margin-bottom:8px;"/>
+        <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. Timeless Elegance)" oninput="scheduleRender()"/>
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-label">Taglines — click to add (max 3)</div>
+        <div id="selected-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;margin-bottom:10px;padding:8px;border:1.5px dashed rgba(233,30,99,0.2);border-radius:8px;"></div>
+        <div style="font-size:10px;color:#aaa;margin-bottom:8px;font-weight:500;letter-spacing:0.5px;">QUICK PICKS — click to add</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          <span class="tag-preset" onclick="addTag(this)">Wholesale Only</span>
+          <span class="tag-preset" onclick="addTag(this)">Ready Delivery</span>
+          <span class="tag-preset" onclick="addTag(this)">Premium Quality</span>
+          <span class="tag-preset" onclick="addTag(this)">New Collection</span>
+          <span class="tag-preset" onclick="addTag(this)">Limited Stock</span>
+          <span class="tag-preset" onclick="addTag(this)">Festival Special</span>
+          <span class="tag-preset" onclick="addTag(this)">Bulk Orders Welcome</span>
+          <span class="tag-preset" onclick="addTag(this)">Best Price</span>
+          <span class="tag-preset" onclick="addTag(this)">Free Shipping</span>
+          <span class="tag-preset" onclick="addTag(this)">Trusted by Retailers</span>
+          <span class="tag-preset" onclick="addTag(this)">Pure Fabric</span>
+          <span class="tag-preset" onclick="addTag(this)">Exquisite Craftsmanship</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <input class="ctrl-input" id="custom-tag-input" placeholder="Type custom tagline..." style="flex:1;" onkeydown="if(event.key='Enter')addCustomTag()"/>
+          <button onclick="addCustomTag()" style="padding:10px 14px;background:#E91E63;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap;">+ Add</button>
+        </div>
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-label">Poster Style — each has a unique layout</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div class="style-opt selected" onclick="selectStyle('dark',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#0a0a0a,#1a1a1a);border-radius:4px;margin-bottom:5px;border:1px solid rgba(200,144,42,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🖤 Dark Luxury</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold accents · Bold title</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('white',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff,#f9f0f3);border-radius:4px;margin-bottom:5px;border:1px solid rgba(233,30,99,0.25);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🤍 Clean White</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Pink accents · Centered</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('gold',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#13090a,#2a1500);border-radius:4px;margin-bottom:5px;border:1px solid rgba(212,160,23,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">✨ Gold Royal</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Gold shimmer · Serif heavy</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('maroon',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#1a0005,#3d0010);border-radius:4px;margin-bottom:5px;border:1px solid rgba(192,57,43,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🍷 Deep Maroon</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Red accents · Dramatic</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('navy',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#04091a,#0a1a3d);border-radius:4px;margin-bottom:5px;border:1px solid rgba(74,144,217,0.4);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🌊 Royal Navy</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Blue accents · Editorial</div>
+          </div>
+          <div class="style-opt" onclick="selectStyle('blush',this)" style="padding:10px 6px;">
+            <div style="width:100%;height:28px;background:linear-gradient(135deg,#fff5f7,#ffe0ea);border-radius:4px;margin-bottom:5px;border:1px solid rgba(194,24,91,0.2);"></div>
+            <div style="font-size:10px;font-weight:600;color:#555;">🌸 Blush Pink</div>
+            <div style="font-size:9px;color:#aaa;margin-top:1px;">Soft pink · Feminine</div>
           </div>
         </div>
       </div>
@@ -773,7 +758,8 @@ function renderLandscape() {
       ctx.save();
       ctx.beginPath(); ctx.rect(ix, iy, iw, ih); ctx.clip();
       var img = imgs[i].img;
-      var sc = Math.max(iw / img.width, ih / img.height);
+      // Contain: fit full model in frame
+      var sc = Math.min(iw / img.width, ih / img.height);
       var dw = img.width * sc, dh = img.height * sc;
       ctx.drawImage(img, ix + (iw - dw) / 2, iy + (ih - dh) / 2, dw, dh);
 
@@ -908,9 +894,12 @@ function renderPoster() {
     // Hero image
     ctx.save();
     ctx.beginPath(); ctx.rect(0, 0, heroW, H); ctx.clip();
-    var hScale = Math.max(heroW / heroImgEl.width, H / heroImgEl.height);
+    // Use contain to show full body — fill height, center horizontally
+    var hScale = H / heroImgEl.height;
+    // Only use cover if image is very wide
+    if (heroImgEl.width * hScale < heroW * 0.7) hScale = heroW / heroImgEl.width;
     var hW = heroImgEl.width * hScale, hH = heroImgEl.height * hScale;
-    ctx.drawImage(heroImgEl, (heroW - hW) / 2, (H - hH) / 2, hW, hH);
+    ctx.drawImage(heroImgEl, (heroW - hW) / 2, Math.max(0, (H - hH) / 2), hW, hH);
     ctx.restore();
 
     // Hero right-edge fade
@@ -1219,7 +1208,8 @@ function renderPoster() {
         roundRect(ctx, pos.x, pos.y, pos.w, pos.h, 8);
         ctx.clip();
         ctx.shadowColor = 'transparent';
-        var sc = Math.max(pos.w / img.width, pos.h / img.height);
+        // Contain: show full garment
+        var sc = Math.min(pos.w / img.width, pos.h / img.height);
         var dw = img.width * sc, dh = img.height * sc;
         ctx.drawImage(img, pos.x + (pos.w - dw) / 2, pos.y + (pos.h - dh) / 2, dw, dh);
         ctx.restore();
