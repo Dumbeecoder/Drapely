@@ -302,6 +302,7 @@ var sb = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
 );
 
+
 var ADMIN_PASS = 'drapely2025admin';
 var currentUserId = null;
 var currentBalance = 0;
@@ -328,7 +329,10 @@ function showAdmin() {
   loadAllUsers();
 }
 
-if (sessionStorage.getItem('drapely_admin') === '1') showAdmin();
+if (sessionStorage.getItem('drapely_admin') === '1') {
+  // Small delay on page load to ensure network/supabase is ready (helps mobile)
+  setTimeout(showAdmin, 100);
+}
 
 function adminSignOut() {
   sessionStorage.removeItem('drapely_admin');
@@ -340,40 +344,32 @@ function adminSignOut() {
 }
 
 async function loadStats() {
-  // Photos generated — try count, fallback to select all
+  // Photos count via admin API (bypasses RLS)
   try {
-    var photos = await sb.from('photoshoots').select('id');
-    var photoCount = photos.data ? photos.data.length : 0;
-    document.getElementById('stat-photos').textContent = photoCount.toLocaleString('en-IN');
+    var r = await fetch('/api/admin-user?photo_count=true');
+    var d = await r.json();
+    document.getElementById('stat-photos').textContent = (d.total || 0).toLocaleString('en-IN');
+    // Store photoMap for use in table
+    if (d.photoMap) {
+      photoMap = d.photoMap;
+      applyFilters(); // re-render table with photo counts
+    }
   } catch(e) { document.getElementById('stat-photos').textContent = '0'; }
 }
 
-// Called after allUsers + creditsMap are loaded — calculate revenue from credits data
-function updateRevenueFromCredits() {
+async function updateRevenueFromCredits() {
   try {
-    // Revenue = total credits ever added via topups
-    // We get this from credit_topups if available, else estimate from creditsMap
-    sb.from('credit_topups').select('credits_added').then(function(topupsRes) {
-      if (topupsRes.error || !topupsRes.data || topupsRes.data.length === 0) {
-        // Fallback: estimate from credits balances (not perfect but better than 0)
-        // Sum all positive balances across all users as minimum revenue
-        var totalBal = Object.values(creditsMap).reduce(function(s, b){ return s + (b > 0 ? b : 0); }, 0);
-        // Add 3 free credits per user (initial grant)
-        var paidCredits = Math.max(0, totalBal - (allUsers.length * 3));
-        document.getElementById('stat-revenue').textContent = paidCredits > 0
-          ? '₹' + (paidCredits * 50).toLocaleString('en-IN')
-          : 'N/A';
-        return;
-      }
-      var totalTopups = (topupsRes.data || []).reduce(function(s,t){
-        return s + (t.credits_added > 0 ? t.credits_added : 0);
-      }, 0);
-      document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
-    });
-  } catch(e) { document.getElementById('stat-revenue').textContent = '—'; }
+    var r = await fetch('/api/admin-user?topups=true');
+    var d = await r.json();
+    var totalTopups = (d.topups || []).reduce(function(s,t){
+      return s + (t.credits_added > 0 ? t.credits_added : 0);
+    }, 0);
+    document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
+  } catch(e) { document.getElementById('stat-revenue').textContent = '₹0'; }
 }
 
-async function loadAllUsers() {
+async function loadAllUsers(attempt) {
+  attempt = attempt || 1;
   var tbody = document.getElementById('users-tbody');
   var cards = document.getElementById('user-cards');
   tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:1.5rem;">Loading...</td></tr>';
@@ -398,12 +394,14 @@ async function loadAllUsers() {
     loadStats();
     updateRevenueFromCredits();
 
-    var ph = await sb.from('photoshoots').select('user_id');
-    photoMap = {};
-    (ph.data || []).forEach(function(p){ photoMap[p.user_id] = (photoMap[p.user_id] || 0) + 1; });
+    // photoMap loaded via loadStats() → /api/admin-user?photo_count=true
 
     applyFilters();
   } catch(e) {
+    if (attempt < 3) {
+      setTimeout(function(){ loadAllUsers(attempt + 1); }, 1500);
+      return;
+    }
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:1.5rem;">Error: ' + e.message + '</td></tr>';
     cards.innerHTML = '<div style="color:#dc2626;padding:1rem;font-size:13px;">Error: ' + e.message + '</div>';
   }
@@ -539,21 +537,25 @@ async function loadUserHistory(userId) {
   var list = document.getElementById('user-history-list');
   list.innerHTML = '<div style="font-size:12px;color:#555;padding:8px 0;">Loading...</div>';
   section.style.display = 'block';
-  var res = await sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(5);
-  if (!res.data || !res.data.length) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 0;">No activity yet</div>'; return; }
-  list.innerHTML = '';
-  res.data.forEach(function(item) {
-    var isVideo = item.media_type === 'video' || item.suit_type === 'Video';
-    var isBulk = item.suit_type === 'Bulk' || (item.collection_name && item.collection_name.toLowerCase().includes('bulk'));
-    var icon = isVideo ? '🎬' : isBulk ? '⚡' : '📷';
-    var credits = isVideo ? (item.image_count === 4 ? 4 : 2) : (item.image_count || 1);
-    var title = item.collection_name || (isVideo ? 'AI Video' : 'AI Photo');
-    var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
-    var row = document.createElement('div');
-    row.className = 'user-history-row';
-    row.innerHTML = '<div class="user-history-icon">' + icon + '</div><div class="user-history-info">' + title + ' · ' + date + '</div><div class="user-history-credits spent">-' + credits + ' cr</div>';
-    list.appendChild(row);
-  });
+  try {
+    var r = await fetch('/api/admin-user?activity=' + encodeURIComponent(userId));
+    var d = await r.json();
+    var items = d.activity || [];
+    if (!items.length) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 0;">No activity yet</div>'; return; }
+    list.innerHTML = '';
+    items.forEach(function(item) {
+      var isVideo = item.media_type === 'video' || item.suit_type === 'Video';
+      var isBulk = item.suit_type === 'Bulk' || (item.collection_name && item.collection_name.toLowerCase().includes('bulk'));
+      var icon = isVideo ? '🎬' : isBulk ? '⚡' : '📷';
+      var credits = isVideo ? (item.image_count === 4 ? 4 : 2) : (item.image_count || 1);
+      var title = item.collection_name || (isVideo ? 'AI Video' : 'AI Photo');
+      var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+      var row = document.createElement('div');
+      row.className = 'user-history-row';
+      row.innerHTML = '<div class="user-history-icon">' + icon + '</div><div class="user-history-info">' + title + ' · ' + date + '</div><div class="user-history-credits spent">-' + credits + ' cr</div>';
+      list.appendChild(row);
+    });
+  } catch(e) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 0;">Could not load activity</div>'; }
 }
 
 async function loadUserTopups(userId) {
@@ -561,17 +563,21 @@ async function loadUserTopups(userId) {
   var list = document.getElementById('user-topup-list');
   section.style.display = 'block';
   list.innerHTML = '<div style="font-size:12px;color:#555;padding:8px 12px;">Loading...</div>';
-  var res = await sb.from('credit_topups').select('*').eq('user_id', userId).order('created_at', { ascending: false });
-  if (!res.data || !res.data.length) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 12px;">No payments recorded yet</div>'; return; }
-  list.innerHTML = '';
-  res.data.forEach(function(t) {
-    var date = new Date((t.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
-    var isDeduct = t.credits_added < 0;
-    var row = document.createElement('div');
-    row.className = 'topup-history-row';
-    row.innerHTML = '<div style="font-size:14px;">' + (isDeduct ? '🔻' : '💰') + '</div><div style="flex:1;font-size:12px;color:#555;min-width:0;">' + (t.note || 'Credits added') + '<br><span style="font-size:10px;color:#aaa;">' + date + '</span></div><div style="font-size:13px;font-weight:500;color:' + (isDeduct ? '#dc2626' : '#16a34a') + ';">' + (isDeduct ? '' : '+') + t.credits_added + ' cr</div>';
-    list.appendChild(row);
-  });
+  try {
+    var r = await fetch('/api/admin-user?user_topups=' + encodeURIComponent(userId));
+    var d = await r.json();
+    var items = d.topups || [];
+    if (!items.length) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 12px;">No payments recorded yet</div>'; return; }
+    list.innerHTML = '';
+    items.forEach(function(t) {
+      var date = new Date((t.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+      var isDeduct = t.credits_added < 0;
+      var row = document.createElement('div');
+      row.className = 'topup-history-row';
+      row.innerHTML = '<div style="font-size:14px;">' + (isDeduct ? '🔻' : '💰') + '</div><div style="flex:1;font-size:12px;color:#555;min-width:0;">' + (t.note || 'Credits added') + '<br><span style="font-size:10px;color:#aaa;">' + date + '</span></div><div style="font-size:13px;font-weight:500;color:' + (isDeduct ? '#dc2626' : '#16a34a') + ';">' + (isDeduct ? '' : '+') + t.credits_added + ' cr</div>';
+      list.appendChild(row);
+    });
+  } catch(e) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 12px;">Could not load payments</div>'; }
 }
 
 async function searchUser() {
