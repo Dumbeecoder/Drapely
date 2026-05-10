@@ -430,13 +430,6 @@
               <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Naina T.</div></div>
             </div>
-            <div class="model-card" id="model-98" onclick="selectModel(this,98)">
-              <div class="model-avatar" style="background:#f5f5f5;flex-direction:column;cursor:pointer;align-items:center;justify-content:center;">
-                <div style="text-align:center;"><div style="font-size:26px;margin-bottom:2px;">🪆</div><div style="font-size:9px;color:#555;font-weight:500;margin-top:2px;">Mannequin</div></div>
-                <div class="model-check">✓</div>
-              </div>
-              <div class="model-info"><div class="model-name">Mannequin</div></div>
-            </div>
             <div class="model-card" id="model-99" onclick="selectModel(this,99)">
               <div class="model-avatar" style="background:#fff0f5;flex-direction:column;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('custom-model-input').click()">
                 <div id="custom-model-empty" style="text-align:center;"><div style="font-size:17px;margin-bottom:2px;">📷</div><div style="font-size:10px;color:#E91E63;font-weight:500;">Upload model</div></div>
@@ -447,18 +440,7 @@
               <div class="model-info"><div class="model-name">Custom</div></div>
             </div>
           </div>
-          <div id="mannequin-tip" style="display:none;background:linear-gradient(135deg,#fff8e1,#fff3cd);border:1px solid rgba(255,160,0,0.35);border-radius:10px;padding:12px 14px;margin-bottom:8px;">
-            <div style="display:flex;align-items:flex-start;gap:8px;">
-              <div style="font-size:20px;flex-shrink:0;margin-top:1px;">🪆</div>
-              <div>
-                <div style="font-size:12px;font-weight:600;color:#5d4037;margin-bottom:4px;">Mannequin Mode</div>
-                <div style="font-size:11px;color:#795548;line-height:1.65;">Your suit will be placed on a realistic dress form mannequin. <strong>Only front-facing poses work</strong> — pose has been auto-set to <strong>Standing Front</strong> for best results. If you change the pose, you'll see a warning.</div>
-              </div>
-            </div>
-          </div>
-          <div id="mannequin-pose-warn" style="display:none;background:#fff0f0;border:1px solid rgba(233,30,99,0.25);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:11px;color:#c62828;line-height:1.5;">
-            ⚠️ <strong>This pose may not work well with mannequin.</strong> Mannequins only support front-facing standing poses. The result may look unnatural — consider switching back to <span style="text-decoration:underline;cursor:pointer;font-weight:600;" onclick="autoSelectMannequinPose()">Standing Front</span>.
-          </div>
+
           <div class="step-nav"><button class="btn-back" onclick="goStep(0)">← Back</button><button class="btn-next" onclick="goStep(2)">Choose Background →</button></div>
         </div>
 
@@ -712,16 +694,7 @@ function selectPoseCard(el, posePrompt) {
   selectedPosePrompt = posePrompt;
   showToast('Pose selected');
 
-  // Mannequin compatibility check
-  if (selectedModelIndex === 98) {
-    var warn = document.getElementById('mannequin-pose-warn');
-    // Only Standing front-facing works well with mannequin
-    var mannequinSafe = ['standing straight facing forward', 'standing upright facing forward'];
-    var isSafe = mannequinSafe.some(function(s){ return posePrompt.indexOf(s) !== -1; });
-    if (warn) warn.style.display = isSafe ? 'none' : 'block';
-    // Override pose prompt to always be front-facing for mannequin
-    selectedPosePrompt = 'standing upright facing forward, arms straight at sides, full body visible, full length, front facing display pose';
-  }
+
 }
 
 function selectScene(el, scenePrompt) {
@@ -1125,27 +1098,8 @@ function selectModel(card, idx) {
   document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
   card.classList.add('selected');
   selectedModelIndex = idx;
-  // Show/hide mannequin tip + auto-select standing pose
-  var tip = document.getElementById('mannequin-tip');
-  var warn = document.getElementById('mannequin-pose-warn');
-  if (tip) tip.style.display = idx === 98 ? 'block' : 'none';
-  if (warn) warn.style.display = 'none';
-  if (idx === 98) autoSelectMannequinPose();
 }
 
-function autoSelectMannequinPose() {
-  // Find and click the Standing pose card
-  var poseCards = document.querySelectorAll('#pose-selector .prompt-preset');
-  poseCards.forEach(function(p) {
-    if (p.textContent.trim().indexOf('Standing') !== -1) {
-      poseCards.forEach(function(q){ q.classList.remove('selected'); });
-      p.classList.add('selected');
-      selectedPosePrompt = 'standing upright facing forward, arms straight at sides, full body visible, full length, front facing display pose';
-      var warn = document.getElementById('mannequin-pose-warn');
-      if (warn) warn.style.display = 'none';
-    }
-  });
-}
 
 function selectPose(tag) {
   document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
