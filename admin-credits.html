@@ -835,7 +835,7 @@ This will:
 
 async function cancelSubscription() {
   if (!currentSubId) { showToast('No active subscription to cancel'); return; }
-  if (!confirm('Cancel this user\'s subscription?\nTheir existing credits will NOT be removed.')) return;
+  if (!confirm("Cancel this user's subscription?\nTheir existing credits will NOT be removed.")) return;
   showToast('Cancelling...');
   var r = await sb.from('subscriptions').update({status:'cancelled',cancelled_at:new Date().toISOString()}).eq('id',currentSubId);
   if (r.error) { showToast('✗ Error: ' + r.error.message); return; }
