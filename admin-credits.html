@@ -127,6 +127,20 @@
     .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;max-width:90vw;text-align:center;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+
+    /* SUBSCRIPTIONS */
+    .sub-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;}
+    .sub-active{background:#dcfce7;color:#16a34a;}
+    .sub-none{background:#f3f4f6;color:#9ca3af;}
+    .sub-card{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:10px;padding:1rem;margin-top:1rem;}
+    .sub-card-title{font-size:11px;font-weight:600;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+    .sub-plan-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+    .sub-plan-btn{padding:8px 16px;border-radius:8px;border:1.5px solid rgba(233,30,99,0.2);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#555;cursor:pointer;transition:all 0.15s;}
+    .sub-plan-btn:hover,.sub-plan-btn.selected{border-color:#E91E63;background:#fff0f5;color:#E91E63;}
+    .sub-activate-btn{padding:9px 18px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .sub-activate-btn:hover{background:#15803d;}
+    .sub-cancel-btn{padding:9px 18px;background:#fff;color:#dc2626;border:1px solid #dc2626;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .sub-cancel-btn:hover{background:#dc2626;color:#fff;}
     /* RESPONSIVE */
     @media(max-width:640px){
       body{padding:0.875rem;}
@@ -238,6 +252,23 @@
         <div class="user-history-title">Payment History</div>
         <div id="user-topup-list" style="background:#fff;border:1px solid rgba(233,30,99,0.1);border-radius:8px;overflow:hidden;"></div>
       </div>
+
+      <!-- SUBSCRIPTION MANAGEMENT -->
+      <div class="sub-card" id="sub-manage-section" style="display:none;">
+        <div class="sub-card-title">Subscription</div>
+        <div id="sub-current-status" style="font-size:13px;color:#555;margin-bottom:10px;">No active subscription</div>
+        <div style="font-size:11px;color:#999;margin-bottom:6px;">Activate / change plan:</div>
+        <div class="sub-plan-row">
+          <button class="sub-plan-btn" id="sub-btn-starter" onclick="selectSubPlan('starter',this)">Starter — 25cr/₹999</button>
+          <button class="sub-plan-btn" id="sub-btn-growth" onclick="selectSubPlan('growth',this)">Growth — 55cr/₹1,999</button>
+          <button class="sub-plan-btn" id="sub-btn-pro" onclick="selectSubPlan('pro',this)">Pro — 100cr/₹3,499</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <button class="sub-activate-btn" onclick="activateSubscription()">✓ Activate Plan + Add Credits</button>
+          <button class="sub-cancel-btn" id="sub-cancel-btn" onclick="cancelSubscription()" style="display:none;">✕ Cancel Subscription</button>
+        </div>
+        <div style="font-size:11px;color:#aaa;margin-top:8px;">Activating will: set subscription status to active + add monthly credits to user's balance</div>
+      </div>
     </div>
   </div>
 
@@ -275,6 +306,7 @@
             <th>Phone</th>
             <th onclick="sortBy('credits')">Credits ↕</th>
             <th onclick="sortBy('photos')">Photos ↕</th>
+          <th>Plan</th>
             <th onclick="sortBy('joined')">Joined ↕</th>
             <th></th>
           </tr>
@@ -309,6 +341,7 @@ var currentBalance = 0;
 var currentPhone = '';
 var allUsers = [];
 var creditsMap = {};
+var subMap = {}; // user_id -> plan name
 var photoMap = {};
 
 function checkPass() {
@@ -393,6 +426,7 @@ async function loadAllUsers(attempt) {
     document.getElementById('stat-users').textContent = allUsers.length;
     loadStats();
     updateRevenueFromCredits();
+    loadAllSubscriptions().then(function(){ applyFilters(); });
 
     // photoMap loaded via loadStats() → /api/admin-user?photo_count=true
 
@@ -477,6 +511,7 @@ function renderUsersTable(users) {
       '<td style="color:#555;">' + info.phone + '</td>' +
       '<td><span class="bal-badge ' + balClass + '">' + info.bal + '</span></td>' +
       '<td style="color:#555;">' + info.photoCount + '</td>' +
+      '<td>' + (subMap[user.id] ? '<span class="sub-badge sub-active">⭐ ' + subMap[user.id] + '</span>' : '<span class="sub-badge sub-none">—</span>') + '</td>' +
       '<td style="color:#555;">' + info.joined + '</td>' +
       '<td></td>';
     tr.querySelector('td:last-child').appendChild(btn);
@@ -530,6 +565,7 @@ function selectUserById(userId, email, name, balance, phone) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   loadUserHistory(userId);
   loadUserTopups(userId);
+  loadUserSubscription(userId);
 }
 
 async function loadUserHistory(userId) {
@@ -695,6 +731,129 @@ function formatDateTime(str) {
   var d = parseDate(str);
   if (isNaN(d.getTime())) return '—';
   return d.toLocaleDateString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata'});
+}
+
+// ── SUBSCRIPTION ADMIN ──
+var ADMIN_PLANS = {
+  starter: { name: 'Starter', credits: 25,  price: 999  },
+  growth:  { name: 'Growth',  credits: 55,  price: 1999 },
+  pro:     { name: 'Pro',     credits: 100, price: 3499 },
+};
+var selectedSubPlan = null;
+var currentSubId = null; // active subscription id for cancel
+
+function selectSubPlan(plan, el) {
+  selectedSubPlan = plan;
+  document.querySelectorAll('.sub-plan-btn').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+async function loadUserSubscription(userId) {
+  var section = document.getElementById('sub-manage-section');
+  var status = document.getElementById('sub-current-status');
+  var cancelBtn = document.getElementById('sub-cancel-btn');
+  section.style.display = 'block';
+  currentSubId = null;
+  cancelBtn.style.display = 'none';
+
+  var r = await sb.from('subscriptions').select('*').eq('user_id', userId).eq('status', 'active').order('created_at', {ascending:false}).limit(1);
+  if (r.data && r.data.length) {
+    var sub = r.data[0];
+    currentSubId = sub.id;
+    var p = ADMIN_PLANS[sub.plan] || {name: sub.plan, credits: sub.credits_per_month};
+    var renewal = sub.next_renewal ? new Date(sub.next_renewal).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    status.innerHTML = '<span style="color:#16a34a;font-weight:600;">⭐ Active: ' + p.name + ' Plan</span> · ' + p.credits + ' credits/month · Renews ' + renewal;
+    cancelBtn.style.display = 'inline-block';
+    // Pre-select current plan button
+    document.querySelectorAll('.sub-plan-btn').forEach(function(b){ b.classList.remove('selected'); });
+    var btn = document.getElementById('sub-btn-' + sub.plan);
+    if (btn) { btn.classList.add('selected'); selectedSubPlan = sub.plan; }
+  } else {
+    status.textContent = 'No active subscription';
+  }
+}
+
+async function activateSubscription() {
+  if (!currentUserId) { showToast('Select a user first'); return; }
+  if (!selectedSubPlan) { showToast('Select a plan first'); return; }
+  var plan = ADMIN_PLANS[selectedSubPlan];
+  if (!confirm('Activate ' + plan.name + ' Plan for this user?
+This will:
+• Set subscription to active
+• Add ' + plan.credits + ' credits to their balance')) return;
+
+  showToast('Activating...');
+  try {
+    // 1. Upsert subscription record
+    var now = new Date();
+    var nextRenewal = new Date(now);
+    nextRenewal.setMonth(nextRenewal.getMonth() + 1);
+
+    // Cancel any existing active sub first
+    if (currentSubId) {
+      await sb.from('subscriptions').update({status:'cancelled',cancelled_at:now.toISOString()}).eq('id',currentSubId);
+    }
+
+    // Insert new subscription
+    var subRes = await sb.from('subscriptions').insert({
+      user_id: currentUserId,
+      plan: selectedSubPlan,
+      status: 'active',
+      credits_per_month: plan.credits,
+      amount: plan.price,
+      activated_at: now.toISOString(),
+      next_renewal: nextRenewal.toISOString(),
+    });
+    if (subRes.error) { showToast('✗ Sub error: ' + subRes.error.message); return; }
+
+    // 2. Add credits via admin API
+    var credRes = await fetch('/api/admin-user', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ user_id: currentUserId, amount: plan.credits })
+    });
+    var credData = await credRes.json();
+    if (credData.error) { showToast('✗ Credits error: ' + credData.error); return; }
+
+    // 3. Log in credit_topups
+    await sb.from('credit_topups').insert({
+      user_id: currentUserId,
+      credits_added: plan.credits,
+      note: plan.name + ' Plan activated — ' + plan.credits + ' monthly credits'
+    });
+
+    // 4. Update display
+    currentBalance = credData.new_balance;
+    document.getElementById('res-credits').textContent = credData.new_balance;
+    subMap[currentUserId] = plan.name;
+    showToast('✓ ' + plan.name + ' Plan activated! ' + plan.credits + ' credits added. Balance: ' + credData.new_balance);
+    loadUserSubscription(currentUserId);
+    loadAllUsers();
+    loadUserTopups(currentUserId);
+  } catch(e) { showToast('✗ Error: ' + e.message); }
+}
+
+async function cancelSubscription() {
+  if (!currentSubId) { showToast('No active subscription to cancel'); return; }
+  if (!confirm('Cancel this user\'s subscription?\nTheir existing credits will NOT be removed.')) return;
+  showToast('Cancelling...');
+  var r = await sb.from('subscriptions').update({status:'cancelled',cancelled_at:new Date().toISOString()}).eq('id',currentSubId);
+  if (r.error) { showToast('✗ Error: ' + r.error.message); return; }
+  currentSubId = null;
+  delete subMap[currentUserId];
+  showToast('✓ Subscription cancelled');
+  loadUserSubscription(currentUserId);
+  loadAllUsers();
+}
+
+// Load subs for all users (for table display)
+async function loadAllSubscriptions() {
+  var r = await sb.from('subscriptions').select('user_id,plan').eq('status','active');
+  subMap = {};
+  (r.data || []).forEach(function(s){
+    var p = ADMIN_PLANS[s.plan];
+    subMap[s.user_id] = p ? p.name : s.plan;
+  });
 }
 
 function showToast(msg) {
