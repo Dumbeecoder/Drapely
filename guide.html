@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>How to Use Drapely</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -13,9 +14,9 @@
     .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
     .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
     .sidebar-brand span{color:#E91E63;}
-    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
-    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
+    .sidebar-nav{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:2px;}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:8px 12px 4px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
     .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
     .nav-item.active{color:#E91E63;}
     .sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
@@ -141,6 +142,7 @@
     <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
     <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
     <a class="mobile-nav-item" href="backgrounds.html" onclick="closeMobileNav()">🌄 Backgrounds</a>
+    <a class="mobile-nav-item" href="poster.html" onclick="closeMobileNav()">🎨 Poster Builder</a>
     <a class="mobile-nav-item active" href="guide.html" onclick="closeMobileNav()">📖 How to Use</a>
     <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
     <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
@@ -233,7 +235,7 @@
       <div class="step-card">
         <div class="step-num">5</div>
         <div class="step-title">Select image count & generate</div>
-        <div class="step-desc">Choose 1, 2 or 4 images. Each image = 1 credit (₹25). Click Generate and your photos will be ready in 30–60 seconds.</div>
+        <div class="step-desc">Choose 1, 2 or 4 images. Each image = 1 credit (₹50). Click Generate and your photos will be ready in 30–60 seconds.</div>
       </div>
       <div class="step-card">
         <div class="step-num">6</div>
@@ -276,7 +278,7 @@
     <div class="faq">
       <div class="faq-item" onclick="toggleFaq(this)">
         <div class="faq-q">How many credits does one photoshoot cost? <span class="faq-arrow">▼</span></div>
-        <div class="faq-a">1 image = 1 credit (₹25). You can generate 1, 2 or 4 images per photoshoot. So a 4-image shoot costs 4 credits (₹100).</div>
+        <div class="faq-a">1 image = 1 credit (₹50). You can generate 1, 2 or 4 images per photoshoot. So a 4-image shoot costs 4 credits (₹200).</div>
       </div>
       <div class="faq-item" onclick="toggleFaq(this)">
         <div class="faq-q">Can I use my own background? <span class="faq-arrow">▼</span></div>
@@ -294,7 +296,7 @@
 
     <div class="cta">
       <h3>Ready to generate your first photo?</h3>
-      <p>Takes less than 2 minutes. Starts at ₹25 per image.</p>
+      <p>Takes less than 2 minutes. Starts at ₹50 per image.</p>
       <a href="dashboard.html">Start Photoshoot →</a>
     </div>
 
@@ -325,7 +327,7 @@
       <div class="step-card">
         <div class="step-num">3</div>
         <div class="step-title">Choose video length</div>
-        <div class="step-desc">5 seconds = 2 credits (₹50). 10 seconds = 4 credits (₹100). Longer videos show more movement and are better for social media.</div>
+        <div class="step-desc">5 seconds = 2 credits (₹100). 10 seconds = 4 credits (₹200). Longer videos show more movement and are better for social media.</div>
       </div>
       <div class="step-card">
         <div class="step-num">4</div>
@@ -380,7 +382,7 @@
 
     <div class="cta">
       <h3>Create your first fashion video</h3>
-      <p>5 seconds for just 2 credits (₹50). Perfect for Instagram & WhatsApp.</p>
+      <p>5 seconds for just 2 credits (₹100). Perfect for Instagram & WhatsApp.</p>
       <a href="video.html">Make a Video →</a>
     </div>
 
@@ -401,7 +403,7 @@
       <div class="step-card">
         <div class="step-num">1</div>
         <div class="step-title">Upload multiple suit photos</div>
-        <div class="step-desc">Select up to 20 suit photos at once. Each photo = 1 credit. Make sure you have enough credits before starting. All photos should be clear with good lighting.</div>
+        <div class="step-desc">Select up to 20 suit photos at once. Each photo = 1 credit (₹50). Make sure you have enough credits before starting. All photos should be clear with good lighting.</div>
       </div>
       <div class="step-card">
         <div class="step-num">2</div>
