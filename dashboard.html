@@ -1317,12 +1317,11 @@ async function startGenerate() {
       progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
       var payload = JSON.stringify({
         garment_img: compressed,
-        model_index: (selectedModelIndex === 99 || selectedModelIndex === 98) ? 0 : selectedModelIndex,
+        model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
         custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
         custom_bg: window._customBgDataUrl || null,
         prompt: buildPhotoPrompt(),
-        garment_type: selectedGarmentType,
-        mannequin_mode: selectedModelIndex === 98
+        garment_type: selectedGarmentType
       });
       var response = await fetch('/api/generate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
