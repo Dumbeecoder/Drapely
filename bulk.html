@@ -10,9 +10,9 @@
     .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
     .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
     .sidebar-brand span{color:#E91E63;}
-    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
-    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
+    .sidebar-nav{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:2px;}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:8px 12px 4px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
     .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
     .nav-item.active{color:#E91E63;}
     .sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
@@ -104,6 +104,7 @@
     <a class="mobile-nav-item active" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
     <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
     <a class="mobile-nav-item" href="backgrounds.html" onclick="closeMobileNav()">🌄 Backgrounds</a>
+    <a class="mobile-nav-item" href="poster.html" onclick="closeMobileNav()">🎨 Poster Builder</a>
     <a class="mobile-nav-item" href="guide.html" onclick="closeMobileNav()">📖 How to Use</a>
     <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
     <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
@@ -126,6 +127,7 @@
     <a href="bulk.html" class="nav-item active">⚡ Bulk Studio</a>
     <a href="gallery.html" class="nav-item">🖼️ My gallery</a>
     <a href="backgrounds.html" class="nav-item">🌄 Backgrounds</a>
+    <a href="poster.html" class="nav-item">🎨 Poster Builder</a>
     <div class="nav-section-label">ACCOUNT</div>
     <a href="guide.html" class="nav-item">📖 How to Use</a>
     <a href="settings.html" class="nav-item">⚙️ Settings</a>
@@ -178,11 +180,7 @@
       <div class="setting-group">
         <div class="setting-label">GARMENT TYPE</div>
         <select class="setting-select" id="bulk-garment">
-          <option value="salwar">👗 Salwar Suit</option>
-          <option value="kurta">🧣 Kurti / Kurta</option>
-          <option value="palazzo">🩱 Palazzo Set</option>
-          <option value="anarkali">👸 Anarkali</option>
-          <option value="lehenga">🌸 Lehenga</option>
+          <option value="suit">👗 Salwar Suit</option>
           <option value="saree">🥻 Saree</option>
         </select>
       </div>
@@ -546,15 +544,9 @@ async function startBulkGenerate() {
   var pose = document.getElementById('bulk-pose').value;
   var garmentType = document.getElementById('bulk-garment').value;
   var logoPos = document.getElementById('bulk-logo-pos') ? document.getElementById('bulk-logo-pos').value : 'bottom-right';
-  var garmentDescMap = {
-    'salwar':   'Indian woman wearing a beautiful salwar suit with churidar and dupatta, full length',
-    'kurta':    'Indian woman wearing an elegant kurti with leggings and dupatta, full length',
-    'palazzo':  'Indian woman wearing a stylish palazzo set with wide leg pants and dupatta, full length',
-    'anarkali': 'Indian woman wearing a stunning anarkali suit with flared floor-length kameez and dupatta, full length',
-    'lehenga':  'Indian woman wearing a gorgeous lehenga choli with flared skirt and dupatta, full length',
-    'saree':    'Indian woman wearing an elegant saree with pallu draped gracefully over shoulder, full length',
-  };
-  var garmentDesc = garmentDescMap[garmentType] || garmentDescMap['salwar'];
+  var garmentDesc = garmentType === 'saree'
+    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
   var prompt = garmentDesc + ', ' + pose + ', ' + scene + ', professional Indian fashion photography, high quality';
 
   for (var i = 0; i < bulkQueue.length; i++) {
