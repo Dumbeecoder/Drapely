@@ -165,7 +165,7 @@
     
     @media(max-width:900px){.studio-grid{grid-template-columns:1fr !important;}.results-panel{display:none;}.results-panel.has-results{display:block !important;}.sidebar{display:none !important;}.main{margin-left:0 !important;padding-top:64px !important;}.mobile-header{display:flex !important;}.burger{display:flex !important;}}
     @media(max-width:500px){.content{padding:1rem}.models-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr;gap:10px}}
-    .garment-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 8px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff}
+    .garment-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff}
     .garment-card:hover{border-color:#E91E63;background:#fff0f5}
     .garment-card.selected{border:2px solid #E91E63;background:#fff0f5}
     .pose-card{border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:20px;transition:all 0.15s;}
@@ -307,18 +307,93 @@
           </div>
           <input type="file" id="suit-input" accept="image/*" style="display:none;" onchange="loadSuit(event)" />
 
-          <div style="font-size:10px;color:#999;margin-bottom:6px;margin-top:0.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;">GARMENT TYPE</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0.75rem;">
-            <div class="garment-card selected" id="garment-suit" onclick="selectGarment('suit',this)">
-              <div style="font-size:28px;margin-bottom:6px;">👗</div>
-              <div style="font-weight:500;font-size:13px;">Salwar Suit</div>
-              <div style="font-size:11px;color:#555;margin-top:2px;">Kurta, Anarkali, Palazzo</div>
+          <div style="font-size:10px;color:#999;margin-bottom:6px;margin-top:0.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;">GARMENT TYPE <span style="font-weight:300;color:#bbb;letter-spacing:0;">(pick closest match)</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:0.75rem;">
+
+            <div class="garment-card selected" id="garment-salwar" onclick="selectGarment('salwar',this)">
+              <div style="font-size:22px;margin-bottom:3px;">👗</div>
+              <div style="font-weight:600;font-size:11px;">Salwar Suit</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Churidar, straight cut</div>
             </div>
+
+            <div class="garment-card" id="garment-kurti" onclick="selectGarment('kurti',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🧣</div>
+              <div style="font-weight:600;font-size:11px;">Kurti / Kurta</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Short, long, printed</div>
+            </div>
+
+            <div class="garment-card" id="garment-anarkali" onclick="selectGarment('anarkali',this)">
+              <div style="font-size:22px;margin-bottom:3px;">👸</div>
+              <div style="font-weight:600;font-size:11px;">Anarkali</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Flared, floor length</div>
+            </div>
+
+            <div class="garment-card" id="garment-frock" onclick="selectGarment('frock',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🎀</div>
+              <div style="font-weight:600;font-size:11px;">Frock Suit</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Knee-length frock style</div>
+            </div>
+
+            <div class="garment-card" id="garment-palazzo" onclick="selectGarment('palazzo',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🩱</div>
+              <div style="font-weight:600;font-size:11px;">Palazzo Set</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Wide leg, flowy</div>
+            </div>
+
+            <div class="garment-card" id="garment-sharara" onclick="selectGarment('sharara',this)">
+              <div style="font-size:22px;margin-bottom:3px;">✨</div>
+              <div style="font-weight:600;font-size:11px;">Sharara Set</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Flared bottoms, festive</div>
+            </div>
+
+            <div class="garment-card" id="garment-lehenga" onclick="selectGarment('lehenga',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🌸</div>
+              <div style="font-weight:600;font-size:11px;">Lehenga</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Bridal, festive skirt</div>
+            </div>
+
+            <div class="garment-card" id="garment-indo-western" onclick="selectGarment('indo-western',this)">
+              <div style="font-size:22px;margin-bottom:3px;">💫</div>
+              <div style="font-weight:600;font-size:11px;">Indo-Western</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Fusion, cape, jacket</div>
+            </div>
+
             <div class="garment-card" id="garment-saree" onclick="selectGarment('saree',this)">
-              <div style="font-size:28px;margin-bottom:6px;">🥻</div>
-              <div style="font-weight:500;font-size:13px;">Saree</div>
-              <div style="font-size:11px;color:#555;margin-top:2px;">Silk, Chiffon, Cotton</div>
+              <div style="font-size:22px;margin-bottom:3px;">🥻</div>
+              <div style="font-weight:600;font-size:11px;">Saree</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Silk, chiffon, cotton</div>
             </div>
+
+            <div class="garment-card" id="garment-patiala" onclick="selectGarment('patiala',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🪷</div>
+              <div style="font-weight:600;font-size:11px;">Patiala Suit</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Patiala salwar, puffy</div>
+            </div>
+
+            <div class="garment-card" id="garment-dhoti" onclick="selectGarment('dhoti',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🌺</div>
+              <div style="font-weight:600;font-size:11px;">Dhoti Style</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Dhoti pants, drape</div>
+            </div>
+
+            <div class="garment-card" id="garment-coord" onclick="selectGarment('coord',this)">
+              <div style="font-size:22px;margin-bottom:3px;">👔</div>
+              <div style="font-weight:600;font-size:11px;">Co-ord Set</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Matching top & bottom</div>
+            </div>
+
+            <div class="garment-card" id="garment-pakistani" onclick="selectGarment('pakistani',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🪡</div>
+              <div style="font-weight:600;font-size:11px;">Pakistani Suit</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Straight cut, heavy embroidery</div>
+            </div>
+
+            <div class="garment-card" id="garment-georgette" onclick="selectGarment('georgette',this)">
+              <div style="font-size:22px;margin-bottom:3px;">🌟</div>
+              <div style="font-weight:600;font-size:11px;">Georgette Suit</div>
+              <div style="font-size:9px;color:#777;margin-top:1px;line-height:1.3;">Sheer, embroidered, party</div>
+            </div>
+
           </div>
 
           <div style="font-size:12px;color:#555;margin-bottom:5px;font-weight:600;letter-spacing:1px;font-size:10px;text-transform:uppercase;color:#999;">COLLECTION NAME <span style="font-weight:300;color:#aaa;">(optional)</span></div>
@@ -706,9 +781,23 @@ function buildPhotoPrompt() {
   }
 
   // Build garment-specific prompt
-  var garmentDesc = selectedGarmentType === 'saree'
-    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
-    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
+  var garmentDescMap = {
+    'salwar':     'Indian woman wearing a beautiful salwar suit with straight-cut churidar and dupatta draped over shoulder, full length traditional Indian outfit',
+    'kurti':      'Indian woman wearing a stylish printed long kurti with fitted leggings or pants, ethnic Indian top, full length, elegant casual ethnic wear',
+    'anarkali':   'Indian woman wearing a gorgeous flared Anarkali suit with long dupatta, floor-length heavily embroidered flowing ethnic gown style dress',
+    'frock':      'Indian woman wearing a knee-length frock-style Indian suit with embroidered yoke and flared skirt, with churidar leggings and dupatta, full outfit visible',
+    'palazzo':    'Indian woman wearing a palazzo set with wide flowy palazzo pants and matching embroidered kurta, trendy Indian ethnic co-ord set, full length',
+    'sharara':    'Indian woman wearing a festive sharara set with heavily flared sharara pants and short embroidered kurta with dupatta, full length ethnic festive wear',
+    'lehenga':    'Indian woman wearing a stunning bridal lehenga choli with heavily embroidered skirt and matching blouse with dupatta, festive Indian ethnic wear, full length',
+    'indo-western': 'Indian woman wearing a fusion Indo-Western outfit with a long cape or jacket layered over an ethnic dress or pants, modern Indian fashion, full length',
+    'saree':      'Indian woman wearing an elegant six-yard saree with pallu draped gracefully over the left shoulder, petticoat and matching blouse, full length traditional Indian drape',
+    'patiala':    'Indian woman wearing a Patiala suit with puffy gathered Patiala salwar and long kurta with dupatta, traditional Punjabi ethnic wear, full length',
+    'dhoti':      'Indian woman wearing a contemporary dhoti-style pants with a matching kurta or top, modern ethnic drape style, full length Indian fashion',
+    'coord':      'Indian woman wearing a matching ethnic co-ord set with a cropped or full top and coordinated printed or embroidered bottom, stylish Indian matching set, full length',
+    'pakistani':  'Indian woman wearing a heavy embroidered Pakistani-style straight-cut suit with a straight A-line kurta falling to calf length, heavy gold zari embroidery and cutwork border at hem and sleeves, slim cigarette-cut salwar with embroidery at ankle, heavily embroidered dupatta with scalloped border draped over head and shoulder, full length bridal ethnic wear',
+    'georgette':  'Indian woman wearing an elegant georgette embroidered suit with a sheer flowing georgette kurta heavily embroidered with sequins and zari work, matching embroidered bottom and georgette dupatta with border, full length party and wedding wear, sheer fabric with golden embroidery details',
+  };
+  var garmentDesc = garmentDescMap[selectedGarmentType] || garmentDescMap['salwar'];
 
   var parts = [garmentDesc, selectedPosePrompt || poseDesc];
   if (bgPrompt) parts.push(bgPrompt);
@@ -1306,7 +1395,7 @@ function showRealResults(images) {
 // LOGO FUNCTIONS
 // GARMENT TYPE
 var selectedDuration = '5';
-var selectedGarmentType = 'suit';
+var selectedGarmentType = 'salwar';
 
 function newShoot() {
   goStep(0);
