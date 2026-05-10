@@ -424,8 +424,8 @@ function applyFilters() {
     if (sortVal === 'credits-desc') return (creditsMap[b.id]||0) - (creditsMap[a.id]||0);
     if (sortVal === 'credits-asc') return (creditsMap[a.id]||0) - (creditsMap[b.id]||0);
     if (sortVal === 'photos-desc') return (photoMap[b.id]||0) - (photoMap[a.id]||0);
-    if (sortVal === 'joined-asc') return new Date(a.created_at) - new Date(b.created_at);
-    return new Date(b.created_at) - new Date(a.created_at);
+    if (sortVal === 'joined-asc') return parseDate(a.created_at) - parseDate(b.created_at);
+    return parseDate(b.created_at) - parseDate(a.created_at);
   });
 
   renderUsersTable(filtered);
@@ -450,7 +450,7 @@ function getUserInfo(user) {
   var phone = meta.phone || user.phone || '—';
   var store = meta.store_name || '';
   var bal = creditsMap[user.id] || 0;
-  var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'2-digit'});
+  var joined = formatDate(user.created_at, {day:'numeric',month:'short',year:'2-digit'});
   var photoCount = photoMap[user.id] || 0;
   return { name, initials, phone, store, bal, joined, photoCount };
 }
@@ -549,7 +549,7 @@ async function loadUserHistory(userId) {
       var icon = isVideo ? '🎬' : isBulk ? '⚡' : '📷';
       var credits = isVideo ? (item.image_count === 4 ? 4 : 2) : (item.image_count || 1);
       var title = item.collection_name || (isVideo ? 'AI Video' : 'AI Photo');
-      var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+      var date = formatDateTime(item.created_at);
       var row = document.createElement('div');
       row.className = 'user-history-row';
       row.innerHTML = '<div class="user-history-icon">' + icon + '</div><div class="user-history-info">' + title + ' · ' + date + '</div><div class="user-history-credits spent">-' + credits + ' cr</div>';
@@ -570,7 +570,7 @@ async function loadUserTopups(userId) {
     if (!items.length) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 12px;">No payments recorded yet</div>'; return; }
     list.innerHTML = '';
     items.forEach(function(t) {
-      var date = new Date((t.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+      var date = formatDate(t.created_at, {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
       var isDeduct = t.credits_added < 0;
       var row = document.createElement('div');
       row.className = 'topup-history-row';
@@ -658,13 +658,43 @@ function exportCSV() {
   var rows = [['Name','Email','Phone','Credits','Photos','Joined']];
   allUsers.forEach(function(user) {
     var info = getUserInfo(user);
-    rows.push([info.name, user.email||'', info.phone, info.bal, info.photoCount, new Date(user.created_at).toLocaleDateString('en-IN')]);
+    rows.push([info.name, user.email||'', info.phone, info.bal, info.photoCount, formatDate(user.created_at)]);
   });
   var csv = rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
   var blob = new Blob([csv], { type: 'text/csv' });
   var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'drapely-users-' + new Date().toISOString().slice(0,10) + '.csv'; a.click();
   showToast('✓ CSV exported');
+}
+
+function parseDate(str) {
+  if (!str) return new Date(NaN);
+  var s = str.toString().trim();
+  // Replace space separator with T
+  s = s.replace(' ', 'T');
+  // Normalize timezone: +00:00 or +0000 → Z
+  s = s.replace(/\+00:00$/, 'Z').replace(/\+0000$/, 'Z');
+  // Truncate microseconds to milliseconds (JS only supports 3 decimal places)
+  // e.g. 2026-05-10T12:34:56.123456Z → 2026-05-10T12:34:56.123Z
+  s = s.replace(/(\.[0-9]{3})[0-9]+(Z|[+-][0-9]{2}:?[0-9]{2}|$)/, function(m, ms, tz) {
+    return ms + (tz || 'Z');
+  });
+  // If still no timezone, assume UTC
+  if (!/Z|[+-][0-9]{2}:?[0-9]{2}$/.test(s)) s += 'Z';
+  var d = new Date(s);
+  return d;
+}
+
+function formatDate(str, opts) {
+  var d = parseDate(str);
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-IN', opts || {day:'numeric', month:'short', year:'numeric', timeZone:'Asia/Kolkata'});
+}
+
+function formatDateTime(str) {
+  var d = parseDate(str);
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata'});
 }
 
 function showToast(msg) {
