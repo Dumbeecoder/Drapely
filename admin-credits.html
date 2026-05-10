@@ -8,96 +8,163 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh;padding:2rem;max-width:1000px;margin:0 auto;}
-    .header{background:linear-gradient(135deg,#0a0a0a 0%,#1a0010 100%);border-radius:16px;padding:1.25rem 1.75rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border:1px solid rgba(233,30,99,0.2);box-shadow:0 4px 24px rgba(233,30,99,0.08);}
-    .badge{padding:5px 12px;background:#E91E63;color:#fff;border-radius:20px;font-size:11px;font-weight:500;}
-    .gate{background:#fff;border:1px solid rgba(233,30,99,0.2);border-radius:14px;padding:2rem;max-width:360px;margin:4rem auto;text-align:center;}
+    body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh;padding:1.25rem;max-width:1000px;margin:0 auto;}
+
+    /* HEADER */
+    .header{background:linear-gradient(135deg,#0a0a0a 0%,#1a0010 100%);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border:1px solid rgba(233,30,99,0.2);}
+    .header-brand{display:flex;align-items:center;gap:12px;}
+    .header-icon{width:36px;height:36px;background:#E91E63;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .header-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;color:#fff;letter-spacing:2px;}
+    .header-title span{color:#E91E63;}
+    .header-sub{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
+    .header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .badge{padding:4px 12px;background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;color:#E91E63;font-weight:500;}
+    #signout-btn{padding:5px 12px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;display:none;}
+
+    /* GATE */
+    .gate{background:#fff;border:1px solid rgba(233,30,99,0.2);border-radius:14px;padding:2rem 1.5rem;max-width:340px;margin:3rem auto;text-align:center;}
     .gate h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:6px;}
     .gate p{font-size:12px;color:#555;margin-bottom:1.25rem;}
     .gate input{width:100%;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;margin-bottom:10px;outline:none;}
     .gate input:focus{border-color:#E91E63;}
     .gate button{width:100%;padding:11px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;}
+
+    /* ADMIN BODY */
     .admin-body{display:none;}
-    .card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
+
+    /* STATS */
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem;}
+    .stat-box{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:0.875rem;text-align:center;}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#E91E63;}
+    .stat-lbl{font-size:10px;color:#555;margin-top:2px;line-height:1.4;}
+
+    /* CARD */
+    .card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:14px;padding:1.25rem;margin-bottom:1.25rem;}
     .card-title{font-size:15px;font-weight:500;margin-bottom:4px;}
     .card-sub{font-size:12px;color:#555;margin-bottom:1.25rem;}
-    .search-row{display:flex;gap:10px;flex-wrap:wrap;}
-    .search-input{flex:1;min-width:200px;padding:10px 14px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+
+    /* SEARCH */
+    .search-row{display:flex;gap:8px;}
+    .search-input{flex:1;min-width:0;padding:10px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
     .search-input:focus{border-color:#E91E63;}
-    .search-btn{padding:10px 22px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
-    .user-result{background:#f9f9f9;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:1.25rem;margin-top:1rem;display:none;}
+    .search-btn{padding:10px 18px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
+
+    /* USER RESULT */
+    .user-result{background:#f9f9f9;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:1.1rem;margin-top:1rem;display:none;}
     .user-result.show{display:block;}
-    .user-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap;}
-    .user-av{width:40px;height:40px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:1rem;}
+    .user-av{width:38px;height:38px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#fff;flex-shrink:0;margin-top:2px;}
     .user-name{font-size:14px;font-weight:500;}
-    .user-email{font-size:12px;color:#555;}
+    .user-email{font-size:12px;color:#555;word-break:break-all;}
     .user-meta{font-size:11px;color:#888;margin-top:2px;}
+    .copy-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .copy-btn{padding:4px 10px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:#555;}
+    .copy-btn:hover{background:#E91E63;color:#fff;border-color:#E91E63;}
+
+    /* CREDITS */
     .credits-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border:1px solid rgba(233,30,99,0.2);border-radius:8px;margin-bottom:1rem;}
     .credits-label{font-size:12px;color:#555;flex:1;}
     .credits-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#E91E63;}
-    .add-row{display:flex;gap:8px;}
-    .amount-input{flex:1;padding:9px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;text-align:center;}
-    .amount-input:focus{border-color:#E91E63;}
-    .add-btn{padding:9px 20px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
-    .add-btn:hover{background:#E91E63;}
-    .deduct-btn{padding:9px 20px;background:#fff;color:#dc2626;border:1px solid #dc2626;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
-    .deduct-btn:hover{background:#dc2626;color:#fff;}
+    .note-input{width:100%;padding:9px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;outline:none;}
+    .note-input:focus{border-color:#E91E63;}
     .quick-btns{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
     .quick-btn{padding:6px 12px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#E91E63;cursor:pointer;}
     .quick-btn:hover{background:#E91E63;color:#fff;}
-    .copy-btn{padding:4px 10px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:#555;}
-    .copy-btn:hover{background:#E91E63;color:#fff;border-color:#E91E63;}
-    .users-table{width:100%;border-collapse:collapse;}
-    .users-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(233,30,99,0.1);cursor:pointer;user-select:none;}
+    .add-row{display:flex;gap:8px;}
+    .amount-input{flex:1;min-width:0;padding:9px 12px;border:1px solid rgba(233,30,99,0.2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;text-align:center;}
+    .amount-input:focus{border-color:#E91E63;}
+    .add-btn{padding:9px 16px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
+    .add-btn:hover{background:#E91E63;}
+    .deduct-btn{padding:9px 14px;background:#fff;color:#dc2626;border:1px solid #dc2626;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
+    .deduct-btn:hover{background:#dc2626;color:#fff;}
+
+    /* USER HISTORY */
+    .user-history{margin-top:1rem;border-top:1px solid rgba(233,30,99,0.1);padding-top:1rem;}
+    .user-history-title{font-size:11px;font-weight:600;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+    .user-history-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(233,30,99,0.06);font-size:12px;}
+    .user-history-row:last-child{border-bottom:none;}
+    .user-history-icon{font-size:14px;width:22px;text-align:center;flex-shrink:0;}
+    .user-history-info{flex:1;color:#555;min-width:0;}
+    .user-history-credits{font-weight:500;white-space:nowrap;}
+    .user-history-credits.added{color:#16a34a;}
+    .user-history-credits.spent{color:#E91E63;}
+    .topup-history-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(233,30,99,0.06);font-size:12px;}
+    .topup-history-row:last-child{border-bottom:none;}
+
+    /* ALL USERS TABLE */
+    .filter-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
+    .filter-select{padding:7px 10px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;flex:1;min-width:130px;}
+    .filter-select:focus{border-color:#E91E63;}
+    .export-btn{padding:7px 14px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
+    .export-btn:hover{background:#E91E63;}
+
+    /* TABLE — scrollable on mobile */
+    .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;}
+    .users-table{width:100%;border-collapse:collapse;min-width:520px;}
+    .users-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;font-weight:600;padding:8px 10px;text-align:left;border-bottom:1px solid rgba(233,30,99,0.1);cursor:pointer;user-select:none;white-space:nowrap;}
     .users-table th:hover{color:#E91E63;}
-    .users-table th.sorted{color:#E91E63;}
-    .users-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(233,30,99,0.06);vertical-align:middle;}
+    .users-table td{padding:9px 10px;font-size:12px;border-bottom:1px solid rgba(233,30,99,0.06);vertical-align:middle;}
     .users-table tr:last-child td{border-bottom:none;}
     .users-table tr:hover td{background:#fafafa;}
     .bal-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:500;}
     .bal-high{background:#dcfce7;color:#16a34a;}
     .bal-mid{background:#fff7ed;color:#d97706;}
     .bal-low{background:#fee2e2;color:#dc2626;}
-    .edit-btn{padding:4px 12px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;font-size:11px;font-weight:500;color:#E91E63;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .edit-btn{padding:4px 10px;background:#fff0f5;border:1px solid rgba(233,30,99,0.3);border-radius:6px;font-size:11px;font-weight:500;color:#E91E63;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
     .edit-btn:hover{background:#E91E63;color:#fff;}
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;}
+
+    /* MOBILE CARDS for users list (replaces table on small screens) */
+    .user-cards{display:none;flex-direction:column;gap:8px;}
+    .user-card-item{background:#fff;border:1px solid rgba(233,30,99,0.12);border-radius:10px;padding:12px;cursor:pointer;transition:border-color 0.15s;}
+    .user-card-item:hover{border-color:#E91E63;}
+    .user-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+    .user-card-name{font-size:13px;font-weight:500;}
+    .user-card-store{font-size:10px;color:#888;margin-top:1px;}
+    .user-card-meta{display:flex;gap:10px;font-size:11px;color:#555;flex-wrap:wrap;}
+    .user-card-meta span{display:flex;align-items:center;gap:3px;}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#000;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;max-width:90vw;text-align:center;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem;}
-    .stat-box{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:1rem;text-align:center;}
-    .stat-num{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:#E91E63;}
-    .stat-lbl{font-size:11px;color:#555;margin-top:2px;}
-    .filter-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
-    .filter-select{padding:7px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;}
-    .filter-select:focus{border-color:#E91E63;}
-    .export-btn{padding:7px 16px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;margin-left:auto;}
-    .export-btn:hover{background:#E91E63;}
-    .user-history{margin-top:1rem;border-top:1px solid rgba(233,30,99,0.1);padding-top:1rem;}
-    .user-history-title{font-size:12px;font-weight:600;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
-    .user-history-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(233,30,99,0.06);font-size:12px;}
-    .user-history-row:last-child{border-bottom:none;}
-    .user-history-icon{font-size:14px;width:24px;text-align:center;}
-    .user-history-info{flex:1;color:#555;}
-    .user-history-credits{font-weight:500;white-space:nowrap;}
-    .user-history-credits.added{color:#16a34a;}
-    .user-history-credits.spent{color:#E91E63;}
-    .topup-history-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(233,30,99,0.06);font-size:12px;}
-    .topup-history-row:last-child{border-bottom:none;}
-    @media(max-width:600px){.stat-row{grid-template-columns:1fr 1fr;}.users-table th:nth-child(3),.users-table td:nth-child(3){display:none;}}
+
+    /* RESPONSIVE */
+    @media(max-width:640px){
+      body{padding:0.875rem;}
+      .header{padding:0.875rem 1rem;border-radius:12px;}
+      .header-title{font-size:16px;}
+      .stat-row{grid-template-columns:1fr 1fr;gap:8px;}
+      .stat-row .stat-box:last-child{grid-column:1/-1;}
+      .stat-num{font-size:22px;}
+      .card{padding:1rem;}
+      .add-row{flex-wrap:wrap;}
+      .add-row .amount-input{min-width:80px;}
+      /* Hide table, show cards */
+      .table-wrap{display:none;}
+      .user-cards{display:flex;}
+      .filter-row{gap:6px;}
+      .filter-select{font-size:11px;padding:6px 8px;}
+    }
+    @media(max-width:400px){
+      .stat-row{grid-template-columns:1fr;}
+      .stat-row .stat-box:last-child{grid-column:auto;}
+      .quick-btns{gap:4px;}
+      .quick-btn{padding:5px 10px;font-size:11px;}
+    }
   </style>
 </head>
 <body>
 
 <div class="header">
-  <div style="display:flex;align-items:center;gap:14px;">
-    <div style="width:38px;height:38px;background:#E91E63;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">👗</div>
+  <div class="header-brand">
+    <div class="header-icon">👗</div>
     <div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:2px;">DRAPE<span style="color:#E91E63;">LY</span></div>
-      <div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:1px;">Admin Dashboard</div>
+      <div class="header-title">DRAPE<span>LY</span></div>
+      <div class="header-sub">Admin Dashboard</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <div style="padding:5px 14px;background:rgba(233,30,99,0.15);border:1px solid rgba(233,30,99,0.3);border-radius:20px;font-size:11px;color:#E91E63;font-weight:500;">💳 Credits Manager</div>
-    <button id="signout-btn" onclick="adminSignOut()" style="display:none;padding:6px 14px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;">Sign out</button>
+  <div class="header-right">
+    <div class="badge">💳 Credits Manager</div>
+    <button id="signout-btn" onclick="adminSignOut()">Sign out</button>
   </div>
 </div>
 
@@ -113,7 +180,7 @@
   <!-- STATS -->
   <div class="stat-row">
     <div class="stat-box"><div class="stat-num" id="stat-users">—</div><div class="stat-lbl">Total Users</div></div>
-    <div class="stat-box"><div class="stat-num" id="stat-revenue">—</div><div class="stat-lbl">Est. Revenue (credits sold × ₹50)</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-revenue">—</div><div class="stat-lbl">Est. Revenue</div></div>
     <div class="stat-box"><div class="stat-num" id="stat-photos">—</div><div class="stat-lbl">Photos Generated</div></div>
   </div>
 
@@ -122,21 +189,21 @@
     <div class="card-title">Find User & Manage Credits</div>
     <div class="card-sub">Search by email or phone number</div>
     <div class="search-row">
-      <input class="search-input" id="search-input" type="text" placeholder="email@example.com or phone number" onkeydown="if(event.key==='Enter')searchUser()" />
+      <input class="search-input" id="search-input" type="text" placeholder="email or phone number" onkeydown="if(event.key==='Enter')searchUser()" />
       <button class="search-btn" onclick="searchUser()">Search</button>
     </div>
 
     <div class="user-result" id="user-result">
       <div class="user-row">
         <div class="user-av" id="res-av">?</div>
-        <div style="flex:1;">
+        <div style="flex:1;min-width:0;">
           <div class="user-name" id="res-name">—</div>
           <div class="user-email" id="res-email">—</div>
           <div class="user-meta" id="res-meta">—</div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="copy-btn" onclick="copyField('res-email')">📋 Copy Email</button>
-          <button class="copy-btn" id="copy-phone-btn" onclick="copyPhone()" style="display:none;">📋 Copy Phone</button>
+          <div class="copy-btns">
+            <button class="copy-btn" onclick="copyField('res-email')">📋 Email</button>
+            <button class="copy-btn" id="copy-phone-btn" onclick="copyPhone()" style="display:none;">📋 Phone</button>
+          </div>
         </div>
       </div>
 
@@ -146,8 +213,8 @@
         <div style="font-size:11px;color:#555;">credits</div>
       </div>
 
-      <div style="font-size:11px;color:#555;margin-bottom:4px;">Note (shown in user's credit history)</div>
-      <input class="amount-input" id="credit-note" type="text" placeholder="e.g. Payment received ₹500 via GPay" style="width:100%;margin-bottom:8px;text-align:left;padding:9px 12px;" />
+      <div style="font-size:11px;color:#555;margin-bottom:5px;">Note (shown in payment history)</div>
+      <input class="note-input" id="credit-note" type="text" placeholder="e.g. Payment received ₹500 via GPay" />
 
       <div class="quick-btns">
         <button class="quick-btn" onclick="setAmount(10)">+10</button>
@@ -158,20 +225,18 @@
       </div>
       <div class="add-row">
         <input class="amount-input" id="credit-amount" type="number" placeholder="Credits" min="1" max="1000" />
-        <button class="add-btn" onclick="addCredits()">+ Add Credits</button>
+        <button class="add-btn" onclick="addCredits()">+ Add</button>
         <button class="deduct-btn" onclick="deductCredits()">− Deduct</button>
       </div>
 
-      <!-- USER ACTIVITY HISTORY -->
       <div class="user-history" id="user-history-section" style="display:none;">
         <div class="user-history-title">Recent Activity</div>
         <div id="user-history-list"></div>
       </div>
 
-      <!-- TOPUP HISTORY -->
       <div class="user-history" id="user-topup-section" style="display:none;">
         <div class="user-history-title">Payment History</div>
-        <div id="user-topup-list" class="history-table" style="background:#fff;border:1px solid rgba(233,30,99,0.1);border-radius:8px;overflow:hidden;"></div>
+        <div id="user-topup-list" style="background:#fff;border:1px solid rgba(233,30,99,0.1);border-radius:8px;overflow:hidden;"></div>
       </div>
     </div>
   </div>
@@ -181,14 +246,14 @@
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px;">
       <div class="card-title">All Users</div>
     </div>
-    <div class="card-sub">Click any row to manage credits. Click column headers to sort.</div>
+    <div class="card-sub">Tap any row to manage credits.</div>
     <div class="filter-row">
       <select class="filter-select" id="filter-balance" onchange="applyFilters()">
         <option value="all">All balances</option>
-        <option value="zero">0 credits (follow up)</option>
-        <option value="low">Low (1–5 credits)</option>
-        <option value="mid">Mid (6–20 credits)</option>
-        <option value="high">High (20+ credits)</option>
+        <option value="zero">0 credits</option>
+        <option value="low">Low (1–5)</option>
+        <option value="mid">Mid (6–20)</option>
+        <option value="high">High (20+)</option>
       </select>
       <select class="filter-select" id="filter-sort" onchange="applyFilters()">
         <option value="joined-desc">Newest first</option>
@@ -197,30 +262,39 @@
         <option value="credits-asc">Least credits</option>
         <option value="photos-desc">Most active</option>
       </select>
-      <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="export-btn" onclick="exportCSV()">⬇ CSV</button>
     </div>
-    <table class="users-table">
-      <thead>
-        <tr>
-          <th>Name / Store</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th onclick="sortBy('credits')">Credits ↕</th>
-          <th onclick="sortBy('photos')">Photos ↕</th>
-          <th onclick="sortBy('joined')">Joined ↕</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="users-tbody">
-        <tr><td colspan="7" style="text-align:center;color:#555;padding:2rem;">Loading users...</td></tr>
-      </tbody>
-    </table>
+
+    <!-- Desktop table -->
+    <div class="table-wrap">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Name / Store</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th onclick="sortBy('credits')">Credits ↕</th>
+            <th onclick="sortBy('photos')">Photos ↕</th>
+            <th onclick="sortBy('joined')">Joined ↕</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="7" style="text-align:center;color:#555;padding:2rem;">Loading users...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="user-cards" id="user-cards"></div>
+
     <div id="users-count" style="font-size:12px;color:#555;margin-top:10px;text-align:right;"></div>
   </div>
 
 </div>
 
 <div class="toast" id="toast"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 var sb = window.supabase.createClient(
@@ -235,8 +309,6 @@ var currentPhone = '';
 var allUsers = [];
 var creditsMap = {};
 var photoMap = {};
-var sortField = 'joined';
-var sortDir = 'desc';
 
 function checkPass() {
   if (document.getElementById('admin-pass').value === ADMIN_PASS) {
@@ -256,10 +328,7 @@ function showAdmin() {
   loadAllUsers();
 }
 
-// Auto-login if session exists
-if (sessionStorage.getItem('drapely_admin') === '1') {
-  showAdmin();
-}
+if (sessionStorage.getItem('drapely_admin') === '1') showAdmin();
 
 function adminSignOut() {
   sessionStorage.removeItem('drapely_admin');
@@ -277,7 +346,10 @@ async function loadStats() {
 
 async function loadAllUsers() {
   var tbody = document.getElementById('users-tbody');
+  var cards = document.getElementById('user-cards');
   tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:1.5rem;">Loading...</td></tr>';
+  cards.innerHTML = '<div style="text-align:center;color:#555;padding:1.5rem;font-size:13px;">Loading...</div>';
+
   try {
     var res = await fetch('/api/admin-user?list=true');
     var data = await res.json();
@@ -289,15 +361,12 @@ async function loadAllUsers() {
       var crData = await cr.json();
       (crData.credits || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
     } catch(e) {
-      var cr = await sb.from('credits').select('*');
-      (cr.data || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
+      var cr2 = await sb.from('credits').select('*');
+      (cr2.data || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
     }
 
-    // Load topups to calculate total credits ever issued
     var topupsRes = await sb.from('credit_topups').select('credits_added');
     var totalTopups = (topupsRes.data || []).reduce(function(s,t){ return s + (t.credits_added||0); }, 0);
-    // Also count initial 3 credits per user
-    var totalIssued = totalTopups + (allUsers.length * 3);
     document.getElementById('stat-users').textContent = allUsers.length;
     document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
 
@@ -308,6 +377,7 @@ async function loadAllUsers() {
     applyFilters();
   } catch(e) {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:1.5rem;">Error: ' + e.message + '</td></tr>';
+    cards.innerHTML = '<div style="color:#dc2626;padding:1rem;font-size:13px;">Error: ' + e.message + '</div>';
   }
 }
 
@@ -329,10 +399,12 @@ function applyFilters() {
     if (sortVal === 'credits-asc') return (creditsMap[a.id]||0) - (creditsMap[b.id]||0);
     if (sortVal === 'photos-desc') return (photoMap[b.id]||0) - (photoMap[a.id]||0);
     if (sortVal === 'joined-asc') return new Date(a.created_at) - new Date(b.created_at);
-    return new Date(b.created_at) - new Date(a.created_at); // newest first default
+    return new Date(b.created_at) - new Date(a.created_at);
   });
 
   renderUsersTable(filtered);
+  renderUserCards(filtered);
+  document.getElementById('users-count').textContent = filtered.length + ' user' + (filtered.length !== 1 ? 's' : '');
 }
 
 function sortBy(field) {
@@ -343,46 +415,72 @@ function sortBy(field) {
   applyFilters();
 }
 
+function getUserInfo(user) {
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
+  var phone = meta.phone || user.phone || '—';
+  var store = meta.store_name || '';
+  var bal = creditsMap[user.id] || 0;
+  var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'2-digit'});
+  var photoCount = photoMap[user.id] || 0;
+  return { name, phone, store, bal, joined, photoCount };
+}
+
 function renderUsersTable(users) {
   var tbody = document.getElementById('users-tbody');
   tbody.innerHTML = '';
-  document.getElementById('users-count').textContent = users.length + ' user' + (users.length !== 1 ? 's' : '');
-
   if (!users.length) {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:2rem;">No users match filter</td></tr>';
     return;
   }
-
   users.forEach(function(user) {
-    var meta = user.user_metadata || {};
-    var fname = (meta.first_name || '').trim();
-    var lname = (meta.last_name || '').trim();
-    var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
-    var phone = meta.phone || user.phone || '—';
-    var store = meta.store_name || '';
-    var bal = creditsMap[user.id] || 0;
-    var balClass = bal >= 20 ? 'bal-high' : bal >= 5 ? 'bal-mid' : 'bal-low';
-    var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
-    var photoCount = photoMap[user.id] || 0;
-
+    var info = getUserInfo(user);
+    var balClass = info.bal >= 20 ? 'bal-high' : info.bal >= 5 ? 'bal-mid' : 'bal-low';
     var tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
-    tr.onclick = (function(id, em, nm, b, ph){ return function(){ selectUserById(id, em, nm, b, ph); }; })(user.id, user.email||'', name, bal, phone);
-
+    tr.onclick = (function(u, i){ return function(){ selectUserById(u.id, u.email||'', i.name, i.bal, i.phone); }; })(user, info);
     var btn = document.createElement('button');
     btn.className = 'edit-btn'; btn.textContent = '+ Credits';
-    btn.onclick = (function(id, em, nm, b, ph){ return function(e){ e.stopPropagation(); selectUserById(id, em, nm, b, ph); }; })(user.id, user.email||'', name, bal, phone);
-
+    btn.onclick = (function(u, i){ return function(e){ e.stopPropagation(); selectUserById(u.id, u.email||'', i.name, i.bal, i.phone); }; })(user, info);
     tr.innerHTML =
-      '<td><div style="font-size:13px;font-weight:500;">' + name + '</div>' + (store ? '<div style="font-size:10px;color:#888;">' + store + '</div>' : '') + '</td>' +
-      '<td style="font-size:12px;color:#555;">' + (user.email||'—') + '</td>' +
-      '<td style="font-size:12px;color:#555;">' + phone + '</td>' +
-      '<td><span class="bal-badge ' + balClass + '">' + bal + '</span></td>' +
-      '<td style="font-size:12px;color:#555;">' + photoCount + '</td>' +
-      '<td style="font-size:12px;color:#555;">' + joined + '</td>' +
+      '<td><div style="font-size:13px;font-weight:500;">' + info.name + '</div>' + (info.store ? '<div style="font-size:10px;color:#888;">' + info.store + '</div>' : '') + '</td>' +
+      '<td style="color:#555;font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (user.email||'—') + '</td>' +
+      '<td style="color:#555;">' + info.phone + '</td>' +
+      '<td><span class="bal-badge ' + balClass + '">' + info.bal + '</span></td>' +
+      '<td style="color:#555;">' + info.photoCount + '</td>' +
+      '<td style="color:#555;">' + info.joined + '</td>' +
       '<td></td>';
     tr.querySelector('td:last-child').appendChild(btn);
     tbody.appendChild(tr);
+  });
+}
+
+function renderUserCards(users) {
+  var cards = document.getElementById('user-cards');
+  cards.innerHTML = '';
+  if (!users.length) {
+    cards.innerHTML = '<div style="text-align:center;color:#555;padding:1.5rem;font-size:13px;">No users match filter</div>';
+    return;
+  }
+  users.forEach(function(user) {
+    var info = getUserInfo(user);
+    var balClass = info.bal >= 20 ? 'bal-high' : info.bal >= 5 ? 'bal-mid' : 'bal-low';
+    var card = document.createElement('div');
+    card.className = 'user-card-item';
+    card.onclick = (function(u, i){ return function(){ selectUserById(u.id, u.email||'', i.name, i.bal, i.phone); }; })(user, info);
+    card.innerHTML =
+      '<div class="user-card-top">' +
+        '<div><div class="user-card-name">' + info.name + '</div>' + (info.store ? '<div class="user-card-store">' + info.store + '</div>' : '') + '</div>' +
+        '<span class="bal-badge ' + balClass + '">' + info.bal + ' cr</span>' +
+      '</div>' +
+      '<div class="user-card-meta">' +
+        '<span>📧 ' + (user.email ? user.email.split('@')[0] + '@…' : '—') + '</span>' +
+        '<span>📸 ' + info.photoCount + ' photos</span>' +
+        '<span>📅 ' + info.joined + '</span>' +
+      '</div>';
+    cards.appendChild(card);
   });
 }
 
@@ -393,18 +491,11 @@ function selectUserById(userId, email, name, balance, phone) {
   document.getElementById('res-av').textContent = (name || email || '?').slice(0,2).toUpperCase();
   document.getElementById('res-name').textContent = name || email || userId.substring(0,16);
   document.getElementById('res-email').textContent = email || '—';
-  document.getElementById('res-meta').textContent = '☎️ ' + (phone || '—') + ' · ID: ' + userId.substring(0,12) + '...';
+  document.getElementById('res-meta').textContent = '☎️ ' + (phone || '—') + ' · ID: ' + userId.substring(0,12) + '…';
   document.getElementById('res-credits').textContent = balance;
   document.getElementById('user-result').classList.add('show');
-
-  // Show copy phone button if phone exists
-  var copyPhoneBtn = document.getElementById('copy-phone-btn');
-  if (phone && phone !== '—') {
-    copyPhoneBtn.style.display = 'inline-block';
-  } else {
-    copyPhoneBtn.style.display = 'none';
-  }
-
+  var cpb = document.getElementById('copy-phone-btn');
+  cpb.style.display = (phone && phone !== '—') ? 'inline-block' : 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   loadUserHistory(userId);
   loadUserTopups(userId);
@@ -415,18 +506,8 @@ async function loadUserHistory(userId) {
   var list = document.getElementById('user-history-list');
   list.innerHTML = '<div style="font-size:12px;color:#555;padding:8px 0;">Loading...</div>';
   section.style.display = 'block';
-
-  var res = await sb.from('photoshoots')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(5);
-
-  if (!res.data || res.data.length === 0) {
-    list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 0;">No activity yet</div>';
-    return;
-  }
-
+  var res = await sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(5);
+  if (!res.data || !res.data.length) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 0;">No activity yet</div>'; return; }
   list.innerHTML = '';
   res.data.forEach(function(item) {
     var isVideo = item.media_type === 'video' || item.suit_type === 'Video';
@@ -434,13 +515,10 @@ async function loadUserHistory(userId) {
     var icon = isVideo ? '🎬' : isBulk ? '⚡' : '📷';
     var credits = isVideo ? (item.image_count === 4 ? 4 : 2) : (item.image_count || 1);
     var title = item.collection_name || (isVideo ? 'AI Video' : 'AI Photo');
-    var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z'))
-      .toLocaleDateString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+    var date = new Date((item.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
     var row = document.createElement('div');
     row.className = 'user-history-row';
-    row.innerHTML = '<div class="user-history-icon">' + icon + '</div>' +
-      '<div class="user-history-info">' + title + ' · ' + date + '</div>' +
-      '<div class="user-history-credits spent">-' + credits + ' cr</div>';
+    row.innerHTML = '<div class="user-history-icon">' + icon + '</div><div class="user-history-info">' + title + ' · ' + date + '</div><div class="user-history-credits spent">-' + credits + ' cr</div>';
     list.appendChild(row);
   });
 }
@@ -450,26 +528,15 @@ async function loadUserTopups(userId) {
   var list = document.getElementById('user-topup-list');
   section.style.display = 'block';
   list.innerHTML = '<div style="font-size:12px;color:#555;padding:8px 12px;">Loading...</div>';
-
-  var res = await sb.from('credit_topups')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (!res.data || res.data.length === 0) {
-    list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 12px;">No payments recorded yet</div>';
-    return;
-  }
-
+  var res = await sb.from('credit_topups').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+  if (!res.data || !res.data.length) { list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 12px;">No payments recorded yet</div>'; return; }
   list.innerHTML = '';
   res.data.forEach(function(t) {
-    var date = new Date((t.created_at||'').replace(' ','T').replace(/Z?$/,'Z'))
-      .toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+    var date = new Date((t.created_at||'').replace(' ','T').replace(/Z?$/,'Z')).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
+    var isDeduct = t.credits_added < 0;
     var row = document.createElement('div');
     row.className = 'topup-history-row';
-    row.innerHTML = '<div style="font-size:14px;">💰</div>' +
-      '<div style="flex:1;font-size:12px;color:#555;">' + (t.note || 'Credits added') + '<br><span style="font-size:10px;color:#aaa;">' + date + '</span></div>' +
-      '<div style="font-size:13px;font-weight:500;color:#16a34a;">+' + t.credits_added + ' credits</div>';
+    row.innerHTML = '<div style="font-size:14px;">' + (isDeduct ? '🔻' : '💰') + '</div><div style="flex:1;font-size:12px;color:#555;min-width:0;">' + (t.note || 'Credits added') + '<br><span style="font-size:10px;color:#aaa;">' + date + '</span></div><div style="font-size:13px;font-weight:500;color:' + (isDeduct ? '#dc2626' : '#16a34a') + ';">' + (isDeduct ? '' : '+') + t.credits_added + ' cr</div>';
     list.appendChild(row);
   });
 }
@@ -477,7 +544,7 @@ async function loadUserTopups(userId) {
 async function searchUser() {
   var query = document.getElementById('search-input').value.trim();
   if (!query) { showToast('Enter an email or phone number'); return; }
-  showToast('Searching...');
+  showToast('Searching…');
   var isPhone = /^[+\d\s\-()]{7,}$/.test(query) && !query.includes('@');
   var url = isPhone ? '/api/admin-user?phone=' + encodeURIComponent(query) : '/api/admin-user?email=' + encodeURIComponent(query);
   var res = await fetch(url);
@@ -490,7 +557,6 @@ async function searchUser() {
   var email = user.email || query;
   var displayName = (fname + ' ' + lname).trim() || email.split('@')[0];
   var phone = meta.phone || user.phone || '—';
-  var joined = new Date(user.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   var credRow = await sb.from('credits').select('balance').eq('user_id', user.id).single();
   var balance = credRow.data ? credRow.data.balance : 0;
   selectUserById(user.id, email, displayName, balance, phone);
@@ -501,9 +567,8 @@ function setAmount(n) { document.getElementById('credit-amount').value = n; }
 
 function copyField(id) {
   var text = document.getElementById(id).textContent;
-  navigator.clipboard.writeText(text).then(function(){ showToast('✓ Copied: ' + text); });
+  navigator.clipboard.writeText(text).then(function(){ showToast('✓ Copied'); });
 }
-
 function copyPhone() {
   navigator.clipboard.writeText(currentPhone).then(function(){ showToast('✓ Copied: ' + currentPhone); });
 }
@@ -513,27 +578,17 @@ async function addCredits() {
   var amount = parseInt(document.getElementById('credit-amount').value) || 0;
   if (amount <= 0) { showToast('Enter a valid amount'); return; }
   var note = (document.getElementById('credit-note').value || '').trim() || 'Added by admin';
-  showToast('Adding credits...');
+  showToast('Adding credits…');
   try {
-    var res = await fetch('/api/admin-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: currentUserId, amount: amount })
-    });
+    var res = await fetch('/api/admin-user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUserId, amount: amount }) });
     var data = await res.json();
     if (!res.ok || data.error) { showToast('✗ Error: ' + (data.error || 'Failed')); return; }
     currentBalance = data.new_balance;
     document.getElementById('res-credits').textContent = data.new_balance;
     document.getElementById('credit-amount').value = '';
     document.getElementById('credit-note').value = '';
-    // Log topup
     var topupRes = await sb.from('credit_topups').insert({ user_id: currentUserId, credits_added: amount, note: note });
-    if (topupRes.error) {
-      console.error('Topup log failed:', topupRes.error.message);
-      showToast('✓ Added credits but history log failed: ' + topupRes.error.message);
-    } else {
-      showToast('✓ Added ' + amount + ' credits! New balance: ' + data.new_balance);
-    }
+    showToast(topupRes.error ? '✓ Added but log failed' : '✓ Added ' + amount + ' credits! Balance: ' + data.new_balance);
     loadAllUsers();
     loadUserTopups(currentUserId);
   } catch(e) { showToast('✗ Error: ' + e.message); }
@@ -544,43 +599,32 @@ async function deductCredits() {
   var amount = parseInt(document.getElementById('credit-amount').value) || 0;
   if (amount <= 0) { showToast('Enter amount to deduct'); return; }
   if (!confirm('Deduct ' + amount + ' credits from this user?')) return;
-  showToast('Deducting credits...');
+  showToast('Deducting…');
   try {
-    // Deduct by adding negative
     var newBal = Math.max(0, currentBalance - amount);
     var res = await sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', currentUserId);
     if (res.error) { showToast('✗ Error: ' + res.error.message); return; }
     currentBalance = newBal;
     document.getElementById('res-credits').textContent = newBal;
     document.getElementById('credit-amount').value = '';
-    // Log as negative topup
     var note = (document.getElementById('credit-note').value || '').trim() || 'Deducted by admin';
     await sb.from('credit_topups').insert({ user_id: currentUserId, credits_added: -amount, note: note });
-    showToast('✓ Deducted ' + amount + ' credits. New balance: ' + newBal);
+    showToast('✓ Deducted ' + amount + ' credits. Balance: ' + newBal);
     loadAllUsers();
     loadUserTopups(currentUserId);
   } catch(e) { showToast('✗ Error: ' + e.message); }
 }
 
 function exportCSV() {
-  var rows = [['Name', 'Email', 'Phone', 'Credits', 'Photos', 'Joined']];
+  var rows = [['Name','Email','Phone','Credits','Photos','Joined']];
   allUsers.forEach(function(user) {
-    var meta = user.user_metadata || {};
-    var fname = (meta.first_name || '').trim();
-    var lname = (meta.last_name || '').trim();
-    var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
-    var phone = meta.phone || user.phone || '';
-    var bal = creditsMap[user.id] || 0;
-    var photos = photoMap[user.id] || 0;
-    var joined = new Date(user.created_at).toLocaleDateString('en-IN');
-    rows.push([name, user.email||'', phone, bal, photos, joined]);
+    var info = getUserInfo(user);
+    rows.push([info.name, user.email||'', info.phone, info.bal, info.photoCount, new Date(user.created_at).toLocaleDateString('en-IN')]);
   });
   var csv = rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
   var blob = new Blob([csv], { type: 'text/csv' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'drapely-users-' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'drapely-users-' + new Date().toISOString().slice(0,10) + '.csv'; a.click();
   showToast('✓ CSV exported');
 }
 
