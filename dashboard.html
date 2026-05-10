@@ -10,9 +10,9 @@
     .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
     .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
     .sidebar-brand span{color:#E91E63;}
-    .sidebar-nav{flex:1;padding:1.25rem 0.75rem;display:flex;flex-direction:column;gap:4px;}
-    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 4px;font-weight:500;}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
+    .sidebar-nav{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:2px;}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:8px 12px 4px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
     .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
     .nav-item.active{color:#E91E63;}
     .sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
@@ -216,6 +216,7 @@
     <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
     <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
     <a class="mobile-nav-item" href="backgrounds.html" onclick="closeMobileNav()">🌄 Backgrounds</a>
+    <a class="mobile-nav-item" href="poster.html" onclick="closeMobileNav()">🎨 Poster Builder</a>
     <a class="mobile-nav-item" href="guide.html" onclick="closeMobileNav()">📖 How to Use</a>
     <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
     <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
@@ -238,6 +239,7 @@
     <a href="bulk.html" class="nav-item">⚡ Bulk Studio</a>
     <a href="gallery.html" class="nav-item">🖼️ My gallery</a>
     <a href="backgrounds.html" class="nav-item">🌄 Backgrounds</a>
+    <a href="poster.html" class="nav-item">🎨 Poster Builder</a>
     <div class="nav-section-label">ACCOUNT</div>
     <a href="guide.html" class="nav-item">📖 How to Use</a>
     <a href="settings.html" class="nav-item">⚙️ Settings</a>
@@ -304,41 +306,15 @@
 
           <div style="font-size:10px;color:#999;margin-bottom:6px;margin-top:0.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;">GARMENT TYPE</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0.75rem;">
-            <div class="garment-card selected" id="garment-salwar" onclick="selectGarment('salwar',this)">
-              <div style="font-size:26px;margin-bottom:6px;">👗</div>
-              <div style="font-weight:600;font-size:13px;">Salwar Suit</div>
-              <div style="font-size:11px;color:#E91E63;margin-top:2px;font-weight:500;">Churidar · Patiala</div>
-              <div style="font-size:10px;color:#777;margin-top:4px;line-height:1.4;">Full suit with fitted bottom & dupatta</div>
-            </div>
-            <div class="garment-card" id="garment-kurta" onclick="selectGarment('kurta',this)">
-              <div style="font-size:26px;margin-bottom:6px;">🧣</div>
-              <div style="font-weight:600;font-size:13px;">Kurti / Kurta</div>
-              <div style="font-size:11px;color:#E91E63;margin-top:2px;font-weight:500;">Short · Long · A-line</div>
-              <div style="font-size:10px;color:#777;margin-top:4px;line-height:1.4;">Top with leggings or pants & dupatta</div>
-            </div>
-            <div class="garment-card" id="garment-palazzo" onclick="selectGarment('palazzo',this)">
-              <div style="font-size:26px;margin-bottom:6px;">🩱</div>
-              <div style="font-weight:600;font-size:13px;">Palazzo Set</div>
-              <div style="font-size:11px;color:#E91E63;margin-top:2px;font-weight:500;">Wide leg · Flowy</div>
-              <div style="font-size:10px;color:#777;margin-top:4px;line-height:1.4;">Kurta with wide palazzo pants & dupatta</div>
-            </div>
-            <div class="garment-card" id="garment-anarkali" onclick="selectGarment('anarkali',this)">
-              <div style="font-size:26px;margin-bottom:6px;">👸</div>
-              <div style="font-weight:600;font-size:13px;">Anarkali</div>
-              <div style="font-size:11px;color:#E91E63;margin-top:2px;font-weight:500;">Flared · Floor-length</div>
-              <div style="font-size:10px;color:#777;margin-top:4px;line-height:1.4;">Long flared gown-style kameez & dupatta</div>
-            </div>
-            <div class="garment-card" id="garment-lehenga" onclick="selectGarment('lehenga',this)">
-              <div style="font-size:26px;margin-bottom:6px;">🌸</div>
-              <div style="font-weight:600;font-size:13px;">Lehenga</div>
-              <div style="font-size:11px;color:#E91E63;margin-top:2px;font-weight:500;">Choli · Ghagra</div>
-              <div style="font-size:10px;color:#777;margin-top:4px;line-height:1.4;">Flared skirt with crop top & dupatta</div>
+            <div class="garment-card selected" id="garment-suit" onclick="selectGarment('suit',this)">
+              <div style="font-size:28px;margin-bottom:6px;">👗</div>
+              <div style="font-weight:500;font-size:13px;">Salwar Suit</div>
+              <div style="font-size:11px;color:#555;margin-top:2px;">Kurta, Anarkali, Palazzo</div>
             </div>
             <div class="garment-card" id="garment-saree" onclick="selectGarment('saree',this)">
-              <div style="font-size:26px;margin-bottom:6px;">🥻</div>
-              <div style="font-weight:600;font-size:13px;">Saree</div>
-              <div style="font-size:11px;color:#E91E63;margin-top:2px;font-weight:500;">Silk · Chiffon · Cotton</div>
-              <div style="font-size:10px;color:#777;margin-top:4px;line-height:1.4;">Draped with pallu over shoulder & blouse</div>
+              <div style="font-size:28px;margin-bottom:6px;">🥻</div>
+              <div style="font-weight:500;font-size:13px;">Saree</div>
+              <div style="font-size:11px;color:#555;margin-top:2px;">Silk, Chiffon, Cotton</div>
             </div>
           </div>
 
@@ -727,16 +703,9 @@ function buildPhotoPrompt() {
   }
 
   // Build garment-specific prompt
-  var garmentDescMap = {
-    'salwar':   'Indian woman wearing a beautiful salwar suit with churidar and dupatta, full length',
-    'kurta':    'Indian woman wearing an elegant kurti with leggings and dupatta, full length',
-    'palazzo':  'Indian woman wearing a stylish palazzo set with wide leg pants and dupatta, full length',
-    'anarkali': 'Indian woman wearing a stunning anarkali suit with flared floor-length kameez and dupatta, full length',
-    'lehenga':  'Indian woman wearing a gorgeous lehenga choli with flared skirt and dupatta, full length',
-    'saree':    'Indian woman wearing an elegant saree with pallu draped gracefully over shoulder, full length',
-    'suit':     'Indian woman wearing a beautiful salwar suit with dupatta, full length',
-  };
-  var garmentDesc = garmentDescMap[selectedGarmentType] || garmentDescMap['suit'];
+  var garmentDesc = selectedGarmentType === 'saree'
+    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
+    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
 
   var parts = [garmentDesc, selectedPosePrompt || poseDesc];
   if (bgPrompt) parts.push(bgPrompt);
@@ -1334,7 +1303,7 @@ function showRealResults(images) {
 // LOGO FUNCTIONS
 // GARMENT TYPE
 var selectedDuration = '5';
-var selectedGarmentType = 'salwar';
+var selectedGarmentType = 'suit';
 
 function newShoot() {
   goStep(0);
