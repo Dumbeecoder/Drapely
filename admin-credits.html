@@ -340,8 +340,17 @@ function adminSignOut() {
 }
 
 async function loadStats() {
-  var photos = await sb.from('photoshoots').select('id', { count: 'exact', head: true });
-  document.getElementById('stat-photos').textContent = photos.count || 0;
+  // Load all 3 stats independently so one failure doesn't block others
+  try {
+    var photos = await sb.from('photoshoots').select('id', { count: 'exact', head: true });
+    document.getElementById('stat-photos').textContent = (photos.count || 0).toLocaleString('en-IN');
+  } catch(e) { document.getElementById('stat-photos').textContent = '0'; }
+
+  try {
+    var topupsRes = await sb.from('credit_topups').select('credits_added');
+    var totalTopups = (topupsRes.data || []).reduce(function(s,t){ return s + (Math.max(0, t.credits_added||0)); }, 0);
+    document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
+  } catch(e) { document.getElementById('stat-revenue').textContent = '₹0'; }
 }
 
 async function loadAllUsers() {
@@ -365,10 +374,9 @@ async function loadAllUsers() {
       (cr2.data || []).forEach(function(c){ creditsMap[c.user_id] = c.balance || 0; });
     }
 
-    var topupsRes = await sb.from('credit_topups').select('credits_added');
-    var totalTopups = (topupsRes.data || []).reduce(function(s,t){ return s + (t.credits_added||0); }, 0);
     document.getElementById('stat-users').textContent = allUsers.length;
-    document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
+    // Re-run stats in case they failed on first load
+    loadStats();
 
     var ph = await sb.from('photoshoots').select('user_id');
     photoMap = {};
