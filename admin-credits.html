@@ -33,7 +33,7 @@
     .admin-body{display:none;}
 
     /* STATS */
-    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem;}
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem;}
     .stat-box{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:10px;padding:0.875rem;text-align:center;}
     .stat-num{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#E91E63;}
     .stat-lbl{font-size:10px;color:#555;margin-top:2px;line-height:1.4;}
@@ -132,9 +132,9 @@
       body{padding:0.875rem;}
       .header{padding:0.875rem 1rem;border-radius:12px;}
       .header-title{font-size:16px;}
-      .stat-row{grid-template-columns:1fr 1fr;gap:8px;}
-      .stat-row .stat-box:last-child{grid-column:1/-1;}
-      .stat-num{font-size:22px;}
+      .stat-row{grid-template-columns:1fr 1fr 1fr;gap:6px;}
+      
+      .stat-num{font-size:20px;}
       .card{padding:1rem;}
       .add-row{flex-wrap:wrap;}
       .add-row .amount-input{min-width:80px;}
@@ -145,10 +145,10 @@
       .filter-select{font-size:11px;padding:6px 8px;}
     }
     @media(max-width:400px){
-      .stat-row{grid-template-columns:1fr;}
-      .stat-row .stat-box:last-child{grid-column:auto;}
+      .stat-num{font-size:18px;}
+      .stat-lbl{font-size:9px;}
       .quick-btns{gap:4px;}
-      .quick-btn{padding:5px 10px;font-size:11px;}
+      .quick-btn{padding:5px 8px;font-size:11px;}
     }
   </style>
 </head>
@@ -340,15 +340,25 @@ function adminSignOut() {
 }
 
 async function loadStats() {
-  // Load all 3 stats independently so one failure doesn't block others
+  // Photos generated
   try {
-    var photos = await sb.from('photoshoots').select('id', { count: 'exact', head: true });
-    document.getElementById('stat-photos').textContent = (photos.count || 0).toLocaleString('en-IN');
-  } catch(e) { document.getElementById('stat-photos').textContent = '0'; }
+    var photos = await sb.from('photoshoots').select('*', { count: 'exact', head: true });
+    var photoCount = photos.count !== null ? photos.count : (photos.data ? photos.data.length : 0);
+    document.getElementById('stat-photos').textContent = photoCount.toLocaleString('en-IN');
+  } catch(e) {
+    try {
+      var ph2 = await sb.from('photoshoots').select('id');
+      document.getElementById('stat-photos').textContent = (ph2.data || []).length;
+    } catch(e2) { document.getElementById('stat-photos').textContent = '0'; }
+  }
 
+  // Revenue from topups
   try {
     var topupsRes = await sb.from('credit_topups').select('credits_added');
-    var totalTopups = (topupsRes.data || []).reduce(function(s,t){ return s + (Math.max(0, t.credits_added||0)); }, 0);
+    if (topupsRes.error) throw new Error(topupsRes.error.message);
+    var totalTopups = (topupsRes.data || []).reduce(function(s,t){
+      return s + (t.credits_added > 0 ? t.credits_added : 0);
+    }, 0);
     document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
   } catch(e) { document.getElementById('stat-revenue').textContent = '₹0'; }
 }
@@ -428,12 +438,13 @@ function getUserInfo(user) {
   var fname = (meta.first_name || '').trim();
   var lname = (meta.last_name || '').trim();
   var name = (fname + ' ' + lname).trim() || (user.email || '').split('@')[0];
+  var initials = fname && lname ? (fname[0] + lname[0]).toUpperCase() : (fname || name).slice(0,1).toUpperCase();
   var phone = meta.phone || user.phone || '—';
   var store = meta.store_name || '';
   var bal = creditsMap[user.id] || 0;
   var joined = new Date(user.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'2-digit'});
   var photoCount = photoMap[user.id] || 0;
-  return { name, phone, store, bal, joined, photoCount };
+  return { name, initials, phone, store, bal, joined, photoCount };
 }
 
 function renderUsersTable(users) {
@@ -496,7 +507,11 @@ function selectUserById(userId, email, name, balance, phone) {
   currentUserId = userId;
   currentBalance = balance;
   currentPhone = phone || '';
-  document.getElementById('res-av').textContent = (name || email || '?').slice(0,2).toUpperCase();
+  var nameParts = (name || '').trim().split(' ');
+  var initials = nameParts.length >= 2 && nameParts[0] && nameParts[1]
+    ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+    : (name || email || '?').slice(0,1).toUpperCase();
+  document.getElementById('res-av').textContent = initials;
   document.getElementById('res-name').textContent = name || email || userId.substring(0,16);
   document.getElementById('res-email').textContent = email || '—';
   document.getElementById('res-meta').textContent = '☎️ ' + (phone || '—') + ' · ID: ' + userId.substring(0,12) + '…';
