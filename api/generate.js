@@ -20,10 +20,19 @@ export default async function handler(req, res) {
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png',
   ];
 
-  // Declare isSaree early so it's available everywhere
+  // ── MANNEQUIN IMAGES ──
+  // Upload these 2 mannequin images to your Supabase storage bucket "models" folder
+  // and update the URLs below. Use a plain white dress form mannequin photo.
+  // Recommended: full-body front-facing white mannequin on white/grey background
+  const mannequinModels = [
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/mannequin_front.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/mannequin_side.jpg',
+  ];
+
   const isSaree = garment_type === 'saree';
 
   try {
+    // Upload garment to Imgur
     const base64Data = garment_img.replace(/^data:image\/\w+;base64,/, '');
     const imgurRes = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
@@ -34,43 +43,76 @@ export default async function handler(req, res) {
     if (!imgurData.success) return res.status(500).json({ error: 'Image upload failed' });
     const garmentUrl = imgurData.data.link;
 
-    // Handle mannequin (index 98 or 6) — use actual mannequin model image
-    if (modelIdx === 98 || modelIdx === 6) {
-      const mannequinImg = 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/mannequin.jpg';
+    // ── MANNEQUIN MODE (index 98) ──
+    if (modelIdx === 98) {
       const mannequinDescMap = {
-        'salwar':   'salwar suit with churidar on mannequin',
-        'kurta':    'kurti with leggings on mannequin',
-        'palazzo':  'palazzo set with wide leg pants on mannequin',
-        'anarkali': 'anarkali suit flared floor-length on mannequin',
-        'lehenga':  'lehenga choli with flared skirt on mannequin',
-        'saree':    'elegant saree on mannequin',
-        'suit':     'salwar suit on mannequin',
+        'salwar':       'salwar suit with churidar on dress form mannequin, standing front facing, full length',
+        'kurti':        'kurti with leggings on dress form mannequin, standing front facing, full length',
+        'anarkali':     'anarkali flared floor-length suit on dress form mannequin, standing front facing, full length',
+        'frock':        'frock style Indian suit on dress form mannequin, standing front facing, full length',
+        'palazzo':      'palazzo set with wide leg pants on dress form mannequin, standing front facing, full length',
+        'sharara':      'sharara set with flared bottoms on dress form mannequin, standing front facing, full length',
+        'lehenga':      'lehenga choli with flared skirt on dress form mannequin, standing front facing, full length',
+        'indo-western': 'indo-western fusion outfit on dress form mannequin, standing front facing, full length',
+        'saree':        'saree draped elegantly on dress form mannequin, standing front facing, full length',
+        'patiala':      'patiala suit with puffy salwar on dress form mannequin, standing front facing, full length',
+        'dhoti':        'dhoti style pants with kurta on dress form mannequin, standing front facing, full length',
+        'coord':        'matching co-ord set on dress form mannequin, standing front facing, full length',
+        'pakistani':    'heavy embroidered Pakistani straight suit on dress form mannequin, standing front facing, full length',
+        'georgette':    'georgette embroidered suit on dress form mannequin, standing front facing, full length',
+        'suit':         'salwar suit on dress form mannequin, standing front facing, full length',
       };
+
       const garmentDesc = mannequinDescMap[garment_type] || mannequinDescMap['suit'];
-      const scenePrompt = prompt || 'clean white studio background, soft studio lighting';
-      const mannequinPrompt = garmentDesc + ', ' + scenePrompt + ', professional fashion photography, full length, high quality';
+
+      // Extract scene from prompt (background part) — everything after first 2 parts
+      const promptParts = (prompt || '').split(',');
+      const scenePart = promptParts.slice(2).join(',').trim() ||
+        'clean white studio background, soft professional studio lighting, high fashion product photography';
+
+      const mannequinPrompt = [
+        garmentDesc,
+        scenePart,
+        'professional product fashion photography, 4K high quality, sharp fabric details, full outfit visible'
+      ].join(', ');
+
+      console.log('Mannequin prompt:', mannequinPrompt);
+
       const mannequinBody = {
         model_name: 'product-to-model',
         inputs: {
           product_image: garmentUrl,
-          model_image: mannequinImg,
+          model_image: mannequinModels[0],
           resolution: '1k',
           generation_mode: 'balanced',
           output_format: 'jpeg',
           prompt: mannequinPrompt,
         }
       };
+
       const mannequinRes = await fetch('https://api.fashn.ai/v1/run', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${process.env.FASHN_API_KEY}`, 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${process.env.FASHN_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(mannequinBody)
       });
-      const mannequinData = await mannequinRes.json();
+
+      const mannequinText = await mannequinRes.text();
+      console.log('Mannequin FASHN response:', mannequinText.substring(0, 300));
+
+      let mannequinData;
+      try { mannequinData = JSON.parse(mannequinText); }
+      catch(e) { return res.status(500).json({ error: 'Bad JSON from FASHN: ' + mannequinText.substring(0, 200) }); }
+
       if (mannequinData.error) return res.status(500).json({ error: String(mannequinData.error) });
-      if (!mannequinData.id) return res.status(500).json({ error: 'No ID returned' });
+      if (!mannequinData.id) return res.status(500).json({ error: 'No ID returned from FASHN' });
+
       return res.status(200).json({ prediction_id: mannequinData.id, status: mannequinData.status });
     }
 
+    // ── HUMAN MODEL MODE ──
     let humanImg;
     if (custom_model && custom_model.startsWith('data:')) {
       const customBase64 = custom_model.replace(/^data:image\/\w+;base64,/, '');
@@ -86,28 +128,35 @@ export default async function handler(req, res) {
       console.log('Using model:', modelIdx, humanImg);
     }
 
-  const garmentDescMap = {
-    'salwar':   'Indian woman wearing a beautiful salwar suit with churidar and dupatta, full length',
-    'kurta':    'Indian woman wearing an elegant kurti with leggings and dupatta, full length',
-    'palazzo':  'Indian woman wearing a stylish palazzo set with wide leg pants and dupatta, full length',
-    'anarkali': 'Indian woman wearing a stunning anarkali suit with flared floor-length kameez and dupatta, full length',
-    'lehenga':  'Indian woman wearing a gorgeous lehenga choli with flared skirt and dupatta, full length',
-    'saree':    'Indian woman wearing an elegant saree with pallu draped gracefully over shoulder, full length',
-    'suit':     'Indian woman wearing a beautiful salwar suit with dupatta, full length',
-  };
-  const garmentDesc = garmentDescMap[garment_type] || garmentDescMap['suit'];
+    // All 14 garment type descriptions
+    const garmentDescMap = {
+      'salwar':       'Indian woman wearing a beautiful salwar suit with straight-cut churidar and dupatta draped over shoulder, full length',
+      'kurti':        'Indian woman wearing a stylish long kurti with fitted leggings or pants, full length',
+      'anarkali':     'Indian woman wearing a gorgeous flared Anarkali suit with long dupatta, floor-length ethnic gown, full length',
+      'frock':        'Indian woman wearing a knee-length frock-style Indian suit with flared skirt, churidar and dupatta, full length',
+      'palazzo':      'Indian woman wearing a palazzo set with wide flowy palazzo pants and matching embroidered kurta, full length',
+      'sharara':      'Indian woman wearing a festive sharara set with heavily flared sharara pants and short kurta with dupatta, full length',
+      'lehenga':      'Indian woman wearing a stunning bridal lehenga choli with embroidered skirt and dupatta, full length',
+      'indo-western': 'Indian woman wearing a fusion Indo-Western outfit with cape or jacket over ethnic dress, full length',
+      'saree':        'Indian woman wearing an elegant saree with pallu draped gracefully over left shoulder, full length',
+      'patiala':      'Indian woman wearing a Patiala suit with puffy gathered Patiala salwar and long kurta with dupatta, full length',
+      'dhoti':        'Indian woman wearing dhoti-style pants with matching kurta, modern ethnic drape, full length',
+      'coord':        'Indian woman wearing a matching ethnic co-ord set with coordinated top and bottom, full length',
+      'pakistani':    'Indian woman wearing a heavy embroidered Pakistani-style straight-cut suit with gold zari embroidery, cigarette-cut salwar, embroidered dupatta, full length',
+      'georgette':    'Indian woman wearing an elegant georgette embroidered suit with sheer flowing kurta and sequin zari work, full length',
+      'suit':         'Indian woman wearing a beautiful salwar suit with dupatta, full length',
+    };
+    const garmentDesc = garmentDescMap[garment_type] || garmentDescMap['suit'];
 
-    // Handle custom background image
-    // Use the full prompt built on frontend (includes pose + scene)
-    // Only override for custom_bg case
+    // Build final prompt — use frontend-built prompt (includes pose + scene)
     let finalPrompt = prompt || '';
     if (!finalPrompt || finalPrompt === 'custom_bg_upload') {
       finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, high quality';
     }
-    // If custom bg uploaded, keep pose but use neutral scene description
+    // Custom background: keep pose, use neutral scene
     if (custom_bg && custom_bg.startsWith('data:')) {
-      // Keep the pose from prompt but replace scene with neutral
-      finalPrompt = garmentDesc + ', ' + (prompt ? prompt.split(',').slice(1, 3).join(',') : 'standing straight') + ', professional Indian fashion photography, high quality';
+      const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight';
+      finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
     }
 
     const requestBody = {
