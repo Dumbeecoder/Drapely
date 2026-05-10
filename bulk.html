@@ -183,8 +183,20 @@
       <div class="setting-group">
         <div class="setting-label">GARMENT TYPE</div>
         <select class="setting-select" id="bulk-garment">
-          <option value="suit">👗 Salwar Suit</option>
-          <option value="saree">🥻 Saree</option>
+          <option value="salwar">👗 Salwar Suit — Churidar, straight cut</option>
+          <option value="kurti">🧣 Kurti / Kurta — Short, long, printed</option>
+          <option value="anarkali">👸 Anarkali — Flared, floor length</option>
+          <option value="frock">🎀 Frock Suit — Knee-length frock style</option>
+          <option value="palazzo">🩱 Palazzo Set — Wide leg, flowy</option>
+          <option value="sharara">✨ Sharara Set — Flared bottoms, festive</option>
+          <option value="lehenga">🌸 Lehenga — Bridal, festive skirt</option>
+          <option value="indo-western">💫 Indo-Western — Fusion, cape, jacket</option>
+          <option value="saree">🥻 Saree — Silk, chiffon, cotton</option>
+          <option value="patiala">🪷 Patiala Suit — Patiala salwar, puffy</option>
+          <option value="dhoti">🌺 Dhoti Style — Dhoti pants, drape</option>
+          <option value="coord">👔 Co-ord Set — Matching top & bottom</option>
+          <option value="pakistani">🪡 Pakistani Suit — Straight cut, heavy embroidery</option>
+          <option value="georgette">🌟 Georgette Suit — Sheer, embroidered, party</option>
         </select>
       </div>
       <div class="setting-group">
@@ -227,6 +239,7 @@
       <div class="setting-group">
         <div class="setting-label">POSE</div>
         <select class="setting-select" id="bulk-pose">
+          <option value="RANDOM">🎲 Randomize — Different pose for each photo</option>
           <option value="standing straight facing forward, full body visible, arms relaxed at sides, confident pose, full length">🧍 Standing</option>
           <option value="graceful walking pose mid stride, one foot forward, natural arm swing, full outfit visible, full length">🚶 Walking</option>
           <option value="elegant 3/4 turn, body angled, looking over shoulder gracefully, full outfit details visible">💃 3/4 Turn</option>
@@ -544,13 +557,49 @@ async function startBulkGenerate() {
 
   var modelIndex = parseInt(document.getElementById('bulk-model').value);
   var scene = document.getElementById('bulk-scene').value;
-  var pose = document.getElementById('bulk-pose').value;
+  var poseValue = document.getElementById('bulk-pose').value;
   var garmentType = document.getElementById('bulk-garment').value;
   var logoPos = document.getElementById('bulk-logo-pos') ? document.getElementById('bulk-logo-pos').value : 'bottom-right';
-  var garmentDesc = garmentType === 'saree'
-    ? 'Indian woman wearing an elegant saree with pallu draped gracefully, full length'
-    : 'Indian woman wearing a beautiful salwar suit with dupatta, full length';
-  var prompt = garmentDesc + ', ' + pose + ', ' + scene + ', professional Indian fashion photography, high quality';
+
+  var bulkGarmentMap = {
+    'salwar':       'Indian woman wearing a beautiful salwar suit with straight-cut churidar and dupatta draped over shoulder, full length traditional Indian outfit',
+    'kurti':        'Indian woman wearing a stylish printed long kurti with fitted leggings or pants, ethnic Indian top, full length, elegant casual ethnic wear',
+    'anarkali':     'Indian woman wearing a gorgeous flared Anarkali suit with long dupatta, floor-length heavily embroidered flowing ethnic gown style dress',
+    'frock':        'Indian woman wearing a knee-length frock-style Indian suit with embroidered yoke and flared skirt, with churidar leggings and dupatta, full outfit visible',
+    'palazzo':      'Indian woman wearing a palazzo set with wide flowy palazzo pants and matching embroidered kurta, trendy Indian ethnic co-ord set, full length',
+    'sharara':      'Indian woman wearing a festive sharara set with heavily flared sharara pants and short embroidered kurta with dupatta, full length ethnic festive wear',
+    'lehenga':      'Indian woman wearing a stunning bridal lehenga choli with heavily embroidered skirt and matching blouse with dupatta, festive Indian ethnic wear, full length',
+    'indo-western': 'Indian woman wearing a fusion Indo-Western outfit with a long cape or jacket layered over an ethnic dress or pants, modern Indian fashion, full length',
+    'saree':        'Indian woman wearing an elegant six-yard saree with pallu draped gracefully over the left shoulder, petticoat and matching blouse, full length traditional Indian drape',
+    'patiala':      'Indian woman wearing a Patiala suit with puffy gathered Patiala salwar and long kurta with dupatta, traditional Punjabi ethnic wear, full length',
+    'dhoti':        'Indian woman wearing a contemporary dhoti-style pants with a matching kurta or top, modern ethnic drape style, full length Indian fashion',
+    'coord':        'Indian woman wearing a matching ethnic co-ord set with a cropped or full top and coordinated printed or embroidered bottom, stylish Indian matching set, full length',
+    'pakistani':    'Indian woman wearing a heavy embroidered Pakistani-style straight-cut suit with a straight A-line kurta falling to calf length, heavy gold zari embroidery and cutwork border at hem and sleeves, slim cigarette-cut salwar with embroidery at ankle, heavily embroidered dupatta with scalloped border draped over head and shoulder, full length bridal ethnic wear',
+    'georgette':    'Indian woman wearing an elegant georgette embroidered suit with a sheer flowing georgette kurta heavily embroidered with sequins and zari work, matching embroidered bottom and georgette dupatta with border, full length party and wedding wear, sheer fabric with golden embroidery details',
+  };
+
+  var randomPoses = [
+    'standing straight facing forward, full body visible, arms relaxed at sides, confident pose, full length',
+    'graceful walking pose mid stride, one foot forward, natural arm swing, full outfit visible, full length',
+    'elegant 3/4 turn, body angled, looking over shoulder gracefully, full outfit details visible',
+    'hand on hip power stance, confident high fashion editorial pose, full length, weight shifted',
+    'sitting gracefully on steps, legs to side, elegant seated fashion pose, full outfit visible',
+    'leaning shoulder against wall, casual relaxed editorial pose, one knee slightly bent, full length',
+    'twirling spinning gracefully, arms slightly raised, dupatta flowing and swirling, joyful movement, full length',
+    'profile view side pose, showing silhouette and outfit details, full length',
+    'both hands gently holding dupatta and spreading it wide, showing full fabric detail, graceful feminine pose, full length',
+    'candid laughing pose, natural joyful expression, hand near face, relaxed authentic fashion editorial, full length',
+    'namaste prayer hands pose, graceful traditional Indian greeting, serene expression, full body visible, elegant',
+    'both arms raised overhead gracefully, fingers spread, joyful celebratory pose, dupatta flowing, full length',
+    'back to camera looking over shoulder, showing dupatta drape and outfit back details, full length, editorial pose',
+    'descending a grand staircase, one hand on railing, confident elegant gait, full length, regal and poised',
+    'one foot forward confident runway model walk, full outfit visible, full length',
+    'sitting cross-legged on floor with dupatta arranged around, graceful traditional Indian seated pose, full outfit visible',
+  ];
+
+  var isRandomPose = poseValue === 'RANDOM';
+  var garmentDesc = bulkGarmentMap[garmentType] || bulkGarmentMap['salwar'];
+  var basePrompt = garmentDesc + ', ' + scene + ', professional Indian fashion photography, high quality';
 
   for (var i = 0; i < bulkQueue.length; i++) {
     bulkQueue[i].status = 'processing';
@@ -571,6 +620,10 @@ async function startBulkGenerate() {
 
     try {
       var compressedGarment = await compressImage(bulkQueue[i].dataUrl);
+      var itemPose = isRandomPose
+        ? randomPoses[Math.floor(Math.random() * randomPoses.length)]
+        : poseValue;
+      var prompt = garmentDesc + ', ' + itemPose + ', ' + scene + ', professional Indian fashion photography, high quality';
       var response = await fetch('/api/generate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ garment_img: compressedGarment, model_index: modelIndex, prompt: prompt, garment_type: garmentType })
