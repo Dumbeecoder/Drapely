@@ -777,21 +777,15 @@ async function activateSubscription() {
   if (!currentUserId) { showToast('Select a user first'); return; }
   if (!selectedSubPlan) { showToast('Select a plan first'); return; }
   var plan = ADMIN_PLANS[selectedSubPlan];
-  if (!confirm('Activate ' + plan.name + ' Plan for this user? This will add ' + plan.credits + ' credits to their balance.')) return;
-
+  if (!confirm('Activate ' + plan.name + ' Plan? Adds ' + plan.credits + ' credits.')) return;
   showToast('Activating...');
   try {
-    // 1. Upsert subscription record
     var now = new Date();
     var nextRenewal = new Date(now);
     nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-
-    // Cancel any existing active sub first
     if (currentSubId) {
       await sb.from('subscriptions').update({status:'cancelled',cancelled_at:now.toISOString()}).eq('id',currentSubId);
     }
-
-    // Insert new subscription
     var subRes = await sb.from('subscriptions').insert({
       user_id: currentUserId,
       plan: selectedSubPlan,
@@ -801,33 +795,27 @@ async function activateSubscription() {
       activated_at: now.toISOString(),
       next_renewal: nextRenewal.toISOString(),
     });
-    if (subRes.error) { showToast('✗ Sub error: ' + subRes.error.message); return; }
-
-    // 2. Add credits via admin API
+    if (subRes.error) { showToast('Sub error: ' + subRes.error.message); return; }
     var credRes = await fetch('/api/admin-user', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ user_id: currentUserId, amount: plan.credits })
     });
     var credData = await credRes.json();
-    if (credData.error) { showToast('✗ Credits error: ' + credData.error); return; }
-
-    // 3. Log in credit_topups
+    if (credData.error) { showToast('Credits error: ' + credData.error); return; }
     await sb.from('credit_topups').insert({
       user_id: currentUserId,
       credits_added: plan.credits,
-      note: plan.name + ' Plan activated — ' + plan.credits + ' monthly credits'
+      note: plan.name + ' Plan activated'
     });
-
-    // 4. Update display
     currentBalance = credData.new_balance;
     document.getElementById('res-credits').textContent = credData.new_balance;
     subMap[currentUserId] = plan.name;
-    showToast('✓ ' + plan.name + ' Plan activated! ' + plan.credits + ' credits added. Balance: ' + credData.new_balance);
+    showToast('Done! ' + plan.name + ' activated. Balance: ' + credData.new_balance);
     loadUserSubscription(currentUserId);
     loadAllUsers();
     loadUserTopups(currentUserId);
-  } catch(e) { showToast('✗ Error: ' + e.message); }
+  } catch(e) { showToast('Error: ' + e.message); }
 }
 
 async function cancelSubscription() {
