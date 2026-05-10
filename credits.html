@@ -98,6 +98,56 @@
     .mobile-logo span{color:#E91E63;}
     .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
     .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+
+    /* SUBSCRIPTION PLANS */
+    .plans-section{margin-bottom:2rem;}
+    .plans-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+    .plans-header h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;}
+    .plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:1rem;}
+    .plan-card{background:#fff;border:1.5px solid rgba(233,30,99,0.15);border-radius:16px;padding:1.5rem;position:relative;transition:all 0.2s;cursor:pointer;}
+    .plan-card:hover{border-color:#E91E63;box-shadow:0 4px 20px rgba(233,30,99,0.1);}
+    .plan-card.popular{border-color:#E91E63;border-width:2px;}
+    .plan-popular-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#E91E63;color:#fff;font-size:10px;font-weight:600;padding:3px 12px;border-radius:20px;white-space:nowrap;letter-spacing:0.5px;}
+    .plan-name{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:8px;}
+    .plan-price{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;color:#000;line-height:1;}
+    .plan-price span{font-size:14px;font-weight:400;color:#555;font-family:'DM Sans',sans-serif;}
+    .plan-credits{font-size:14px;font-weight:600;color:#E91E63;margin:10px 0 4px;}
+    .plan-discount{display:inline-block;background:#fff0f5;color:#E91E63;font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;margin-bottom:12px;}
+    .plan-divider{height:1px;background:rgba(233,30,99,0.1);margin:12px 0;}
+    .plan-features{list-style:none;display:flex;flex-direction:column;gap:6px;}
+    .plan-features li{font-size:12px;color:#555;display:flex;align-items:center;gap:6px;}
+    .plan-features li::before{content:'✓';color:#E91E63;font-weight:700;flex-shrink:0;}
+    .plan-features li.no::before{content:'—';color:#ccc;}
+    .plan-features li.no{color:#bbb;}
+    .plan-subscribe-btn{width:100%;padding:10px;margin-top:14px;background:#000;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+    .plan-subscribe-btn:hover{background:#E91E63;}
+    .plan-card.popular .plan-subscribe-btn{background:#E91E63;}
+    .plan-card.popular .plan-subscribe-btn:hover{background:#c2185b;}
+    .active-plan-banner{background:linear-gradient(135deg,#0a0a0a,#1a0010);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border:1px solid rgba(233,30,99,0.3);}
+    .active-plan-badge{background:#E91E63;color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:12px;letter-spacing:0.5px;margin-bottom:4px;display:inline-block;}
+    .active-plan-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;}
+    .active-plan-meta{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
+    .active-plan-renewal{font-size:12px;color:rgba(255,255,255,0.6);text-align:right;}
+    .active-plan-credits{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#E91E63;}
+    /* SUB MODAL */
+    .sub-modal{background:#fff;border-radius:20px;padding:0;max-width:400px;width:92%;overflow:hidden;max-height:90vh;overflow-y:auto;}
+    .sub-modal-header{background:linear-gradient(135deg,#0a0a0a,#1a0010);padding:1.5rem;text-align:center;}
+    .sub-modal-plan{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+    .sub-modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#fff;}
+    .sub-modal-price{font-size:14px;color:#E91E63;margin-top:4px;}
+    .sub-modal-body{padding:1.5rem;}
+    .sub-steps{display:flex;flex-direction:column;gap:1rem;margin-bottom:1.25rem;}
+    .sub-step{display:flex;align-items:flex-start;gap:12px;}
+    .sub-step-num{width:24px;height:24px;border-radius:50%;background:#E91E63;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .sub-step-text{font-size:13px;color:#333;line-height:1.5;}
+    .sub-step-text strong{color:#000;}
+    @media(max-width:700px){
+      .plans-grid{grid-template-columns:1fr;}
+      .plan-card{padding:1.25rem;}
+    }
+    @media(max-width:500px){
+      .plan-price{font-size:30px;}
+    }
 </style>
 </head>
 <body>
@@ -167,6 +217,94 @@
     <button class="buy-btn" onclick="showBuyModal()">+ Buy Credits</button>
   </div>
 
+  <!-- ACTIVE PLAN BANNER (hidden by default, shown if subscribed) -->
+  <div class="active-plan-banner" id="active-plan-banner" style="display:none;">
+    <div>
+      <div class="active-plan-badge" id="active-plan-badge">STARTER</div>
+      <div class="active-plan-name" id="active-plan-name">Starter Plan</div>
+      <div class="active-plan-meta" id="active-plan-meta">25 credits/month · ₹999/month</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;">MONTHLY CREDITS</div>
+      <div class="active-plan-credits" id="active-plan-credits">25</div>
+      <div class="active-plan-renewal" id="active-plan-renewal">Renews —</div>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTION PLANS -->
+  <div class="plans-section" id="plans-section">
+    <div class="plans-header">
+      <h2>Monthly Plans</h2>
+      <div style="font-size:11px;color:#999;">Save up to 30% vs pay-per-use</div>
+    </div>
+
+    <div class="plans-grid">
+
+      <!-- STARTER -->
+      <div class="plan-card" onclick="showSubModal('starter')">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">₹999<span>/mo</span></div>
+        <div class="plan-credits">25 credits / month</div>
+        <div class="plan-discount">Save 20% · ₹40/credit</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>25 AI photos per month</li>
+          <li>All garment types</li>
+          <li>Poster Builder</li>
+          <li>Bulk Studio</li>
+          <li class="no">Priority support</li>
+          <li class="no">Credits reset monthly</li>
+        </ul>
+        <button class="plan-subscribe-btn" onclick="event.stopPropagation();showSubModal('starter')">Subscribe — ₹999/mo</button>
+      </div>
+
+      <!-- GROWTH -->
+      <div class="plan-card popular" onclick="showSubModal('growth')">
+        <div class="plan-popular-tag">⭐ MOST POPULAR</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price">₹1,999<span>/mo</span></div>
+        <div class="plan-credits">55 credits / month</div>
+        <div class="plan-discount">Save 28% · ₹36/credit</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>55 AI photos per month</li>
+          <li>All garment types</li>
+          <li>Poster Builder</li>
+          <li>Bulk Studio</li>
+          <li>Priority WhatsApp support</li>
+          <li class="no">Credits reset monthly</li>
+        </ul>
+        <button class="plan-subscribe-btn" onclick="event.stopPropagation();showSubModal('growth')">Subscribe — ₹1,999/mo</button>
+      </div>
+
+      <!-- PRO -->
+      <div class="plan-card" onclick="showSubModal('pro')">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">₹3,499<span>/mo</span></div>
+        <div class="plan-credits">100 credits / month</div>
+        <div class="plan-discount">Save 30% · ₹35/credit</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>100 AI photos per month</li>
+          <li>All garment types</li>
+          <li>Poster Builder</li>
+          <li>Bulk Studio</li>
+          <li>Priority WhatsApp support</li>
+          <li class="no">Credits reset monthly</li>
+        </ul>
+        <button class="plan-subscribe-btn" onclick="event.stopPropagation();showSubModal('pro')">Subscribe — ₹3,499/mo</button>
+      </div>
+
+    </div>
+    <div style="font-size:11px;color:#aaa;text-align:center;margin-top:4px;">Pay monthly via UPI · Credits added within 30 minutes · Unused credits reset each month · Cancel anytime</div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+    <div style="flex:1;height:1px;background:rgba(233,30,99,0.1);"></div>
+    <div style="font-size:11px;color:#aaa;font-weight:500;letter-spacing:1px;">OR BUY A ONE-TIME PACK</div>
+    <div style="flex:1;height:1px;background:rgba(233,30,99,0.1);"></div>
+  </div>
+
   <div style="margin-bottom:1.5rem;">
     <div style="font-size:13px;font-weight:500;color:#555;margin-bottom:12px;">Choose a pack</div>
         <div class="packs-grid">
@@ -204,6 +342,49 @@
   </div>
   <div class="history-table" id="history-container">
     <div class="empty-state"><div class="empty-icon">💳</div><div>Loading history...</div></div>
+  </div>
+</div>
+
+<!-- SUBSCRIPTION MODAL -->
+<div class="modal-backdrop" id="sub-modal">
+  <div class="sub-modal">
+    <div class="sub-modal-header">
+      <div class="sub-modal-plan" id="sub-modal-plan">STARTER PLAN</div>
+      <div class="sub-modal-title" id="sub-modal-title">Starter</div>
+      <div class="sub-modal-price" id="sub-modal-price">₹999/month · 25 credits</div>
+    </div>
+    <div class="sub-modal-body">
+      <div class="sub-steps">
+        <div class="sub-step">
+          <div class="sub-step-num">1</div>
+          <div class="sub-step-text">Pay <strong id="sub-step-amount">₹999</strong> via UPI to <strong>6352197977@ptyes</strong><br/>GPay · PhonePe · Paytm · any UPI app</div>
+        </div>
+        <div class="sub-step">
+          <div class="sub-step-num">2</div>
+          <div class="sub-step-text">Send payment screenshot on WhatsApp to confirm your subscription</div>
+        </div>
+        <div class="sub-step">
+          <div class="sub-step-num">3</div>
+          <div class="sub-step-text"><strong id="sub-step-credits">25 credits</strong> added to your account within 30 minutes. Same day every month going forward.</div>
+        </div>
+      </div>
+
+      <div style="background:#f9f9f9;border-radius:12px;padding:1.1rem;margin-bottom:1.25rem;text-align:center;">
+        <img id="sub-qr" style="width:150px;height:150px;border-radius:8px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;" src="" alt="UPI QR"/>
+        <div style="font-size:14px;font-weight:600;color:#000;">6352197977@ptyes</div>
+        <div style="font-size:11px;color:#555;margin-top:2px;">Scan with any UPI app</div>
+        <div style="font-size:20px;font-weight:600;color:#E91E63;margin-top:8px;" id="sub-qr-amount">₹999</div>
+      </div>
+
+      <a class="wa-btn" id="sub-wa-btn" href="" target="_blank">
+        💬 Send Payment Screenshot on WhatsApp
+      </a>
+      <button class="close-btn" onclick="hideSubModal()">Maybe later</button>
+
+      <div style="font-size:11px;color:#aaa;text-align:center;margin-top:12px;line-height:1.6;">
+        No auto-debit · Cancel by not paying next month · Unused credits reset on renewal date
+      </div>
+    </div>
   </div>
 </div>
 
@@ -249,6 +430,7 @@ sb.auth.getSession().then(function(r) {
   var mn = document.getElementById('m-name'); if(mn) mn.textContent = displayName;
   loadCredits(user.id);
   loadHistory(user.id);
+  loadSubscription(user.id);
 });
 
 function loadCredits(userId) {
@@ -441,6 +623,64 @@ function showBuyModal() {
 
 function hideBuyModal() {
   document.getElementById('buy-modal').classList.remove('open');
+}
+
+// ── SUBSCRIPTION PLANS ──
+var PLANS = {
+  starter: { name: 'Starter', price: 999,  credits: 25,  label: 'STARTER PLAN',  perCredit: '₹40/credit · 20% off' },
+  growth:  { name: 'Growth',  price: 1999, credits: 55,  label: 'GROWTH PLAN',   perCredit: '₹36/credit · 28% off' },
+  pro:     { name: 'Pro',     price: 3499, credits: 100, label: 'PRO PLAN',      perCredit: '₹35/credit · 30% off' },
+};
+
+var currentSubPlan = null;
+
+function showSubModal(planKey) {
+  var plan = PLANS[planKey];
+  if (!plan) return;
+  currentSubPlan = planKey;
+  document.getElementById('sub-modal-plan').textContent = plan.label;
+  document.getElementById('sub-modal-title').textContent = plan.name;
+  document.getElementById('sub-modal-price').textContent = '₹' + plan.price.toLocaleString('en-IN') + '/month · ' + plan.credits + ' credits · ' + plan.perCredit;
+  document.getElementById('sub-step-amount').textContent = '₹' + plan.price.toLocaleString('en-IN');
+  document.getElementById('sub-step-credits').textContent = plan.credits + ' credits';
+  document.getElementById('sub-qr-amount').textContent = '₹' + plan.price.toLocaleString('en-IN');
+  // Generate QR
+  var upiData = 'upi://pay?pa=6352197977@ptyes&pn=Drapely&am=' + plan.price + '&cu=INR&tn=Drapely+' + plan.name + '+Plan';
+  document.getElementById('sub-qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(upiData);
+  // WhatsApp message
+  var waMsg = 'Hi! I paid ₹' + plan.price + ' for the Drapely ' + plan.name + ' Plan (' + plan.credits + ' credits/month). Please activate my subscription.';
+  document.getElementById('sub-wa-btn').href = 'https://wa.me/916352197977?text=' + encodeURIComponent(waMsg);
+  document.getElementById('sub-modal').classList.add('open');
+}
+
+function hideSubModal() {
+  document.getElementById('sub-modal').classList.remove('open');
+}
+
+// Load active subscription from Supabase
+function loadSubscription(userId) {
+  sb.from('subscriptions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .then(function(r) {
+      if (r.error || !r.data || !r.data.length) return; // no active sub
+      var sub = r.data[0];
+      var plan = PLANS[sub.plan] || { name: sub.plan, credits: sub.credits_per_month, price: sub.amount };
+      // Show active plan banner
+      document.getElementById('active-plan-banner').style.display = 'flex';
+      document.getElementById('active-plan-badge').textContent = plan.name.toUpperCase();
+      document.getElementById('active-plan-name').textContent = plan.name + ' Plan';
+      document.getElementById('active-plan-meta').textContent = plan.credits + ' credits/month · ₹' + plan.price.toLocaleString('en-IN') + '/month';
+      document.getElementById('active-plan-credits').textContent = plan.credits;
+      // Renewal date
+      if (sub.next_renewal) {
+        var d = new Date(sub.next_renewal);
+        document.getElementById('active-plan-renewal').textContent = 'Renews ' + d.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+      }
+    });
 }
 
 function showToast(msg) {
