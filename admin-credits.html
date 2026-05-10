@@ -340,27 +340,37 @@ function adminSignOut() {
 }
 
 async function loadStats() {
-  // Photos generated
+  // Photos generated — try count, fallback to select all
   try {
-    var photos = await sb.from('photoshoots').select('*', { count: 'exact', head: true });
-    var photoCount = photos.count !== null ? photos.count : (photos.data ? photos.data.length : 0);
+    var photos = await sb.from('photoshoots').select('id');
+    var photoCount = photos.data ? photos.data.length : 0;
     document.getElementById('stat-photos').textContent = photoCount.toLocaleString('en-IN');
-  } catch(e) {
-    try {
-      var ph2 = await sb.from('photoshoots').select('id');
-      document.getElementById('stat-photos').textContent = (ph2.data || []).length;
-    } catch(e2) { document.getElementById('stat-photos').textContent = '0'; }
-  }
+  } catch(e) { document.getElementById('stat-photos').textContent = '0'; }
+}
 
-  // Revenue from topups
+// Called after allUsers + creditsMap are loaded — calculate revenue from credits data
+function updateRevenueFromCredits() {
   try {
-    var topupsRes = await sb.from('credit_topups').select('credits_added');
-    if (topupsRes.error) throw new Error(topupsRes.error.message);
-    var totalTopups = (topupsRes.data || []).reduce(function(s,t){
-      return s + (t.credits_added > 0 ? t.credits_added : 0);
-    }, 0);
-    document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
-  } catch(e) { document.getElementById('stat-revenue').textContent = '₹0'; }
+    // Revenue = total credits ever added via topups
+    // We get this from credit_topups if available, else estimate from creditsMap
+    sb.from('credit_topups').select('credits_added').then(function(topupsRes) {
+      if (topupsRes.error || !topupsRes.data || topupsRes.data.length === 0) {
+        // Fallback: estimate from credits balances (not perfect but better than 0)
+        // Sum all positive balances across all users as minimum revenue
+        var totalBal = Object.values(creditsMap).reduce(function(s, b){ return s + (b > 0 ? b : 0); }, 0);
+        // Add 3 free credits per user (initial grant)
+        var paidCredits = Math.max(0, totalBal - (allUsers.length * 3));
+        document.getElementById('stat-revenue').textContent = paidCredits > 0
+          ? '₹' + (paidCredits * 50).toLocaleString('en-IN')
+          : 'N/A';
+        return;
+      }
+      var totalTopups = (topupsRes.data || []).reduce(function(s,t){
+        return s + (t.credits_added > 0 ? t.credits_added : 0);
+      }, 0);
+      document.getElementById('stat-revenue').textContent = '₹' + (totalTopups * 50).toLocaleString('en-IN');
+    });
+  } catch(e) { document.getElementById('stat-revenue').textContent = '—'; }
 }
 
 async function loadAllUsers() {
@@ -385,8 +395,8 @@ async function loadAllUsers() {
     }
 
     document.getElementById('stat-users').textContent = allUsers.length;
-    // Re-run stats in case they failed on first load
     loadStats();
+    updateRevenueFromCredits();
 
     var ph = await sb.from('photoshoots').select('user_id');
     photoMap = {};
