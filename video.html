@@ -297,7 +297,7 @@ sb.auth.getSession().then(function(r) {
   var lname = (meta.last_name || '').trim();
   var fullname = (fname + ' ' + lname).trim();
   var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
-  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : (fname||displayName).slice(0,1).toUpperCase();
   if (document.getElementById('user-name')) document.getElementById('user-name').textContent = displayName;
   if (document.getElementById('user-avatar')) document.getElementById('user-avatar').textContent = initials;
   if (document.getElementById('m-avatar')) document.getElementById('m-avatar').textContent = initials;
