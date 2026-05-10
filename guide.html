@@ -493,7 +493,7 @@ sb.auth.getSession().then(function(r) {
   var fname = (meta.first_name || '').trim();
   var lname = (meta.last_name || '').trim();
   var displayName = (fname + ' ' + lname).trim() || user.email.split('@')[0];
-  var initials = displayName.slice(0,2).toUpperCase();
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : (fname || displayName).slice(0,1).toUpperCase();
   var av = document.getElementById('user-avatar'); if(av) av.textContent = initials;
   var nm = document.getElementById('user-name'); if(nm) nm.textContent = displayName;
   var mav = document.getElementById('m-avatar'); if(mav) mav.textContent = initials;
