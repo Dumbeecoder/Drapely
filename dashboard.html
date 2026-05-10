@@ -779,7 +779,7 @@ sb.auth.getSession().then(function(r) {
   var lname = (meta.last_name || '').trim();
   var fullname = (fname + ' ' + lname).trim();
   var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
-  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : displayName.slice(0,2).toUpperCase();
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : (fname||displayName).slice(0,1).toUpperCase();
   document.getElementById('user-name').textContent = displayName;
   document.getElementById('user-avatar').textContent = initials;
   var tsEl = document.getElementById('topbar-sub'); if(tsEl) tsEl.textContent = 'Welcome back, ' + (fname || displayName) + '!';
