@@ -777,10 +777,7 @@ async function activateSubscription() {
   if (!currentUserId) { showToast('Select a user first'); return; }
   if (!selectedSubPlan) { showToast('Select a plan first'); return; }
   var plan = ADMIN_PLANS[selectedSubPlan];
-  if (!confirm('Activate ' + plan.name + ' Plan for this user?
-This will:
-• Set subscription to active
-• Add ' + plan.credits + ' credits to their balance')) return;
+  if (!confirm('Activate ' + plan.name + ' Plan for this user? This will add ' + plan.credits + ' credits to their balance.')) return;
 
   showToast('Activating...');
   try {
