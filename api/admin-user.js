@@ -6,7 +6,6 @@ export default async function handler(req, res) {
 
   const SUPABASE_URL = 'https://oqmoneclnirnhqpcdeqy.supabase.co';
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-
   const headers = {
     'Authorization': `Bearer ${SERVICE_KEY}`,
     'apikey': SERVICE_KEY,
@@ -17,47 +16,85 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { user_id, amount } = req.body;
     if (!user_id || !amount) return res.status(400).json({ error: 'Missing user_id or amount' });
-
-    // Get current balance
     const getRes = await fetch(`${SUPABASE_URL}/rest/v1/credits?user_id=eq.${user_id}&select=balance`, { headers });
     const getRows = await getRes.json();
     const currentBalance = getRows[0]?.balance || 0;
     const newBalance = currentBalance + parseInt(amount);
-
-    // Upsert
     const upsertRes = await fetch(`${SUPABASE_URL}/rest/v1/credits?user_id=eq.${user_id}`, {
       method: 'PATCH',
       headers: { ...headers, 'Prefer': 'return=representation' },
       body: JSON.stringify({ balance: newBalance }),
     });
-
     if (!upsertRes.ok) {
       const err = await upsertRes.text();
       return res.status(500).json({ error: err });
     }
-
     return res.status(200).json({ success: true, new_balance: newBalance });
   }
 
-  // GET — list, search by email/phone, or get credits for a user
+  // GET
   if (req.method === 'GET') {
     const { email, phone, list, user_id } = req.query;
 
-    // Get credits for specific user
+    // ── GET CREDITS FOR SPECIFIC USER ──
     if (user_id) {
       const r = await fetch(`${SUPABASE_URL}/rest/v1/credits?user_id=eq.${user_id}&select=balance`, { headers });
       const rows = await r.json();
       return res.status(200).json({ balance: rows[0]?.balance || 0 });
     }
 
-    // Get all credits
+    // ── GET ALL CREDITS ──
     if (req.query.credits === 'true') {
       const r = await fetch(`${SUPABASE_URL}/rest/v1/credits?select=user_id,balance`, { headers });
       const rows = await r.json();
       return res.status(200).json({ credits: rows });
     }
 
-    // Fetch all auth users
+    // ── GET ALL TOPUPS (revenue) ──
+    if (req.query.topups === 'true') {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/credit_topups?select=credits_added`, { headers });
+      const rows = await r.json();
+      return res.status(200).json({ topups: rows });
+    }
+
+    // ── GET TOPUPS FOR SPECIFIC USER ──
+    if (req.query.user_topups) {
+      const uid = req.query.user_topups;
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/credit_topups?user_id=eq.${uid}&order=created_at.desc`,
+        { headers }
+      );
+      const rows = await r.json();
+      return res.status(200).json({ topups: rows });
+    }
+
+    // ── GET PHOTOSHOOTS COUNT (for stat) ──
+    if (req.query.photo_count === 'true') {
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/photoshoots?select=user_id`,
+        { headers }
+      );
+      const rows = await r.json();
+      // Build photoMap: { user_id: count }
+      const photoMap = {};
+      (rows || []).forEach(function(p) {
+        photoMap[p.user_id] = (photoMap[p.user_id] || 0) + 1;
+      });
+      return res.status(200).json({ total: (rows || []).length, photoMap });
+    }
+
+    // ── GET RECENT ACTIVITY FOR SPECIFIC USER ──
+    if (req.query.activity) {
+      const uid = req.query.activity;
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/photoshoots?user_id=eq.${uid}&order=created_at.desc&limit=5`,
+        { headers }
+      );
+      const rows = await r.json();
+      return res.status(200).json({ activity: rows });
+    }
+
+    // ── GET ALL USERS ──
     const response = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?per_page=1000`, { headers });
     const data = await response.json();
     if (!response.ok) return res.status(500).json({ error: data.message || 'Supabase error' });
