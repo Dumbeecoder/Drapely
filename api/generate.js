@@ -79,7 +79,7 @@ export default async function handler(req, res) {
       const mannequinPrompt = [
         garmentDesc,
         scenePart,
-        'professional product fashion photography, 4K high quality, sharp fabric details, full outfit visible'
+        'professional product fashion photography, 4K ultra high quality, sharp fabric details, full outfit visible, highly detailed embroidery, crisp 1k resolution'
       ].join(', ');
 
       console.log('Mannequin prompt:', mannequinPrompt);
@@ -91,8 +91,6 @@ export default async function handler(req, res) {
           model_image: mannequinModels[0],
           resolution: '1k',
           generation_mode: 'balanced',
-          output_format: 'jpeg',
-          prompt: mannequinPrompt,
         }
       };
 
@@ -159,13 +157,17 @@ export default async function handler(req, res) {
     // Build final prompt — use frontend-built prompt (includes pose + scene)
     let finalPrompt = prompt || '';
     if (!finalPrompt || finalPrompt === 'custom_bg_upload') {
-      finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, high quality';
+      finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, ultra high quality, sharp fabric details, highly detailed embroidery, crisp 1k resolution, 4K';
     }
     // Custom background: keep pose, use neutral scene
     if (custom_bg && custom_bg.startsWith('data:')) {
       const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight';
-      finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
+      finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, ultra high quality, sharp fabric details, highly detailed embroidery, crisp 1k resolution, 4K';
     }
+
+    // Append quality keywords to every prompt
+    const qualitySuffix = ', ultra high quality, sharp fabric details, highly detailed embroidery, crisp 1k resolution, 4K, photorealistic';
+    finalPrompt = finalPrompt + qualitySuffix;
 
     const requestBody = {
       model_name: 'product-to-model',
