@@ -424,7 +424,15 @@
         <!-- STEP 2: MODEL -->
         <div class="step-panel" id="step-1">
           <div class="step-label">STEP 2 — CHOOSE YOUR MODEL</div>
-          <div class="model-grid">
+
+          <!-- Age toggle -->
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button id="toggle-adult" onclick="switchModelAge('adult')" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid #E91E63;background:#E91E63;color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">👩 Adult</button>
+            <button id="toggle-kids" onclick="switchModelAge('kids')" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid rgba(233,30,99,0.25);background:#fff;color:#555;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">🧒 Kids (Age 8–10)</button>
+          </div>
+
+          <!-- Adult models -->
+          <div id="models-adult" class="model-grid">
             <div class="model-card selected" id="model-0" onclick="selectModel(this,0)">
               <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg" /><div class="model-check">✓</div></div>
               <div class="model-info"><div class="model-name">Priya S.</div></div>
@@ -457,6 +465,27 @@
               </div>
               <input type="file" id="custom-model-input" accept="image/*" style="display:none;" onchange="loadCustomModel(event)" />
               <div class="model-info"><div class="model-name">Custom</div></div>
+            </div>
+          </div>
+
+          <!-- Kids models -->
+          <div id="models-kids" class="model-grid" style="display:none;">
+            <div class="model-card" id="model-k0" onclick="selectModel(this,'k0')">
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-1.png" /><div class="model-check">✓</div></div>
+              <div class="model-info"><div class="model-name">Riya</div><div class="model-spec">Age 8–10 · Girl</div></div>
+            </div>
+            <div class="model-card" id="model-k1" onclick="selectModel(this,'k1')">
+              <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-2.png" /><div class="model-check">✓</div></div>
+              <div class="model-info"><div class="model-name">Sneha</div><div class="model-spec">Age 8–10 · Girl</div></div>
+            </div>
+            <div class="model-card" id="model-k99" onclick="selectModel(this,'k99')">
+              <div class="model-avatar" style="background:#fff0f5;flex-direction:column;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('custom-kid-input').click()">
+                <div id="custom-kid-empty" style="text-align:center;"><div style="font-size:17px;margin-bottom:2px;">📷</div><div style="font-size:10px;color:#E91E63;font-weight:500;">Upload kid model</div></div>
+                <img id="custom-kid-preview" style="display:none;width:100%;height:100%;object-fit:cover;object-position:top;position:absolute;top:0;left:0;" />
+                <div class="model-check">✓</div>
+              </div>
+              <input type="file" id="custom-kid-input" accept="image/*" style="display:none;" onchange="loadCustomKid(event)" />
+              <div class="model-info"><div class="model-name">Custom</div><div class="model-spec">Upload your kid model</div></div>
             </div>
           </div>
 
@@ -1471,6 +1500,50 @@ function loadCustomModel(e) {
     selectedModelIndex = 99;
     showToast('Custom model uploaded!');
   };
+
+function switchModelAge(age) {
+  var adultDiv = document.getElementById('models-adult');
+  var kidsDiv = document.getElementById('models-kids');
+  var btnAdult = document.getElementById('toggle-adult');
+  var btnKids = document.getElementById('toggle-kids');
+  if (age === 'kids') {
+    adultDiv.style.display = 'none';
+    kidsDiv.style.display = 'grid';
+    btnKids.style.background = '#E91E63';
+    btnKids.style.color = '#fff';
+    btnKids.style.borderColor = '#E91E63';
+    btnAdult.style.background = '#fff';
+    btnAdult.style.color = '#555';
+    btnAdult.style.borderColor = 'rgba(233,30,99,0.25)';
+  } else {
+    adultDiv.style.display = 'grid';
+    kidsDiv.style.display = 'none';
+    btnAdult.style.background = '#E91E63';
+    btnAdult.style.color = '#fff';
+    btnAdult.style.borderColor = '#E91E63';
+    btnKids.style.background = '#fff';
+    btnKids.style.color = '#555';
+    btnKids.style.borderColor = 'rgba(233,30,99,0.25)';
+  }
+}
+
+function loadCustomKid(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('custom-kid-preview');
+    var empty = document.getElementById('custom-kid-empty');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+    document.getElementById('model-k99').classList.add('selected');
+    window._customModelUrl = ev.target.result;
+    selectedModelIndex = 'k99';
+    showToast('Custom kid model uploaded!');
+  };
+  reader.readAsDataURL(file);
+}
   reader.readAsDataURL(file);
 }
 
