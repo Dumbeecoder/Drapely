@@ -1500,6 +1500,8 @@ function loadCustomModel(e) {
     selectedModelIndex = 99;
     showToast('Custom model uploaded!');
   };
+  reader.readAsDataURL(file);
+}
 
 function switchModelAge(age) {
   var adultDiv = document.getElementById('models-adult');
@@ -1542,8 +1544,6 @@ function loadCustomKid(e) {
     selectedModelIndex = 'k99';
     showToast('Custom kid model uploaded!');
   };
-  reader.readAsDataURL(file);
-}
   reader.readAsDataURL(file);
 }
 
