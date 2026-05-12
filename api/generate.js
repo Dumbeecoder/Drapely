@@ -8,7 +8,8 @@ export default async function handler(req, res) {
   const { garment_img, model_index, prompt, garment_type, custom_model, custom_bg } = req.body;
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
-  const modelIdx = parseInt(model_index) || 0;
+  const modelIdx = model_index; // keep as-is (could be 0-5, 99, 98, 'k0', 'k1', 'k99')
+  const numericIdx = parseInt(model_index) || 0;
   console.log('Model index:', modelIdx, 'Garment type:', garment_type);
 
   const models = [
@@ -18,6 +19,11 @@ export default async function handler(req, res) {
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png',
+  ];
+
+  const kidModels = [
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-1.png', // k0 - Riya
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-2.png', // k1 - Sneha
   ];
 
   // ── MANNEQUIN IMAGES ──
@@ -44,7 +50,7 @@ export default async function handler(req, res) {
     const garmentUrl = imgurData.data.link;
 
     // ── MANNEQUIN MODE (index 98) ──
-    if (modelIdx === 98) {
+    if (numericIdx === 98) {
       const mannequinDescMap = {
         'salwar':       'salwar suit with churidar on dress form mannequin, standing front facing, full length',
         'kurti':        'kurti with leggings on dress form mannequin, standing front facing, full length',
@@ -115,6 +121,7 @@ export default async function handler(req, res) {
     // ── HUMAN MODEL MODE ──
     let humanImg;
     if (custom_model && custom_model.startsWith('data:')) {
+      // Custom uploaded model (adult or kid)
       const customBase64 = custom_model.replace(/^data:image\/\w+;base64,/, '');
       const customImgurRes = await fetch('https://api.imgur.com/3/image', {
         method: 'POST',
@@ -123,9 +130,13 @@ export default async function handler(req, res) {
       });
       const customImgurData = await customImgurRes.json();
       humanImg = customImgurData.success ? customImgurData.data.link : models[0];
+    } else if (modelIdx === 'k0') {
+      humanImg = kidModels[0];
+    } else if (modelIdx === 'k1') {
+      humanImg = kidModels[1];
     } else {
-      humanImg = models[modelIdx] || models[0];
-      console.log('Using model:', modelIdx, humanImg);
+      humanImg = models[numericIdx] || models[0];
+      console.log('Using model:', numericIdx, humanImg);
     }
 
     // All 14 garment type descriptions
@@ -146,7 +157,29 @@ export default async function handler(req, res) {
       'georgette':    'Indian woman wearing an elegant georgette embroidered suit with sheer flowing kurta and sequin zari work, full length',
       'suit':         'Indian woman wearing a beautiful salwar suit with dupatta, full length',
     };
-    const garmentDesc = garmentDescMap[garment_type] || garmentDescMap['suit'];
+
+    const kidGarmentDescMap = {
+      'salwar':       'Indian girl aged 8-10 wearing a cute salwar suit with churidar and dupatta, full length',
+      'kurti':        'Indian girl aged 8-10 wearing a stylish kurti with leggings, full length',
+      'anarkali':     'Indian girl aged 8-10 wearing a flared Anarkali suit with dupatta, full length',
+      'frock':        'Indian girl aged 8-10 wearing a frock-style Indian suit with flared skirt, full length',
+      'palazzo':      'Indian girl aged 8-10 wearing a palazzo set with kurta, full length',
+      'sharara':      'Indian girl aged 8-10 wearing a sharara set with dupatta, full length',
+      'lehenga':      'Indian girl aged 8-10 wearing a lehenga choli with dupatta, full length',
+      'indo-western': 'Indian girl aged 8-10 wearing a fusion Indo-Western ethnic outfit, full length',
+      'saree':        'Indian girl aged 8-10 wearing a half saree or lehenga with dupatta, full length',
+      'patiala':      'Indian girl aged 8-10 wearing a Patiala suit with dupatta, full length',
+      'dhoti':        'Indian girl aged 8-10 wearing dhoti-style pants with kurta, full length',
+      'coord':        'Indian girl aged 8-10 wearing a matching ethnic co-ord set, full length',
+      'pakistani':    'Indian girl aged 8-10 wearing an embroidered Pakistani-style suit, full length',
+      'georgette':    'Indian girl aged 8-10 wearing a georgette embroidered suit, full length',
+      'suit':         'Indian girl aged 8-10 wearing a salwar suit with dupatta, full length',
+    };
+
+    const isKidModel = String(modelIdx).startsWith('k');
+    const garmentDesc = isKidModel
+      ? (kidGarmentDescMap[garment_type] || kidGarmentDescMap['suit'])
+      : (garmentDescMap[garment_type] || garmentDescMap['suit']);
 
     // Build final prompt — use frontend-built prompt (includes pose + scene)
     let finalPrompt = prompt || '';
