@@ -1344,8 +1344,8 @@ async function startGenerate() {
       progressLabel.textContent = 'Generating image ' + (i+1) + ' of ' + count + '...';
       var payload = JSON.stringify({
         garment_img: compressed,
-        model_index: selectedModelIndex === 99 ? 0 : selectedModelIndex,
-        custom_model: selectedModelIndex === 99 ? window._customModelUrl : null,
+        model_index: (selectedModelIndex === 99 || selectedModelIndex === 'k99') ? 0 : selectedModelIndex,
+        custom_model: selectedModelIndex === 99 ? window._customModelUrl : (selectedModelIndex === 'k99' ? window._customModelUrl : null),
         custom_bg: window._customBgDataUrl || null,
         prompt: buildPhotoPrompt(),
         garment_type: selectedGarmentType
