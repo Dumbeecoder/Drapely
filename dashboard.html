@@ -428,7 +428,7 @@
           <!-- Age toggle -->
           <div style="display:flex;gap:8px;margin-bottom:12px;">
             <button id="toggle-adult" onclick="switchModelAge('adult')" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid #E91E63;background:#E91E63;color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">👩 Adult</button>
-            <button id="toggle-kids" onclick="switchModelAge('kids')" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid rgba(233,30,99,0.25);background:#fff;color:#555;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">🧒 Kids (Age 8–10)</button>
+            <button id="toggle-kids" onclick="switchModelAge('kids')" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid rgba(233,30,99,0.25);background:#fff;color:#555;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">🧒 Kids</button>
           </div>
 
           <!-- Adult models -->
@@ -472,11 +472,11 @@
           <div id="models-kids" class="model-grid" style="display:none;">
             <div class="model-card" id="model-k0" onclick="selectModel(this,'k0')">
               <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-1.png" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Riya</div><div class="model-spec">Age 8–10 · Girl</div></div>
+              <div class="model-info"><div class="model-name">Riya</div></div>
             </div>
             <div class="model-card" id="model-k1" onclick="selectModel(this,'k1')">
               <div class="model-avatar"><img src="https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-2.png" /><div class="model-check">✓</div></div>
-              <div class="model-info"><div class="model-name">Sneha</div><div class="model-spec">Age 8–10 · Girl</div></div>
+              <div class="model-info"><div class="model-name">Sneha</div></div>
             </div>
             <div class="model-card" id="model-k99" onclick="selectModel(this,'k99')">
               <div class="model-avatar" style="background:#fff0f5;flex-direction:column;cursor:pointer;" onclick="event.stopPropagation();document.getElementById('custom-kid-input').click()">
@@ -485,7 +485,7 @@
                 <div class="model-check">✓</div>
               </div>
               <input type="file" id="custom-kid-input" accept="image/*" style="display:none;" onchange="loadCustomKid(event)" />
-              <div class="model-info"><div class="model-name">Custom</div><div class="model-spec">Upload your kid model</div></div>
+              <div class="model-info"><div class="model-name">Custom</div></div>
             </div>
           </div>
 
