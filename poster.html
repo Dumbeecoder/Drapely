@@ -243,18 +243,26 @@
         <div class="ctrl-label">Store Info</div>
         <input class="ctrl-input" id="store-name" placeholder="Your Store Name" oninput="scheduleRender()" style="margin-bottom:8px;"/>
         <input class="ctrl-input" id="store-phone" placeholder="Phone / WhatsApp" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. New Collection)" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="bottom-text" placeholder="Bottom text (leave blank for default)" oninput="scheduleRender()"/>
+        <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. New Collection)" oninput="scheduleRender()"/>
       </div>
       <div class="ctrl-section">
-        <div class="ctrl-label">Bottom Bar Labels (editable)</div>
+        <div class="ctrl-label">Colours Section Text</div>
+        <input class="ctrl-input" id="bottom-text" placeholder="Available in these elegant colours" oninput="scheduleRender()"/>
+      </div>
+      <div class="ctrl-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="ctrl-label" style="margin-bottom:0;">Bottom Bar</div>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:#555;">
+            <input type="checkbox" id="show-bottom-bar" checked onchange="scheduleRender()" style="accent-color:#E91E63;width:16px;height:16px;"/>
+            Show
+          </label>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
           <input class="ctrl-input" id="bar-label-0" placeholder="Bulk Orders Welcome" oninput="scheduleRender()"/>
           <input class="ctrl-input" id="bar-label-1" placeholder="Best Quality Product" oninput="scheduleRender()"/>
           <input class="ctrl-input" id="bar-label-2" placeholder="Trusted by Retailers" oninput="scheduleRender()"/>
           <input class="ctrl-input" id="bar-label-3" placeholder="High Profit Margin" oninput="scheduleRender()"/>
         </div>
-        <div style="font-size:10px;color:#aaa;margin-top:5px;">Leave all blank to hide bottom bar</div>
       </div>
 
       <div class="ctrl-section">
@@ -430,7 +438,7 @@ function renderPoster(){
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
   var barLabels=[document.getElementById("bar-label-0").value||"Bulk Orders Welcome",document.getElementById("bar-label-1").value||"Best Quality Product",document.getElementById("bar-label-2").value||"Trusted by Retailers",document.getElementById("bar-label-3").value||"High Profit Margin"];
-  var allBarBlank=["bar-label-0","bar-label-1","bar-label-2","bar-label-3"].every(function(id){return document.getElementById(id).value==="";});
+  var allBarBlank=!document.getElementById("show-bottom-bar").checked;
   var vl=varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
   var cl=[0,1,2,3].map(function(i){return document.getElementById("clabel-"+i).value||"";});
   var nv=vl.length;
@@ -695,7 +703,7 @@ function renderLandscape(){
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
   var barLabels=[document.getElementById("bar-label-0").value||"Bulk Orders Welcome",document.getElementById("bar-label-1").value||"Best Quality Product",document.getElementById("bar-label-2").value||"Trusted by Retailers",document.getElementById("bar-label-3").value||"High Profit Margin"];
-  var allBarBlank=["bar-label-0","bar-label-1","bar-label-2","bar-label-3"].every(function(id){return document.getElementById(id).value==="";});
+  var allBarBlank=!document.getElementById("show-bottom-bar").checked;
   var n=active.length;
   var headerH=170,footerH=130;
 
@@ -789,31 +797,33 @@ function renderLandscape(){
     }
 
     function drawLsFooter(){
-      var fg=ctx.createLinearGradient(0,H-footerH-80,0,H);
+      var lsBarH=allBarBlank?0:60;
+      var fg=ctx.createLinearGradient(0,H-footerH-lsBarH-80,0,H);
       fg.addColorStop(0,'rgba(0,0,0,0)');
       fg.addColorStop(0.25,bgEl?'rgba(0,0,0,0.85)':h2r(s.bg,0.95));
       fg.addColorStop(1,bgEl?'rgba(0,0,0,0.97)':h2r(s.bg,1));
-      ctx.fillStyle=fg;ctx.fillRect(0,H-footerH-80,W,footerH+80);
+      ctx.fillStyle=fg;ctx.fillRect(0,H-footerH-lsBarH-80,W,footerH+lsBarH+80);
       var ar=ctx.createLinearGradient(W*0.05,0,W*0.95,0);
       ar.addColorStop(0,h2r(s.accent,0));ar.addColorStop(0.5,h2r(s.accent,0.8));ar.addColorStop(1,h2r(s.accent,0));
-      ctx.strokeStyle=ar;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.05,H-footerH);ctx.lineTo(W*0.95,H-footerH);ctx.stroke();
-      var fy=H-footerH+20;
+      ctx.strokeStyle=ar;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.05,H-footerH-lsBarH);ctx.lineTo(W*0.95,H-footerH-lsBarH);ctx.stroke();
+      var fy=H-footerH-lsBarH+18;
       if(tags.length){
         ctx.fillStyle=bgEl?'rgba(255,255,255,0.88)':s.sub;
-        ctx.font='300 20px DM Sans';ctx.textAlign='center';
-        ctx.fillText(tags.join('   ·   '),W/2,fy+14);fy+=42;
+        ctx.font='300 18px DM Sans';ctx.textAlign='center';
+        ctx.fillText(tags.join('   ·   '),W/2,fy+14);fy+=38;
       }
       if(phone){
-        ctx.fillStyle=s.accent;ctx.font='600 28px DM Sans';ctx.textAlign='center';
-        ctx.fillText('☎  '+phone,W/2,fy+24);fy+=40;
+        ctx.fillStyle=s.accent;ctx.font='600 26px DM Sans';ctx.textAlign='center';
+        ctx.fillText('☎  '+phone,W/2,fy+22);fy+=36;
       }
+      // Colours text above color pills
       var lsBottomTxt=(bottomText&&bottomText!=='')?bottomText:'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
-      ctx.fillStyle=bgEl?'rgba(255,255,255,0.3)':h2r(s.accent,0.4);
-      ctx.font='400 11px DM Sans';ctx.textAlign='center';
-      ctx.fillText(lsBottomTxt,W/2,H-14);
+      ctx.fillStyle=bgEl?'rgba(255,255,255,0.35)':h2r(s.accent,0.5);
+      ctx.font='400 10px DM Sans';ctx.textAlign='center';
+      ctx.fillText(lsBottomTxt,W/2,H-footerH-lsBarH-42);
 
-      // Draw color pills ABOVE the footer line, clearly visible
-      var pillY=H-footerH-36;
+      // Color pills
+      var pillY=H-footerH-lsBarH-18;
       for(var pi=0;pi<n;pi++){
         var pmx=pi*mw;
         var plbl=(lsLbl[mImgs[pi].oi]||('Color '+(mImgs[pi].oi+1))).toUpperCase();
@@ -821,6 +831,26 @@ function renderLandscape(){
         var pll=ctx.measureText(plbl).width+22,plx=pmx+(mw-pll)/2;
         ctx.fillStyle=s.accent;rr(ctx,plx,pillY,pll,28,14);ctx.fill();
         ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(plbl,pmx+mw/2,pillY+20);ctx.restore();
+      }
+
+      // Bottom bar
+      if(!allBarBlank){
+        var by=H-lsBarH;
+        var bbg=ctx.createLinearGradient(0,by,W,H);
+        bbg.addColorStop(0,h2r(s.accent,0.9));bbg.addColorStop(0.5,h2r(s.accent,1));bbg.addColorStop(1,h2r(s.accent,0.9));
+        ctx.fillStyle=bbg;ctx.fillRect(0,by,W,lsBarH);
+        ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(0,by,W,lsBarH);
+        var icons=['📦','⭐','🤝','💰'];
+        var fw2=W/barLabels.length;
+        barLabels.forEach(function(label,i){
+          var fx=i*fw2+fw2/2,fy2=by+4;
+          if(i>0){ctx.save();ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(i*fw2,by+6);ctx.lineTo(i*fw2,H-6);ctx.stroke();ctx.restore();}
+          ctx.font='16px DM Sans';ctx.textAlign='center';ctx.fillText(icons[i]||'✦',fx,fy2+18);
+          var words=label.toUpperCase().split(' '),mid=Math.ceil(words.length/2);
+          var line1=words.slice(0,mid).join(' '),line2=words.slice(mid).join(' ');
+          ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 9px DM Sans';ctx.fillText(line1,fx,fy2+32);
+          if(line2){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='300 8px DM Sans';ctx.fillText(line2,fx,fy2+43);}
+        });
       }
       drawLogo(ctx,W,H,showCanvas);
     }
