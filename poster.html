@@ -557,8 +557,8 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
 
   // Colour variant grid
   if(nv>0){
-    var availH=H-botBarH-cy-10;
-    var varH=Math.min(availH,160);
+    var availH=H-botBarH-cy-24; // full remaining space minus label
+    var varH=Math.max(availH,100); // use ALL available height
     var gap=5,padX=12;
     var availW=pW-padX*2;
     var slotW=(availW-(nv-1)*gap)/nv;
@@ -698,8 +698,9 @@ function renderLandscape(){
         var mx=i*mw,im=mImgs[i].img;
         var os=document.createElement('canvas');os.width=mw;os.height=H;
         var oc=os.getContext('2d');
-        var sc2=Math.min(H/im.height,mw/im.width);
-        if(im.width*sc2<mw*0.55)sc2=mw*0.65/im.width;
+        // Cover scale — always fill full height
+        var sc2=H/im.height;
+        if(im.width*sc2>mw*1.2)sc2=mw/im.width; // don't stretch too wide
         var dw=im.width*sc2,dh=im.height*sc2;
         var ddx=(mw-dw)/2,ddy=H-dh;if(ddy>0)ddy=0;
         oc.drawImage(im,ddx,ddy,dw,dh);
@@ -712,16 +713,14 @@ function renderLandscape(){
         oc.globalCompositeOperation='source-over';
         ctx.drawImage(os,mx,0);
 
-        // Color label pill
-        var lbl=(lsLbl[mImgs[i].oi]||'').toUpperCase();
-        if(lbl){
-          ctx.save();ctx.font='600 14px DM Sans';
-          var ll=ctx.measureText(lbl).width+24,lx3=mx+(mw-ll)/2,ly3=H-footerH-40;
-          var pillG=ctx.createLinearGradient(lx3,ly3,lx3+ll,ly3);
-          pillG.addColorStop(0,h2r(s.accent,0.8));pillG.addColorStop(1,h2r(s.accent,1));
-          ctx.fillStyle=pillG;rr(ctx,lx3,ly3,ll,28,14);ctx.fill();
-          ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(lbl,mx+mw/2,ly3+20);ctx.restore();
-        }
+        // Color label pill — always show
+        var lbl=(lsLbl[mImgs[i].oi]||('Color '+(mImgs[i].oi+1))).toUpperCase();
+        ctx.save();ctx.font='600 15px DM Sans';
+        var ll=ctx.measureText(lbl).width+28,lx3=mx+(mw-ll)/2,ly3=H-footerH-46;
+        ctx.fillStyle='rgba(0,0,0,0.55)';rr(ctx,lx3,ly3,ll,32,16);ctx.fill();
+        ctx.strokeStyle=h2r(s.accent,0.8);ctx.lineWidth=2;rr(ctx,lx3,ly3,ll,32,16);ctx.stroke();
+        ctx.fillStyle='#fff';ctx.textAlign='center';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=6;
+        ctx.fillText(lbl,mx+mw/2,ly3+22);ctx.shadowBlur=0;ctx.restore();
       }
       drawLsHeader();
     }
