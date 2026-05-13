@@ -706,19 +706,23 @@ function renderLandscape(){
         var mx=i*mw,im=mImgs[i].img;
         var os=document.createElement('canvas');os.width=mw;os.height=H;
         var oc=os.getContext('2d');
-        // Always fill full height — cover scale
+
+        // Always fill FULL HEIGHT — cover scale, center crop width
         var sc2=H/im.height;
         var dw=im.width*sc2,dh=H;
-        // If too wide for slot, scale down to fit width
-        if(dw>mw*1.3){sc2=mw/im.width;dw=mw;dh=im.height*sc2;}
-        var ddx=(mw-dw)/2,ddy=(H-dh);if(ddy>0)ddy=0;
-        oc.drawImage(im,ddx,ddy,dw,dh);
+        // Center horizontally in slot
+        var ddx=(mw-dw)/2;
+        oc.drawImage(im,ddx,0,dw,dh);
+
         oc.globalCompositeOperation='destination-out';
-        var fS=0.09;
-        if(i>0){var lf=oc.createLinearGradient(0,0,mw*fS,0);lf.addColorStop(0,'rgba(0,0,0,0.9)');lf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=lf;oc.fillRect(0,0,mw*fS,H);}
-        if(i<n-1){var rf=oc.createLinearGradient(mw*(1-fS),0,mw,0);rf.addColorStop(0,'rgba(0,0,0,0)');rf.addColorStop(1,'rgba(0,0,0,0.9)');oc.fillStyle=rf;oc.fillRect(mw*(1-fS),0,mw*fS,H);}
-        var tf=oc.createLinearGradient(0,0,0,headerH*1.3);tf.addColorStop(0,'rgba(0,0,0,1)');tf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=tf;oc.fillRect(0,0,mw,headerH*1.3);
-        var bf=oc.createLinearGradient(0,H-footerH*1.2,0,H);bf.addColorStop(0,'rgba(0,0,0,0)');bf.addColorStop(1,'rgba(0,0,0,0.85)');oc.fillStyle=bf;oc.fillRect(0,H-footerH*1.2,mw,footerH*1.2);
+        var fS=0.08;
+        // Blend edges between models
+        if(i>0){var lf=oc.createLinearGradient(0,0,mw*fS,0);lf.addColorStop(0,'rgba(0,0,0,0.85)');lf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=lf;oc.fillRect(0,0,mw*fS,H);}
+        if(i<n-1){var rf=oc.createLinearGradient(mw*(1-fS),0,mw,0);rf.addColorStop(0,'rgba(0,0,0,0)');rf.addColorStop(1,'rgba(0,0,0,0.85)');oc.fillStyle=rf;oc.fillRect(mw*(1-fS),0,mw*fS,H);}
+        // Top fade into header
+        var tf=oc.createLinearGradient(0,0,0,headerH*1.1);tf.addColorStop(0,'rgba(0,0,0,1)');tf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=tf;oc.fillRect(0,0,mw,headerH*1.1);
+        // Bottom fade into footer
+        var bf=oc.createLinearGradient(0,H-footerH*1.1,0,H);bf.addColorStop(0,'rgba(0,0,0,0)');bf.addColorStop(1,'rgba(0,0,0,0.8)');oc.fillStyle=bf;oc.fillRect(0,H-footerH*1.1,mw,footerH*1.1);
         oc.globalCompositeOperation='source-over';
         ctx.drawImage(os,mx,0);
 
