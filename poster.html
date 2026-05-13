@@ -730,15 +730,6 @@ function renderLandscape(){
         ctx.drawImage(os,mx,0);
       }
       drawLsHeader();
-      // Draw color pills LAST so they appear on top of footer gradient
-      for(var pi=0;pi<n;pi++){
-        var pmx=pi*mw;
-        var plbl=(lsLbl[mImgs[pi].oi]||('Color '+(mImgs[pi].oi+1))).toUpperCase();
-        ctx.save();ctx.font='700 13px DM Sans';
-        var pll=ctx.measureText(plbl).width+22,plx=pmx+(mw-pll)/2,ply=H-footerH+14;
-        ctx.fillStyle=s.accent;rr(ctx,plx,ply,pll,28,14);ctx.fill();
-        ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(plbl,pmx+mw/2,ply+20);ctx.restore();
-      }
     }
 
     function drawLsHeader(){
@@ -780,11 +771,9 @@ function renderLandscape(){
       fg.addColorStop(0.25,bgEl?'rgba(0,0,0,0.85)':h2r(s.bg,0.95));
       fg.addColorStop(1,bgEl?'rgba(0,0,0,0.97)':h2r(s.bg,1));
       ctx.fillStyle=fg;ctx.fillRect(0,H-footerH-80,W,footerH+80);
-      // Gradient accent rule
       var ar=ctx.createLinearGradient(W*0.05,0,W*0.95,0);
       ar.addColorStop(0,h2r(s.accent,0));ar.addColorStop(0.5,h2r(s.accent,0.8));ar.addColorStop(1,h2r(s.accent,0));
       ctx.strokeStyle=ar;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.05,H-footerH);ctx.lineTo(W*0.95,H-footerH);ctx.stroke();
-
       var fy=H-footerH+20;
       if(tags.length){
         ctx.fillStyle=bgEl?'rgba(255,255,255,0.88)':s.sub;
@@ -795,10 +784,21 @@ function renderLandscape(){
         ctx.fillStyle=s.accent;ctx.font='600 28px DM Sans';ctx.textAlign='center';
         ctx.fillText('☎  '+phone,W/2,fy+24);fy+=40;
       }
+      var lsBottomTxt=(bottomText&&bottomText!=='')?bottomText:'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
       ctx.fillStyle=bgEl?'rgba(255,255,255,0.3)':h2r(s.accent,0.4);
       ctx.font='400 11px DM Sans';ctx.textAlign='center';
-      var lsBottomTxt=bottomText||'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
       ctx.fillText(lsBottomTxt,W/2,H-14);
+
+      // Draw color pills ABOVE the footer line, clearly visible
+      var pillY=H-footerH-36;
+      for(var pi=0;pi<n;pi++){
+        var pmx=pi*mw;
+        var plbl=(lsLbl[mImgs[pi].oi]||('Color '+(mImgs[pi].oi+1))).toUpperCase();
+        ctx.save();ctx.font='700 13px DM Sans';
+        var pll=ctx.measureText(plbl).width+22,plx=pmx+(mw-pll)/2;
+        ctx.fillStyle=s.accent;rr(ctx,plx,pillY,pll,28,14);ctx.fill();
+        ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(plbl,pmx+mw/2,pillY+20);ctx.restore();
+      }
       drawLogo(ctx,W,H,showCanvas);
     }
   }
