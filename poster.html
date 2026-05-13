@@ -413,7 +413,7 @@ function renderPoster(){
   var cv=document.getElementById('poster-canvas'),ctx=cv.getContext('2d');
   var W=1080,H=1350;cv.width=W;cv.height=H;
   var s=ST[currentStyle]||ST.dark;
-  var title=document.getElementById('poster-title').value||'Timeless Elegance';
+  var title=document.getElementById('poster-title').value||'';
   var sname=document.getElementById('store-name').value||'';
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
@@ -496,20 +496,20 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
   rl1.addColorStop(0,h2r(s.accent,0));rl1.addColorStop(0.5,h2r(s.accent,0.5));rl1.addColorStop(1,h2r(s.accent,0));
   ctx.strokeStyle=rl1;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pX+pad,cy);ctx.lineTo(W-pad,cy);ctx.stroke();cy+=14;
 
-  // BIG ITALIC TITLE — two lines
-  var tls=wrap(ctx,title,pW-pad*2);if(tls.length>2)tls=tls.slice(0,2);
-  var ts=tls.length>1?46:60;
-  ctx.font='italic 300 '+ts+'px Cormorant Garamond,serif';
-  tls=wrap(ctx,title,pW-pad*2);if(tls.length>2)tls=tls.slice(0,2);
-  ctx.fillStyle=s.text;ctx.textAlign='center';
-  ctx.shadowColor=s.accent+'66';ctx.shadowBlur=20;
-  tls.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+4;});
-  ctx.shadowBlur=0;cy+=8;
-
-  // Subtitle / tagline
-  if(tags.length>0){
-    ctx.font='300 10px DM Sans';ctx.fillStyle=h2r(s.text,0.5);ctx.textAlign='center';
-    ctx.fillText('CRAFTED FOR GRACE. DESIGNED TO STAND OUT.',pCx,cy+11);cy+=22;
+  // BIG ITALIC TITLE — only if user typed something
+  if(title&&title.trim().length>0){
+    var tls=wrap(ctx,title,pW-pad*2);if(tls.length>2)tls=tls.slice(0,2);
+    var ts=tls.length>1?46:60;
+    ctx.font='italic 300 '+ts+'px Cormorant Garamond,serif';
+    tls=wrap(ctx,title,pW-pad*2);if(tls.length>2)tls=tls.slice(0,2);
+    ctx.fillStyle=s.text;ctx.textAlign='center';
+    ctx.shadowColor=s.accent+'66';ctx.shadowBlur=20;
+    tls.forEach(function(l){ctx.fillText(l,pCx,cy+ts);cy+=ts+4;});
+    ctx.shadowBlur=0;cy+=8;
+    if(tags.length>0){
+      ctx.font='300 10px DM Sans';ctx.fillStyle=h2r(s.text,0.5);ctx.textAlign='center';
+      ctx.fillText('CRAFTED FOR GRACE. DESIGNED TO STAND OUT.',pCx,cy+11);cy+=22;
+    }
   }
 
   // Diamond ornament
@@ -668,7 +668,7 @@ function renderLandscape(){
   var cv=document.getElementById('poster-canvas'),ctx=cv.getContext('2d');
   var W=1350,H=1080;cv.width=W;cv.height=H;
   var s=ST[currentStyle]||ST.dark;
-  var title=document.getElementById('poster-title').value||'New Collection';
+  var title=document.getElementById('poster-title').value||'';
   var sname=document.getElementById('store-name').value||'';
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
@@ -726,24 +726,26 @@ function renderLandscape(){
         oc.globalCompositeOperation='source-over';
         ctx.drawImage(os,mx,0);
 
-        // Color label pill — always show
+        // Color label pill — solid accent background, always visible
         var lbl=(lsLbl[mImgs[i].oi]||('Color '+(mImgs[i].oi+1))).toUpperCase();
-        ctx.save();ctx.font='600 15px DM Sans';
-        var ll=ctx.measureText(lbl).width+28,lx3=mx+(mw-ll)/2,ly3=H-footerH-46;
-        ctx.fillStyle='rgba(0,0,0,0.55)';rr(ctx,lx3,ly3,ll,32,16);ctx.fill();
-        ctx.strokeStyle=h2r(s.accent,0.8);ctx.lineWidth=2;rr(ctx,lx3,ly3,ll,32,16);ctx.stroke();
-        ctx.fillStyle='#fff';ctx.textAlign='center';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=6;
-        ctx.fillText(lbl,mx+mw/2,ly3+22);ctx.shadowBlur=0;ctx.restore();
+        ctx.save();ctx.font='700 13px DM Sans';
+        var ll=ctx.measureText(lbl).width+24,lx3=mx+(mw-ll)/2,ly3=H-footerH-40;
+        ctx.fillStyle=s.accent;rr(ctx,lx3,ly3,ll,28,14);ctx.fill();
+        ctx.fillStyle='#fff';ctx.textAlign='center';
+        ctx.fillText(lbl,mx+mw/2,ly3+19);ctx.restore();
       }
       drawLsHeader();
     }
 
     function drawLsHeader(){
-      // Rich header overlay
-      var hg=ctx.createLinearGradient(0,0,0,headerH+80);
-      hg.addColorStop(0,bgEl?'rgba(0,0,0,0.92)':h2r(s.bg,1));hg.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=hg;ctx.fillRect(0,0,W,headerH+80);
-      // Gradient top accent bar
+      var hasTitle=title&&title.trim().length>0;
+      // Only draw header overlay if there's content
+      if(sname||hasTitle){
+        var hg=ctx.createLinearGradient(0,0,0,headerH+60);
+        hg.addColorStop(0,bgEl?'rgba(0,0,0,0.88)':h2r(s.bg,1));hg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=hg;ctx.fillRect(0,0,W,headerH+60);
+      }
+      // Gradient top accent bar — always show
       var ab=ctx.createLinearGradient(0,0,W,0);
       ab.addColorStop(0,h2r(s.accent,0.3));ab.addColorStop(0.5,h2r(s.accent,1));ab.addColorStop(1,h2r(s.accent,0.3));
       ctx.fillStyle=ab;ctx.fillRect(0,0,W,6);
@@ -751,18 +753,20 @@ function renderLandscape(){
       var hcx=W/2,hcy=18;
       if(sname){
         ctx.fillStyle=bgEl?'#ffffff':s.accent;
-        ctx.font='600 20px DM Sans';ctx.textAlign='center';
-        ctx.fillText(sname.toUpperCase().split('').join('  '),hcx,hcy+20);hcy+=46;
+        ctx.font='600 18px DM Sans';ctx.textAlign='center';
+        ctx.fillText(sname.toUpperCase().split('').join('  '),hcx,hcy+18);hcy+=40;
       }
-      // Big landscape title
-      ctx.fillStyle=bgEl?'#fff':s.text;ctx.textAlign='center';
-      ctx.shadowColor=s.accent+'66';ctx.shadowBlur=28;
-      var htl=wrap(ctx,title,W*0.5);if(htl.length>2)htl=htl.slice(0,2);
-      var hts=htl.length>1?58:76;
-      ctx.font='italic 300 '+hts+'px Cormorant Garamond,serif';
-      htl=wrap(ctx,title,W*0.5);if(htl.length>2)htl=htl.slice(0,2);
-      htl.forEach(function(l){ctx.fillText(l,hcx,hcy+hts);hcy+=hts+6;});
-      ctx.shadowBlur=0;
+      // Title — only if user typed something
+      if(hasTitle){
+        ctx.fillStyle=bgEl?'#fff':s.text;ctx.textAlign='center';
+        ctx.shadowColor=s.accent+'66';ctx.shadowBlur=24;
+        var htl=wrap(ctx,title,W*0.45);if(htl.length>2)htl=htl.slice(0,2);
+        var hts=htl.length>1?54:68;
+        ctx.font='italic 300 '+hts+'px Cormorant Garamond,serif';
+        htl=wrap(ctx,title,W*0.45);if(htl.length>2)htl=htl.slice(0,2);
+        htl.forEach(function(l){ctx.fillText(l,hcx,hcy+hts);hcy+=hts+6;});
+        ctx.shadowBlur=0;
+      }
       drawLsFooter();
     }
 
