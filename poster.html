@@ -388,6 +388,7 @@ sb.auth.getSession().then(function(r){
 });
 
 var heroImg=null,varImgs=[null,null,null,null],lsImgs=[null,null,null,null],lsBgImg=null,logoImg=null;
+var _renderId=0;
 var selectedTags=[],currentStyle='dark',currentMode='portrait',logoPos='top-right',renderTimer=null;
 
 function addTag(el){var t=el.textContent.trim();if(selectedTags.includes(t)||selectedTags.length>=3)return;selectedTags.push(t);renderTags();scheduleRender();}
@@ -443,6 +444,7 @@ function renderPoster(){
   if(!heroImg){alert('Upload a hero photo first');return;}
   var cv=document.getElementById('poster-canvas'),ctx=cv.getContext('2d');
   var W=1080,H=1350;cv.width=W;cv.height=H;
+  var myRender=++_renderId;
   var s=ST[currentStyle]||ST.dark;
   var title=document.getElementById('poster-title').value||'';
   var sname=document.getElementById('store-name').value||'';
@@ -598,6 +600,7 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
       (function(oIdx){
         var img=new Image();
         img.onload=function(){
+          if(myRender!==_renderId)return;
           var sx=pX+padX+oIdx*(slotW+gap),sy=cy;
           var os=document.createElement('canvas');
           os.width=Math.ceil(slotW);os.height=Math.ceil(varH);
@@ -692,6 +695,7 @@ function renderLandscape(){
   if(!active.length)return;
   var cv=document.getElementById('poster-canvas'),ctx=cv.getContext('2d');
   var W=1350,H=1080;cv.width=W;cv.height=H;
+  var myRender=++_renderId;
   var s=ST[currentStyle]||ST.dark;
   var title=document.getElementById('poster-title').value||'';
   var sname=document.getElementById('store-name').value||'';
@@ -723,7 +727,7 @@ function renderLandscape(){
     var loaded=0,mImgs=[];
     active.forEach(function(item,i){
       var img=new Image();
-      img.onload=function(){mImgs[i]={img:img,oi:item.idx};loaded++;if(loaded===n)drawModels();};
+      img.onload=function(){if(myRender!==_renderId)return;mImgs[i]={img:img,oi:item.idx};loaded++;if(loaded===n)drawModels();};
       img.src=item.src;
     });
 
