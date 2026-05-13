@@ -420,8 +420,8 @@ function renderPoster(){
   var sname=document.getElementById('store-name').value||'';
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
-  var bottomText=document.getElementById("bottom-text").value||"";
-  var bottomBarText=document.getElementById("bottom-bar-text").value||"";
+  var bottomText=document.getElementById("bottom-text").value;
+  var bottomBarText=document.getElementById("bottom-bar-text").value;
   var cl=[0,1,2,3].map(function(i){return document.getElementById('clabel-'+i).value||'';});
   var vl=varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
   var nv=vl.length;
@@ -606,43 +606,26 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
 
 /* ── Bottom feature bar ── */
 function drawBottomBar(ctx,W,H,botBarH,s,tags,bottomText,bottomBarText){
-  // Bottom text line (above bar)
-  var btext=bottomText||'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
-  // If no custom bar text and no default, skip bar
-  var barItems=bottomBarText?bottomBarText.split('·').map(function(x){return x.trim();}).filter(function(x){return x;}):
+  var btext=(bottomText!==undefined&&bottomText!=='') ? bottomText : 'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
+  var hasCustom=(bottomBarText!==undefined&&bottomBarText!=='');
+  var barItems=hasCustom ? bottomBarText.split('·').map(function(x){return x.trim();}).filter(function(x){return x;}) :
     ['BULK ORDERS WELCOME','BEST QUALITY PRODUCT','TRUSTED BY RETAILERS','HIGH PROFIT MARGIN'];
-
-  if(bottomBarText===''&&bottomBarText!==undefined){
-    // User explicitly cleared it — no bar, just the bottom text line
-    if(btext){
-      ctx.fillStyle=h2r(s.accent,0.45);ctx.font='400 11px DM Sans';ctx.textAlign='center';
-      ctx.fillText(btext,W/2,H-10);
-    }
-    return;
-  }
-
   var by=H-botBarH;
   var bbg=ctx.createLinearGradient(0,by,W,H);
   bbg.addColorStop(0,h2r(s.accent,0.9));bbg.addColorStop(0.5,h2r(s.accent,1));bbg.addColorStop(1,h2r(s.accent,0.9));
   ctx.fillStyle=bbg;ctx.fillRect(0,by,W,botBarH);
   ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(0,by,W,botBarH);
-
   var fw=W/barItems.length;
   barItems.forEach(function(item,i){
     var fx=i*fw+fw/2,fy=by+8;
     if(i>0){ctx.save();ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(i*fw,by+10);ctx.lineTo(i*fw,H-10);ctx.stroke();ctx.restore();}
-    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 10px DM Sans';ctx.textAlign='center';
-    // Split on space for two lines
     var words=item.split(' '),line1=words.slice(0,Math.ceil(words.length/2)).join(' '),line2=words.slice(Math.ceil(words.length/2)).join(' ');
+    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 10px DM Sans';ctx.textAlign='center';
     ctx.fillText(line1,fx,fy+22);
     if(line2){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='300 9px DM Sans';ctx.fillText(line2,fx,fy+36);}
   });
-
-  // Bottom text above bar
-  if(btext){
-    ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='400 10px DM Sans';ctx.textAlign='center';
-    ctx.fillText(btext,W/2,by-8);
-  }
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='400 10px DM Sans';ctx.textAlign='center';
+  ctx.fillText(btext,W/2,by-8);
 }
 
 /* ── Full hero overlay (no variants) ── */
@@ -687,8 +670,8 @@ function renderLandscape(){
   var sname=document.getElementById('store-name').value||'';
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
-  var bottomText=document.getElementById("bottom-text").value||"";
-  var bottomBarText=document.getElementById("bottom-bar-text").value||"";
+  var bottomText=document.getElementById("bottom-text").value;
+  var bottomBarText=document.getElementById("bottom-bar-text").value;
   var lsLbl=[0,1,2,3].map(function(i){return document.getElementById('ls-label-'+i).value||'';});
   var n=active.length;
   var headerH=170,footerH=130;
@@ -745,15 +728,17 @@ function renderLandscape(){
         var bf=oc.createLinearGradient(0,H-footerH*1.1,0,H);bf.addColorStop(0,'rgba(0,0,0,0)');bf.addColorStop(1,'rgba(0,0,0,0.8)');oc.fillStyle=bf;oc.fillRect(0,H-footerH*1.1,mw,footerH*1.1);
         oc.globalCompositeOperation='source-over';
         ctx.drawImage(os,mx,0);
-
-        // Color label pill — solid, inside footer so always visible
-        var lbl=(lsLbl[mImgs[i].oi]||('Color '+(mImgs[i].oi+1))).toUpperCase();
-        ctx.save();ctx.font='700 12px DM Sans';
-        var ll=ctx.measureText(lbl).width+20,lx3=mx+(mw-ll)/2,ly3=H-footerH+12;
-        ctx.fillStyle=s.accent;rr(ctx,lx3,ly3,ll,26,13);ctx.fill();
-        ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(lbl,mx+mw/2,ly3+18);ctx.restore();
       }
       drawLsHeader();
+      // Draw color pills LAST so they appear on top of footer gradient
+      for(var pi=0;pi<n;pi++){
+        var pmx=pi*mw;
+        var plbl=(lsLbl[mImgs[pi].oi]||('Color '+(mImgs[pi].oi+1))).toUpperCase();
+        ctx.save();ctx.font='700 13px DM Sans';
+        var pll=ctx.measureText(plbl).width+22,plx=pmx+(mw-pll)/2,ply=H-footerH+14;
+        ctx.fillStyle=s.accent;rr(ctx,plx,ply,pll,28,14);ctx.fill();
+        ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(plbl,pmx+mw/2,ply+20);ctx.restore();
+      }
     }
 
     function drawLsHeader(){
