@@ -469,7 +469,7 @@ function renderPoster(){
     ctx.fillStyle=bfg;ctx.fillRect(0,H-botBarH-120,heroW,120);
 
     if(nv>0){
-      drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv);
+      drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv,bottomText,barLabels,allBarBlank);
     } else {
       drawFullHeroOverlay(ctx,W,H,botBarH,s,title,sname,phone,tags,function(){
         drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank);
@@ -481,7 +481,7 @@ function renderPoster(){
 }
 
 /* ── Right info panel ── */
-function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv){
+function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv,bottomText,barLabels,allBarBlank){
   // Panel subtle gradient background
   var pg=ctx.createLinearGradient(pX,0,W,H);
   pg.addColorStop(0,h2r(s.bg,0.4));pg.addColorStop(1,h2r(s.bg,0.85));
