@@ -739,8 +739,9 @@ function renderLandscape(){
       img.src=item.src;
     });
 
+    var mw=Math.floor(W/n); // declared here so drawLsFooter can access it
+
     function drawModels(){
-      var mw=Math.floor(W/n);
       for(var i=0;i<n;i++){
         var mx=i*mw,im=mImgs[i].img;
         var os=document.createElement('canvas');os.width=mw;os.height=H;
