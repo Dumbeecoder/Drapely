@@ -491,7 +491,7 @@ function renderPoster(){
     ctx.fillStyle=bfg;ctx.fillRect(0,H-botBarH-120,heroW,120);
 
     if(nv>0){
-      drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv,bottomText,barLabels,allBarBlank);
+      drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv,bottomText,barLabels,allBarBlank,myRender);
     } else {
       drawFullHeroOverlay(ctx,W,H,botBarH,s,title,sname,phone,tags,function(){
         drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank);
@@ -503,7 +503,7 @@ function renderPoster(){
 }
 
 /* ── Right info panel ── */
-function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv,bottomText,barLabels,allBarBlank){
+function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv,bottomText,barLabels,allBarBlank,myRender){
   // Panel subtle gradient background
   var pg=ctx.createLinearGradient(pX,0,W,H);
   pg.addColorStop(0,h2r(s.bg,0.4));pg.addColorStop(1,h2r(s.bg,0.85));
@@ -864,7 +864,7 @@ function renderLandscape(){
 
 /* ── DECORATIVE ── */
 function dDiam(ctx,cx,y,width,color){var hw=width/2;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=0.6;ctx.beginPath();ctx.moveTo(cx-hw,y);ctx.lineTo(cx-14,y);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+14,y);ctx.lineTo(cx+hw,y);ctx.stroke();ctx.globalAlpha=1;ctx.fillStyle=color;ctx.save();ctx.translate(cx,y);ctx.rotate(Math.PI/4);ctx.fillRect(-4,-4,8,8);ctx.restore();ctx.globalAlpha=0.38;ctx.beginPath();ctx.arc(cx-20,y,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+20,y,2,0,Math.PI*2);ctx.fill();ctx.restore();}
-function dOrn(ctx,cx,y,width,color){var hw=width/2;ctx.save();ctx.strokeStyle=color;ctx.globalAlpha=0.28;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-hw,y);ctx.bezierCurveTo(cx-hw*0.6,y-6,cx-hw*0.3,y+4,cx-6,y);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+hw,y);ctx.bezierCurveTo(ctx+hw*0.6,y-6,cx+hw*0.3,y+4,cx+6,y);ctx.stroke();ctx.globalAlpha=0.8;ctx.fillStyle=color;ctx.beginPath();ctx.arc(cx,y,2,0,Math.PI*2);ctx.fill();ctx.restore();}
+function dOrn(ctx,cx,y,width,color){var hw=width/2;ctx.save();ctx.strokeStyle=color;ctx.globalAlpha=0.28;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-hw,y);ctx.bezierCurveTo(cx-hw*0.6,y-6,cx-hw*0.3,y+4,cx-6,y);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+hw,y);ctx.bezierCurveTo(cx+hw*0.6,y-6,cx+hw*0.3,y+4,cx+6,y);ctx.stroke();ctx.globalAlpha=0.8;ctx.fillStyle=color;ctx.beginPath();ctx.arc(cx,y,2,0,Math.PI*2);ctx.fill();ctx.restore();}
 
 function downloadPoster(){var cv=document.getElementById('poster-canvas'),link=document.createElement('a');var sn=document.getElementById('store-name').value||'Drapely';link.download=sn.replace(/\s+/g,'_')+'_Poster.jpg';link.href=cv.toDataURL('image/jpeg',0.95);link.click();}
 function openMobileNav(){document.getElementById('mobile-nav').classList.add('open');document.getElementById('mobile-overlay').classList.add('open');document.body.style.overflow='hidden';}
