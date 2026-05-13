@@ -432,6 +432,7 @@ function renderPoster(){
   var barLabels=[document.getElementById("bar-label-0").value||"Bulk Orders Welcome",document.getElementById("bar-label-1").value||"Best Quality Product",document.getElementById("bar-label-2").value||"Trusted by Retailers",document.getElementById("bar-label-3").value||"High Profit Margin"];
   var allBarBlank=["bar-label-0","bar-label-1","bar-label-2","bar-label-3"].every(function(id){return document.getElementById(id).value==="";});
   var vl=varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
+  var cl=[0,1,2,3].map(function(i){return document.getElementById("clabel-"+i).value||"";});
   var nv=vl.length;
 
   // Layout: hero=58%, panel=42%
