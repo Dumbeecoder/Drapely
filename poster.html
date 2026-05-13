@@ -449,7 +449,7 @@ function renderPoster(){
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
-  var barLabels=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;}).map(function(i){var defaults=["Bulk Orders Welcome","Best Quality Product","Trusted by Retailers","High Profit Margin"];return document.getElementById("bar-label-"+i).value||defaults[i];});
+  var _icons=["📦","⭐","🤝","💰"];var barLabels=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;}).map(function(i){var defaults=["Bulk Orders Welcome","Best Quality Product","Trusted by Retailers","High Profit Margin"];return{label:document.getElementById("bar-label-"+i).value||defaults[i],icon:_icons[i]};});
   var allBarBlank=!document.getElementById("show-bottom-bar").checked||barLabels.length===0;
   var vl=varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
   var cl=[0,1,2,3].map(function(i){return document.getElementById("clabel-"+i).value||"";});
@@ -558,7 +558,7 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
       // Icon text
       var icons=['✦','◈','❋'];
       ctx.fillStyle=s.accent;ctx.font='700 11px DM Sans';ctx.textAlign='center';
-      ctx.fillText(icons[checkedIndices[i]]||'✦',pX+pad+16,bulletY+16);
+      ctx.fillText(icons[i]||'✦',pX+pad+16,bulletY+16);
       // Bullet text
       ctx.fillStyle=s.text;ctx.font='600 11px DM Sans';ctx.textAlign='left';
       ctx.fillText(t.toUpperCase(),pX+pad+36,bulletY+10);
@@ -637,31 +637,19 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
 /* ── Bottom feature bar ── */
 function drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank){
   if(allBarBlank)return;
-
-  // Full-width accent bar — exact same design as before
   var by=H-botBarH;
   var bbg=ctx.createLinearGradient(0,by,W,H);
   bbg.addColorStop(0,h2r(s.accent,0.88));bbg.addColorStop(0.5,h2r(s.accent,1));bbg.addColorStop(1,h2r(s.accent,0.88));
   ctx.fillStyle=bbg;ctx.fillRect(0,by,W,botBarH);
   ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(0,by,W,botBarH);
-
-  var icons=["📦","⭐","🤝","💰"];
-  var checkedIndices=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;});
   var fw=W/barLabels.length;
-  barLabels.forEach(function(label,i){
+  barLabels.forEach(function(item,i){
     var fx=i*fw+fw/2,fy=by+6;
-    if(i>0){
-      ctx.save();ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(i*fw,by+8);ctx.lineTo(i*fw,H-8);ctx.stroke();ctx.restore();
-    }
-    // Icon
-    ctx.font='20px DM Sans';ctx.textAlign='center';ctx.fillText(icons[checkedIndices[i]]||'✦',fx,fy+22);
-    // Label — split into two lines at midpoint
-    var words=label.toUpperCase().split(' ');
-    var mid=Math.ceil(words.length/2);
+    if(i>0){ctx.save();ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(i*fw,by+8);ctx.lineTo(i*fw,H-8);ctx.stroke();ctx.restore();}
+    ctx.font='20px DM Sans';ctx.textAlign='center';ctx.fillText(item.icon,fx,fy+22);
+    var words=item.label.toUpperCase().split(' '),mid=Math.ceil(words.length/2);
     var line1=words.slice(0,mid).join(' '),line2=words.slice(mid).join(' ');
-    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 10px DM Sans';
-    ctx.fillText(line1,fx,fy+38);
+    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 10px DM Sans';ctx.fillText(line1,fx,fy+38);
     if(line2){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='300 9px DM Sans';ctx.fillText(line2,fx,fy+51);}
   });
 }
@@ -710,7 +698,7 @@ function renderLandscape(){
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
-  var barLabels=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;}).map(function(i){var defaults=["Bulk Orders Welcome","Best Quality Product","Trusted by Retailers","High Profit Margin"];return document.getElementById("bar-label-"+i).value||defaults[i];});
+  var _icons=["📦","⭐","🤝","💰"];var barLabels=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;}).map(function(i){var defaults=["Bulk Orders Welcome","Best Quality Product","Trusted by Retailers","High Profit Margin"];return{label:document.getElementById("bar-label-"+i).value||defaults[i],icon:_icons[i]};});
   var allBarBlank=!document.getElementById("show-bottom-bar").checked||barLabels.length===0;
   var n=active.length;
   var headerH=170,footerH=130;
@@ -849,16 +837,12 @@ function renderLandscape(){
         bbg.addColorStop(0,h2r(s.accent,0.9));bbg.addColorStop(0.5,h2r(s.accent,1));bbg.addColorStop(1,h2r(s.accent,0.9));
         ctx.fillStyle=bbg;ctx.fillRect(0,by,W,lsBarH);
         ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(0,by,W,lsBarH);
-        var allIcons=['📦','⭐','🤝','💰'];
-        // Keep original icon index from checked items
-        var checkedIndices=[0,1,2,3].filter(function(i){return document.getElementById('bar-show-'+i).checked;});
         var fw2=W/barLabels.length;
-        barLabels.forEach(function(label,i){
-          var origIdx=checkedIndices[i];
+        barLabels.forEach(function(item,i){
           var fx=i*fw2+fw2/2,fy2=by+4;
           if(i>0){ctx.save();ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(i*fw2,by+6);ctx.lineTo(i*fw2,H-6);ctx.stroke();ctx.restore();}
-          ctx.font='16px DM Sans';ctx.textAlign='center';ctx.fillText(allIcons[origIdx]||'✦',fx,fy2+18);
-          var words=label.toUpperCase().split(' '),mid=Math.ceil(words.length/2);
+          ctx.font='16px DM Sans';ctx.textAlign='center';ctx.fillText(item.icon,fx,fy2+18);
+          var words=item.label.toUpperCase().split(' '),mid=Math.ceil(words.length/2);
           var line1=words.slice(0,mid).join(' '),line2=words.slice(mid).join(' ');
           ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 9px DM Sans';ctx.fillText(line1,fx,fy2+32);
           if(line2){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='300 8px DM Sans';ctx.fillText(line2,fx,fy2+43);}
