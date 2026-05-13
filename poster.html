@@ -705,6 +705,7 @@ function renderLandscape(){
   var _icons=["📦","⭐","🤝","💰"];var barLabels=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;}).map(function(i){var defaults=["Bulk Orders Welcome","Best Quality Product","Trusted by Retailers","High Profit Margin"];return{label:document.getElementById("bar-label-"+i).value||defaults[i],icon:_icons[i]};});
   var allBarBlank=!document.getElementById("show-bottom-bar").checked||barLabels.length===0;
   var n=active.length;
+  var lsLbl=[0,1,2,3].map(function(i){return document.getElementById('ls-label-'+i).value||'';});
   var headerH=170,footerH=130;
 
   function doRender(bgEl){
