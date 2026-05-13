@@ -257,11 +257,23 @@
             Show
           </label>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-          <input class="ctrl-input" id="bar-label-0" placeholder="Bulk Orders Welcome" oninput="scheduleRender()"/>
-          <input class="ctrl-input" id="bar-label-1" placeholder="Best Quality Product" oninput="scheduleRender()"/>
-          <input class="ctrl-input" id="bar-label-2" placeholder="Trusted by Retailers" oninput="scheduleRender()"/>
-          <input class="ctrl-input" id="bar-label-3" placeholder="High Profit Margin" oninput="scheduleRender()"/>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="bar-show-0" checked onchange="scheduleRender()" style="accent-color:#E91E63;flex-shrink:0;"/>
+            <input class="ctrl-input" id="bar-label-0" placeholder="Bulk Orders Welcome" oninput="scheduleRender()" style="flex:1;"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="bar-show-1" checked onchange="scheduleRender()" style="accent-color:#E91E63;flex-shrink:0;"/>
+            <input class="ctrl-input" id="bar-label-1" placeholder="Best Quality Product" oninput="scheduleRender()" style="flex:1;"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="bar-show-2" checked onchange="scheduleRender()" style="accent-color:#E91E63;flex-shrink:0;"/>
+            <input class="ctrl-input" id="bar-label-2" placeholder="Trusted by Retailers" oninput="scheduleRender()" style="flex:1;"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="bar-show-3" checked onchange="scheduleRender()" style="accent-color:#E91E63;flex-shrink:0;"/>
+            <input class="ctrl-input" id="bar-label-3" placeholder="High Profit Margin" oninput="scheduleRender()" style="flex:1;"/>
+          </div>
         </div>
       </div>
 
@@ -437,8 +449,8 @@ function renderPoster(){
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
-  var barLabels=[document.getElementById("bar-label-0").value||"Bulk Orders Welcome",document.getElementById("bar-label-1").value||"Best Quality Product",document.getElementById("bar-label-2").value||"Trusted by Retailers",document.getElementById("bar-label-3").value||"High Profit Margin"];
-  var allBarBlank=!document.getElementById("show-bottom-bar").checked;
+  var barLabels=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;}).map(function(i){var defaults=["Bulk Orders Welcome","Best Quality Product","Trusted by Retailers","High Profit Margin"];return document.getElementById("bar-label-"+i).value||defaults[i];});
+  var allBarBlank=!document.getElementById("show-bottom-bar").checked||barLabels.length===0;
   var vl=varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
   var cl=[0,1,2,3].map(function(i){return document.getElementById("clabel-"+i).value||"";});
   var nv=vl.length;
@@ -568,10 +580,11 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
     ctx.fillText('☎  '+phone,pCx,cy+26);cy+=52;
   }
 
-  // "Available In These Elegant Colours" heading
+  // "Available In These Elegant Colours" heading — above variant grid
   dOrn(ctx,pCx,cy,pW*0.6,s.accent);cy+=14;
+  var coloursText=(bottomText&&bottomText!=='')?bottomText.toUpperCase():'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
   ctx.fillStyle=h2r(s.accent,0.8);ctx.font='300 9px DM Sans';ctx.textAlign='center';
-  ctx.fillText('A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S',pCx,cy+10);cy+=20;
+  ctx.fillText(coloursText,pCx,cy+10);cy+=20;
 
   // Colour variant grid
   if(nv>0){
@@ -623,12 +636,6 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
 
 /* ── Bottom feature bar ── */
 function drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank){
-  // Bottom text above bar
-  var btext=(bottomText&&bottomText!=='')?bottomText:'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
-  ctx.fillStyle=h2r(s.accent,0.5);ctx.font='400 10px DM Sans';ctx.textAlign='center';
-  ctx.fillText(btext,W/2,H-botBarH-8);
-
-  // Hide bar if all labels blank
   if(allBarBlank)return;
 
   // Full-width accent bar — exact same design as before
@@ -702,8 +709,8 @@ function renderLandscape(){
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
-  var barLabels=[document.getElementById("bar-label-0").value||"Bulk Orders Welcome",document.getElementById("bar-label-1").value||"Best Quality Product",document.getElementById("bar-label-2").value||"Trusted by Retailers",document.getElementById("bar-label-3").value||"High Profit Margin"];
-  var allBarBlank=!document.getElementById("show-bottom-bar").checked;
+  var barLabels=[0,1,2,3].filter(function(i){return document.getElementById("bar-show-"+i).checked;}).map(function(i){var defaults=["Bulk Orders Welcome","Best Quality Product","Trusted by Retailers","High Profit Margin"];return document.getElementById("bar-label-"+i).value||defaults[i];});
+  var allBarBlank=!document.getElementById("show-bottom-bar").checked||barLabels.length===0;
   var n=active.length;
   var headerH=170,footerH=130;
 
