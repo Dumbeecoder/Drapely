@@ -234,6 +234,9 @@
           <option value="3">Simran K.</option>
           <option value="4">Meera P.</option>
           <option value="5">Naina T.</option>
+          <option disabled>── Kids Models ──</option>
+          <option value="k0">🧒 Riya (Kids)</option>
+          <option value="k1">🧒 Sneha (Kids)</option>
         </select>
       </div>
       <div class="setting-group">
@@ -555,7 +558,8 @@ async function startBulkGenerate() {
   document.getElementById('bulk-results-wrap').style.display = 'none';
   document.getElementById('export-btn').style.display = 'none';
 
-  var modelIndex = parseInt(document.getElementById('bulk-model').value);
+  var modelIndex = document.getElementById('bulk-model').value;
+  if (!isNaN(parseInt(modelIndex))) modelIndex = parseInt(modelIndex);
   var scene = document.getElementById('bulk-scene').value;
   var poseValue = document.getElementById('bulk-pose').value;
   var garmentType = document.getElementById('bulk-garment').value;
