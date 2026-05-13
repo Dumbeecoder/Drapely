@@ -244,9 +244,17 @@
         <input class="ctrl-input" id="store-name" placeholder="Your Store Name" oninput="scheduleRender()" style="margin-bottom:8px;"/>
         <input class="ctrl-input" id="store-phone" placeholder="Phone / WhatsApp" oninput="scheduleRender()" style="margin-bottom:8px;"/>
         <input class="ctrl-input" id="poster-title" placeholder="Poster Title (e.g. New Collection)" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="bottom-text" placeholder="Bottom text (e.g. Available in these colours)" oninput="scheduleRender()" style="margin-bottom:8px;"/>
-        <input class="ctrl-input" id="bottom-bar-text" placeholder="Bottom bar (e.g. Bulk Orders · Best Quality · Trusted)" oninput="scheduleRender()"/>
-        <div style="font-size:10px;color:#aaa;margin-top:5px;">Leave blank to hide bottom bar</div>
+        <input class="ctrl-input" id="bottom-text" placeholder="Bottom text (leave blank for default)" oninput="scheduleRender()"/>
+      </div>
+      <div class="ctrl-section">
+        <div class="ctrl-label">Bottom Bar Labels (editable)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <input class="ctrl-input" id="bar-label-0" placeholder="Bulk Orders Welcome" oninput="scheduleRender()"/>
+          <input class="ctrl-input" id="bar-label-1" placeholder="Best Quality Product" oninput="scheduleRender()"/>
+          <input class="ctrl-input" id="bar-label-2" placeholder="Trusted by Retailers" oninput="scheduleRender()"/>
+          <input class="ctrl-input" id="bar-label-3" placeholder="High Profit Margin" oninput="scheduleRender()"/>
+        </div>
+        <div style="font-size:10px;color:#aaa;margin-top:5px;">Leave all blank to hide bottom bar</div>
       </div>
 
       <div class="ctrl-section">
@@ -421,8 +429,8 @@ function renderPoster(){
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
-  var bottomBarText=document.getElementById("bottom-bar-text").value;
-  var cl=[0,1,2,3].map(function(i){return document.getElementById('clabel-'+i).value||'';});
+  var barLabels=[document.getElementById("bar-label-0").value||"Bulk Orders Welcome",document.getElementById("bar-label-1").value||"Best Quality Product",document.getElementById("bar-label-2").value||"Trusted by Retailers",document.getElementById("bar-label-3").value||"High Profit Margin"];
+  var allBarBlank=["bar-label-0","bar-label-1","bar-label-2","bar-label-3"].every(function(id){return document.getElementById(id).value==="";});
   var vl=varImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
   var nv=vl.length;
 
@@ -463,7 +471,7 @@ function renderPoster(){
       drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv);
     } else {
       drawFullHeroOverlay(ctx,W,H,botBarH,s,title,sname,phone,tags,function(){
-        drawBottomBar(ctx,W,H,botBarH,s,tags,bottomText,bottomBarText);
+        drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank);
         drawLogo(ctx,W,H,showCanvas);
       });
     }
@@ -594,39 +602,53 @@ function drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,
           ctx.save();ctx.font='600 9px DM Sans';ctx.textAlign='center';
           ctx.fillStyle=s.accent;ctx.fillText(lbl,sx+slotW/2,sy+varH+14);ctx.restore();
           loaded++;
-          if(loaded===nv){drawBottomBar(ctx,W,H,botBarH,s,tags,bottomText,bottomBarText);drawLogo(ctx,W,H,showCanvas);}
+          if(loaded===nv){drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank);drawLogo(ctx,W,H,showCanvas);}
         };
         img.src=item.src;
       })(oi);
     });
   } else {
-    drawBottomBar(ctx,W,H,botBarH,s,tags,bottomText,bottomBarText);drawLogo(ctx,W,H,showCanvas);
+    drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank);drawLogo(ctx,W,H,showCanvas);
   }
 }
 
 /* ── Bottom feature bar ── */
-function drawBottomBar(ctx,W,H,botBarH,s,tags,bottomText,bottomBarText){
-  var btext=(bottomText!==undefined&&bottomText!=='') ? bottomText : 'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
-  var hasCustom=(bottomBarText!==undefined&&bottomBarText!=='');
-  var barItems=hasCustom ? bottomBarText.split('·').map(function(x){return x.trim();}).filter(function(x){return x;}) :
-    ['BULK ORDERS WELCOME','BEST QUALITY PRODUCT','TRUSTED BY RETAILERS','HIGH PROFIT MARGIN'];
+function drawBottomBar(ctx,W,H,botBarH,s,bottomText,barLabels,allBarBlank){
+  // Bottom text above bar
+  var btext=(bottomText&&bottomText!=='')?bottomText:'A V A I L A B L E  I N  T H E S E  E L E G A N T  C O L O U R S';
+  ctx.fillStyle=h2r(s.accent,0.5);ctx.font='400 10px DM Sans';ctx.textAlign='center';
+  ctx.fillText(btext,W/2,H-botBarH-8);
+
+  // Hide bar if all labels blank
+  if(allBarBlank)return;
+
+  // Full-width accent bar — exact same design as before
   var by=H-botBarH;
   var bbg=ctx.createLinearGradient(0,by,W,H);
-  bbg.addColorStop(0,h2r(s.accent,0.9));bbg.addColorStop(0.5,h2r(s.accent,1));bbg.addColorStop(1,h2r(s.accent,0.9));
+  bbg.addColorStop(0,h2r(s.accent,0.88));bbg.addColorStop(0.5,h2r(s.accent,1));bbg.addColorStop(1,h2r(s.accent,0.88));
   ctx.fillStyle=bbg;ctx.fillRect(0,by,W,botBarH);
-  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(0,by,W,botBarH);
-  var fw=W/barItems.length;
-  barItems.forEach(function(item,i){
-    var fx=i*fw+fw/2,fy=by+8;
-    if(i>0){ctx.save();ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(i*fw,by+10);ctx.lineTo(i*fw,H-10);ctx.stroke();ctx.restore();}
-    var words=item.split(' '),line1=words.slice(0,Math.ceil(words.length/2)).join(' '),line2=words.slice(Math.ceil(words.length/2)).join(' ');
-    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 10px DM Sans';ctx.textAlign='center';
-    ctx.fillText(line1,fx,fy+22);
-    if(line2){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='300 9px DM Sans';ctx.fillText(line2,fx,fy+36);}
+  ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(0,by,W,botBarH);
+
+  var icons=['📦','⭐','🤝','💰'];
+  var fw=W/barLabels.length;
+  barLabels.forEach(function(label,i){
+    var fx=i*fw+fw/2,fy=by+6;
+    if(i>0){
+      ctx.save();ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(i*fw,by+8);ctx.lineTo(i*fw,H-8);ctx.stroke();ctx.restore();
+    }
+    // Icon
+    ctx.font='20px DM Sans';ctx.textAlign='center';ctx.fillText(icons[i]||'✦',fx,fy+22);
+    // Label — split into two lines at midpoint
+    var words=label.toUpperCase().split(' ');
+    var mid=Math.ceil(words.length/2);
+    var line1=words.slice(0,mid).join(' '),line2=words.slice(mid).join(' ');
+    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font='600 10px DM Sans';
+    ctx.fillText(line1,fx,fy+38);
+    if(line2){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='300 9px DM Sans';ctx.fillText(line2,fx,fy+51);}
   });
-  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='400 10px DM Sans';ctx.textAlign='center';
-  ctx.fillText(btext,W/2,by-8);
 }
+
 
 /* ── Full hero overlay (no variants) ── */
 function drawFullHeroOverlay(ctx,W,H,botBarH,s,title,sname,phone,tags,cb){
@@ -671,8 +693,8 @@ function renderLandscape(){
   var phone=document.getElementById('store-phone').value||'';
   var tags=selectedTags.slice(0,3);
   var bottomText=document.getElementById("bottom-text").value;
-  var bottomBarText=document.getElementById("bottom-bar-text").value;
-  var lsLbl=[0,1,2,3].map(function(i){return document.getElementById('ls-label-'+i).value||'';});
+  var barLabels=[document.getElementById("bar-label-0").value||"Bulk Orders Welcome",document.getElementById("bar-label-1").value||"Best Quality Product",document.getElementById("bar-label-2").value||"Trusted by Retailers",document.getElementById("bar-label-3").value||"High Profit Margin"];
+  var allBarBlank=["bar-label-0","bar-label-1","bar-label-2","bar-label-3"].every(function(id){return document.getElementById(id).value==="";});
   var n=active.length;
   var headerH=170,footerH=130;
 
