@@ -575,13 +575,23 @@ function releaseWakeLock() {
   if (_wakeLock) { _wakeLock.release(); _wakeLock = null; }
 }
 
+function resetGenerateBtn() {
+  var btn = document.querySelector('.generate-btn');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+}
+
 async function startVideoGenerate() {
+  var generateBtn = document.querySelector('.generate-btn');
+  if (generateBtn.disabled) return; // prevent double click
+  generateBtn.disabled = true;
+  generateBtn.style.opacity = '0.6';
+  generateBtn.style.cursor = 'not-allowed';
   var suitFile = document.getElementById('v-suit-input').files[0];
   var fromPhotoUrl = window._videoFromPhotoUrl || null;
-  if (!suitFile && !fromPhotoUrl) { showToast('Please upload your suit photo first!'); return; }
+  if (!suitFile && !fromPhotoUrl) { resetGenerateBtn(); showToast('Please upload your suit photo first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
   var vidCost = selectedDuration === '10' ? 4 : 2;
-  if (credits < vidCost) { showToast('Need ' + vidCost + ' credits for this video!'); showBuyCredits(); return; }
+  if (credits < vidCost) { resetGenerateBtn(); showToast('Need ' + vidCost + ' credits for this video!'); showBuyCredits(); return; }
   var promptEl = document.getElementById('v-prompt');
   var prompt = (promptEl && promptEl.value.trim()) ? promptEl.value.trim() : 'model standing confidently, posing for camera';
   var progressEl = document.getElementById('v-progress');
@@ -629,6 +639,7 @@ async function startVideoGenerate() {
       clearInterval(vInterval);
       if (progressEl) progressEl.style.display = 'none';
       releaseWakeLock();
+      resetGenerateBtn();
       showToast('Error: ' + String(data.error).substring(0, 80));
       return;
     }
@@ -646,6 +657,7 @@ async function startVideoGenerate() {
           clearInterval(vInterval);
           if (progressEl) progressEl.style.display = 'none';
           releaseWakeLock();
+          resetGenerateBtn();
           showToast('Video failed. Try again.');
           return;
         }
@@ -711,6 +723,7 @@ async function startVideoGenerate() {
         });
 
         releaseWakeLock();
+        resetGenerateBtn();
         showToast('Your fashion video is ready!');
       } else {
         showToast('No video returned. Try again.');
@@ -720,6 +733,7 @@ async function startVideoGenerate() {
   } catch(err) {
     clearInterval(vInterval);
     if (progressEl) progressEl.style.display = 'none';
+    resetGenerateBtn();
     showToast('Error: ' + err.message);
   }
 }
