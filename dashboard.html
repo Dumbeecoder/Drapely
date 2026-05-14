@@ -1297,12 +1297,20 @@ function releaseWakeLock() {
 }
 
 async function startGenerate() {
+  var genBtn = document.querySelector('.generate-btn');
+  if (genBtn && genBtn.disabled) return;
+  if (genBtn) { genBtn.disabled = true; genBtn.style.opacity = '0.6'; genBtn.style.cursor = 'not-allowed'; }
+
+  function resetGenBtn() {
+    if (genBtn) { genBtn.disabled = false; genBtn.style.opacity = '1'; genBtn.style.cursor = 'pointer'; }
+  }
+
   var suitFile = document.getElementById('suit-input').files[0];
-  if (!suitFile) { showToast('Please upload your suit photo first!'); goStep(0); return; }
+  if (!suitFile) { resetGenBtn(); showToast('Please upload your suit photo first!'); goStep(0); return; }
 
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
   var imageCount = getVarCount();
-  if (credits < imageCount) { showToast('Need ' + imageCount + ' credits for ' + imageCount + ' image' + (imageCount>1?'s':'') + '! Buy more.'); showBuyCredits(); return; }
+  if (credits < imageCount) { resetGenBtn(); showToast('Need ' + imageCount + ' credits for ' + imageCount + ' image' + (imageCount>1?'s':'') + '! Buy more.'); showBuyCredits(); return; }
 
   // Read collection name from input
   var collectionInput = document.getElementById('collection-name');
@@ -1359,6 +1367,7 @@ async function startGenerate() {
         progressWrap.classList.remove('visible');
         activeStepEl.style.display = 'block';
         releaseWakeLock();
+        resetGenBtn();
         showToast('Error: ' + String(data.error).substring(0, 80));
         return;
       }
@@ -1368,6 +1377,7 @@ async function startGenerate() {
         progressWrap.classList.remove('visible');
         activeStepEl.style.display = 'block';
         releaseWakeLock();
+        resetGenBtn();
         showToast('No prediction ID returned');
         return;
       }
@@ -1408,17 +1418,20 @@ async function startGenerate() {
           addToGallery(urlsToSave, collectionName);
           showRealResults(urlsToSave);
           releaseWakeLock();
+          resetGenBtn();
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         }).catch(function() {
           addToGallery(composited, collectionName);
           showRealResults(composited);
           releaseWakeLock();
+          resetGenBtn();
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
         });
         });
       } else {
+        resetGenBtn();
         showToast('No images returned. Please try again.');
         goStep(0);
       }
@@ -1428,6 +1441,7 @@ async function startGenerate() {
     clearInterval(interval);
     progressWrap.classList.remove('visible');
     activeStepEl.style.display = 'block';
+    resetGenBtn();
     showToast('Error: ' + err.message);
   }
 }
