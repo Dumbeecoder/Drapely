@@ -934,9 +934,60 @@ sb.auth.getSession().then(function(r) {
   loadCredits(user.id);
   loadActivePlan(user.id);
   loadGalleryFromDB(user.id);
+  restorePrefs();
 });
 
 
+
+function restorePrefs() {
+  try {
+    // Restore model
+    var savedModel = localStorage.getItem('drapely_model');
+    if (savedModel !== null) {
+      var idx = isNaN(savedModel) ? savedModel : parseInt(savedModel);
+      var modelCard = document.getElementById('model-' + savedModel);
+      if (modelCard) {
+        document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+        modelCard.classList.add('selected');
+        selectedModelIndex = idx;
+        // Switch to kids tab if kid model
+        if (String(savedModel).startsWith('k')) switchModelAge('kids');
+      }
+    }
+    // Restore garment type
+    var savedGarment = localStorage.getItem('drapely_garment');
+    if (savedGarment) {
+      var garmentEl = document.querySelector('.garment-card[onclick*="' + savedGarment + '"]');
+      if (garmentEl) {
+        document.querySelectorAll('.garment-card').forEach(function(c){ c.classList.remove('selected'); });
+        garmentEl.classList.add('selected');
+        selectedGarmentType = savedGarment;
+      }
+    }
+    // Restore background
+    var savedBg = localStorage.getItem('drapely_bg');
+    if (savedBg) {
+      var bgCard = document.querySelector('.bg-card[data-prompt="' + savedBg + '"]');
+      if (bgCard) {
+        document.querySelectorAll('.bg-card').forEach(function(c){ c.classList.remove('selected'); });
+        bgCard.classList.add('selected');
+        var promptEl = document.getElementById('photo-prompt-val');
+        if (promptEl) { promptEl.setAttribute('data-bg', savedBg); promptEl.value = savedBg; }
+      }
+    }
+    // Restore pose
+    var savedPose = localStorage.getItem('drapely_pose');
+    if (savedPose) {
+      var poseTags = document.querySelectorAll('.pose-tag');
+      poseTags.forEach(function(t) {
+        if ((t.getAttribute('data-pose') || t.textContent) === savedPose) {
+          document.querySelectorAll('.pose-tag').forEach(function(p){ p.classList.remove('selected'); });
+          t.classList.add('selected');
+        }
+      });
+    }
+  } catch(e) {}
+}
 
 function deductCredit(count) {
   var amount = count || 1;
@@ -1165,18 +1216,21 @@ function selectGarment(type, el) {
   selectedGarmentType = type;
   document.querySelectorAll('.garment-card').forEach(function(c){ c.classList.remove('selected'); });
   el.classList.add('selected');
+  try { localStorage.setItem('drapely_garment', type); } catch(e) {}
 }
 
 function selectModel(card, idx) {
   document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
   card.classList.add('selected');
   selectedModelIndex = idx;
+  try { localStorage.setItem('drapely_model', String(idx)); } catch(e) {}
 }
 
 
 function selectPose(tag) {
   document.querySelectorAll('.pose-tag').forEach(function(t){ t.classList.remove('selected'); });
   tag.classList.add('selected');
+  try { localStorage.setItem('drapely_pose', tag.getAttribute('data-pose') || tag.textContent); } catch(e) {}
 }
 
 function selectBg(card) {
@@ -1190,6 +1244,7 @@ function selectBg(card) {
     promptEl.value = (stylePrompt ? stylePrompt + ', ' : '') + bgPrompt;
     console.log('Photo prompt set to:', promptEl.value);
   }
+  try { localStorage.setItem('drapely_bg', card.dataset.prompt || ''); } catch(e) {}
 }
 
 function selectVars(btn) {
