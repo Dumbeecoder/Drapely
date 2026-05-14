@@ -78,7 +78,6 @@
     .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
     .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
     @media(max-width:500px){.content{padding:1rem}.stats-row{grid-template-columns:1fr}}
-    /* FIX: hide result panel on mobile by default, show when video is ready */
     @media(max-width:900px){
       .sidebar{display:none !important;}
       .mobile-header{display:flex !important;}
@@ -88,6 +87,12 @@
       .v-result-panel{display:none;}
       .v-result-panel.has-results{display:block !important;}
     }
+    /* NEW: end image upload zone */
+    .end-img-zone{border:1.5px dashed rgba(233,30,99,0.3);border-radius:10px;background:#fff8fb;padding:12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:all 0.2s;}
+    .end-img-zone:hover{border-color:#E91E63;background:#fff0f5;}
+    .end-img-zone.has-file{border-style:solid;border-color:#E91E63;padding:0;}
+    .end-img-preview{width:100%;max-height:120px;object-fit:contain;display:none;border-radius:8px;padding:6px;}
+    .end-clear-btn{position:absolute;top:5px;right:5px;width:20px;height:20px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;}
 </style>
 </head>
 <body>
@@ -203,6 +208,25 @@
           <button class="dur-btn" onclick="selectDur(this,'10')">10 sec &mdash; 4 credits</button>
         </div>
 
+        <!-- ── ADDED: Optional End Frame ── -->
+        <div style="margin-bottom:1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div class="section-label" style="margin-bottom:0;">End Frame <span style="font-size:9px;color:#aaa;font-weight:400;letter-spacing:0;text-transform:none;">(optional)</span></div>
+            <span style="font-size:10px;color:#aaa;">Video transitions to this image</span>
+          </div>
+          <div class="end-img-zone" id="end-img-zone" onclick="document.getElementById('v-end-input').click()">
+            <div id="end-img-empty" style="padding:10px 0;">
+              <div style="font-size:18px;margin-bottom:4px;">🖼️</div>
+              <div style="font-size:12px;color:#555;font-weight:500;">Upload end frame</div>
+              <div style="font-size:11px;color:#aaa;">Video smoothly transitions to this · 1080p only</div>
+            </div>
+            <img id="end-img-preview" class="end-img-preview" />
+            <button class="end-clear-btn" id="end-clear-btn" onclick="clearEndImg(event)">✕</button>
+          </div>
+          <input type="file" id="v-end-input" accept="image/*" style="display:none;" onchange="loadEndImg(event)" />
+        </div>
+        <!-- ── END ADDED ── -->
+
         <button class="generate-btn" onclick="startVideoGenerate()">
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
           Generate Fashion Video
@@ -235,7 +259,6 @@
           </div>
           <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
             <button onclick="downloadVideo()" style="width:100%;padding:12px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Save / Download Video</button>
-
           </div>
         </div>
       </div>
@@ -384,6 +407,41 @@ function clearVideoSuit(e) {
   window._videoFromPhotoUrl = null;
 }
 
+// ── ADDED: End frame functions ──
+function loadEndImg(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    window._endImgData = ev.target.result;
+    var preview = document.getElementById('end-img-preview');
+    var empty = document.getElementById('end-img-empty');
+    var zone = document.getElementById('end-img-zone');
+    var clearBtn = document.getElementById('end-clear-btn');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearEndImg(e) {
+  e.stopPropagation();
+  window._endImgData = null;
+  var preview = document.getElementById('end-img-preview');
+  var empty = document.getElementById('end-img-empty');
+  var zone = document.getElementById('end-img-zone');
+  var clearBtn = document.getElementById('end-clear-btn');
+  var input = document.getElementById('v-end-input');
+  if (preview) { preview.style.display = 'none'; preview.src = ''; }
+  if (empty) empty.style.display = 'block';
+  if (zone) zone.classList.remove('has-file');
+  if (clearBtn) clearBtn.style.display = 'none';
+  if (input) input.value = '';
+}
+// ── END ADDED ──
+
 function selectDur(btn, dur) {
   document.querySelectorAll('.dur-btn').forEach(function(b){ b.classList.remove('selected'); });
   btn.classList.add('selected');
@@ -397,13 +455,8 @@ function shareVideo() {
 }
 
 function downloadVideo() {
-  // Wait for Supabase URL (permanent), then open with download attribute
-  // iOS Safari correctly saves mp4 files when opened this way
   var url = window._permanentVideoUrl;
-  if (url) {
-    doDownload(url);
-    return;
-  }
+  if (url) { doDownload(url); return; }
   showToast('Preparing...');
   var waited = 0;
   var check = setInterval(function() {
@@ -422,18 +475,15 @@ function doDownload(url) {
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (isIOS) {
     if (navigator.share && window._videoBlob) {
-      // Use pre-fetched blob — shows "Save Video" in share sheet
       var file = new File([window._videoBlob], 'drapely-video-' + Date.now() + '.mp4', { type: 'video/mp4' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         navigator.share({ files: [file], title: 'Drapely AI Fashion Video' }).catch(function(){});
         return;
       }
     }
-    // Blob not ready — open in Safari
     window.open(url, '_blank');
     return;
   }
-  // Android/desktop: blob download
   showToast('Downloading...');
   fetch(url)
     .then(function(r){ return r.blob(); })
@@ -567,9 +617,12 @@ async function startVideoGenerate() {
       });
     }
 
-    var payload = JSON.stringify({ image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt });
+    // ADDED: include end_image if uploaded
+    var payload = { image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt };
+    if (window._endImgData) payload.end_image = window._endImgData;
+
     var response = await fetch('/api/video', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
     });
     var data = await response.json();
     if (data.error) {
@@ -613,7 +666,6 @@ async function startVideoGenerate() {
       if (videoUrl) {
         currentVideoUrl = videoUrl;
 
-        // Show result panel on mobile and scroll to it
         var panel = document.getElementById('v-result-panel');
         if (panel) {
           panel.classList.add('has-results');
@@ -623,7 +675,6 @@ async function startVideoGenerate() {
         }
 
         if (resultEl) resultEl.innerHTML = '<video controls autoplay playsinline style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:10px;background:#000;max-height:500px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
-        // Pre-fetch blob in background so iOS share has "Save Video" option ready
         if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
           fetch(videoUrl).then(function(r){ return r.blob(); }).then(function(blob){
             window._videoBlob = blob;
@@ -632,11 +683,9 @@ async function startVideoGenerate() {
 
         if (downloadWrap) downloadWrap.style.display = 'block';
 
-        // Save to DB and deduct credits
         sb.auth.getSession().then(function(r) {
           if (!r.data.session) return;
           var userId = r.data.session.user.id;
-          // Upload video to Supabase storage for a permanent URL
           uploadVideoToStorage(videoUrl).then(function(permanentUrl) {
             var saveUrl = permanentUrl || videoUrl;
             window._permanentVideoUrl = saveUrl;
