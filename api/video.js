@@ -5,11 +5,21 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { image, duration, prompt } = req.body;
+  const { image, duration, prompt, end_image } = req.body;
   if (!image) return res.status(400).json({ error: 'Missing image' });
 
   try {
-    console.log('Fashn video - duration:', duration, 'resolution: 1080p');
+    console.log('Fashn video - duration:', duration, 'resolution: 1080p', 'end_image:', !!end_image);
+
+    const inputs = {
+      image: image,
+      duration: duration || 5,
+      resolution: '1080p',
+      prompt: prompt || ''
+    };
+
+    // Only add end_image if provided (requires resolution 1080p — already set above)
+    if (end_image) inputs.end_image = end_image;
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
@@ -19,12 +29,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model_name: 'image-to-video',
-        inputs: {
-          image: image,
-          duration: duration || 5,
-          resolution: '1080p',  // upgraded from 720p
-          prompt: prompt || ''
-        }
+        inputs
       })
     });
 
