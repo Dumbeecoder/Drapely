@@ -1950,17 +1950,35 @@ function openCustomizeModal(imageUrl) {
   canvas.addEventListener('click',function(e){
     var p=getCanvasPos(e);
     if(mode==='circles'){
-      // Try remove first
-      var ci=findCircleAt(p.x,p.y);
-      if(ci>=0){ circles.splice(ci,1); redraw(); return; }
-      // Add new circle — place on LEFT side, line points to tapped spot
-      var W=canvas.width, cr=W*0.13;
-      var lx=cr+W*0.02;
-      var ly=Math.max(cr+4,Math.min(canvas.height-cr-4,p.y));
-      // Shift down if overlapping existing
-      circles.forEach(function(c){if(Math.abs(c.cy-ly)<cr*2.2){ly=c.cy+cr*2.4;}});
-      ly=Math.min(canvas.height-cr-4,ly);
-      circles.push({cx:lx,cy:ly,sx:p.x,sy:p.y});
+      // Try remove first — check both left and right circles
+      var W2=canvas.width, cr2=W2*0.13, removed=false;
+      for(var ci=0;ci<circles.length;ci++){
+        var dx=p.x-circles[ci].cx, dy=p.y-circles[ci].cy;
+        if(Math.sqrt(dx*dx+dy*dy)<cr2+10){circles.splice(ci,1);removed=true;break;}
+      }
+      if(!removed){
+        // Max 4 circles
+        if(circles.length>=4){ showToast('Max 4 detail circles allowed'); return; }
+        var W3=canvas.width, H3=canvas.height, cr3=W3*0.13;
+        // Smart placement: if tap is on right half → circle on right, else left
+        var onRight = p.x > W3*0.5;
+        var cx3 = onRight ? W3-cr3-W3*0.02 : cr3+W3*0.02;
+        // Find a free vertical slot
+        var ly=Math.max(cr3+4, Math.min(H3-cr3-4, p.y));
+        // Shift if overlapping existing circle on same side
+        var maxTries=8;
+        while(maxTries-->0){
+          var overlap=false;
+          for(var oi=0;oi<circles.length;oi++){
+            if(Math.abs(circles[oi].cx-cx3)<cr3*2 && Math.abs(circles[oi].cy-ly)<cr3*2.2){
+              overlap=true; ly+=cr3*2.3; break;
+            }
+          }
+          if(!overlap)break;
+        }
+        ly=Math.max(cr3+4,Math.min(H3-cr3-4,ly));
+        circles.push({cx:cx3,cy:ly,sx:p.x,sy:p.y});
+      }
       redraw();
     }else{
       // Only tap-to-place if we weren't dragging
