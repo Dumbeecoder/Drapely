@@ -1567,27 +1567,31 @@ function addDetailCircles(imageUrl) {
     // Draw base image
     ctx.drawImage(img, 0, 0, W, H);
 
-    // Define 4 crop zones targeting actual dress parts
-    // Image is portrait — model center, dress fills most of frame
+    // Crop zones — all centered horizontally on the dress
+    // Use tighter crops for better zoom effect
+    var cw = W * 0.28; // crop width — narrow so it zooms in more
+    var ch = H * 0.12; // crop height
+    var cx2 = W * 0.5 - cw/2; // center horizontally on dress
+
     var zones = [
-      // Neckline — center-top of image where neck/collar is
-      { sx: W*0.28, sy: H*0.18, sw: W*0.44, sh: H*0.18 },
-      // Dupatta — left side where dupatta drapes
-      { sx: W*0.05, sy: H*0.30, sw: W*0.42, sh: H*0.20 },
-      // Middle of dress / embroidery detail
-      { sx: W*0.22, sy: H*0.52, sw: W*0.44, sh: H*0.18 },
-      // Salwar/bottom — lower portion
-      { sx: W*0.20, sy: H*0.72, sw: W*0.44, sh: H*0.18 },
+      // Neckline — upper chest center
+      { sx: W*0.32, sy: H*0.14, sw: W*0.36, sh: H*0.12 },
+      // Chest embroidery / dupatta detail
+      { sx: W*0.28, sy: H*0.32, sw: W*0.32, sh: H*0.12 },
+      // Mid dress embroidery
+      { sx: W*0.28, sy: H*0.52, sw: W*0.36, sh: H*0.14 },
+      // Hem / bottom of kurti
+      { sx: W*0.25, sy: H*0.70, sw: W*0.40, sh: H*0.14 },
     ];
 
     // Circle positions — left column, evenly spaced
-    var cr = W * 0.11; // circle radius
-    var cx = W * 0.12; // circle center x
+    var cr = W * 0.13; // bigger circle radius for better visibility
+    var cx = W * 0.13; // circle center x
     var positions = [
-      { cx: cx, cy: H * 0.14 },
-      { cx: cx, cy: H * 0.36 },
-      { cx: cx, cy: H * 0.58 },
-      { cx: cx, cy: H * 0.80 },
+      { cx: cx, cy: H * 0.12 },
+      { cx: cx, cy: H * 0.33 },
+      { cx: cx, cy: H * 0.56 },
+      { cx: cx, cy: H * 0.78 },
     ];
 
     zones.forEach(function(z, i) {
@@ -1617,9 +1621,9 @@ function addDetailCircles(imageUrl) {
       ctx.stroke();
       ctx.restore();
 
-      // Connector line from circle to dress area
-      var targetX = [W*0.42, W*0.35, W*0.38, W*0.38];
-      var targetY = [H*0.24, H*0.38, H*0.58, H*0.78];
+      // Connector line pointing to center of dress
+      var targetX = [W*0.45, W*0.42, W*0.42, W*0.40];
+      var targetY = [H*0.18, H*0.37, H*0.57, H*0.75];
       ctx.save();
       ctx.strokeStyle = 'rgba(255,255,255,0.75)';
       ctx.lineWidth = W * 0.003;
@@ -1671,10 +1675,13 @@ function showDetailModal(dataUrl) {
   dlBtn.style.cssText = 'padding:12px 28px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;';
   dlBtn.textContent = '↓ Download';
   dlBtn.onclick = function() {
-    var a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = 'drapely-detail-' + Date.now() + '.jpg';
-    a.click();
+    modal.remove();
+    showTextOverlayModal(dataUrl, function(finalUrl) {
+      var a = document.createElement('a');
+      a.href = finalUrl;
+      a.download = 'drapely-detail-' + Date.now() + '.jpg';
+      a.click();
+    });
   };
 
   var closeBtn = document.createElement('button');
@@ -2080,27 +2087,264 @@ function convertToVideo(imageUrl) {
 }
 
 function downloadImg(url, num) {
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  if (isIOS) {
-    // iOS Safari: open directly, user taps Share → Save to Photos
-    window.open(url, '_blank');
-    return;
+  showTextOverlayModal(url, function(finalUrl) {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) { window.open(finalUrl, '_blank'); return; }
+    showToast('Downloading image ' + num + '...');
+    fetch(finalUrl)
+      .then(function(res){ return res.blob(); })
+      .then(function(blob){
+        var blobUrl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = 'drapely-photo-' + num + '.jpg';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
+      })
+      .catch(function(){ window.open(finalUrl, '_blank'); });
+  });
+}
+
+// ── TEXT OVERLAY MODAL ──
+function showTextOverlayModal(imageUrl, onDownload) {
+  var existing = document.getElementById('text-overlay-modal');
+  if (existing) existing.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'text-overlay-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:12px;overflow-y:auto;';
+
+  // State
+  var overlays = []; // [{text, font, color, size, pos}]
+  var selectedOverlay = null;
+
+  // ── Header ──
+  var header = document.createElement('div');
+  header.style.cssText = 'width:100%;max-width:460px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;';
+  header.innerHTML = '<div style="color:#fff;font-size:15px;font-weight:600;font-family:DM Sans,sans-serif;">✏️ Add Text Overlay</div>';
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'background:rgba(255,255,255,0.15);border:none;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;';
+  closeBtn.textContent = '✕ Skip & Download';
+  closeBtn.onclick = function() { modal.remove(); onDownload(imageUrl); };
+  header.appendChild(closeBtn);
+  modal.appendChild(header);
+
+  // ── Canvas preview ──
+  var canvasWrap = document.createElement('div');
+  canvasWrap.style.cssText = 'width:100%;max-width:460px;position:relative;margin-bottom:10px;';
+  var previewCanvas = document.createElement('canvas');
+  previewCanvas.style.cssText = 'width:100%;border-radius:10px;display:block;cursor:crosshair;';
+  canvasWrap.appendChild(previewCanvas);
+  modal.appendChild(canvasWrap);
+
+  // ── Controls ──
+  var controls = document.createElement('div');
+  controls.style.cssText = 'width:100%;max-width:460px;background:rgba(255,255,255,0.08);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;margin-bottom:10px;';
+
+  // Text inputs row
+  var inputRow = document.createElement('div');
+  inputRow.style.cssText = 'display:flex;gap:8px;';
+  var textInput = document.createElement('input');
+  textInput.placeholder = 'Brand name / D.NO.1234 / READYMADE...';
+  textInput.style.cssText = 'flex:1;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;font-family:DM Sans,sans-serif;font-size:13px;outline:none;';
+  var addTextBtn = document.createElement('button');
+  addTextBtn.textContent = '+ Add';
+  addTextBtn.style.cssText = 'padding:9px 16px;background:#E91E63;border:none;border-radius:8px;color:#fff;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;';
+  inputRow.appendChild(textInput);
+  inputRow.appendChild(addTextBtn);
+  controls.appendChild(inputRow);
+
+  // Font picker
+  var fontRow = document.createElement('div');
+  fontRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;';
+  var fonts = [
+    {label:'Sans', value:'DM Sans,sans-serif'},
+    {label:'Serif', value:'Georgia,serif'},
+    {label:'Elegant', value:'Cormorant Garamond,serif'},
+    {label:'Bold', value:'Impact,sans-serif'},
+    {label:'Mono', value:'Courier New,monospace'},
+  ];
+  var selectedFont = fonts[0].value;
+  fonts.forEach(function(f) {
+    var btn = document.createElement('button');
+    btn.style.cssText = 'padding:5px 10px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.2);background:'+(f.value===selectedFont?'#E91E63':'rgba(255,255,255,0.08)')+';color:#fff;font-family:'+f.value+';font-size:12px;cursor:pointer;';
+    btn.textContent = f.label;
+    btn.onclick = function() {
+      selectedFont = f.value;
+      fontRow.querySelectorAll('button').forEach(function(b){ b.style.background='rgba(255,255,255,0.08)'; });
+      btn.style.background = '#E91E63';
+      if(selectedOverlay){ selectedOverlay.font=selectedFont; redraw(); }
+    };
+    fontRow.appendChild(btn);
+  });
+  controls.appendChild(fontRow);
+
+  // Color + size row
+  var styleRow = document.createElement('div');
+  styleRow.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  var colors = ['#ffffff','#000000','#FFD700','#E91E63','#FF6B6B','#00D4AA'];
+  var selectedColor = '#ffffff';
+  colors.forEach(function(c) {
+    var swatch = document.createElement('div');
+    swatch.style.cssText = 'width:26px;height:26px;border-radius:50%;background:'+c+';cursor:pointer;border:2.5px solid '+(c===selectedColor?'#E91E63':'rgba(255,255,255,0.3)')+';flex-shrink:0;';
+    swatch.onclick = function() {
+      selectedColor = c;
+      styleRow.querySelectorAll('.color-swatch').forEach(function(s){ s.style.border='2.5px solid rgba(255,255,255,0.3)'; });
+      swatch.style.border = '2.5px solid #E91E63';
+      if(selectedOverlay){ selectedOverlay.color=selectedColor; redraw(); }
+    };
+    swatch.className = 'color-swatch';
+    styleRow.appendChild(swatch);
+  });
+  // Size slider
+  var sizeLabel = document.createElement('span');
+  sizeLabel.style.cssText = 'color:rgba(255,255,255,0.6);font-size:11px;margin-left:4px;font-family:DM Sans,sans-serif;white-space:nowrap;';
+  sizeLabel.textContent = 'Size:';
+  var sizeSlider = document.createElement('input');
+  sizeSlider.type = 'range'; sizeSlider.min = 16; sizeSlider.max = 120; sizeSlider.value = 42;
+  sizeSlider.style.cssText = 'flex:1;accent-color:#E91E63;';
+  sizeSlider.oninput = function() { if(selectedOverlay){ selectedOverlay.size=parseInt(sizeSlider.value); redraw(); } };
+  styleRow.appendChild(sizeLabel);
+  styleRow.appendChild(sizeSlider);
+  controls.appendChild(styleRow);
+
+  // Position presets
+  var posLabel = document.createElement('div');
+  posLabel.style.cssText = 'color:rgba(255,255,255,0.5);font-size:11px;font-family:DM Sans,sans-serif;';
+  posLabel.textContent = 'Tap image to position · or pick preset:';
+  controls.appendChild(posLabel);
+  var posRow = document.createElement('div');
+  posRow.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:5px;';
+  var positions = [
+    {label:'↖ Top Left',   x:0.05, y:0.05},
+    {label:'↑ Top Center', x:0.5,  y:0.05},
+    {label:'↗ Top Right',  x:0.95, y:0.05},
+    {label:'← Mid Left',   x:0.05, y:0.5},
+    {label:'· Center',     x:0.5,  y:0.5},
+    {label:'→ Mid Right',  x:0.95, y:0.5},
+    {label:'↙ Bot Left',   x:0.05, y:0.93},
+    {label:'↓ Bot Center', x:0.5,  y:0.93},
+    {label:'↘ Bot Right',  x:0.95, y:0.93},
+  ];
+  positions.forEach(function(p) {
+    var btn = document.createElement('button');
+    btn.style.cssText = 'padding:5px 4px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.8);font-family:DM Sans,sans-serif;font-size:10px;cursor:pointer;';
+    btn.textContent = p.label;
+    btn.onclick = function() {
+      if(selectedOverlay){ selectedOverlay.x=p.x; selectedOverlay.y=p.y; redraw(); }
+      else if(overlays.length){ overlays[overlays.length-1].x=p.x; overlays[overlays.length-1].y=p.y; redraw(); }
+    };
+    posRow.appendChild(btn);
+  });
+  controls.appendChild(posRow);
+
+  // Delete selected
+  var delBtn = document.createElement('button');
+  delBtn.textContent = '🗑 Remove Selected Text';
+  delBtn.style.cssText = 'padding:7px;border-radius:8px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;font-family:DM Sans,sans-serif;font-size:12px;cursor:pointer;';
+  delBtn.onclick = function() {
+    if(selectedOverlay){ overlays = overlays.filter(function(o){ return o!==selectedOverlay; }); selectedOverlay=null; redraw(); }
+  };
+  controls.appendChild(delBtn);
+  modal.appendChild(controls);
+
+  // ── Download button ──
+  var dlBtn = document.createElement('button');
+  dlBtn.style.cssText = 'width:100%;max-width:460px;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:DM Sans,sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:20px;';
+  dlBtn.textContent = '↓ Download with Text';
+  dlBtn.onclick = function() {
+    var finalData = previewCanvas.toDataURL('image/jpeg', 0.95);
+    modal.remove();
+    onDownload(finalData);
+  };
+  modal.appendChild(dlBtn);
+
+  document.body.appendChild(modal);
+
+  // ── Load image and setup canvas ──
+  var baseImg = new Image();
+  baseImg.crossOrigin = 'anonymous';
+  baseImg.onload = function() {
+    previewCanvas.width = baseImg.width;
+    previewCanvas.height = baseImg.height;
+    redraw();
+  };
+  baseImg.onerror = function() {
+    var img2 = new Image();
+    img2.onload = function() { previewCanvas.width=img2.width; previewCanvas.height=img2.height; baseImg=img2; redraw(); };
+    img2.src = imageUrl;
+    baseImg = img2;
+  };
+  baseImg.src = imageUrl;
+
+  function redraw() {
+    var ctx = previewCanvas.getContext('2d');
+    var W = previewCanvas.width, H = previewCanvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.drawImage(baseImg, 0, 0, W, H);
+    overlays.forEach(function(o) {
+      var px = o.x * W, py = o.y * H;
+      // Determine text align from x position
+      var align = o.x < 0.2 ? 'left' : o.x > 0.8 ? 'right' : 'center';
+      ctx.save();
+      ctx.font = o.size + 'px ' + o.font;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      // Shadow for readability
+      ctx.shadowColor = o.color === '#ffffff' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.5)';
+      ctx.shadowBlur = o.size * 0.3;
+      ctx.shadowOffsetX = o.size * 0.02;
+      ctx.shadowOffsetY = o.size * 0.02;
+      ctx.fillStyle = o.color;
+      ctx.fillText(o.text, px, py);
+      // Highlight selected
+      if(o === selectedOverlay) {
+        var tw = ctx.measureText(o.text).width;
+        var startX = align==='center' ? px-tw/2 : align==='right' ? px-tw : px;
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#E91E63';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(startX-4, py-o.size*0.6, tw+8, o.size*1.2);
+      }
+      ctx.restore();
+    });
   }
-  // Android/desktop: blob download
-  showToast('Downloading image ' + num + '...');
-  fetch(url)
-    .then(function(res){ return res.blob(); })
-    .then(function(blob){
-      var blobUrl = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = 'drapely-photo-' + num + '.jpg';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
-    })
-    .catch(function(){ window.open(url, '_blank'); });
+
+  // Add text on button click or Enter
+  function addText() {
+    var t = textInput.value.trim();
+    if(!t) return;
+    var newOverlay = { text:t, font:selectedFont, color:selectedColor, size:parseInt(sizeSlider.value), x:0.5, y:0.08 };
+    overlays.push(newOverlay);
+    selectedOverlay = newOverlay;
+    redraw();
+    textInput.value = '';
+  }
+  addTextBtn.onclick = addText;
+  textInput.onkeydown = function(e){ if(e.key==='Enter') addText(); };
+
+  // Click canvas to position selected overlay
+  previewCanvas.onclick = function(e) {
+    var rect = previewCanvas.getBoundingClientRect();
+    var scaleX = previewCanvas.width / rect.width;
+    var scaleY = previewCanvas.height / rect.height;
+    var cx3 = (e.clientX - rect.left) * scaleX;
+    var cy3 = (e.clientY - rect.top) * scaleY;
+    if(selectedOverlay) {
+      selectedOverlay.x = cx3 / previewCanvas.width;
+      selectedOverlay.y = cy3 / previewCanvas.height;
+      redraw();
+    } else if(overlays.length) {
+      // Select clicked overlay
+      overlays.forEach(function(o) {
+        var px = o.x * previewCanvas.width, py = o.y * previewCanvas.height;
+        var ctx2 = previewCanvas.getContext('2d');
+        ctx2.font = o.size + 'px ' + o.font;
+        var tw = ctx2.measureText(o.text).width;
+        if(Math.abs(cx3-px)<tw/2+20 && Math.abs(cy3-py)<o.size) { selectedOverlay=o; redraw(); }
+      });
+    }
+  };
 }
 
 function addToGallery(images, collectionName) {
