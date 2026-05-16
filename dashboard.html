@@ -1619,152 +1619,154 @@ function showRealResults(images) {
 
 // ── CUSTOMIZE MODAL ── dark overlay + centered card ──
 function openCustomizeModal(imageUrl) {
-  var existing = document.getElementById('customize-modal');
-  if (existing) existing.remove();
+  var ex = document.getElementById('customize-modal');
+  if (ex) ex.remove();
 
   var overlays = [], circles = [], selectedOverlay = null;
-  var selFont = 'DM Sans,sans-serif', selColor = '#ffffff', selSize = 42;
+  var selFont = 'DM Sans,sans-serif', selColor = '#ffffff', selSize = 48;
   var baseImg = new Image();
+  var dragging = null, dragOffX = 0, dragOffY = 0;
 
-  // Dark backdrop
+  // ── Backdrop ──
   var modal = document.createElement('div');
   modal.id = 'customize-modal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);display:flex;align-items:flex-end;justify-content:center;';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:16px;';
   modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
 
-  // Card — slides up from bottom like a sheet
+  // ── Card ──
   var card = document.createElement('div');
-  card.style.cssText = 'background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,0.3);';
+  card.style.cssText = 'background:#fff;border-radius:20px;width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);';
   card.onclick = function(e){ e.stopPropagation(); };
 
-  // ── Handle bar ──
-  var handle = document.createElement('div');
-  handle.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid #f0f0f0;';
-  handle.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><div style="width:36px;height:4px;background:#ddd;border-radius:2px;"></div><span style="font-size:14px;font-weight:600;font-family:DM Sans,sans-serif;color:#000;">🎨 Customize Photo</span></div>';
-  var closeBtn = document.createElement('button');
-  closeBtn.style.cssText = 'width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;';
-  closeBtn.textContent = '✕';
-  closeBtn.onclick = function(){ modal.remove(); };
-  handle.appendChild(closeBtn);
-  card.appendChild(handle);
+  // ── Header ──
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f0f0f0;flex-shrink:0;';
+  hdr.innerHTML = '<div style="font-size:16px;font-weight:700;font-family:DM Sans,sans-serif;color:#000;">🎨 Customize Photo</div>';
+  var closeX = document.createElement('button');
+  closeX.style.cssText = 'width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:none;font-size:18px;cursor:pointer;color:#555;display:flex;align-items:center;justify-content:center;';
+  closeX.innerHTML = '✕';
+  closeX.onclick = function(){ modal.remove(); };
+  hdr.appendChild(closeX); card.appendChild(hdr);
 
-  // ── Scrollable content ──
-  var content = document.createElement('div');
-  content.style.cssText = 'flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0;';
+  // ── Body: LEFT panel + RIGHT canvas ──
+  var body = document.createElement('div');
+  body.style.cssText = 'display:flex;flex:1;overflow:hidden;min-height:0;';
 
-  // Image preview — fixed height, shows image + canvas overlay
-  var imgWrap = document.createElement('div');
-  imgWrap.style.cssText = 'position:relative;background:#000;flex-shrink:0;';
-  var canvas = document.createElement('canvas');
-  canvas.style.cssText = 'width:100%;max-height:38vh;object-fit:contain;display:block;cursor:crosshair;';
-  var hint = document.createElement('div');
-  hint.style.cssText = 'position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,0.7);font-family:DM Sans,sans-serif;pointer-events:none;';
-  hint.textContent = '👆 Tap photo to place text';
-  imgWrap.appendChild(canvas); imgWrap.appendChild(hint);
-  content.appendChild(imgWrap);
+  // LEFT: controls
+  var left = document.createElement('div');
+  left.style.cssText = 'width:300px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #f0f0f0;overflow-y:auto;';
 
-  // ── Tools area ──
-  var tools = document.createElement('div');
-  tools.style.cssText = 'padding:14px;display:flex;flex-direction:column;gap:12px;background:#fafafa;';
-
-  // Mode pills
-  var modeRow = document.createElement('div');
-  modeRow.style.cssText = 'display:flex;background:#f0f0f0;border-radius:10px;padding:3px;gap:3px;';
-  var mode = 'text', modeBtns = [];
-  [{l:'✏️ Add Text',v:'text'},{l:'🔍 Detail Circles',v:'circles'}].forEach(function(m,i){
-    var b = document.createElement('button');
-    b.style.cssText = 'flex:1;padding:9px;border-radius:8px;border:none;font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;background:'+(i===0?'#E91E63':'transparent')+';color:'+(i===0?'#fff':'#666')+';';
-    b.textContent = m.l;
-    b.onclick = function(){
-      mode=m.v;
-      modeBtns.forEach(function(x,xi){x.style.background=xi===i?'#E91E63':'transparent';x.style.color=xi===i?'#fff':'#666';});
-      textTools.style.display=m.v==='text'?'flex':'none';
-      circleTools.style.display=m.v==='circles'?'flex':'none';
-      hint.textContent=m.v==='text'?'👆 Tap photo to place text':'👆 Tap dress to add detail circle · tap circle to remove';
+  // Mode tabs
+  var tabBar = document.createElement('div');
+  tabBar.style.cssText = 'display:flex;padding:10px;gap:6px;background:#fafafa;border-bottom:1px solid #f0f0f0;flex-shrink:0;';
+  var mode = 'text', tabBtns = [], textPanel, circlePanel;
+  [{l:'✏️ Text',v:'text'},{l:'🔍 Circles',v:'circles'}].forEach(function(m,i){
+    var t = document.createElement('button');
+    t.style.cssText = 'flex:1;padding:9px;border-radius:8px;border:none;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:'+(i===0?'#E91E63':'#fff')+';color:'+(i===0?'#fff':'#888')+';border:1.5px solid '+(i===0?'#E91E63':'#eee')+';';
+    t.textContent = m.l;
+    t.onclick = function(){
+      mode = m.v;
+      tabBtns.forEach(function(b,bi){b.style.background=bi===i?'#E91E63':'#fff';b.style.color=bi===i?'#fff':'#888';b.style.border='1.5px solid '+(bi===i?'#E91E63':'#eee');});
+      textPanel.style.display = m.v==='text'?'flex':'none';
+      circlePanel.style.display = m.v==='circles'?'flex':'none';
     };
-    modeBtns.push(b); modeRow.appendChild(b);
+    tabBtns.push(t); tabBar.appendChild(t);
   });
-  tools.appendChild(modeRow);
+  left.appendChild(tabBar);
 
-  // ── TEXT TOOLS ──
-  var textTools = document.createElement('div');
-  textTools.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+  // TEXT PANEL
+  textPanel = document.createElement('div');
+  textPanel.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:14px;flex:1;';
 
-  // Input row
-  var iRow = document.createElement('div'); iRow.style.cssText='display:flex;gap:8px;';
+  // Instruction
+  var ti = document.createElement('div');
+  ti.style.cssText = 'font-size:12px;color:#888;font-family:DM Sans,sans-serif;background:#f9f9f9;border-radius:8px;padding:8px 10px;line-height:1.5;';
+  ti.textContent = '1. Type text → Add  2. Drag text on photo to move  3. Tap text on photo to select';
+  textPanel.appendChild(ti);
+
+  // Input
+  var iRow = document.createElement('div'); iRow.style.cssText='display:flex;gap:6px;';
   var tInput = document.createElement('input');
   tInput.placeholder = 'Brand name / D.NO.1234 / READYMADE...';
-  tInput.style.cssText = 'flex:1;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(233,30,99,0.3);font-family:DM Sans,sans-serif;font-size:14px;outline:none;background:#fff;';
+  tInput.style.cssText = 'flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(233,30,99,0.3);font-family:DM Sans,sans-serif;font-size:13px;outline:none;';
   var aBtn = document.createElement('button');
-  aBtn.style.cssText = 'padding:11px 18px;background:#E91E63;border:none;border-radius:10px;color:#fff;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;';
-  aBtn.textContent = '+ Add';
-  iRow.appendChild(tInput); iRow.appendChild(aBtn); textTools.appendChild(iRow);
+  aBtn.style.cssText = 'padding:10px 14px;background:#E91E63;border:none;border-radius:10px;color:#fff;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;';
+  aBtn.textContent = 'Add';
+  iRow.appendChild(tInput); iRow.appendChild(aBtn); textPanel.appendChild(iRow);
 
-  // Font row
-  var fRow = document.createElement('div'); fRow.style.cssText='display:flex;gap:6px;flex-wrap:wrap;';
+  // Font
+  var fLabel = document.createElement('div'); fLabel.style.cssText='font-size:11px;color:#aaa;font-family:DM Sans,sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;'; fLabel.textContent='Font';
+  var fRow = document.createElement('div'); fRow.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:5px;';
   [{l:'Sans',v:'DM Sans,sans-serif'},{l:'Serif',v:'Georgia,serif'},{l:'Elegant',v:'Cormorant Garamond,serif'},{l:'Bold',v:'Impact,sans-serif'}].forEach(function(f){
     var b=document.createElement('button');
-    b.style.cssText='padding:7px 14px;border-radius:8px;border:1.5px solid '+(f.v===selFont?'#E91E63':'#ddd')+';font-family:'+f.v+';font-size:13px;cursor:pointer;background:'+(f.v===selFont?'#E91E63':'#fff')+';color:'+(f.v===selFont?'#fff':'#444')+';';
+    b.style.cssText='padding:8px;border-radius:8px;border:1.5px solid '+(f.v===selFont?'#E91E63':'#eee')+';font-family:'+f.v+';font-size:13px;cursor:pointer;background:'+(f.v===selFont?'#fff0f5':'#fff')+';color:'+(f.v===selFont?'#E91E63':'#444')+';';
     b.textContent=f.l;
-    b.onclick=function(){selFont=f.v;fRow.querySelectorAll('button').forEach(function(x){x.style.background='#fff';x.style.color='#444';x.style.border='1.5px solid #ddd';});b.style.background='#E91E63';b.style.color='#fff';b.style.border='1.5px solid #E91E63';if(selectedOverlay){selectedOverlay.font=selFont;redraw();}};
+    b.onclick=function(){selFont=f.v;fRow.querySelectorAll('button').forEach(function(x){x.style.background='#fff';x.style.color='#444';x.style.border='1.5px solid #eee';});b.style.background='#fff0f5';b.style.color='#E91E63';b.style.border='1.5px solid #E91E63';if(selectedOverlay){selectedOverlay.font=selFont;redraw();}};
     fRow.appendChild(b);
   });
-  textTools.appendChild(fRow);
+  textPanel.appendChild(fLabel); textPanel.appendChild(fRow);
 
-  // Color + size row
-  var csRow = document.createElement('div'); csRow.style.cssText='display:flex;align-items:center;gap:8px;';
-  ['#ffffff','#000000','#FFD700','#E91E63','#FF6B6B','#00D4AA'].forEach(function(c){
-    var sw=document.createElement('div');sw.className='cs';
-    sw.style.cssText='width:30px;height:30px;border-radius:50%;background:'+c+';cursor:pointer;border:3px solid '+(c===selColor?'#E91E63':'rgba(0,0,0,0.1)')+';flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,0.15);';
-    sw.onclick=function(){selColor=c;csRow.querySelectorAll('.cs').forEach(function(s){s.style.border='3px solid rgba(0,0,0,0.1)';});sw.style.border='3px solid #E91E63';if(selectedOverlay){selectedOverlay.color=c;redraw();}};
-    csRow.appendChild(sw);
+  // Color
+  var cLabel = document.createElement('div'); cLabel.style.cssText='font-size:11px;color:#aaa;font-family:DM Sans,sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;'; cLabel.textContent='Color';
+  var cRow = document.createElement('div'); cRow.style.cssText='display:flex;gap:8px;flex-wrap:wrap;';
+  var selColorEl = null;
+  ['#ffffff','#000000','#FFD700','#E91E63','#FF6B6B','#00D4AA','#4A90D9','#FF9F00'].forEach(function(c){
+    var sw=document.createElement('div'); sw.className='csw';
+    sw.style.cssText='width:32px;height:32px;border-radius:50%;background:'+c+';cursor:pointer;border:3px solid '+(c===selColor?'#E91E63':'rgba(0,0,0,0.1)')+';box-shadow:0 1px 4px rgba(0,0,0,0.15);transition:transform 0.1s;';
+    sw.onclick=function(){selColor=c;cRow.querySelectorAll('.csw').forEach(function(s){s.style.border='3px solid rgba(0,0,0,0.1)';s.style.transform='scale(1)';});sw.style.border='3px solid #E91E63';sw.style.transform='scale(1.15)';if(selectedOverlay){selectedOverlay.color=c;redraw();}};
+    if(c===selColor){sw.style.border='3px solid #E91E63';sw.style.transform='scale(1.15)';}
+    cRow.appendChild(sw);
   });
-  var szSlider=document.createElement('input');szSlider.type='range';szSlider.min=20;szSlider.max=140;szSlider.value=42;szSlider.style.cssText='flex:1;accent-color:#E91E63;';
-  szSlider.oninput=function(){selSize=parseInt(szSlider.value);if(selectedOverlay){selectedOverlay.size=selSize;redraw();}};
-  csRow.appendChild(szSlider); textTools.appendChild(csRow);
+  textPanel.appendChild(cLabel); textPanel.appendChild(cRow);
 
-  // Position grid
-  var pgLabel = document.createElement('div'); pgLabel.style.cssText='font-size:11px;color:#aaa;font-family:DM Sans,sans-serif;'; pgLabel.textContent='Quick position:';
-  var pgRow = document.createElement('div'); pgRow.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:5px;';
-  [{l:'↖ Top L',x:0.05,y:0.06},{l:'↑ Top C',x:0.5,y:0.06},{l:'↗ Top R',x:0.95,y:0.06},
-   {l:'← Mid L',x:0.05,y:0.5},{l:'· Center',x:0.5,y:0.5},{l:'→ Mid R',x:0.95,y:0.5},
-   {l:'↙ Bot L',x:0.05,y:0.93},{l:'↓ Bot C',x:0.5,y:0.93},{l:'↘ Bot R',x:0.95,y:0.93}].forEach(function(p){
+  // Size
+  var sLabel = document.createElement('div'); sLabel.style.cssText='font-size:11px;color:#aaa;font-family:DM Sans,sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;'; sLabel.textContent='Size';
+  var sRow = document.createElement('div'); sRow.style.cssText='display:flex;align-items:center;gap:8px;';
+  var szSlider = document.createElement('input'); szSlider.type='range';szSlider.min=20;szSlider.max=160;szSlider.value=selSize;szSlider.style.cssText='flex:1;accent-color:#E91E63;';
+  var szVal = document.createElement('span'); szVal.style.cssText='font-size:12px;color:#555;font-family:DM Sans,sans-serif;min-width:28px;text-align:right;'; szVal.textContent=selSize+'px';
+  szSlider.oninput=function(){selSize=parseInt(szSlider.value);szVal.textContent=selSize+'px';if(selectedOverlay){selectedOverlay.size=selSize;redraw();}};
+  sRow.appendChild(szSlider); sRow.appendChild(szVal);
+  textPanel.appendChild(sLabel); textPanel.appendChild(sRow);
+
+  // Position presets
+  var pLabel = document.createElement('div'); pLabel.style.cssText='font-size:11px;color:#aaa;font-family:DM Sans,sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;'; pLabel.textContent='Quick Position';
+  var pGrid = document.createElement('div'); pGrid.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:4px;';
+  [{l:'↖',x:0.05,y:0.06},{l:'↑',x:0.5,y:0.06},{l:'↗',x:0.95,y:0.06},
+   {l:'←',x:0.05,y:0.5},{l:'·',x:0.5,y:0.5},{l:'→',x:0.95,y:0.5},
+   {l:'↙',x:0.05,y:0.93},{l:'↓',x:0.5,y:0.93},{l:'↘',x:0.95,y:0.93}].forEach(function(p){
     var b=document.createElement('button');
-    b.style.cssText='padding:7px 4px;border-radius:8px;border:1px solid #eee;background:#fff;color:#555;font-family:DM Sans,sans-serif;font-size:11px;cursor:pointer;';
+    b.style.cssText='padding:8px;border-radius:8px;border:1px solid #eee;background:#fff;color:#555;font-size:16px;cursor:pointer;';
     b.textContent=p.l;
     b.onclick=function(){var o=selectedOverlay||overlays[overlays.length-1];if(o){o.x=p.x;o.y=p.y;redraw();}};
-    pgRow.appendChild(b);
+    pGrid.appendChild(b);
   });
-  textTools.appendChild(pgLabel); textTools.appendChild(pgRow);
+  textPanel.appendChild(pLabel); textPanel.appendChild(pGrid);
 
   var delBtn=document.createElement('button');
-  delBtn.style.cssText='padding:8px;border-radius:8px;border:1px solid #fcc;background:#fff5f5;color:#cc0000;font-family:DM Sans,sans-serif;font-size:12px;cursor:pointer;';
+  delBtn.style.cssText='padding:9px;border-radius:10px;border:1.5px solid #fcc;background:#fff5f5;color:#cc0000;font-family:DM Sans,sans-serif;font-size:13px;cursor:pointer;margin-top:4px;';
   delBtn.textContent='🗑 Remove selected text';
   delBtn.onclick=function(){if(selectedOverlay){overlays=overlays.filter(function(o){return o!==selectedOverlay;});selectedOverlay=null;redraw();}};
-  textTools.appendChild(delBtn);
-  tools.appendChild(textTools);
+  textPanel.appendChild(delBtn);
+  left.appendChild(textPanel);
 
-  // ── CIRCLE TOOLS ──
-  var circleTools = document.createElement('div');
-  circleTools.style.cssText = 'display:none;flex-direction:column;gap:10px;';
-  var cInfo=document.createElement('div');
-  cInfo.style.cssText='font-size:13px;color:#555;font-family:DM Sans,sans-serif;background:#fff0f5;border-radius:10px;padding:12px;line-height:1.6;border:1px solid rgba(233,30,99,0.15);';
-  cInfo.innerHTML='👆 <strong>Tap any part of the dress</strong> to add a zoomed detail circle — neckline, embroidery, dupatta, hem.<br>Tap an existing circle to remove it.';
-  var ccBtn=document.createElement('button');
-  ccBtn.style.cssText='padding:8px;border-radius:8px;border:1px solid #fcc;background:#fff5f5;color:#cc0000;font-family:DM Sans,sans-serif;font-size:13px;cursor:pointer;';
+  // CIRCLE PANEL
+  circlePanel = document.createElement('div');
+  circlePanel.style.cssText = 'display:none;flex-direction:column;gap:12px;padding:14px;flex:1;';
+  var ci2 = document.createElement('div');
+  ci2.style.cssText = 'font-size:13px;color:#555;font-family:DM Sans,sans-serif;background:#fff0f5;border-radius:10px;padding:12px;line-height:1.7;border:1px solid rgba(233,30,99,0.15);';
+  ci2.innerHTML = '👆 <strong>Tap any part of the dress photo</strong> to add a detail circle zooming into that spot.<br><br>👆 <strong>Tap a circle</strong> to remove it.';
+  var ccBtn = document.createElement('button');
+  ccBtn.style.cssText='padding:9px;border-radius:10px;border:1.5px solid #fcc;background:#fff5f5;color:#cc0000;font-family:DM Sans,sans-serif;font-size:13px;cursor:pointer;';
   ccBtn.textContent='🗑 Clear all circles';
   ccBtn.onclick=function(){circles=[];redraw();};
-  circleTools.appendChild(cInfo); circleTools.appendChild(ccBtn);
-  tools.appendChild(circleTools);
+  circlePanel.appendChild(ci2); circlePanel.appendChild(ccBtn);
+  left.appendChild(circlePanel);
 
-  content.appendChild(tools);
-  card.appendChild(content);
-
-  // ── Save & Download button ──
-  var footer = document.createElement('div');
-  footer.style.cssText = 'padding:12px 16px;background:#fff;border-top:1px solid #f0f0f0;flex-shrink:0;';
+  // Save button at bottom of left panel
+  var saveWrap = document.createElement('div');
+  saveWrap.style.cssText = 'padding:14px;border-top:1px solid #f0f0f0;flex-shrink:0;margin-top:auto;';
   var saveBtn = document.createElement('button');
-  saveBtn.style.cssText = 'width:100%;padding:15px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:12px;font-family:DM Sans,sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(233,30,99,0.3);';
+  saveBtn.style.cssText = 'width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:12px;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(233,30,99,0.3);';
   saveBtn.textContent = '💾 Save & Download';
   saveBtn.onclick = async function(){
     saveBtn.textContent='Saving...'; saveBtn.disabled=true;
@@ -1773,72 +1775,165 @@ function openCustomizeModal(imageUrl) {
     if(!isIOS){var a=document.createElement('a');a.href=data;a.download='drapely-edited-'+Date.now()+'.jpg';a.click();}
     try{
       var res=await fetch(data);var blob=await res.blob();
-      var fileName='edited_'+Date.now()+'.jpg';
-      var up=await sb.storage.from('photoshoots').upload(fileName,blob,{contentType:'image/jpeg',upsert:false});
+      var fn2='edited_'+Date.now()+'.jpg';
+      var up=await sb.storage.from('photoshoots').upload(fn2,blob,{contentType:'image/jpeg',upsert:false});
       if(!up.error){
-        var pubUrl=sb.storage.from('photoshoots').getPublicUrl(fileName).data.publicUrl;
-        var sess=await sb.auth.getSession();
-        if(sess.data.session) await sb.from('photoshoots').insert({user_id:sess.data.session.user.id,image_url:pubUrl,collection_name:'Customized',suit_type:'Edited',image_count:0});
+        var pu=sb.storage.from('photoshoots').getPublicUrl(fn2).data.publicUrl;
+        var ss=await sb.auth.getSession();
+        if(ss.data.session) await sb.from('photoshoots').insert({user_id:ss.data.session.user.id,image_url:pu,collection_name:'Customized',suit_type:'Edited',image_count:0});
         showToast('✅ Saved to gallery & downloaded!');
       }
-    }catch(e){showToast('Downloaded! Gallery save failed.');}
+    }catch(e){showToast('Downloaded!');}
     if(isIOS){var w=window.open();w.document.write('<img src="'+data+'" style="max-width:100%">'); }
     saveBtn.textContent='💾 Save & Download'; saveBtn.disabled=false;
     setTimeout(function(){ modal.remove(); },1500);
   };
-  footer.appendChild(saveBtn);
-  card.appendChild(footer);
-  modal.appendChild(card);
+  saveWrap.appendChild(saveBtn); left.appendChild(saveWrap);
+
+  // RIGHT: canvas
+  var right = document.createElement('div');
+  right.style.cssText = 'flex:1;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;';
+  var canvas = document.createElement('canvas');
+  canvas.style.cssText = 'max-width:100%;max-height:100%;display:block;cursor:crosshair;';
+  right.appendChild(canvas);
+
+  body.appendChild(left); body.appendChild(right);
+  card.appendChild(body); modal.appendChild(card);
   document.body.appendChild(modal);
 
   // ── Redraw ──
   function redraw(){
     if(!baseImg.width)return;
     var W=baseImg.width,H=baseImg.height;
-    canvas.width=W;canvas.height=H;
+    canvas.width=W; canvas.height=H;
     var ctx=canvas.getContext('2d');
     ctx.drawImage(baseImg,0,0,W,H);
     circles.forEach(function(c){
-      var cr=W*0.12;
+      var cr=W*0.13;
       ctx.save();ctx.beginPath();ctx.arc(c.cx,c.cy,cr,0,Math.PI*2);ctx.clip();
-      var cw=W*0.22,ch=H*0.15;
+      var cw=W*0.24,ch=H*0.18;
       var sx=Math.max(0,Math.min(c.sx-cw/2,W-cw)),sy=Math.max(0,Math.min(c.sy-ch/2,H-ch));
       ctx.drawImage(baseImg,sx,sy,cw,ch,c.cx-cr,c.cy-cr,cr*2,cr*2);ctx.restore();
-      ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=W*0.007;ctx.shadowColor='rgba(0,0,0,0.4)';ctx.shadowBlur=W*0.012;ctx.beginPath();ctx.arc(c.cx,c.cy,cr,0,Math.PI*2);ctx.stroke();ctx.restore();
-      ctx.save();ctx.strokeStyle='rgba(255,255,255,0.8)';ctx.lineWidth=W*0.003;ctx.setLineDash([W*0.008,W*0.006]);ctx.beginPath();ctx.moveTo(c.cx+cr*0.7,c.cy+cr*0.7);ctx.lineTo(c.sx,c.sy);ctx.stroke();ctx.restore();
+      ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=W*0.008;ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=W*0.015;ctx.beginPath();ctx.arc(c.cx,c.cy,cr,0,Math.PI*2);ctx.stroke();ctx.restore();
+      ctx.save();ctx.strokeStyle='rgba(255,255,255,0.85)';ctx.lineWidth=W*0.003;ctx.setLineDash([W*0.009,W*0.006]);ctx.beginPath();ctx.moveTo(c.cx+cr*0.7,c.cy+cr*0.7);ctx.lineTo(c.sx,c.sy);ctx.stroke();ctx.restore();
     });
     overlays.forEach(function(o){
       var px=o.x*W,py=o.y*H;
-      var align=o.x<0.2?'left':o.x>0.8?'right':'center';
+      var align=o.x<0.15?'left':o.x>0.85?'right':'center';
       ctx.save();ctx.font=o.size+'px '+o.font;ctx.textAlign=align;ctx.textBaseline='middle';
-      ctx.shadowColor=o.color==='#ffffff'?'rgba(0,0,0,0.8)':'rgba(255,255,255,0.4)';ctx.shadowBlur=o.size*0.3;ctx.shadowOffsetX=o.size*0.02;ctx.shadowOffsetY=o.size*0.02;
+      ctx.shadowColor=o.color==='#ffffff'?'rgba(0,0,0,0.85)':'rgba(255,255,255,0.4)';ctx.shadowBlur=o.size*0.35;
       ctx.fillStyle=o.color;ctx.fillText(o.text,px,py);
-      if(o===selectedOverlay){var tw=ctx.measureText(o.text).width;var sx2=align==='center'?px-tw/2:align==='right'?px-tw:px;ctx.shadowBlur=0;ctx.strokeStyle='#E91E63';ctx.lineWidth=2;ctx.strokeRect(sx2-4,py-o.size*0.6,tw+8,o.size*1.2);}
+      if(o===selectedOverlay){
+        var tw=ctx.measureText(o.text).width;
+        var sx2=align==='center'?px-tw/2:align==='right'?px-tw:px;
+        ctx.shadowBlur=0;ctx.strokeStyle='#E91E63';ctx.lineWidth=3;
+        ctx.setLineDash([8,4]);ctx.strokeRect(sx2-6,py-o.size*0.65,tw+12,o.size*1.3);
+      }
       ctx.restore();
     });
   }
 
+  // ── Load image ──
   baseImg.crossOrigin='anonymous';
   baseImg.onload=function(){redraw();};
   baseImg.onerror=function(){var i2=new Image();i2.onload=function(){baseImg=i2;redraw();};i2.src=imageUrl;baseImg=i2;};
   baseImg.src=imageUrl;
 
-  canvas.onclick=function(e){
+  // ── Hit test helper ──
+  function getCanvasPos(e){
     var rect=canvas.getBoundingClientRect();
     var scX=canvas.width/rect.width,scY=canvas.height/rect.height;
-    var tapX=(e.clientX-rect.left)*scX,tapY=(e.clientY-rect.top)*scY;
+    return {x:(e.clientX-rect.left)*scX, y:(e.clientY-rect.top)*scY};
+  }
+
+  function findOverlayAt(x,y){
+    var ctx2=canvas.getContext('2d');
+    for(var i=overlays.length-1;i>=0;i--){
+      var o=overlays[i];
+      ctx2.font=o.size+'px '+o.font;
+      var tw=ctx2.measureText(o.text).width;
+      var px=o.x*canvas.width, py=o.y*canvas.height;
+      var align=o.x<0.15?'left':o.x>0.85?'right':'center';
+      var sx2=align==='center'?px-tw/2:align==='right'?px-tw:px;
+      if(x>=sx2-10 && x<=sx2+tw+10 && y>=py-o.size*0.7 && y<=py+o.size*0.7) return o;
+    }
+    return null;
+  }
+
+  function findCircleAt(x,y){
+    var W=canvas.width, cr=W*0.13;
+    for(var i=circles.length-1;i>=0;i--){
+      var dx=x-circles[i].cx, dy=y-circles[i].cy;
+      if(Math.sqrt(dx*dx+dy*dy)<cr+10) return i;
+    }
+    return -1;
+  }
+
+  // ── Mouse/touch drag for text ──
+  canvas.addEventListener('mousedown',function(e){
+    if(mode!=='text')return;
+    var p=getCanvasPos(e);
+    var o=findOverlayAt(p.x,p.y);
+    if(o){dragging=o;selectedOverlay=o;dragOffX=p.x-o.x*canvas.width;dragOffY=p.y-o.y*canvas.height;canvas.style.cursor='grabbing';redraw();e.preventDefault();}
+    else{selectedOverlay=null;redraw();}
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!dragging)return;
+    var p=getCanvasPos(e);
+    dragging.x=Math.max(0.01,Math.min(0.99,(p.x-dragOffX)/canvas.width));
+    dragging.y=Math.max(0.01,Math.min(0.99,(p.y-dragOffY)/canvas.height));
+    redraw();
+  });
+  window.addEventListener('mouseup',function(){dragging=null;canvas.style.cursor='crosshair';});
+
+  // Touch drag
+  canvas.addEventListener('touchstart',function(e){
+    if(mode!=='text')return;
+    var t=e.touches[0];
+    var p=getCanvasPos(t);
+    var o=findOverlayAt(p.x,p.y);
+    if(o){dragging=o;selectedOverlay=o;dragOffX=p.x-o.x*canvas.width;dragOffY=p.y-o.y*canvas.height;redraw();e.preventDefault();}
+  },{passive:false});
+  window.addEventListener('touchmove',function(e){
+    if(!dragging)return;
+    var t=e.touches[0];
+    var p=getCanvasPos(t);
+    dragging.x=Math.max(0.01,Math.min(0.99,(p.x-dragOffX)/canvas.width));
+    dragging.y=Math.max(0.01,Math.min(0.99,(p.y-dragOffY)/canvas.height));
+    redraw();e.preventDefault();
+  },{passive:false});
+  window.addEventListener('touchend',function(){dragging=null;});
+
+  // ── Click: circles mode add/remove, text mode tap-to-place if not dragging ──
+  canvas.addEventListener('click',function(e){
+    var p=getCanvasPos(e);
     if(mode==='circles'){
-      var W=canvas.width,removed=false;
-      for(var ci=0;ci<circles.length;ci++){var dx=tapX-circles[ci].cx,dy=tapY-circles[ci].cy;if(Math.sqrt(dx*dx+dy*dy)<W*0.14){circles.splice(ci,1);removed=true;break;}}
-      if(!removed){var cr=W*0.12,lx=cr+W*0.02,ly=Math.max(cr,Math.min(canvas.height-cr,tapY));circles.push({cx:lx,cy:ly,sx:tapX,sy:tapY});}
+      // Try remove first
+      var ci=findCircleAt(p.x,p.y);
+      if(ci>=0){ circles.splice(ci,1); redraw(); return; }
+      // Add new circle — place on LEFT side, line points to tapped spot
+      var W=canvas.width, cr=W*0.13;
+      var lx=cr+W*0.02;
+      var ly=Math.max(cr+4,Math.min(canvas.height-cr-4,p.y));
+      // Shift down if overlapping existing
+      circles.forEach(function(c){if(Math.abs(c.cy-ly)<cr*2.2){ly=c.cy+cr*2.4;}});
+      ly=Math.min(canvas.height-cr-4,ly);
+      circles.push({cx:lx,cy:ly,sx:p.x,sy:p.y});
       redraw();
     }else{
-      if(selectedOverlay){selectedOverlay.x=tapX/canvas.width;selectedOverlay.y=tapY/canvas.height;redraw();}
-      else{overlays.forEach(function(o){var px=o.x*canvas.width,py=o.y*canvas.height;var ctx2=canvas.getContext('2d');ctx2.font=o.size+'px '+o.font;var tw=ctx2.measureText(o.text).width;if(Math.abs(tapX-px)<tw/2+20&&Math.abs(tapY-py)<o.size){selectedOverlay=o;redraw();}});}
+      // Only tap-to-place if we weren't dragging
+      if(dragging)return;
+      var o=findOverlayAt(p.x,p.y);
+      if(o){selectedOverlay=o;redraw();}
+      else if(selectedOverlay){selectedOverlay.x=p.x/canvas.width;selectedOverlay.y=p.y/canvas.height;redraw();}
     }
-  };
+  });
 
-  function addText(){var t=tInput.value.trim();if(!t)return;var o={text:t,font:selFont,color:selColor,size:selSize,x:0.5,y:0.08};overlays.push(o);selectedOverlay=o;redraw();tInput.value='';tInput.focus();}
+  function addText(){
+    var t=tInput.value.trim();if(!t)return;
+    var o={text:t,font:selFont,color:selColor,size:selSize,x:0.5,y:0.08};
+    overlays.push(o);selectedOverlay=o;redraw();tInput.value='';tInput.focus();
+  }
   aBtn.onclick=addText;
   tInput.onkeydown=function(e){if(e.key==='Enter')addText();};
 }
