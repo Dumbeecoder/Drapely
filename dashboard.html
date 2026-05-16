@@ -1870,6 +1870,23 @@ function openCustomizeModal(imageUrl) {
   }
 
   // ── Mouse/touch drag for text ──
+  function onMouseMove(e){
+    if(!dragging)return;
+    var p=getCanvasPos(e);
+    dragging.x=Math.max(0.01,Math.min(0.99,(p.x-dragOffX)/canvas.width));
+    dragging.y=Math.max(0.01,Math.min(0.99,(p.y-dragOffY)/canvas.height));
+    redraw();
+  }
+  function onMouseUp(){dragging=null;canvas.style.cursor='crosshair';}
+  function onTouchMove(e){
+    if(!dragging)return;
+    var t=e.touches[0];var p=getCanvasPos(t);
+    dragging.x=Math.max(0.01,Math.min(0.99,(p.x-dragOffX)/canvas.width));
+    dragging.y=Math.max(0.01,Math.min(0.99,(p.y-dragOffY)/canvas.height));
+    redraw();e.preventDefault();
+  }
+  function onTouchEnd(){dragging=null;}
+
   canvas.addEventListener('mousedown',function(e){
     if(mode!=='text')return;
     var p=getCanvasPos(e);
@@ -1877,32 +1894,27 @@ function openCustomizeModal(imageUrl) {
     if(o){dragging=o;selectedOverlay=o;dragOffX=p.x-o.x*canvas.width;dragOffY=p.y-o.y*canvas.height;canvas.style.cursor='grabbing';redraw();e.preventDefault();}
     else{selectedOverlay=null;redraw();}
   });
-  window.addEventListener('mousemove',function(e){
-    if(!dragging)return;
-    var p=getCanvasPos(e);
-    dragging.x=Math.max(0.01,Math.min(0.99,(p.x-dragOffX)/canvas.width));
-    dragging.y=Math.max(0.01,Math.min(0.99,(p.y-dragOffY)/canvas.height));
-    redraw();
-  });
-  window.addEventListener('mouseup',function(){dragging=null;canvas.style.cursor='crosshair';});
-
-  // Touch drag
   canvas.addEventListener('touchstart',function(e){
     if(mode!=='text')return;
-    var t=e.touches[0];
-    var p=getCanvasPos(t);
+    var t=e.touches[0];var p=getCanvasPos(t);
     var o=findOverlayAt(p.x,p.y);
     if(o){dragging=o;selectedOverlay=o;dragOffX=p.x-o.x*canvas.width;dragOffY=p.y-o.y*canvas.height;redraw();e.preventDefault();}
   },{passive:false});
-  window.addEventListener('touchmove',function(e){
-    if(!dragging)return;
-    var t=e.touches[0];
-    var p=getCanvasPos(t);
-    dragging.x=Math.max(0.01,Math.min(0.99,(p.x-dragOffX)/canvas.width));
-    dragging.y=Math.max(0.01,Math.min(0.99,(p.y-dragOffY)/canvas.height));
-    redraw();e.preventDefault();
-  },{passive:false});
-  window.addEventListener('touchend',function(){dragging=null;});
+
+  window.addEventListener('mousemove',onMouseMove);
+  window.addEventListener('mouseup',onMouseUp);
+  window.addEventListener('touchmove',onTouchMove,{passive:false});
+  window.addEventListener('touchend',onTouchEnd);
+
+  // Clean up listeners when modal closes
+  function cleanup(){
+    window.removeEventListener('mousemove',onMouseMove);
+    window.removeEventListener('mouseup',onMouseUp);
+    window.removeEventListener('touchmove',onTouchMove);
+    window.removeEventListener('touchend',onTouchEnd);
+  }
+  closeX.onclick = function(){ cleanup(); modal.remove(); };
+  modal.onclick = function(e){ if(e.target===modal){ cleanup(); modal.remove(); } };
 
   // ── Click: circles mode add/remove, text mode tap-to-place if not dragging ──
   canvas.addEventListener('click',function(e){
