@@ -270,6 +270,7 @@
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
       <p class="topbar-sub" id="topbar-sub">Welcome back!</p>
       <span class="plan-pill" id="plan-pill" style="display:none;"></span>
+      <button onclick="startTour()" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;color:#E91E63;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;">🗺️ Tour</button>
     </div>
   </div>
 
@@ -1505,7 +1506,6 @@ function showRealResults(images) {
   var body = document.getElementById('results-body');
   if (!body) return;
   body.innerHTML = '';
-  // Show results panel on mobile
   var panel = document.getElementById('results-panel');
   if (panel) {
     panel.classList.add('has-results');
@@ -1530,10 +1530,20 @@ function showRealResults(images) {
     vidBtn.style.cssText = 'background:#000;color:#fff;border-color:#000;';
     vidBtn.textContent = '🎬 Make Video';
     vidBtn.onclick = (function(u){ return function(){ convertToVideo(u); }; })(url);
+    // Detail View button
+    var detailBtn = document.createElement('button');
+    detailBtn.className = 'result-btn';
+    detailBtn.style.cssText = 'background:#fff0f5;color:#E91E63;border-color:rgba(233,30,99,0.3);width:100%;margin-top:4px;';
+    detailBtn.textContent = '🔍 Detail View';
+    detailBtn.onclick = (function(u){ return function(){ addDetailCircles(u); }; })(url);
     actions.appendChild(dlBtn);
     actions.appendChild(vidBtn);
+    var detailRow = document.createElement('div');
+    detailRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
+    detailRow.appendChild(detailBtn);
     item.appendChild(img);
     item.appendChild(actions);
+    item.appendChild(detailRow);
     grid.appendChild(item);
   });
   body.appendChild(grid);
@@ -1542,6 +1552,135 @@ function showRealResults(images) {
   newBtn.textContent = '+ Start a new photoshoot';
   newBtn.onclick = newShoot;
   body.appendChild(newBtn);
+}
+
+function addDetailCircles(imageUrl) {
+  showToast('Creating detail view...');
+  var img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    var W = img.width, H = img.height;
+    var cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var ctx = cv.getContext('2d');
+
+    // Draw base image
+    ctx.drawImage(img, 0, 0, W, H);
+
+    // Define 4 crop zones (as fractions of image) — neckline, sleeve, hem detail, bottom border
+    var zones = [
+      { sx: W*0.3, sy: H*0.02, sw: W*0.4,  sh: H*0.18, label: 'Neckline' },
+      { sx: W*0.55, sy: H*0.22, sw: W*0.38, sh: H*0.16, label: 'Sleeve' },
+      { sx: W*0.2,  sy: H*0.55, sw: W*0.45, sh: H*0.16, label: 'Embroidery' },
+      { sx: W*0.15, sy: H*0.74, sw: W*0.5,  sh: H*0.18, label: 'Border' },
+    ];
+
+    // Circle positions — left column, evenly spaced
+    var cr = W * 0.11; // circle radius
+    var cx = W * 0.12; // circle center x
+    var positions = [
+      { cx: cx, cy: H * 0.14 },
+      { cx: cx, cy: H * 0.36 },
+      { cx: cx, cy: H * 0.58 },
+      { cx: cx, cy: H * 0.80 },
+    ];
+
+    zones.forEach(function(z, i) {
+      var pos = positions[i];
+
+      // Clip circle and draw zoomed crop
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(pos.cx, pos.cy, cr, 0, Math.PI * 2);
+      ctx.clip();
+
+      // Draw the cropped zone scaled to fill the circle
+      var scale = (cr * 2) / Math.min(z.sw, z.sh);
+      var dw = z.sw * scale, dh = z.sh * scale;
+      var dx = pos.cx - dw / 2, dy = pos.cy - dh / 2;
+      ctx.drawImage(img, z.sx, z.sy, z.sw, z.sh, dx, dy, dw, dh);
+      ctx.restore();
+
+      // White border around circle
+      ctx.save();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = W * 0.008;
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = W * 0.015;
+      ctx.beginPath();
+      ctx.arc(pos.cx, pos.cy, cr, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // Connector line from circle to image area
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = W * 0.003;
+      ctx.setLineDash([W*0.008, W*0.006]);
+      ctx.beginPath();
+      ctx.moveTo(pos.cx + cr, pos.cy);
+      ctx.lineTo(W * 0.32, H * (0.1 + i * 0.22));
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    // Show in modal and offer download
+    var dataUrl = cv.toDataURL('image/jpeg', 0.95);
+    showDetailModal(dataUrl);
+  };
+  img.onerror = function() {
+    // If crossOrigin fails, try without
+    var img2 = new Image();
+    img2.onload = function() {
+      var cv2 = document.createElement('canvas');
+      cv2.width = img2.width; cv2.height = img2.height;
+      var ctx2 = cv2.getContext('2d');
+      ctx2.drawImage(img2, 0, 0);
+      showDetailModal(cv2.toDataURL('image/jpeg', 0.95));
+    };
+    img2.src = imageUrl;
+  };
+  img.src = imageUrl;
+}
+
+function showDetailModal(dataUrl) {
+  // Remove existing modal
+  var existing = document.getElementById('detail-modal');
+  if (existing) existing.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'detail-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;';
+  modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
+
+  var img = document.createElement('img');
+  img.src = dataUrl;
+  img.style.cssText = 'max-width:100%;max-height:80vh;object-fit:contain;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.5);';
+
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:10px;margin-top:16px;';
+
+  var dlBtn = document.createElement('button');
+  dlBtn.style.cssText = 'padding:12px 28px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;';
+  dlBtn.textContent = '↓ Download';
+  dlBtn.onclick = function() {
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'drapely-detail-' + Date.now() + '.jpg';
+    a.click();
+  };
+
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'padding:12px 20px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;cursor:pointer;font-family:DM Sans,sans-serif;';
+  closeBtn.textContent = '✕ Close';
+  closeBtn.onclick = function(){ modal.remove(); };
+
+  btnRow.appendChild(dlBtn);
+  btnRow.appendChild(closeBtn);
+  modal.appendChild(img);
+  modal.appendChild(btnRow);
+  document.body.appendChild(modal);
+  showToast('Detail view ready!');
 }
 
 // LOGO FUNCTIONS
@@ -2241,5 +2380,191 @@ async function startVideoGenerate() {
 
 
 </script>
-</body>
-</html>
+<!-- ONBOARDING TOUR -->
+<div id="tour-overlay" style="display:none;position:fixed;inset:0;z-index:9000;">
+  <!-- Dark overlay with spotlight hole -->
+  <canvas id="tour-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <!-- Tooltip card -->
+  <div id="tour-card" style="position:absolute;background:#fff;border-radius:16px;padding:20px;max-width:280px;box-shadow:0 20px 60px rgba(0,0,0,0.4);z-index:9001;border:2px solid rgba(233,30,99,0.2);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;gap:5px;" id="tour-dots"></div>
+      <button onclick="endTour()" style="background:none;border:none;color:#aaa;font-size:18px;cursor:pointer;padding:0;line-height:1;">✕</button>
+    </div>
+    <div id="tour-emoji" style="font-size:32px;margin-bottom:8px;"></div>
+    <div id="tour-title" style="font-size:15px;font-weight:600;color:#000;margin-bottom:6px;"></div>
+    <div id="tour-desc" style="font-size:13px;color:#555;line-height:1.5;margin-bottom:16px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button id="tour-prev" onclick="tourStep(-1)" style="flex:1;padding:9px;border:1.5px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;color:#E91E63;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:none;">← Back</button>
+      <button id="tour-next" onclick="tourStep(1)" style="flex:1;padding:9px;background:#E91E63;border:none;border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var tourSteps = [
+  { emoji:'👋', title:'Welcome to Drapely!', desc:"Let's take a quick tour so you can start creating stunning AI fashion photos in seconds.", target: null },
+  { emoji:'📸', title:'Upload Your Suit', desc:'Start by uploading a clear photo of your suit or garment. A flat lay or mannequin photo works perfectly.', target:'suit-upload-zone' },
+  { emoji:'👩', title:'Choose Your Model', desc:'Pick from our AI models — adult or kids. You can also upload your own custom model photo!', target:'step-1' },
+  { emoji:'🌄', title:'Pick a Scene & Pose', desc:'Choose from beautiful backgrounds like Rajasthani Fort, Garden, or Studio. Set a pose too!', target:'step-2' },
+  { emoji:'⚡', title:'Generate Your Photoshoot', desc:'Hit Generate and our AI creates professional photos in 1-2 minutes. Each photo costs 1 credit.', target:'step-3' },
+  { emoji:'💳', title:'Your Credits', desc:'You start with 3 free credits. Buy more anytime to keep generating stunning photos!', target:'stat-credits' },
+];
+
+var tourIdx = 0;
+var tourActive = false;
+
+function startTour() {
+  tourActive = true;
+  tourIdx = 0;
+  document.getElementById('tour-overlay').style.display = 'block';
+  renderTourStep();
+}
+
+function endTour() {
+  tourActive = false;
+  document.getElementById('tour-overlay').style.display = 'none';
+  try { localStorage.setItem('drapely_tour_done', '1'); } catch(e) {}
+}
+
+function tourStep(dir) {
+  tourIdx = Math.max(0, Math.min(tourSteps.length - 1, tourIdx + dir));
+  renderTourStep();
+}
+
+function renderTourStep() {
+  var step = tourSteps[tourIdx];
+  var isLast = tourIdx === tourSteps.length - 1;
+
+  document.getElementById('tour-emoji').textContent = step.emoji;
+  document.getElementById('tour-title').textContent = step.title;
+  document.getElementById('tour-desc').textContent = step.desc;
+
+  // Dots
+  var dots = document.getElementById('tour-dots');
+  dots.innerHTML = '';
+  tourSteps.forEach(function(_, i) {
+    var d = document.createElement('div');
+    d.style.cssText = 'width:6px;height:6px;border-radius:50%;background:' + (i === tourIdx ? '#E91E63' : '#ddd') + ';transition:background 0.2s;';
+    dots.appendChild(d);
+  });
+
+  // Buttons
+  document.getElementById('tour-prev').style.display = tourIdx > 0 ? 'block' : 'none';
+  var nextBtn = document.getElementById('tour-next');
+  nextBtn.textContent = isLast ? '🎉 Start Creating!' : 'Next →';
+  if (isLast) nextBtn.onclick = endTour;
+  else nextBtn.onclick = function(){ tourStep(1); };
+
+  // Spotlight
+  drawSpotlight(step.target);
+
+  // Position card near target
+  positionCard(step.target);
+}
+
+function drawSpotlight(targetId) {
+  var canvas = document.getElementById('tour-canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (!targetId) return;
+
+  var el = document.getElementById(targetId);
+  if (!el) return;
+
+  // Make sure element is visible — if in hidden step panel, show it temporarily
+  var rect = el.getBoundingClientRect();
+  if (rect.width === 0) return;
+
+  var pad = 12;
+  var x = rect.left - pad, y = rect.top - pad;
+  var w = rect.width + pad * 2, h = rect.height + pad * 2;
+  var r = 12;
+
+  // Cut spotlight hole
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalCompositeOperation = 'source-over';
+
+  // Pink glow border around spotlight
+  ctx.strokeStyle = 'rgba(233,30,99,0.7)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function positionCard(targetId) {
+  var card = document.getElementById('tour-card');
+  var cw = 280, margin = 16;
+  var vw = window.innerWidth, vh = window.innerHeight;
+
+  if (!targetId) {
+    // Center for welcome/no-target steps
+    card.style.left = Math.max(margin, (vw - cw) / 2) + 'px';
+    card.style.top = (vh / 2 - 140) + 'px';
+    return;
+  }
+
+  var el = document.getElementById(targetId);
+  if (!el) {
+    card.style.left = Math.max(margin, (vw - cw) / 2) + 'px';
+    card.style.top = (vh / 2 - 140) + 'px';
+    return;
+  }
+
+  var rect = el.getBoundingClientRect();
+  var ch = card.offsetHeight || 200;
+
+  // Try below first, then above, then right
+  var left = Math.min(Math.max(margin, rect.left), vw - cw - margin);
+  var top;
+  if (rect.bottom + ch + margin < vh) {
+    top = rect.bottom + 16;
+  } else if (rect.top - ch - margin > 0) {
+    top = rect.top - ch - 16;
+  } else {
+    top = Math.max(margin, Math.min(rect.top, vh - ch - margin));
+    left = rect.right + 16;
+    if (left + cw > vw) left = rect.left - cw - 16;
+  }
+
+  card.style.left = Math.max(margin, left) + 'px';
+  card.style.top = Math.max(margin, top) + 'px';
+}
+
+// Auto-start for first-time users
+try {
+  if (!localStorage.getItem('drapely_tour_done')) {
+    setTimeout(startTour, 1200);
+  }
+} catch(e) {}
+
+window.addEventListener('resize', function() {
+  if (tourActive) renderTourStep();
+});
+</script>
