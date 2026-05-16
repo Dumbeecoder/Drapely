@@ -1438,7 +1438,12 @@ async function startGenerate() {
         return;
       }
       var pollResult = await androidSafePoll(predId, interval, progressWrap, activeStepEl);
-      if (!pollResult) return;
+      if (!pollResult) {
+        clearInterval(interval);
+        releaseWakeLock();
+        resetGenBtn();
+        return;
+      }
       if (pollResult.output) {
         var imgs = Array.isArray(pollResult.output) ? pollResult.output : [pollResult.output];
         results = results.concat(imgs);
@@ -1455,10 +1460,8 @@ async function startGenerate() {
       activeStepEl.style.display = 'block';
       if (results.length > 0) {
         updateStats(results.length);
-        deductCredit(results.length); // 1 credit per generated image
         // Composite onto custom background if uploaded
         compositeOnBackground(results).then(function(composited) {
-        // Overlay logo then upload watermarked images to Imgur, save those URLs
         overlayLogoOnImages(composited).then(async function(finalImages) {
           var urlsToSave = [];
           for (var fi = 0; fi < finalImages.length; fi++) {
@@ -1473,6 +1476,7 @@ async function startGenerate() {
           }
           addToGallery(urlsToSave, collectionName);
           showRealResults(urlsToSave);
+          deductCredit(urlsToSave.length); // deduct ONLY after confirmed results
           releaseWakeLock();
           resetGenBtn();
           showToast('Photoshoot ready! Download your images.');
@@ -1480,6 +1484,7 @@ async function startGenerate() {
         }).catch(function() {
           addToGallery(composited, collectionName);
           showRealResults(composited);
+          deductCredit(composited.length); // deduct ONLY after confirmed results
           releaseWakeLock();
           resetGenBtn();
           showToast('Photoshoot ready! Download your images.');
