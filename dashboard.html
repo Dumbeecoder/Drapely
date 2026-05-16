@@ -1507,204 +1507,193 @@ function showRealResults(images) {
   if (!body) return;
   body.innerHTML = '';
   var panel = document.getElementById('results-panel');
-  if (panel) {
-    panel.classList.add('has-results');
-    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  if (panel) { panel.classList.add('has-results'); panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   var grid = document.createElement('div');
   grid.className = 'results-grid';
   images.forEach(function(url, i) {
-    var item = document.createElement('div');
-    item.className = 'result-item';
+    var item = document.createElement('div'); item.className = 'result-item';
     var img = document.createElement('img');
     img.src = url;
-    img.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;border-radius:10px 10px 0 0;';
-    var actions = document.createElement('div');
-    actions.className = 'result-actions';
-    var dlBtn = document.createElement('button');
-    dlBtn.className = 'result-btn primary';
-    dlBtn.textContent = '↓ Download';
+    img.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;border-radius:10px 10px 0 0;cursor:pointer;';
+    img.onclick = (function(u){ return function(){ openInlineEditor(u); }; })(url);
+    var actions = document.createElement('div'); actions.className = 'result-actions';
+    var dlBtn = document.createElement('button'); dlBtn.className = 'result-btn primary'; dlBtn.textContent = '↓ Download';
     dlBtn.onclick = (function(u, n){ return function(){ downloadImg(u, n); }; })(url, i+1);
-    var vidBtn = document.createElement('button');
-    vidBtn.className = 'result-btn';
+    var vidBtn = document.createElement('button'); vidBtn.className = 'result-btn';
     vidBtn.style.cssText = 'background:#000;color:#fff;border-color:#000;';
     vidBtn.textContent = '🎬 Make Video';
     vidBtn.onclick = (function(u){ return function(){ convertToVideo(u); }; })(url);
-    // Detail View button
-    var detailBtn = document.createElement('button');
-    detailBtn.className = 'result-btn';
-    detailBtn.style.cssText = 'background:#fff0f5;color:#E91E63;border-color:rgba(233,30,99,0.3);width:100%;margin-top:4px;';
-    detailBtn.textContent = '🔍 Detail View';
-    detailBtn.onclick = (function(u){ return function(){ addDetailCircles(u); }; })(url);
-    actions.appendChild(dlBtn);
-    actions.appendChild(vidBtn);
-    var detailRow = document.createElement('div');
-    detailRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
-    detailRow.appendChild(detailBtn);
-    item.appendChild(img);
-    item.appendChild(actions);
-    item.appendChild(detailRow);
+    var editBtn = document.createElement('button'); editBtn.className = 'result-btn';
+    editBtn.style.cssText = 'background:#fff0f5;color:#E91E63;border-color:rgba(233,30,99,0.3);width:100%;margin-top:4px;font-weight:600;';
+    editBtn.textContent = '✏️ Edit & Download';
+    editBtn.onclick = (function(u){ return function(){ openInlineEditor(u); }; })(url);
+    actions.appendChild(dlBtn); actions.appendChild(vidBtn);
+    item.appendChild(img); item.appendChild(actions);
+    var er = document.createElement('div'); er.appendChild(editBtn); item.appendChild(er);
     grid.appendChild(item);
   });
   body.appendChild(grid);
-  var newBtn = document.createElement('button');
-  newBtn.className = 'new-shoot-btn';
-  newBtn.textContent = '+ Start a new photoshoot';
-  newBtn.onclick = newShoot;
+  var newBtn = document.createElement('button'); newBtn.className = 'new-shoot-btn';
+  newBtn.textContent = '+ Start a new photoshoot'; newBtn.onclick = newShoot;
   body.appendChild(newBtn);
 }
 
-function addDetailCircles(imageUrl) {
-  showToast('Creating detail view...');
-  var img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = function() {
-    var W = img.width, H = img.height;
-    var cv = document.createElement('canvas');
-    cv.width = W; cv.height = H;
-    var ctx = cv.getContext('2d');
+function openInlineEditor(imageUrl) {
+  var body = document.getElementById('results-body');
+  if (!body) return;
+  body.innerHTML = '';
+  var overlays = [], circles = [], selectedOverlay = null, mode = 'text';
+  var baseImg = new Image();
 
-    // Draw base image
-    ctx.drawImage(img, 0, 0, W, H);
+  // Back
+  var backBtn = document.createElement('button');
+  backBtn.style.cssText = 'padding:7px 14px;border:1.5px solid rgba(233,30,99,0.3);border-radius:8px;background:#fff;color:#E91E63;font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:10px;';
+  backBtn.textContent = '← Back';
+  backBtn.onclick = function(){ location.reload(); };
+  body.appendChild(backBtn);
 
-    // Crop zones — all centered horizontally on the dress
-    // Use tighter crops for better zoom effect
-    var cw = W * 0.28; // crop width — narrow so it zooms in more
-    var ch = H * 0.12; // crop height
-    var cx2 = W * 0.5 - cw/2; // center horizontally on dress
-
-    var zones = [
-      // Neckline — upper chest center
-      { sx: W*0.32, sy: H*0.14, sw: W*0.36, sh: H*0.12 },
-      // Chest embroidery / dupatta detail
-      { sx: W*0.28, sy: H*0.32, sw: W*0.32, sh: H*0.12 },
-      // Mid dress embroidery
-      { sx: W*0.28, sy: H*0.52, sw: W*0.36, sh: H*0.14 },
-      // Hem / bottom of kurti
-      { sx: W*0.25, sy: H*0.70, sw: W*0.40, sh: H*0.14 },
-    ];
-
-    // Circle positions — left column, evenly spaced
-    var cr = W * 0.13; // bigger circle radius for better visibility
-    var cx = W * 0.13; // circle center x
-    var positions = [
-      { cx: cx, cy: H * 0.12 },
-      { cx: cx, cy: H * 0.33 },
-      { cx: cx, cy: H * 0.56 },
-      { cx: cx, cy: H * 0.78 },
-    ];
-
-    zones.forEach(function(z, i) {
-      var pos = positions[i];
-
-      // Clip circle and draw zoomed crop
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(pos.cx, pos.cy, cr, 0, Math.PI * 2);
-      ctx.clip();
-
-      // Draw the cropped zone scaled to fill the circle
-      var scale = (cr * 2) / Math.min(z.sw, z.sh);
-      var dw = z.sw * scale, dh = z.sh * scale;
-      var dx = pos.cx - dw / 2, dy = pos.cy - dh / 2;
-      ctx.drawImage(img, z.sx, z.sy, z.sw, z.sh, dx, dy, dw, dh);
-      ctx.restore();
-
-      // White border around circle
-      ctx.save();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = W * 0.008;
-      ctx.shadowColor = 'rgba(0,0,0,0.4)';
-      ctx.shadowBlur = W * 0.015;
-      ctx.beginPath();
-      ctx.arc(pos.cx, pos.cy, cr, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
-
-      // Connector line pointing to center of dress
-      var targetX = [W*0.45, W*0.42, W*0.42, W*0.40];
-      var targetY = [H*0.18, H*0.37, H*0.57, H*0.75];
-      ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
-      ctx.lineWidth = W * 0.003;
-      ctx.setLineDash([W*0.008, W*0.006]);
-      ctx.beginPath();
-      ctx.moveTo(pos.cx + cr, pos.cy);
-      ctx.lineTo(targetX[i], targetY[i]);
-      ctx.stroke();
-      ctx.restore();
-    });
-
-    // Show in modal and offer download
-    var dataUrl = cv.toDataURL('image/jpeg', 0.95);
-    showDetailModal(dataUrl);
-  };
-  img.onerror = function() {
-    // If crossOrigin fails, try without
-    var img2 = new Image();
-    img2.onload = function() {
-      var cv2 = document.createElement('canvas');
-      cv2.width = img2.width; cv2.height = img2.height;
-      var ctx2 = cv2.getContext('2d');
-      ctx2.drawImage(img2, 0, 0);
-      showDetailModal(cv2.toDataURL('image/jpeg', 0.95));
+  // Tabs
+  var tabs = document.createElement('div'); tabs.style.cssText = 'display:flex;gap:6px;margin-bottom:10px;';
+  var tabBtns = [];
+  ['✏️ Add Text','🔍 Detail Circles'].forEach(function(label, idx) {
+    var t = document.createElement('button');
+    t.style.cssText = 'flex:1;padding:9px;border-radius:8px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid rgba(233,30,99,0.25);background:'+(idx===0?'#E91E63':'#fff')+';color:'+(idx===0?'#fff':'#555')+';';
+    t.textContent = label;
+    t.onclick = function() {
+      mode = idx===0?'text':'circles';
+      tabBtns.forEach(function(b,bi){ b.style.background=bi===idx?'#E91E63':'#fff'; b.style.color=bi===idx?'#fff':'#555'; });
+      textPanel.style.display = idx===0?'block':'none';
+      circlePanel.style.display = idx===1?'block':'none';
     };
-    img2.src = imageUrl;
+    tabBtns.push(t); tabs.appendChild(t);
+  });
+  body.appendChild(tabs);
+
+  // Canvas
+  var canvas = document.createElement('canvas');
+  canvas.style.cssText = 'width:100%;border-radius:10px;display:block;cursor:crosshair;margin-bottom:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1);';
+  body.appendChild(canvas);
+
+  // ── TEXT PANEL ──
+  var textPanel = document.createElement('div'); textPanel.style.display = 'block';
+
+  var iRow = document.createElement('div'); iRow.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
+  var tInput = document.createElement('input');
+  tInput.placeholder = 'Brand name / D.NO.1234 / READYMADE / any text...';
+  tInput.style.cssText = 'flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(233,30,99,0.25);font-family:DM Sans,sans-serif;font-size:13px;outline:none;';
+  var aBtn = document.createElement('button');
+  aBtn.style.cssText = 'padding:9px 14px;background:#E91E63;border:none;border-radius:8px;color:#fff;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;';
+  aBtn.textContent = '+ Add';
+  iRow.appendChild(tInput); iRow.appendChild(aBtn); textPanel.appendChild(iRow);
+
+  var fRow = document.createElement('div'); fRow.style.cssText = 'display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;';
+  var selFont = 'DM Sans,sans-serif';
+  [{l:'Sans',v:'DM Sans,sans-serif'},{l:'Serif',v:'Georgia,serif'},{l:'Elegant',v:'Cormorant Garamond,serif'},{l:'Bold',v:'Impact,sans-serif'},{l:'Mono',v:'Courier New,monospace'}].forEach(function(f){
+    var b=document.createElement('button');
+    b.style.cssText='padding:5px 10px;border-radius:6px;border:1.5px solid rgba(233,30,99,0.2);font-family:'+f.v+';font-size:12px;cursor:pointer;background:'+(f.v===selFont?'#E91E63':'#fff')+';color:'+(f.v===selFont?'#fff':'#555')+';';
+    b.textContent=f.l;
+    b.onclick=function(){selFont=f.v;fRow.querySelectorAll('button').forEach(function(x){x.style.background='#fff';x.style.color='#555';});b.style.background='#E91E63';b.style.color='#fff';if(selectedOverlay){selectedOverlay.font=selFont;redraw();}};
+    fRow.appendChild(b);
+  });
+  textPanel.appendChild(fRow);
+
+  var sRow = document.createElement('div'); sRow.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;';
+  var selColor = '#ffffff';
+  ['#ffffff','#000000','#FFD700','#E91E63','#FF6B6B','#00D4AA'].forEach(function(c){
+    var sw=document.createElement('div');
+    sw.className='cs';
+    sw.style.cssText='width:26px;height:26px;border-radius:50%;background:'+c+';cursor:pointer;border:2.5px solid '+(c===selColor?'#E91E63':'rgba(0,0,0,0.15)')+';flex-shrink:0;';
+    sw.onclick=function(){selColor=c;sRow.querySelectorAll('.cs').forEach(function(s){s.style.border='2.5px solid rgba(0,0,0,0.15)';});sw.style.border='2.5px solid #E91E63';if(selectedOverlay){selectedOverlay.color=c;redraw();}};
+    sRow.appendChild(sw);
+  });
+  var szL=document.createElement('span');szL.textContent='Size:';szL.style.cssText='font-size:11px;color:#888;font-family:DM Sans,sans-serif;';
+  var szS=document.createElement('input');szS.type='range';szS.min=16;szS.max=120;szS.value=42;szS.style.cssText='flex:1;min-width:60px;accent-color:#E91E63;';
+  szS.oninput=function(){if(selectedOverlay){selectedOverlay.size=parseInt(szS.value);redraw();}};
+  sRow.appendChild(szL);sRow.appendChild(szS);textPanel.appendChild(sRow);
+
+  var pL=document.createElement('div');pL.style.cssText='font-size:11px;color:#888;font-family:DM Sans,sans-serif;margin-bottom:5px;';pL.textContent='Tap image to place text · or use preset:';textPanel.appendChild(pL);
+  var pG=document.createElement('div');pG.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px;';
+  [{l:'↖ Top Left',x:0.05,y:0.05},{l:'↑ Top Center',x:0.5,y:0.05},{l:'↗ Top Right',x:0.95,y:0.05},{l:'← Mid Left',x:0.05,y:0.5},{l:'· Center',x:0.5,y:0.5},{l:'→ Mid Right',x:0.95,y:0.5},{l:'↙ Bot Left',x:0.05,y:0.93},{l:'↓ Bot Center',x:0.5,y:0.93},{l:'↘ Bot Right',x:0.95,y:0.93}].forEach(function(p){
+    var b=document.createElement('button');b.style.cssText='padding:5px 3px;border-radius:6px;border:1px solid rgba(233,30,99,0.2);background:#fff;color:#555;font-family:DM Sans,sans-serif;font-size:10px;cursor:pointer;';b.textContent=p.l;
+    b.onclick=function(){var o=selectedOverlay||overlays[overlays.length-1];if(o){o.x=p.x;o.y=p.y;redraw();}};pG.appendChild(b);
+  });
+  textPanel.appendChild(pG);
+  var dBtn=document.createElement('button');dBtn.style.cssText='width:100%;padding:7px;border-radius:8px;border:1px solid rgba(255,80,80,0.3);background:rgba(255,80,80,0.05);color:#e05;font-family:DM Sans,sans-serif;font-size:12px;cursor:pointer;';dBtn.textContent='🗑 Remove Selected Text';
+  dBtn.onclick=function(){if(selectedOverlay){overlays=overlays.filter(function(o){return o!==selectedOverlay;});selectedOverlay=null;redraw();}};
+  textPanel.appendChild(dBtn);
+  body.appendChild(textPanel);
+
+  // ── CIRCLE PANEL ──
+  var circlePanel = document.createElement('div'); circlePanel.style.display = 'none';
+  var cInfo=document.createElement('div');cInfo.style.cssText='font-size:12px;color:#555;font-family:DM Sans,sans-serif;padding:10px 12px;background:#fff0f5;border-radius:8px;margin-bottom:8px;border:1px solid rgba(233,30,99,0.15);line-height:1.5;';
+  cInfo.innerHTML='👆 <strong>Tap anywhere on the dress</strong> to add a detail circle zooming into that part.<br>Tap an existing circle to remove it.';
+  var ccBtn=document.createElement('button');ccBtn.style.cssText='width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,80,80,0.3);background:rgba(255,80,80,0.05);color:#e05;font-family:DM Sans,sans-serif;font-size:12px;cursor:pointer;margin-top:6px;';ccBtn.textContent='🗑 Clear All Circles';
+  ccBtn.onclick=function(){circles=[];redraw();};
+  circlePanel.appendChild(cInfo);circlePanel.appendChild(ccBtn);
+  body.appendChild(circlePanel);
+
+  // ── DOWNLOAD ──
+  var dlBtn=document.createElement('button');
+  dlBtn.style.cssText='width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:DM Sans,sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;';
+  dlBtn.textContent='↓ Download';
+  dlBtn.onclick=function(){
+    var data=canvas.toDataURL('image/jpeg',0.95);
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+    if(isIOS){var w=window.open();w.document.write('<img src="'+data+'" style="max-width:100%">');return;}
+    var a=document.createElement('a');a.href=data;a.download='drapely-edited-'+Date.now()+'.jpg';a.click();
   };
-  img.src = imageUrl;
-}
+  body.appendChild(dlBtn);
 
-function showDetailModal(dataUrl) {
-  // Remove existing modal
-  var existing = document.getElementById('detail-modal');
-  if (existing) existing.remove();
-
-  var modal = document.createElement('div');
-  modal.id = 'detail-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;';
-  modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
-
-  var img = document.createElement('img');
-  img.src = dataUrl;
-  img.style.cssText = 'max-width:100%;max-height:80vh;object-fit:contain;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.5);';
-
-  var btnRow = document.createElement('div');
-  btnRow.style.cssText = 'display:flex;gap:10px;margin-top:16px;';
-
-  var dlBtn = document.createElement('button');
-  dlBtn.style.cssText = 'padding:12px 28px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;';
-  dlBtn.textContent = '↓ Download';
-  dlBtn.onclick = function() {
-    modal.remove();
-    showTextOverlayModal(dataUrl, function(finalUrl) {
-      var a = document.createElement('a');
-      a.href = finalUrl;
-      a.download = 'drapely-detail-' + Date.now() + '.jpg';
-      a.click();
+  // ── REDRAW ──
+  function redraw(){
+    if(!baseImg.width)return;
+    var W=baseImg.width,H=baseImg.height;
+    canvas.width=W;canvas.height=H;
+    var ctx=canvas.getContext('2d');
+    ctx.drawImage(baseImg,0,0,W,H);
+    circles.forEach(function(c){
+      var cr=W*0.12;
+      ctx.save();ctx.beginPath();ctx.arc(c.cx,c.cy,cr,0,Math.PI*2);ctx.clip();
+      var cw=W*0.22,ch=H*0.15;
+      var sx=Math.max(0,Math.min(c.sx-cw/2,W-cw)),sy=Math.max(0,Math.min(c.sy-ch/2,H-ch));
+      ctx.drawImage(baseImg,sx,sy,cw,ch,c.cx-cr,c.cy-cr,cr*2,cr*2);ctx.restore();
+      ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=W*0.007;ctx.shadowColor='rgba(0,0,0,0.4)';ctx.shadowBlur=W*0.012;ctx.beginPath();ctx.arc(c.cx,c.cy,cr,0,Math.PI*2);ctx.stroke();ctx.restore();
+      ctx.save();ctx.strokeStyle='rgba(255,255,255,0.8)';ctx.lineWidth=W*0.003;ctx.setLineDash([W*0.008,W*0.006]);ctx.beginPath();ctx.moveTo(c.cx+cr*0.7,c.cy+cr*0.7);ctx.lineTo(c.sx,c.sy);ctx.stroke();ctx.restore();
     });
+    overlays.forEach(function(o){
+      var px=o.x*W,py=o.y*H;
+      var align=o.x<0.2?'left':o.x>0.8?'right':'center';
+      ctx.save();ctx.font=o.size+'px '+o.font;ctx.textAlign=align;ctx.textBaseline='middle';
+      ctx.shadowColor=o.color==='#ffffff'?'rgba(0,0,0,0.8)':'rgba(255,255,255,0.4)';ctx.shadowBlur=o.size*0.3;ctx.shadowOffsetX=o.size*0.02;ctx.shadowOffsetY=o.size*0.02;
+      ctx.fillStyle=o.color;ctx.fillText(o.text,px,py);
+      if(o===selectedOverlay){var tw=ctx.measureText(o.text).width;var sx2=align==='center'?px-tw/2:align==='right'?px-tw:px;ctx.shadowBlur=0;ctx.strokeStyle='#E91E63';ctx.lineWidth=2;ctx.strokeRect(sx2-4,py-o.size*0.6,tw+8,o.size*1.2);}
+      ctx.restore();
+    });
+  }
+
+  baseImg.crossOrigin='anonymous';
+  baseImg.onload=function(){redraw();};
+  baseImg.onerror=function(){var i2=new Image();i2.onload=function(){baseImg=i2;redraw();};i2.src=imageUrl;baseImg=i2;};
+  baseImg.src=imageUrl;
+
+  canvas.onclick=function(e){
+    var rect=canvas.getBoundingClientRect();
+    var scX=canvas.width/rect.width,scY=canvas.height/rect.height;
+    var tapX=(e.clientX-rect.left)*scX,tapY=(e.clientY-rect.top)*scY;
+    if(mode==='circles'){
+      var W=canvas.width,removed=false;
+      for(var ci=0;ci<circles.length;ci++){var dx=tapX-circles[ci].cx,dy=tapY-circles[ci].cy;if(Math.sqrt(dx*dx+dy*dy)<W*0.13){circles.splice(ci,1);removed=true;break;}}
+      if(!removed){var cr=W*0.12,lx=cr+W*0.02,ly=Math.max(cr,Math.min(canvas.height-cr,tapY));circles.push({cx:lx,cy:ly,sx:tapX,sy:tapY});}
+      redraw();
+    }else{
+      if(selectedOverlay){selectedOverlay.x=tapX/canvas.width;selectedOverlay.y=tapY/canvas.height;redraw();}
+      else{overlays.forEach(function(o){var px=o.x*canvas.width,py=o.y*canvas.height;var ctx2=canvas.getContext('2d');ctx2.font=o.size+'px '+o.font;var tw=ctx2.measureText(o.text).width;if(Math.abs(tapX-px)<tw/2+20&&Math.abs(tapY-py)<o.size){selectedOverlay=o;redraw();}});}
+    }
   };
 
-  var closeBtn = document.createElement('button');
-  closeBtn.style.cssText = 'padding:12px 20px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;font-size:14px;cursor:pointer;font-family:DM Sans,sans-serif;';
-  closeBtn.textContent = '✕ Close';
-  closeBtn.onclick = function(){ modal.remove(); };
-
-  btnRow.appendChild(dlBtn);
-  btnRow.appendChild(closeBtn);
-  modal.appendChild(img);
-  modal.appendChild(btnRow);
-  document.body.appendChild(modal);
-  showToast('Detail view ready!');
-}
-
-// LOGO FUNCTIONS
-// GARMENT TYPE
-var selectedDuration = '5';
-var selectedGarmentType = 'salwar';
-
-function newShoot() {
-  goStep(0);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  function addText(){var t=tInput.value.trim();if(!t)return;var o={text:t,font:selFont,color:selColor,size:parseInt(szS.value),x:0.5,y:0.08};overlays.push(o);selectedOverlay=o;redraw();tInput.value='';}
+  aBtn.onclick=addText;
+  tInput.onkeydown=function(e){if(e.key==='Enter')addText();};
 }
 
 function loadCustomModel(e) {
