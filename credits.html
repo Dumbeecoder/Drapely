@@ -458,6 +458,12 @@ function loadHistory(userId) {
     topupHistory = (!topupsResult.error && topupsResult.data) ? topupsResult.data : [];
 
       // Separate items by type for independent numbering (oldest=1 per type)
+      // Exclude customized/edited photos — they don't cost credits
+      data = data.filter(function(i){
+        return i.suit_type !== 'Edited' && i.suit_type !== 'Customized' &&
+               !(i.collection_name && i.collection_name === 'Customized');
+      });
+
       var regularPhotos = data.filter(function(i){
         return i.media_type !== 'video' && i.suit_type !== 'Video' &&
                i.suit_type !== 'Bulk' && !(i.collection_name && i.collection_name.toLowerCase().includes('bulk'));
