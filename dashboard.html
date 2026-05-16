@@ -1772,21 +1772,46 @@ function openCustomizeModal(imageUrl) {
     saveBtn.textContent='Saving...'; saveBtn.disabled=true;
     var data=canvas.toDataURL('image/jpeg',0.95);
     var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-    if(!isIOS){var a=document.createElement('a');a.href=data;a.download='drapely-edited-'+Date.now()+'.jpg';a.click();}
+
+    // Convert to blob first (needed for both iOS share and gallery upload)
+    var fetchRes=await fetch(data);
+    var blob=await fetchRes.blob();
+
+    // Download / share
+    if(isIOS){
+      // Try Web Share API with file (shows "Save to Photos" on iOS)
+      var file=new File([blob],'drapely-edited-'+Date.now()+'.jpg',{type:'image/jpeg'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:'Drapely Photo'}).catch(function(){
+          // Fallback: open in new tab so user can long-press save
+          var blobUrl=URL.createObjectURL(blob);
+          window.open(blobUrl,'_blank');
+        });
+      } else {
+        // Older iOS: open blob URL in new tab
+        var blobUrl=URL.createObjectURL(blob);
+        window.open(blobUrl,'_blank');
+      }
+    } else {
+      // Android/desktop: blob download
+      var blobUrl=URL.createObjectURL(blob);
+      var a=document.createElement('a');a.href=blobUrl;a.download='drapely-edited-'+Date.now()+'.jpg';a.click();
+      setTimeout(function(){URL.revokeObjectURL(blobUrl);},3000);
+    }
+
+    // Save to gallery
     try{
-      var res=await fetch(data);var blob=await res.blob();
       var fn2='edited_'+Date.now()+'.jpg';
       var up=await sb.storage.from('photoshoots').upload(fn2,blob,{contentType:'image/jpeg',upsert:false});
       if(!up.error){
         var pu=sb.storage.from('photoshoots').getPublicUrl(fn2).data.publicUrl;
         var ss=await sb.auth.getSession();
         if(ss.data.session) await sb.from('photoshoots').insert({user_id:ss.data.session.user.id,image_url:pu,collection_name:'Customized',suit_type:'Edited',image_count:0});
-        showToast('✅ Saved to gallery & downloaded!');
+        showToast('✅ Saved to gallery!');
       }
-    }catch(e){showToast('Downloaded!');}
-    if(isIOS){var w=window.open();w.document.write('<img src="'+data+'" style="max-width:100%">'); }
+    }catch(e){showToast('Saved!');}
     saveBtn.textContent='💾 Save & Download'; saveBtn.disabled=false;
-    setTimeout(function(){ modal.remove(); },1500);
+    setTimeout(function(){ cleanup(); modal.remove(); },1500);
   };
   saveWrap.appendChild(saveBtn); left.appendChild(saveWrap);
 
@@ -1960,6 +1985,49 @@ function downloadImg(url, num) {
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
   }).catch(function(){ window.open(url, '_blank'); });
+}
+
+function loadLogo(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    logoDataUrl = ev.target.result;
+    var preview = document.getElementById('logo-preview');
+    var previewWrap = document.getElementById('logo-preview-wrap');
+    var posWrap = document.getElementById('logo-position-wrap');
+    if (preview) preview.src = logoDataUrl;
+    if (previewWrap) previewWrap.style.display = 'flex';
+    if (posWrap) posWrap.style.display = 'block';
+    showToast('Logo uploaded! Choose position below.');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo() {
+  logoDataUrl = null;
+  var li = document.getElementById('logo-input');
+  var lp = document.getElementById('logo-preview-wrap');
+  var lpos = document.getElementById('logo-position-wrap');
+  if (li) li.value = '';
+  if (lp) lp.style.display = 'none';
+  if (lpos) lpos.style.display = 'none';
+  showToast('Logo removed');
+}
+
+function selectLogoPos(btn, pos) {
+  document.querySelectorAll('.logo-pos-btn').forEach(function(b) {
+    b.style.border = '1px solid rgba(233,30,99,0.2)';
+    b.style.background = '#fff';
+    b.style.color = '#555';
+    b.style.fontWeight = 'normal';
+  });
+  btn.style.border = '1px solid #E91E63';
+  btn.style.background = '#fff0f5';
+  btn.style.color = '#E91E63';
+  btn.style.fontWeight = '500';
+  logoPosition = pos;
+  showToast('Logo position: ' + pos.replace('-', ' '));
 }
 
 function compressForImgur(dataUrl) {
