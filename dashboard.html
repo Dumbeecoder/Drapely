@@ -1567,12 +1567,17 @@ function addDetailCircles(imageUrl) {
     // Draw base image
     ctx.drawImage(img, 0, 0, W, H);
 
-    // Define 4 crop zones (as fractions of image) — neckline, sleeve, hem detail, bottom border
+    // Define 4 crop zones targeting actual dress parts
+    // Image is portrait — model center, dress fills most of frame
     var zones = [
-      { sx: W*0.3, sy: H*0.02, sw: W*0.4,  sh: H*0.18, label: 'Neckline' },
-      { sx: W*0.55, sy: H*0.22, sw: W*0.38, sh: H*0.16, label: 'Sleeve' },
-      { sx: W*0.2,  sy: H*0.55, sw: W*0.45, sh: H*0.16, label: 'Embroidery' },
-      { sx: W*0.15, sy: H*0.74, sw: W*0.5,  sh: H*0.18, label: 'Border' },
+      // Neckline — center-top of image where neck/collar is
+      { sx: W*0.28, sy: H*0.18, sw: W*0.44, sh: H*0.18 },
+      // Dupatta — left side where dupatta drapes
+      { sx: W*0.05, sy: H*0.30, sw: W*0.42, sh: H*0.20 },
+      // Middle of dress / embroidery detail
+      { sx: W*0.22, sy: H*0.52, sw: W*0.44, sh: H*0.18 },
+      // Salwar/bottom — lower portion
+      { sx: W*0.20, sy: H*0.72, sw: W*0.44, sh: H*0.18 },
     ];
 
     // Circle positions — left column, evenly spaced
@@ -1612,14 +1617,16 @@ function addDetailCircles(imageUrl) {
       ctx.stroke();
       ctx.restore();
 
-      // Connector line from circle to image area
+      // Connector line from circle to dress area
+      var targetX = [W*0.42, W*0.35, W*0.38, W*0.38];
+      var targetY = [H*0.24, H*0.38, H*0.58, H*0.78];
       ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
       ctx.lineWidth = W * 0.003;
       ctx.setLineDash([W*0.008, W*0.006]);
       ctx.beginPath();
       ctx.moveTo(pos.cx + cr, pos.cy);
-      ctx.lineTo(W * 0.32, H * (0.1 + i * 0.22));
+      ctx.lineTo(targetX[i], targetY[i]);
       ctx.stroke();
       ctx.restore();
     });
