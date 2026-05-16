@@ -916,6 +916,10 @@ var sb = window.supabase.createClient(
 var currentStep = 0;
 var selectedModelIndex = 0;
 var galleryImages = [];
+var selectedGarmentType = 'salwar';
+var selectedDuration = '5';
+var logoDataUrl = null;
+var logoPosition = 'top-center';
 
 // Load user
 sb.auth.getSession().then(function(r) {
@@ -1225,6 +1229,65 @@ function selectModel(card, idx) {
   card.classList.add('selected');
   selectedModelIndex = idx;
   try { localStorage.setItem('drapely_model', String(idx)); } catch(e) {}
+}
+
+function newShoot() {
+  goStep(0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchModelAge(age) {
+  var adultDiv = document.getElementById('models-adult');
+  var kidsDiv = document.getElementById('models-kids');
+  var btnAdult = document.getElementById('toggle-adult');
+  var btnKids = document.getElementById('toggle-kids');
+  if (age === 'kids') {
+    if(adultDiv) adultDiv.style.display = 'none';
+    if(kidsDiv) kidsDiv.style.display = 'grid';
+    if(btnKids){ btnKids.style.background='#E91E63';btnKids.style.color='#fff';btnKids.style.borderColor='#E91E63'; }
+    if(btnAdult){ btnAdult.style.background='#fff';btnAdult.style.color='#555';btnAdult.style.borderColor='rgba(233,30,99,0.25)'; }
+  } else {
+    if(adultDiv) adultDiv.style.display = 'grid';
+    if(kidsDiv) kidsDiv.style.display = 'none';
+    if(btnAdult){ btnAdult.style.background='#E91E63';btnAdult.style.color='#fff';btnAdult.style.borderColor='#E91E63'; }
+    if(btnKids){ btnKids.style.background='#fff';btnKids.style.color='#555';btnKids.style.borderColor='rgba(233,30,99,0.25)'; }
+  }
+}
+
+function loadCustomModel(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('custom-model-preview');
+    var empty = document.getElementById('custom-model-empty');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+    document.getElementById('model-99').classList.add('selected');
+    window._customModelUrl = ev.target.result;
+    selectedModelIndex = 99;
+    showToast('Custom model uploaded!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function loadCustomKid(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('custom-kid-preview');
+    var empty = document.getElementById('custom-kid-empty');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    document.querySelectorAll('.model-card').forEach(function(c){ c.classList.remove('selected'); });
+    document.getElementById('model-k99').classList.add('selected');
+    window._customModelUrl = ev.target.result;
+    selectedModelIndex = 'k99';
+    showToast('Custom kid model uploaded!');
+  };
+  reader.readAsDataURL(file);
 }
 
 
@@ -1791,6 +1854,262 @@ function downloadImg(url, num) {
     setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
   }).catch(function(){ window.open(url, '_blank'); });
 }
+
+function compressForImgur(dataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var MAX = 800; // max 800px for Imgur
+      var w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = function() { resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
+async function uploadLogoedImageToStorage(base64DataUrl) {
+  try {
+    var parts = base64DataUrl.split(',');
+    var mimeType = parts[0].match(/:(.*?);/)[1];
+    var binary = atob(parts[1]);
+    var array = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+    var blob = new Blob([array], { type: mimeType });
+    var fileName = 'logo_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
+    console.log('Uploading to Supabase Storage, size:', Math.round(blob.size/1024) + 'KB');
+    var uploadResult = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
+    if (uploadResult.error) {
+      console.log('Storage FAILED:', uploadResult.error.message);
+      return null;
+    }
+    var urlResult = sb.storage.from('photoshoots').getPublicUrl(fileName);
+    console.log('Storage SUCCESS:', urlResult.data.publicUrl);
+    return urlResult.data.publicUrl;
+  } catch(e) {
+    console.log('Storage exception:', e.message);
+    return null;
+  }
+}
+
+async function overlayLogoOnImage(imageUrl, logoDataUrl, position) {
+  if (!logoDataUrl) return imageUrl;
+
+  // Step 1: Try direct canvas with crossOrigin
+  var directResult = await tryDirectCanvas(imageUrl, logoDataUrl, position);
+  if (directResult) { console.log('Logo applied via direct canvas!'); return directResult; }
+
+  // Step 2: Try via our watermark proxy
+  try {
+    var proxyRes = await fetch('/api/watermark', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: imageUrl })
+    });
+    if (proxyRes.ok) {
+      var proxyData = await proxyRes.json();
+      if (proxyData.dataUrl) {
+        var proxyResult = await tryDirectCanvas(proxyData.dataUrl, logoDataUrl, position);
+        if (proxyResult) { console.log('Logo applied via proxy!'); return proxyResult; }
+      }
+    }
+  } catch(e) { console.log('Proxy failed:', e.message); }
+
+  console.log('Logo overlay failed, returning original');
+  return imageUrl;
+}
+
+function tryDirectCanvas(photoSrc, logoDataUrl, position) {
+  return new Promise(function(resolve) {
+    var logo = new Image();
+    logo.onload = function() {
+      var photo = new Image();
+      if (!photoSrc.startsWith('data:')) photo.crossOrigin = 'anonymous';
+      var timeout = setTimeout(function() { console.log('Canvas timeout'); resolve(null); }, 10000);
+      photo.onload = function() {
+        clearTimeout(timeout);
+        try {
+          var canvas = document.createElement('canvas');
+          var W = photo.naturalWidth || photo.width || 800;
+          var H = photo.naturalHeight || photo.height || 1000;
+          canvas.width = W;
+          canvas.height = H;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(photo, 0, 0, W, H);
+
+          // Logo: 20% of width
+          var lw = Math.round(W * 0.20);
+          var scale = lw / logo.naturalWidth;
+          var lh = Math.round(logo.naturalHeight * scale);
+          var pad = Math.round(W * 0.03);
+
+          var x = W - lw - pad;
+          var y = H - lh - pad;
+          if (position === 'top-left')      { x=pad; y=pad; }
+          if (position === 'top-center')    { x=Math.round((W-lw)/2); y=pad; }
+          if (position === 'top-right')     { x=W-lw-pad; y=pad; }
+          if (position === 'bottom-left')   { x=pad; y=H-lh-pad; }
+          if (position === 'bottom-center') { x=Math.round((W-lw)/2); y=H-lh-pad; }
+
+          ctx.globalAlpha = 1.0;
+          ctx.drawImage(logo, x, y, lw, lh);
+          console.log('Drew logo at', x, y, 'size', lw, 'x', lh, 'on canvas', W, 'x', H);
+
+          var result = canvas.toDataURL('image/jpeg', 0.92);
+          if (result && result.length > 5000) {
+            resolve(result);
+          } else {
+            console.log('Canvas result too small:', result.length);
+            resolve(null);
+          }
+        } catch(e) {
+          clearTimeout(timeout);
+          console.log('Canvas error:', e.message);
+          resolve(null);
+        }
+      };
+      photo.onerror = function(e) {
+        clearTimeout(timeout);
+        console.log('Photo load failed for:', photoSrc.substring(0,60));
+        resolve(null);
+      };
+      photo.src = photoSrc;
+    };
+    logo.onerror = function() { console.log('Logo load failed'); resolve(null); };
+    logo.src = logoDataUrl;
+  });
+}
+
+
+function overlayLogoOnImages(imageUrls) {
+  if (!logoDataUrl) return Promise.resolve(imageUrls);
+  var pos = logoPosition || 'bottom-right';
+  return Promise.all(imageUrls.map(function(url) {
+    return overlayLogoOnImage(url, logoDataUrl, pos);
+  }));
+}
+
+
+// Remove background from photo then composite onto custom uploaded background
+function compositeOnBackground(imageUrls) {
+  var bgDataUrl = window._customBgDataUrl;
+  if (!bgDataUrl) return Promise.resolve(imageUrls);
+
+  // Show status
+  var labelEl = document.getElementById('progress-label-text');
+  if (labelEl) labelEl.textContent = 'Removing background & applying custom scene...';
+  var progressWrap = document.getElementById('progress-wrap');
+  if (progressWrap) progressWrap.classList.add('visible');
+
+  return Promise.all(imageUrls.map(function(photoUrl) {
+    return removeBackgroundAndComposite(photoUrl, bgDataUrl);
+  }));
+}
+
+async function removeBackgroundAndComposite(photoUrl, bgDataUrl) {
+  try {
+    var labelEl = document.getElementById('progress-label-text');
+    if (labelEl) labelEl.textContent = 'Removing background...';
+
+    // Call our server-side remove.bg proxy
+    var res = await fetch('/api/removebg', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: photoUrl })
+    });
+
+    if (!res.ok) throw new Error('removebg API returned ' + res.status);
+
+    var data = await res.json();
+    if (!data.cutout) throw new Error('No cutout returned');
+
+    if (labelEl) labelEl.textContent = 'Compositing onto background...';
+    console.log('Background removed successfully, compositing...');
+
+    // Composite cutout onto custom background
+    return compositeImages(data.cutout, bgDataUrl, photoUrl);
+
+  } catch(e) {
+    console.log('BG removal failed:', e.message, '— doing direct composite');
+    return directComposite(photoUrl, bgDataUrl);
+  }
+}
+
+function compositeImages(foregroundUrl, bgDataUrl, fallback) {
+  return new Promise(function(resolve) {
+    var bg = new Image();
+    var fg = new Image();
+    var loaded = 0;
+    function onLoad() {
+      loaded++;
+      if (loaded < 2) return;
+      try {
+        var canvas = document.createElement('canvas');
+        var W = fg.naturalWidth || 800, H = fg.naturalHeight || 1000;
+        canvas.width = W; canvas.height = H;
+        var ctx = canvas.getContext('2d');
+        var s = Math.max(W/bg.naturalWidth, H/bg.naturalHeight);
+        ctx.drawImage(bg, (W-bg.naturalWidth*s)/2, (H-bg.naturalHeight*s)/2, bg.naturalWidth*s, bg.naturalHeight*s);
+        ctx.drawImage(fg, 0, 0, W, H);
+        var r = canvas.toDataURL('image/jpeg', 0.92);
+        resolve(r.length > 5000 ? r : fallback);
+      } catch(e) { resolve(fallback); }
+    }
+    bg.onload = fg.onload = onLoad;
+    bg.onerror = fg.onerror = function(){ resolve(fallback); };
+    bg.src = bgDataUrl;
+    fg.src = foregroundUrl; // blob URL — no CORS issue
+  });
+}
+
+async function directComposite(photoUrl, bgDataUrl) {
+  // Fetch photo as blob first to avoid CORS canvas taint
+  try {
+    var res = await fetch(photoUrl);
+    var blob = await res.blob();
+    var blobUrl = URL.createObjectURL(blob);
+    var result = await new Promise(function(resolve) {
+      var bg = new Image();
+      var photo = new Image();
+      var loaded = 0;
+      function onLoad() {
+        loaded++;
+        if (loaded < 2) return;
+        try {
+          var canvas = document.createElement('canvas');
+          var W = photo.naturalWidth || 800, H = photo.naturalHeight || 1000;
+          canvas.width = W; canvas.height = H;
+          var ctx = canvas.getContext('2d');
+          var s = Math.max(W/bg.naturalWidth, H/bg.naturalHeight);
+          ctx.drawImage(bg, (W-bg.naturalWidth*s)/2, (H-bg.naturalHeight*s)/2, bg.naturalWidth*s, bg.naturalHeight*s);
+          ctx.drawImage(photo, 0, 0, W, H);
+          var r = canvas.toDataURL('image/jpeg', 0.92);
+          resolve(r.length > 5000 ? r : photoUrl);
+        } catch(e) { console.log('Canvas error:', e.message); resolve(photoUrl); }
+      }
+      bg.onload = photo.onload = onLoad;
+      bg.onerror = photo.onerror = function(){ resolve(photoUrl); };
+      bg.src = bgDataUrl;
+      photo.src = blobUrl;
+    });
+    URL.revokeObjectURL(blobUrl);
+    return result;
+  } catch(e) {
+    console.log('Direct composite failed:', e.message);
+    return photoUrl;
+  }
+}
+
+function convertToVideo(imageUrl) {
+  sessionStorage.setItem('videoFromPhoto', imageUrl);
+  window.location.href = 'video.html';
+}
+
 
 function addToGallery(images, collectionName) {
   galleryImages = images.concat(galleryImages);
