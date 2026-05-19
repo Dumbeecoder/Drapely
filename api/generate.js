@@ -9,7 +9,6 @@ export default async function handler(req, res) {
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const modelIdx = parseInt(model_index) || 0;
-  const rawModelIdx = model_index; // for kid model detection
   console.log('Model index:', modelIdx, 'Garment type:', garment_type);
 
   const models = [
@@ -20,11 +19,6 @@ export default async function handler(req, res) {
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png',
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png',
   ];
-
-  const kidModels = {
-    'k0': 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-1.png',
-    'k1': 'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-2.png',
-  };
 
   // ── MANNEQUIN IMAGES ──
   // Upload these 2 mannequin images to your Supabase storage bucket "models" folder
@@ -79,7 +73,7 @@ export default async function handler(req, res) {
       const mannequinPrompt = [
         garmentDesc,
         scenePart,
-        'professional product fashion photography, 4K ultra high quality, sharp fabric details, full outfit visible, highly detailed embroidery, crisp 1k resolution'
+        'professional product fashion photography, 4K high quality, sharp fabric details, full outfit visible'
       ].join(', ');
 
       console.log('Mannequin prompt:', mannequinPrompt);
@@ -91,6 +85,8 @@ export default async function handler(req, res) {
           model_image: mannequinModels[0],
           resolution: '1k',
           generation_mode: 'balanced',
+          output_format: 'jpeg',
+          prompt: mannequinPrompt,
         }
       };
 
@@ -127,8 +123,6 @@ export default async function handler(req, res) {
       });
       const customImgurData = await customImgurRes.json();
       humanImg = customImgurData.success ? customImgurData.data.link : models[0];
-    } else if (kidModels[rawModelIdx]) {
-      humanImg = kidModels[rawModelIdx];
     } else {
       humanImg = models[modelIdx] || models[0];
       console.log('Using model:', modelIdx, humanImg);
@@ -157,17 +151,60 @@ export default async function handler(req, res) {
     // Build final prompt — use frontend-built prompt (includes pose + scene)
     let finalPrompt = prompt || '';
     if (!finalPrompt || finalPrompt === 'custom_bg_upload') {
-      finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, ultra high quality, sharp fabric details, highly detailed embroidery, crisp 1k resolution, 4K';
-    }
-    // Custom background: keep pose, use neutral scene
-    if (custom_bg && custom_bg.startsWith('data:')) {
-      const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight';
-      finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, ultra high quality, sharp fabric details, highly detailed embroidery, crisp 1k resolution, 4K';
+      finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, high quality';
     }
 
-    // Append quality keywords to every prompt
-    const qualitySuffix = ', ultra high quality, sharp fabric details, highly detailed embroidery, crisp 1k resolution, 4K, photorealistic';
-    finalPrompt = finalPrompt + qualitySuffix;
+    // Custom background: use Claude Vision to describe the scene, inject into prompt
+    // This makes FASHN generate the model naturally IN the scene rather than compositing
+    if (custom_bg && custom_bg.startsWith('data:')) {
+      try {
+        const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight, graceful pose';
+        // Extract base64 from data URL
+        const bgBase64 = custom_bg.replace(/^data:image\/\w+;base64,/, '');
+        const bgMediaType = custom_bg.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
+
+        // Ask Claude to describe the background scene
+        const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 120,
+            messages: [{
+              role: 'user',
+              content: [
+                {
+                  type: 'image',
+                  source: { type: 'base64', media_type: bgMediaType, data: bgBase64 }
+                },
+                {
+                  type: 'text',
+                  text: 'Describe this background location in 8-12 words for a fashion photo prompt. Focus on the setting, lighting, and atmosphere only. No people. Example format: "Rajasthani fort courtyard, warm golden hour lighting, stone architecture"'
+                }
+              ]
+            }]
+          })
+        });
+
+        const claudeData = await claudeRes.json();
+        const sceneDesc = claudeData.content?.[0]?.text?.trim() || '';
+        console.log('Claude scene description:', sceneDesc);
+
+        if (sceneDesc) {
+          finalPrompt = garmentDesc + ', ' + posePart + ', ' + sceneDesc + ', professional Indian fashion photography, photorealistic, 4K quality, natural lighting';
+        } else {
+          finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
+        }
+      } catch(e) {
+        console.log('Claude vision failed, using neutral prompt:', e.message);
+        const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight';
+        finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
+      }
+    }
 
     const requestBody = {
       model_name: 'product-to-model',
