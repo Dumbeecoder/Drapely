@@ -154,45 +154,34 @@ export default async function handler(req, res) {
       finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, high quality';
     }
 
-    // Custom background: use Claude Vision to describe the scene, inject into prompt
-    // This makes FASHN generate the model naturally IN the scene rather than compositing
+    // Custom background: use GPT-4o Vision to describe the scene, inject into prompt
     if (custom_bg && custom_bg.startsWith('data:')) {
       try {
         const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight, graceful pose';
-        // Extract base64 from data URL
-        const bgBase64 = custom_bg.replace(/^data:image\/\w+;base64,/, '');
-        const bgMediaType = custom_bg.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
 
-        // Ask Claude to describe the background scene
-        const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        // Ask GPT-4o Vision to describe the background scene
+        const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': process.env.ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01'
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
           },
           body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 120,
+            model: 'gpt-4o-mini',
+            max_tokens: 60,
             messages: [{
               role: 'user',
               content: [
-                {
-                  type: 'image',
-                  source: { type: 'base64', media_type: bgMediaType, data: bgBase64 }
-                },
-                {
-                  type: 'text',
-                  text: 'Describe this background location in 8-12 words for a fashion photo prompt. Focus on the setting, lighting, and atmosphere only. No people. Example format: "Rajasthani fort courtyard, warm golden hour lighting, stone architecture"'
-                }
+                { type: 'image_url', image_url: { url: custom_bg, detail: 'low' } },
+                { type: 'text', text: 'Describe this background location in 8-12 words for a fashion photo prompt. Focus on setting, lighting, atmosphere only. No people. Example: "Rajasthani fort courtyard, warm golden hour lighting, stone architecture"' }
               ]
             }]
           })
         });
 
-        const claudeData = await claudeRes.json();
-        const sceneDesc = claudeData.content?.[0]?.text?.trim() || '';
-        console.log('Claude scene description:', sceneDesc);
+        const openaiData = await openaiRes.json();
+        const sceneDesc = openaiData.choices?.[0]?.message?.content?.trim() || '';
+        console.log('GPT-4o scene description:', sceneDesc);
 
         if (sceneDesc) {
           finalPrompt = garmentDesc + ', ' + posePart + ', ' + sceneDesc + ', professional Indian fashion photography, photorealistic, 4K quality, natural lighting';
@@ -200,7 +189,7 @@ export default async function handler(req, res) {
           finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
         }
       } catch(e) {
-        console.log('Claude vision failed, using neutral prompt:', e.message);
+        console.log('GPT-4o vision failed, using neutral prompt:', e.message);
         const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight';
         finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
       }
