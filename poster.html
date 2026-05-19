@@ -6,6 +6,10 @@
   <title>Poster Builder — Drapely</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script type="module">
+    import { removeBackground } from 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser.mjs';
+    window._removeBg = removeBackground;
+  </script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;display:flex;min-height:100vh;overflow-x:hidden;}
@@ -212,7 +216,7 @@
         <div class="ctrl-section">
           <div class="ctrl-label">Background Image (optional)</div>
           <div class="upload-zone" id="ls-bg-zone" onclick="triggerUpload('ls-bg-input')" style="height:90px;">
-            <div id="ls-bg-empty"><div style="font-size:20px;">🌄</div><div class="upload-text" style="margin-top:4px;font-size:11px;">Upload background — models blend on top</div></div>
+            <div id="ls-bg-empty"><div style="font-size:20px;">🌄</div><div class="upload-text" style="margin-top:4px;font-size:11px;">Upload your background — model backgrounds auto-removed</div></div>
             <img id="ls-bg-preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;"/>
             <button class="remove-btn" id="ls-bg-remove" style="display:none;" onclick="removeLsBg(event)">✕</button>
           </div>
@@ -391,6 +395,7 @@
           <div style="font-size:13px;color:#aaa;">Upload photos and click Generate Poster</div>
         </div>
         <canvas id="poster-canvas" width="1080" height="1350" style="display:none;"></canvas>
+        <div id="poster-status" style="display:none;position:absolute;bottom:12px;left:0;right:0;text-align:center;background:rgba(0,0,0,0.7);color:#fff;font-size:12px;font-family:DM Sans,sans-serif;padding:8px;border-radius:8px;margin:0 12px;">⏳ Removing model backgrounds...</div>
       </div>
       <button class="download-btn" id="download-btn" onclick="downloadPoster()">⬇️ Download Poster (HD)</button>
     </div>
@@ -503,23 +508,17 @@ function renderPoster(){
     ctx.save();ctx.beginPath();ctx.rect(0,0,heroW,H-botBarH);ctx.clip();
     var sc=Math.max(heroW/hEl.width,(H-botBarH)/hEl.height);
     var dw=hEl.width*sc,dh=hEl.height*sc;
-    // Anchor slightly top so face shows
     var dy=(H-botBarH-dh)*0.15;if(dy>0)dy=0;
     ctx.drawImage(hEl,(heroW-dw)/2,dy,dw,dh);
     ctx.restore();
-
-    // Right-edge fade on hero → panel
     if(nv>0){
       var rfg=ctx.createLinearGradient(heroW*0.6,0,heroW,0);
       rfg.addColorStop(0,'rgba(0,0,0,0)');rfg.addColorStop(1,h2r(s.bg,1));
       ctx.fillStyle=rfg;ctx.fillRect(heroW*0.42,0,heroW*0.58,H-botBarH);
     }
-
-    // Bottom fade on hero
     var bfg=ctx.createLinearGradient(0,H-botBarH-120,0,H-botBarH);
     bfg.addColorStop(0,'rgba(0,0,0,0)');bfg.addColorStop(1,h2r(s.bg,0.9));
     ctx.fillStyle=bfg;ctx.fillRect(0,H-botBarH-120,heroW,120);
-
     if(nv>0){
       drawInfoPanel(ctx,pX,pW,pCx,W,H,botBarH,s,title,sname,phone,tags,cl,vl,nv,bottomText,barLabels,allBarBlank,myRender);
     } else {
@@ -731,6 +730,59 @@ function drawNoVar(ctx,W,H,s,title,sname,phone,tags,cb){cb();}
 /* ════════════════════════════
    LANDSCAPE
 ════════════════════════════ */
+// Remove backgrounds from all model images using @imgly/background-removal
+// Falls back to originals if removal fails or takes too long
+function removeAllBgs(mImgs, callback) {
+  var statusEl = document.getElementById('poster-status');
+  if(statusEl){ statusEl.textContent='Removing model backgrounds...'; statusEl.style.display='block'; }
+
+  var results = mImgs.slice(); // copy
+  var done = 0;
+  var total = mImgs.length;
+
+  mImgs.forEach(function(item, i){
+    // Convert img element to blob URL for processing
+    var tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = item.img.naturalWidth;
+    tmpCanvas.height = item.img.naturalHeight;
+    tmpCanvas.getContext('2d').drawImage(item.img, 0, 0);
+    tmpCanvas.toBlob(function(blob){
+      // Set timeout — if takes more than 30s per image, use original
+      var timedOut = false;
+      var timer = setTimeout(function(){
+        timedOut = true;
+        done++;
+        if(done===total){ if(statusEl) statusEl.style.display='none'; callback(results); }
+      }, 30000);
+
+      window._removeBg(blob, {
+        output: { format: 'image/png', quality: 1 },
+        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/'
+      }).then(function(resultBlob){
+        if(timedOut) return;
+        clearTimeout(timer);
+        var url = URL.createObjectURL(resultBlob);
+        var cleanImg = new Image();
+        cleanImg.onload = function(){
+          results[i] = { img: cleanImg, oi: item.oi };
+          done++;
+          if(done===total){ if(statusEl) statusEl.style.display='none'; callback(results); }
+        };
+        cleanImg.onerror = function(){
+          done++;
+          if(done===total){ if(statusEl) statusEl.style.display='none'; callback(results); }
+        };
+        cleanImg.src = url;
+      }).catch(function(){
+        if(timedOut) return;
+        clearTimeout(timer);
+        done++;
+        if(done===total){ if(statusEl) statusEl.style.display='none'; callback(results); }
+      });
+    }, 'image/jpeg', 0.95);
+  });
+}
+
 function renderLandscape(){
   var active=lsImgs.map(function(v,i){return{src:v,idx:i};}).filter(function(v){return v.src;});
   if(!active.length)return;
@@ -769,7 +821,19 @@ function renderLandscape(){
     var loaded=0,mImgs=[];
     active.forEach(function(item,i){
       var img=new Image();
-      img.onload=function(){if(myRender!==_renderId)return;mImgs[i]={img:img,oi:item.idx};loaded++;if(loaded===n)drawModels();};
+      img.onload=function(){
+        if(myRender!==_renderId)return;
+        mImgs[i]={img:img,oi:item.idx};
+        loaded++;
+        if(loaded===n){
+          // If custom background uploaded and removeBg available — remove model backgrounds
+          if(bgEl && window._removeBg){
+            removeAllBgs(mImgs, function(cleanImgs){ mImgs=cleanImgs; drawModels(); });
+          } else {
+            drawModels();
+          }
+        }
+      };
       img.src=item.src;
     });
 
@@ -790,9 +854,11 @@ function renderLandscape(){
 
         oc.globalCompositeOperation='destination-out';
         var fS=0.08;
-        // Blend edges between models
-        if(i>0){var lf=oc.createLinearGradient(0,0,mw*fS,0);lf.addColorStop(0,'rgba(0,0,0,0.85)');lf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=lf;oc.fillRect(0,0,mw*fS,H);}
-        if(i<n-1){var rf=oc.createLinearGradient(mw*(1-fS),0,mw,0);rf.addColorStop(0,'rgba(0,0,0,0)');rf.addColorStop(1,'rgba(0,0,0,0.85)');oc.fillStyle=rf;oc.fillRect(mw*(1-fS),0,mw*fS,H);}
+        // Only apply edge blending when no custom background (model bg was removed cleanly)
+        if(!bgEl){
+          if(i>0){var lf=oc.createLinearGradient(0,0,mw*fS,0);lf.addColorStop(0,'rgba(0,0,0,0.85)');lf.addColorStop(1,'rgba(0,0,0,0)');oc.fillStyle=lf;oc.fillRect(0,0,mw*fS,H);}
+          if(i<n-1){var rf=oc.createLinearGradient(mw*(1-fS),0,mw,0);rf.addColorStop(0,'rgba(0,0,0,0)');rf.addColorStop(1,'rgba(0,0,0,0.85)');oc.fillStyle=rf;oc.fillRect(mw*(1-fS),0,mw*fS,H);}
+        }
         // Top fade — only if header content exists
         var hasHeader=(sname||title)&&(sname||title).trim().length>0;
         if(hasHeader){
