@@ -2,38 +2,56 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { id } = req.query;
-  if (!id) return res.status(400).json({ error: 'Missing prediction id' });
+  const { id, provider } = req.query;
+  if (!id) return res.status(400).json({ error: 'Missing id' });
 
   try {
-    const response = await fetch(`https://api.fashn.ai/v1/status/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${process.env.FASHN_API_KEY}`,
-        'Cache-Control': 'no-cache',
+    // Kling via fal.ai
+    if (provider === 'kling') {
+      const pollRes = await fetch(
+        `https://queue.fal.run/fal-ai/kling-video/v2.1/pro/image-to-video/requests/${id}/status`,
+        { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } }
+      );
+      const data = await pollRes.json();
+      console.log('Kling poll status:', data.status);
+
+      if (data.status === 'COMPLETED') {
+        // Fetch result
+        const resultRes = await fetch(
+          `https://queue.fal.run/fal-ai/kling-video/v2.1/pro/image-to-video/requests/${id}`,
+          { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } }
+        );
+        const result = await resultRes.json();
+        const videoUrl = result?.video?.url || result?.output?.video?.url || null;
+        return res.status(200).json({
+          status: 'succeeded',
+          output: videoUrl ? [videoUrl] : []
+        });
       }
-    });
 
-    const text = await response.text();
-    console.log('Poll response:', text.substring(0, 500));
+      if (data.status === 'FAILED' || data.status === 'ERROR') {
+        return res.status(200).json({ status: 'failed', error: data.error || 'Generation failed' });
+      }
 
-    let data;
-    try { data = JSON.parse(text); }
-    catch(e) { return res.status(500).json({ error: 'Bad JSON: ' + text.substring(0, 200) }); }
-
-    console.log('Status:', data.status, 'Output:', JSON.stringify(data.output));
-
-    // Normalise completed -> succeeded
-    if (data.status === 'completed') data.status = 'succeeded';
-
-    // Ensure output is array
-    if (data.output && !Array.isArray(data.output)) {
-      data.output = [data.output];
+      // IN_QUEUE or IN_PROGRESS
+      return res.status(200).json({ status: 'processing', queue_position: data.queue_position });
     }
 
-    return res.status(200).json(data);
+    // Default: FASHN polling
+    const pollRes = await fetch(`https://api.fashn.ai/v1/status/${id}`, {
+      headers: { 'Authorization': `Bearer ${process.env.FASHN_API_KEY}` }
+    });
+    const data = await pollRes.json();
+
+    if (data.status === 'completed') {
+      return res.status(200).json({ status: 'succeeded', output: data.output });
+    }
+    if (data.status === 'failed') {
+      return res.status(200).json({ status: 'failed', error: data.error });
+    }
+    return res.status(200).json({ status: data.status });
 
   } catch (err) {
     console.error('Poll error:', err.message);
