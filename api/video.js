@@ -9,40 +9,76 @@ export default async function handler(req, res) {
   if (!image) return res.status(400).json({ error: 'Missing image' });
 
   try {
-    console.log('Fashn video - duration:', duration, 'resolution: 1080p', 'end_image:', !!end_image);
-
-    const inputs = {
-      image: image,
-      duration: duration || 5,
-      resolution: '1080p',
-      prompt: prompt || ''
-    };
-
-    // Only add end_image if provided (requires resolution 1080p — already set above)
-    if (end_image) inputs.end_image = end_image;
-
-    const response = await fetch('https://api.fashn.ai/v1/run', {
+    // Step 1: Upload image to fal storage to get a public URL
+    // fal.ai requires public URLs, not base64
+    const uploadRes = await fetch('https://fal.run/fal-ai/storage/upload', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.FASHN_API_KEY}`,
+        'Authorization': `Key ${process.env.FAL_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model_name: 'image-to-video',
-        inputs
-      })
+      body: JSON.stringify({ image: image }) // base64 data URL
     });
 
-    const data = await response.json();
-    console.log('Fashn video response:', JSON.stringify(data).substring(0, 300));
+    let imageUrl = image; // fallback
+    if (uploadRes.ok) {
+      const uploadData = await uploadRes.json();
+      imageUrl = uploadData.url || image;
+      console.log('Uploaded to fal storage:', imageUrl);
+    } else {
+      console.log('fal upload failed, using raw image');
+    }
 
-    if (data.error) return res.status(500).json({ error: typeof data.error === 'object' ? JSON.stringify(data.error) : data.error });
-    if (!data.id) return res.status(500).json({ error: 'No prediction ID returned', debug: JSON.stringify(data).substring(0, 200) });
+    // Build Kling input
+    const input = {
+      prompt: prompt || 'model walking gracefully, showing full outfit, Indian fashion photography',
+      start_image_url: imageUrl,
+      duration: String(duration || 5),
+      cfg_scale: 0.5,
+    };
 
-    return res.status(200).json({ prediction_id: data.id, status: data.status });
+    // Optional end frame
+    if (end_image) {
+      let endUrl = end_image;
+      const endUpload = await fetch('https://fal.run/fal-ai/storage/upload', {
+        method: 'POST',
+        headers: { 'Authorization': `Key ${process.env.FAL_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: end_image })
+      });
+      if (endUpload.ok) {
+        const ed = await endUpload.json();
+        endUrl = ed.url || end_image;
+      }
+      input.end_image_url = endUrl;
+    }
+
+    console.log('Kling video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
+
+    // Step 2: Submit to Kling 2.1 Pro via fal queue
+    const submitRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v2.1/pro/image-to-video', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Key ${process.env.FAL_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ input })
+    });
+
+    const submitData = await submitRes.json();
+    console.log('Kling submit response:', JSON.stringify(submitData).substring(0, 300));
+
+    if (!submitData.request_id) {
+      return res.status(500).json({ error: 'No request_id from Kling', debug: JSON.stringify(submitData).substring(0, 200) });
+    }
+
+    return res.status(200).json({
+      prediction_id: submitData.request_id,
+      status: 'starting',
+      provider: 'kling'
+    });
 
   } catch (err) {
-    console.error('Video error:', err.message);
+    console.error('Kling video error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
