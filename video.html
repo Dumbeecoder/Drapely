@@ -204,8 +204,8 @@
 
         <div class="section-label" style="margin-top:1rem;">Step 3 &mdash; Video Length</div>
         <div style="display:flex;gap:8px;margin-bottom:1.25rem;">
-          <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec &mdash; 1 credit</button>
-          <button class="dur-btn" onclick="selectDur(this,'10')">10 sec &mdash; 2 credits</button>
+          <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec &mdash; 2 credits</button>
+          <button class="dur-btn" onclick="selectDur(this,'10')">10 sec &mdash; 4 credits</button>
         </div>
 
         <!-- ── ADDED: Optional End Frame ── -->
@@ -590,7 +590,7 @@ async function startVideoGenerate() {
   var fromPhotoUrl = window._videoFromPhotoUrl || null;
   if (!suitFile && !fromPhotoUrl) { resetGenerateBtn(); showToast('Please upload your suit photo first!'); return; }
   var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
-  var vidCost = selectedDuration === '10' ? 2 : 1;
+  var vidCost = selectedDuration === '10' ? 4 : 2;
   if (credits < vidCost) { resetGenerateBtn(); showToast('Need ' + vidCost + ' credit' + (vidCost>1?'s':'') + ' for this video!'); showBuyCredits(); return; }
   var promptEl = document.getElementById('v-prompt');
   var prompt = (promptEl && promptEl.value.trim()) ? promptEl.value.trim() : 'model standing confidently, posing for camera';
@@ -705,13 +705,13 @@ async function startVideoGenerate() {
             sb.from('photoshoots').insert({
               user_id: userId, image_url: saveUrl,
               collection_name: 'Drapely AI Video', suit_type: 'Video',
-              image_count: (selectedDuration === '10' ? 2 : 1),
+              image_count: (selectedDuration === '10' ? 4 : 2),
               media_type: 'video'
             }).then(function(res) {
               if (!res.error) loadVideoCount(userId);
             });
           });
-          var cost = selectedDuration === '10' ? 2 : 1;
+          var cost = selectedDuration === '10' ? 4 : 2;
           sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
             if (res.data) {
               var newBal = Math.max(0, res.data.balance - cost);
