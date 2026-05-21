@@ -10,23 +10,36 @@ export default async function handler(req, res) {
 
   try {
     // Step 1: Upload image to fal storage to get a public URL
-    // fal.ai requires public URLs, not base64
-    const uploadRes = await fetch('https://fal.run/fal-ai/storage/upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Key ${process.env.FAL_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ image: image }) // base64 data URL
-    });
+    // Convert base64 to blob and upload
+    let imageUrl = image;
+    try {
+      // Extract base64 data
+      const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+      const mimeType = image.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
+      const buffer = Buffer.from(base64Data, 'base64');
 
-    let imageUrl = image; // fallback
-    if (uploadRes.ok) {
-      const uploadData = await uploadRes.json();
-      imageUrl = uploadData.url || image;
-      console.log('Uploaded to fal storage:', imageUrl);
-    } else {
-      console.log('fal upload failed, using raw image');
+      const uploadRes = await fetch('https://fal.run/fal-ai/storage/upload/base64', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Key ${process.env.FAL_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content_type: mimeType,
+          data: base64Data
+        })
+      });
+
+      if (uploadRes.ok) {
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.url || image;
+        console.log('Uploaded to fal storage:', imageUrl);
+      } else {
+        const errText = await uploadRes.text();
+        console.log('fal upload failed:', errText, '— using raw base64');
+      }
+    } catch(e) {
+      console.log('fal upload error:', e.message, '— using raw base64');
     }
 
     // Build Kling input
@@ -40,15 +53,19 @@ export default async function handler(req, res) {
     // Optional end frame
     if (end_image) {
       let endUrl = end_image;
-      const endUpload = await fetch('https://fal.run/fal-ai/storage/upload', {
-        method: 'POST',
-        headers: { 'Authorization': `Key ${process.env.FAL_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: end_image })
-      });
-      if (endUpload.ok) {
-        const ed = await endUpload.json();
-        endUrl = ed.url || end_image;
-      }
+      try {
+        const endBase64 = end_image.replace(/^data:image\/\w+;base64,/, '');
+        const endMime = end_image.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
+        const endUpload = await fetch('https://fal.run/fal-ai/storage/upload/base64', {
+          method: 'POST',
+          headers: { 'Authorization': `Key ${process.env.FAL_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content_type: endMime, data: endBase64 })
+        });
+        if (endUpload.ok) {
+          const ed = await endUpload.json();
+          endUrl = ed.url || end_image;
+        }
+      } catch(e) { console.log('end_image upload failed:', e.message); }
       input.end_image_url = endUrl;
     }
 
