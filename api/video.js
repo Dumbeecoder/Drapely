@@ -9,38 +9,8 @@ export default async function handler(req, res) {
   if (!image) return res.status(400).json({ error: 'Missing image' });
 
   try {
-    // Step 1: Upload image to fal storage to get a public URL
-    // Convert base64 to blob and upload
-    let imageUrl = image;
-    try {
-      // Extract base64 data
-      const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
-      const mimeType = image.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
-      const buffer = Buffer.from(base64Data, 'base64');
-
-      const uploadRes = await fetch('https://fal.run/fal-ai/storage/upload/base64', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Key ${process.env.FAL_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content_type: mimeType,
-          data: base64Data
-        })
-      });
-
-      if (uploadRes.ok) {
-        const uploadData = await uploadRes.json();
-        imageUrl = uploadData.url || image;
-        console.log('Uploaded to fal storage:', imageUrl);
-      } else {
-        const errText = await uploadRes.text();
-        console.log('fal upload failed:', errText, '— using raw base64');
-      }
-    } catch(e) {
-      console.log('fal upload error:', e.message, '— using raw base64');
-    }
+    // fal.ai accepts base64 data URIs directly - no upload needed
+    const imageUrl = image; // pass base64 data URL directly
 
     // Build Kling input
     const input = {
@@ -50,23 +20,9 @@ export default async function handler(req, res) {
       cfg_scale: 0.5,
     };
 
-    // Optional end frame
+    // Optional end frame - pass base64 directly
     if (end_image) {
-      let endUrl = end_image;
-      try {
-        const endBase64 = end_image.replace(/^data:image\/\w+;base64,/, '');
-        const endMime = end_image.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
-        const endUpload = await fetch('https://fal.run/fal-ai/storage/upload/base64', {
-          method: 'POST',
-          headers: { 'Authorization': `Key ${process.env.FAL_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content_type: endMime, data: endBase64 })
-        });
-        if (endUpload.ok) {
-          const ed = await endUpload.json();
-          endUrl = ed.url || end_image;
-        }
-      } catch(e) { console.log('end_image upload failed:', e.message); }
-      input.end_image_url = endUrl;
+      input.end_image_url = end_image;
     }
 
     console.log('Kling video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
