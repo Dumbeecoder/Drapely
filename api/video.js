@@ -56,6 +56,8 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       prediction_id: submitData.request_id,
+      status_url: submitData.status_url,
+      response_url: submitData.response_url,
       status: 'starting',
       provider: 'kling'
     });
