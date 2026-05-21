@@ -25,14 +25,13 @@ export default async function handler(req, res) {
     // Build Kling input
     const input = {
       prompt: prompt || 'model walking gracefully, showing full outfit, Indian fashion photography',
-      start_image_url: imageUrl,
+      image_url: imageUrl,
       duration: String(duration || 5),
       cfg_scale: 0.5,
     };
 
-    // Optional end frame - pass base64 directly
     if (end_image) {
-      input.end_image_url = end_image;
+      input.tail_image_url = end_image;
     }
 
     console.log('Kling video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
