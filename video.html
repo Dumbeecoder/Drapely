@@ -649,6 +649,8 @@ async function startVideoGenerate() {
     }
     var predId = data.prediction_id;
     var provider = data.provider || 'fashn';
+    console.log('VIDEO REQUEST ID:', predId, '| Provider:', provider);
+    alert('Request ID: ' + predId + '\nProvider: ' + provider + '\n\nCopy this ID for debugging!');
     var pollResult = null;
     var attempts = 0;
     while (attempts < 120) {  // 10 minutes max
@@ -656,6 +658,7 @@ async function startVideoGenerate() {
       try {
         var pollRes = await fetch('/api/poll?id=' + predId + '&provider=' + provider);
         pollResult = await pollRes.json();
+        console.log('Poll response:', JSON.stringify(pollResult));
         var kStatus = pollResult.kling_status || pollResult.status || '';
         var qPos = pollResult.queue_position != null ? ' (Queue: ' + pollResult.queue_position + ')' : '';
         if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)' + (kStatus ? ' · ' + kStatus : '') + qPos;
