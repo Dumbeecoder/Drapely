@@ -651,8 +651,6 @@ async function startVideoGenerate() {
     var provider = data.provider || 'fashn';
     var statusUrl = data.status_url || '';
     var responseUrl = data.response_url || '';
-    console.log('VIDEO REQUEST ID:', predId, '| Provider:', provider);
-    console.log('Status URL:', statusUrl);
     var pollResult = null;
     var attempts = 0;
     while (attempts < 120) {  // 10 minutes max
@@ -666,7 +664,6 @@ async function startVideoGenerate() {
           headers: { 'Cache-Control': 'no-cache' }
         });
         pollResult = await pollRes.json();
-        console.log('=== POLL RESPONSE ===', JSON.stringify(pollResult));
         var kStatus = pollResult.kling_status || pollResult.status || '';
         var debugInfo = pollResult.debug ? ' [' + pollResult.debug + ']' : '';
         var qPos = pollResult.queue_position != null ? ' (Queue: ' + pollResult.queue_position + ')' : '';
@@ -686,6 +683,11 @@ async function startVideoGenerate() {
     var videoUrl = pollResult && pollResult.output
       ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output)
       : null;
+
+    // Proxy fal.ai URLs through Vercel to avoid CORS/connection issues
+    if (videoUrl && videoUrl.includes('fal.media')) {
+      videoUrl = '/api/proxy-video?url=' + encodeURIComponent(videoUrl);
+    }
 
     clearInterval(vInterval);
     if (progressFill) progressFill.style.width = '100%';
