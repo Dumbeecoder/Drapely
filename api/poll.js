@@ -51,9 +51,16 @@ export default async function handler(req, res) {
       if (st === 'COMPLETED') {
         const resultRes = await fetch(rUrl, { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } });
         const result = await resultRes.json();
-        console.log('Kling result:', JSON.stringify(result).substring(0, 400));
-        const videoUrl = result?.video?.url || result?.output?.video?.url || result?.videos?.[0]?.url || null;
-        return res.status(200).json({ status: 'succeeded', output: videoUrl ? [videoUrl] : [] });
+        console.log('=== KLING FULL RESULT ===', JSON.stringify(result));
+        // Try every possible path fal.ai might return the video URL
+        const videoUrl = result?.video?.url
+          || result?.output?.video?.url
+          || result?.videos?.[0]?.url
+          || result?.data?.video?.url
+          || result?.data?.videos?.[0]?.url
+          || (typeof result?.video === 'string' ? result.video : null)
+          || null;
+        return res.status(200).json({ status: 'succeeded', output: videoUrl ? [videoUrl] : [], raw: JSON.stringify(result).substring(0, 500) });
       }
       if (st === 'FAILED' || st === 'ERROR') {
         return res.status(200).json({ status: 'failed', error: statusData.error || 'Failed' });
