@@ -158,26 +158,24 @@ export default async function handler(req, res) {
       model_name: 'product-to-model',
       inputs: {
         product_image: garmentUrl,
-        model_image: humanImg,
         resolution: '4k',
         generation_mode: 'quality',
         output_format: 'jpeg',
         prompt: finalPrompt,
-        // Garment fidelity — preserve original design, colors, embroidery
-        garment_photo_type: 'auto',
-        restore_background: false,
-        restore_clothes: true,  // key param — preserves original garment details
-        long_top: false,
       }
     };
 
     // Custom background
     if (custom_bg && custom_bg.startsWith('data:')) {
-      delete requestBody.inputs.model_image;
       requestBody.inputs.background_reference = custom_bg;
       const posePart = (finalPrompt.split(',').slice(1, 3).join(',').trim()) || 'standing straight, graceful pose';
       requestBody.inputs.prompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, photorealistic';
       console.log('Using background_reference for custom bg');
+    }
+
+    // Use model image as image_prompt (inspiration) — valid parameter
+    if (humanImg && !custom_bg) {
+      requestBody.inputs.image_prompt = humanImg;
     }
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
