@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ status: 'processing', error: 'FAL_KEY missing' });
       }
 
-      const endpoint = 'fal-ai/kling-video/v2.1/pro/image-to-video';
+      const endpoint = 'fal-ai/kling-video/v2.1/standard/image-to-video';
       let statusData;
 
       try {
@@ -45,9 +45,10 @@ export default async function handler(req, res) {
         return res.status(200).json({ status: 'processing', debug: fetchErr.message });
       }
 
-      console.log('Kling status:', JSON.stringify(statusData).substring(0, 200));
+      const status = (statusData.status || '').toUpperCase();
+      console.log('Kling status:', status, JSON.stringify(statusData).substring(0, 200));
 
-      if (statusData.status === 'COMPLETED') {
+      if (status === 'COMPLETED') {
         const resultRes = await fetch(
           `https://queue.fal.run/${endpoint}/requests/${id}`,
           { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } }
@@ -61,14 +62,14 @@ export default async function handler(req, res) {
         return res.status(200).json({ status: 'succeeded', output: videoUrl ? [videoUrl] : [] });
       }
 
-      if (statusData.status === 'FAILED' || statusData.status === 'ERROR') {
+      if (status === 'FAILED' || status === 'ERROR') {
         return res.status(200).json({ status: 'failed', error: statusData.error || 'Failed' });
       }
 
       return res.status(200).json({
         status: 'processing',
         queue_position: statusData.queue_position,
-        kling_status: statusData.status
+        kling_status: status
       });
     }
 
