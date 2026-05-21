@@ -1,101 +1,747 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Video — Drapely</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+    .sidebar{width:220px;background:#000;min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10;}
+    .sidebar-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block;}
+    .sidebar-brand span{color:#E91E63;}
+    .sidebar-nav{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:2px;}
+    .nav-section-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:8px 12px 4px;font-weight:500;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;border-radius:8px;transition:all 0.15s;}
+    .nav-item:hover,.nav-item.active{background:rgba(233,30,99,0.12);color:#fff;}
+    .nav-item.active{color:#E91E63;}
+    .sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.15);}
+    .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(233,30,99,0.08);border-radius:10px;}
+    .user-av,.user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;}
+    .user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#f9f9f9;color:#000;min-height:100vh}
+    .nav-item:hover{background:rgba(233,30,99,0.1);color:#fff}
+    .nav-icon{width:16px;height:16px;flex-shrink:0}
+    .main{margin-left:220px;min-height:100vh;overflow-x:hidden;}
+    .topbar{background:#fff;border-bottom:1px solid rgba(233,30,99,0.15);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#000}
+    .topbar-sub{font-size:12px;color:#555;margin-left:10px}
+    .content{padding:2rem}
+    .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:2rem;max-width:560px}
+    .stat-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:12px;padding:1.25rem 1.5rem}
+    .stat-label{font-size:11px;color:#555;letter-spacing:0.3px;margin-bottom:6px;text-transform:uppercase;font-weight:500}
+    .stat-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#000;line-height:1;margin-bottom:4px}
+    .stat-note{font-size:11px;color:#E91E63}
+    .video-layout{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+    .studio-card{background:#fff;border:1px solid rgba(233,30,99,0.15);border-radius:16px;overflow:hidden}
+    .upload-zone{border:2px dashed rgba(233,30,99,0.35);border-radius:12px;background:#fff0f5;padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+    .upload-zone:hover{border-color:#E91E63;background:#ffe0ec}
+    .upload-zone.has-file{padding:0;border-style:solid;border-color:#E91E63}
+    .upload-icon-wrap{width:44px;height:44px;background:rgba(233,30,99,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem}
+    .upload-icon-wrap svg{width:20px;height:20px;color:#E91E63}
+    .upload-title{font-size:14px;font-weight:500;color:#000;margin-bottom:3px}
+    .upload-hint{font-size:12px;color:#555}
+    .upload-preview{width:100%;max-height:260px;object-fit:contain;display:none;border-radius:10px;padding:0.75rem;background:#fff0f5}
+    .clear-file-btn{position:absolute;top:8px;right:8px;width:24px;height:24px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
+    .prompt-preset{border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;transition:all 0.15s;background:#fff;font-size:12px}
+    .prompt-preset:hover{border-color:#E91E63;background:#fff0f5}
+    .prompt-preset.selected{border-color:#E91E63;border-width:2px;background:#fff0f5}
+    .prompt-input{width:100%;padding:10px 12px;border:1px solid rgba(233,30,99,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;background:#fff;outline:none;resize:vertical}
+    .prompt-input:focus{border-color:#E91E63}
+    .dur-btn{flex:1;padding:9px;border:1.5px solid rgba(233,30,99,0.2);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;text-align:center;transition:all 0.15s;font-weight:500;color:#555}
+    .dur-btn.selected{background:#E91E63;border-color:#E91E63;color:#fff}
+    .generate-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E91E63,#c2185b);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+    .generate-btn:hover{opacity:0.9}
+    .section-label{font-size:10px;color:#999;margin-bottom:7px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+    #v-progress{display:none;margin-top:1rem}
+    #v-progress.visible{display:block}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#000;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;border:1px solid rgba(233,30,99,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:158}
+    .mobile-overlay.open{display:block}
+    .mobile-nav{position:fixed;top:0;left:-280px;bottom:0;width:260px;background:#000;z-index:160;transition:left 0.3s ease;display:flex;flex-direction:column;padding:1.5rem 0;overflow-y:auto}
+    .mobile-nav.open{left:0}
+    .mobile-nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.2);display:block}
+    .mobile-nav-brand span{color:#E91E63}
+    .mobile-nav-items{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:4px}
+    .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:14px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .mobile-nav-item:hover,.mobile-nav-item.active{background:rgba(233,30,99,0.12);color:#fff}
+    .mobile-nav-section{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:8px 14px 4px;font-weight:500;}
+    .mobile-nav-footer{padding:1rem 0.75rem;border-top:1px solid rgba(233,30,99,0.2)}
+    .mobile-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(233,30,99,0.08)}
+    .mobile-user-avatar{width:32px;height:32px;border-radius:50%;background:#E91E63;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
+    .mobile-user-name{font-size:12px;font-weight:500;color:#fff}
+    .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:#000;z-index:500;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid rgba(233,30,99,0.25);}
+    .mobile-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:3px;text-transform:uppercase;text-decoration:none;flex:1;}
+    .mobile-logo span{color:#E91E63;}
+    .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;flex-shrink:0;}
+    .burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+    @media(max-width:500px){.content{padding:1rem}.stats-row{grid-template-columns:1fr}}
+    @media(max-width:900px){
+      .sidebar{display:none !important;}
+      .mobile-header{display:flex !important;}
+      .burger{display:flex !important;}
+      .main{margin-left:0 !important;padding-top:64px !important;}
+      .video-layout{grid-template-columns:1fr !important;}
+      .v-result-panel{display:none;}
+      .v-result-panel.has-results{display:block !important;}
+    }
+    /* NEW: end image upload zone */
+    .end-img-zone{border:1.5px dashed rgba(233,30,99,0.3);border-radius:10px;background:#fff8fb;padding:12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:all 0.2s;}
+    .end-img-zone:hover{border-color:#E91E63;background:#fff0f5;}
+    .end-img-zone.has-file{border-style:solid;border-color:#E91E63;padding:0;}
+    .end-img-preview{width:100%;max-height:120px;object-fit:contain;display:none;border-radius:8px;padding:6px;}
+    .end-clear-btn{position:absolute;top:5px;right:5px;width:20px;height:20px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:#fff;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+<div class="mobile-header">
+  <button class="burger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+  <a href="#" onclick="location.reload();return false;" class="mobile-logo">Drape<span>ly</span></a>
+</div>
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#" onclick="location.reload();return false;" class="mobile-nav-brand">Drape<span>ly</span></a>
+  <div class="mobile-nav-items">
+    <div class="mobile-nav-section">STUDIO</div>
+    <a class="mobile-nav-item" href="dashboard.html" onclick="closeMobileNav()">✨ New Photoshoot</a>
+    <a class="mobile-nav-item active" href="video.html" onclick="closeMobileNav()">🎬 New Video</a>
+    <a class="mobile-nav-item" href="bulk.html" onclick="closeMobileNav()">⚡ Bulk Studio</a>
+    <a class="mobile-nav-item" href="gallery.html" onclick="closeMobileNav()">🖼️ My Gallery</a>
+    <a class="mobile-nav-item" href="backgrounds.html" onclick="closeMobileNav()">🌄 Backgrounds</a>
+    <a class="mobile-nav-item" href="poster.html" onclick="closeMobileNav()">🎨 Poster Builder</a>
+    <div class="mobile-nav-section">ACCOUNT</div>
+    <a class="mobile-nav-item" href="guide.html" onclick="closeMobileNav()">📖 How to Use</a>
+    <a class="mobile-nav-item" href="credits.html" onclick="closeMobileNav()">💳 Credits</a>
+    <a class="mobile-nav-item" href="settings.html" onclick="closeMobileNav()">⚙️ Settings</a>
+    <button class="mobile-nav-item" onclick="doSignOut()">🚪 Sign out</button>
+  </div>
+  <div class="mobile-nav-footer">
+    <div class="mobile-user">
+      <div class="mobile-user-avatar" id="m-avatar">?</div>
+      <div><div class="mobile-user-name" id="m-name">...</div></div>
+    </div>
+  </div>
+</div>
 
-  const { image, duration, prompt, end_image } = req.body;
-  if (!image) return res.status(400).json({ error: 'Missing image' });
+<div class="sidebar">
+  <a href="#" onclick="location.reload();return false;" class="sidebar-brand">Drape<span>ly</span></a>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">STUDIO</div>
+    <a href="dashboard.html" class="nav-item">✨ New photoshoot</a>
+    <a href="video.html" class="nav-item active">🎬 New video</a>
+    <a href="bulk.html" class="nav-item">⚡ Bulk Studio</a>
+    <a href="gallery.html" class="nav-item">🖼️ My gallery</a>
+    <a href="backgrounds.html" class="nav-item">🌄 Backgrounds</a>
+    <a href="poster.html" class="nav-item">🎨 Poster Builder</a>
+    <div class="nav-section-label">ACCOUNT</div>
+    <a href="guide.html" class="nav-item">📖 How to Use</a>
+    <a href="settings.html" class="nav-item">⚙️ Settings</a>
+    <a href="credits.html" class="nav-item">💳 Credits</a>
+    <a href="#" onclick="doSignOut();return false;" class="nav-item">🚪 Sign out</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-av user-avatar" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">Loading...</div></div>
+    </div>
+  </div>
+</div>
 
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <h1 class="topbar-title">New Video</h1>
+      <p class="topbar-sub" id="topbar-sub">Create an AI fashion video</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Videos Generated</div>
+        <div class="stat-val" id="stat-videos">0</div>
+        <div class="stat-note">Generated here</div>
+      </div>
+      <div class="stat-card" style="border-color:rgba(233,30,99,0.4);">
+        <div class="stat-label">Your Credits</div>
+        <div class="stat-val" id="stat-credits">&#8212;</div>
+        <div class="stat-note"><a href="credits.html" style="color:#E91E63;text-decoration:none;">+ Add credits</a></div>
+      </div>
+    </div>
+
+    <div class="video-layout">
+      <!-- LEFT: CONTROLS -->
+      <div class="studio-card" style="padding:1.5rem;">
+        <h2 style="font-size:16px;font-weight:500;margin-bottom:4px;">New AI Fashion Video</h2>
+        <p style="font-size:12px;color:#555;margin-bottom:1.25rem;">Upload your suit or use a generated photo</p>
+
+        <div class="section-label">Step 1 &mdash; Your Suit Photo</div>
+        <div class="upload-zone" id="v-upload-zone" onclick="document.getElementById('v-suit-input').click()" style="margin-bottom:1rem;">
+          <div id="v-upload-empty">
+            <div class="upload-icon-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+            </div>
+            <div class="upload-title">Upload suit photo</div>
+            <div class="upload-hint">Or use a photo you already generated</div>
+          </div>
+          <img id="v-suit-preview" class="upload-preview" />
+          <button class="clear-file-btn" id="v-clear-btn" onclick="clearVideoSuit(event)">&#10005;</button>
+        </div>
+        <input type="file" id="v-suit-input" accept="image/*" style="display:none;" onchange="loadVideoSuit(event)" />
+
+        <div class="section-label" style="margin-top:1rem;">Step 2 — What should the model do?</div>
+        <div style="font-size:12px;color:#888;margin-bottom:8px;">Describe the action or movement</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+          <button onclick="setVideoPrompt(this,'model walking gracefully on a runway, dupatta flowing in wind, full outfit visible, cinematic slow motion')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">👣 Runway Walk</button>
+          <button onclick="setVideoPrompt(this,'model standing confidently, gentle breeze making dupatta flow, subtle hair movement, editorial fashion shot')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🧍 Elegant Stand</button>
+          <button onclick="setVideoPrompt(this,'model twirling gracefully, dupatta spreading wide in circle, full skirt flaring, slow motion cinematic')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">💃 Twirl</button>
+          <button onclick="setVideoPrompt(this,'model doing slow 360 degree turn, back design revealed, full outfit showcase, smooth rotation')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🔄 360° Turn</button>
+          <button onclick="setVideoPrompt(this,'model spreading dupatta wide with both hands, intricate embroidery detail visible, graceful arms movement')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🪄 Show Dupatta</button>
+          <button onclick="setVideoPrompt(this,'model walking confidently towards camera, close up on embroidery details, professional fashion film')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🎬 Walk to Camera</button>
+          <button onclick="setVideoPrompt(this,'slow motion close up shots of embroidery work, fabric texture, sequins and zari details sparkling')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">✨ Detail Showcase</button>
+          <button onclick="setVideoPrompt(this,'model sitting down gracefully, arranging dupatta, lehenga spread beautifully, bridal shoot style')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">👰 Bridal Pose</button>
+          <button onclick="setVideoPrompt(this,'model posing for Instagram reel, candid natural movement, hair flick, vibrant fashion content')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">📱 Reel Style</button>
+          <button onclick="setVideoPrompt(this,'model walking away from camera showing back design, then turns around to reveal front, elegant transition')" style="padding:5px 12px;border:1.5px solid rgba(233,30,99,0.3);border-radius:20px;background:#fff;font-family:\'DM Sans\',sans-serif;font-size:12px;color:#555;cursor:pointer;">🔁 Front to Back</button>
+        </div>
+        <textarea class="prompt-input" id="v-prompt" placeholder="e.g. model walking gracefully, twirling to show outfit..." style="margin-bottom:0.75rem;min-height:70px;" rows="3"></textarea>
+
+        <div class="section-label" style="margin-top:1rem;">Step 3 &mdash; Video Length</div>
+        <div style="display:flex;gap:8px;margin-bottom:1.25rem;">
+          <button class="dur-btn selected" onclick="selectDur(this,'5')">5 sec &mdash; 2 credits</button>
+          <button class="dur-btn" onclick="selectDur(this,'10')">10 sec &mdash; 4 credits</button>
+        </div>
+
+        <!-- ── ADDED: Optional End Frame ── -->
+        <div style="margin-bottom:1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div class="section-label" style="margin-bottom:0;">Back Design / End Frame <span style="font-size:9px;color:#aaa;font-weight:400;letter-spacing:0;text-transform:none;">(optional)</span></div>
+            <span style="font-size:10px;color:#aaa;">Upload back of dress for twirl/360° videos</span>
+          </div>
+          <div class="end-img-zone" id="end-img-zone" onclick="document.getElementById('v-end-input').click()">
+            <div id="end-img-empty" style="padding:10px 0;">
+              <div style="font-size:18px;margin-bottom:4px;">🖼️</div>
+              <div style="font-size:12px;color:#555;font-weight:500;">Upload back of dress / end pose</div>
+              <div style="font-size:11px;color:#aaa;">Video transitions to this · Perfect for twirl/turn videos</div>
+            </div>
+            <img id="end-img-preview" class="end-img-preview" />
+            <button class="end-clear-btn" id="end-clear-btn" onclick="clearEndImg(event)">✕</button>
+          </div>
+          <input type="file" id="v-end-input" accept="image/*" style="display:none;" onchange="loadEndImg(event)" />
+        </div>
+        <!-- ── END ADDED ── -->
+
+        <button class="generate-btn" onclick="startVideoGenerate()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
+          Generate Fashion Video
+        </button>
+
+        <div id="v-progress" style="margin-top:1rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span id="v-progress-label" style="font-size:12px;color:#555;">Generating your video...</span>
+            <span id="v-progress-pct" style="font-size:12px;color:#E91E63;font-weight:500;">0%</span>
+          </div>
+          <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;">
+            <div id="v-progress-fill" style="height:100%;background:linear-gradient(90deg,#E91E63,#c2185b);border-radius:3px;transition:width 0.5s;width:0%;"></div>
+          </div>
+          <div style="font-size:11px;color:#aaa;margin-top:6px;">Keep screen on 📱 Takes 2–3 minutes.</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: RESULT -->
+      <div class="v-result-panel" id="v-result-panel">
+        <div class="studio-card">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(233,30,99,0.1);">
+            <div style="font-size:11px;font-weight:600;color:#999;letter-spacing:1px;text-transform:uppercase;">Generated Video</div>
+          </div>
+          <div id="v-result" style="min-height:220px;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px;text-align:center;background:#f9f9f9;padding:2rem;">
+            <div>
+              <div style="font-size:40px;margin-bottom:10px;">🎬</div>
+              <div style="font-weight:500;margin-bottom:4px;">Your fashion video will appear here</div>
+              <div style="font-size:11px;color:#aaa;">Takes 2–3 minutes</div>
+            </div>
+          </div>
+          <div id="v-download-wrap" style="display:none;padding:1rem;border-top:1px solid rgba(233,30,99,0.1);">
+            <button onclick="downloadVideo()" style="width:100%;padding:12px;background:#E91E63;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">↓ Save / Download Video</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BUY CREDITS MODAL -->
+<div id="credits-modal" onclick="handleModalClick(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:1.5rem;max-width:340px;width:90%;text-align:center;position:relative;">
+    <button onclick="hideBuyCredits()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:#555;">✕</button>
+    <div style="font-size:18px;font-weight:500;margin-bottom:4px;">Buy Credits</div>
+    <div style="font-size:12px;color:#555;margin-bottom:1.25rem;">₹50 per credit · Added within 30 mins</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;">
+      <div onclick="selectPack(500,10)" id="pack-500" style="border:2px solid #E91E63;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff0f5;"><div style="font-size:16px;font-weight:500;color:#E91E63;">₹500</div><div style="font-size:10px;color:#555;margin-top:2px;">10 credits</div></div>
+      <div onclick="selectPack(1000,20)" id="pack-1000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">₹1000</div><div style="font-size:10px;color:#555;margin-top:2px;">20 credits</div></div>
+      <div onclick="selectPack(2000,40)" id="pack-2000" style="border:1.5px solid rgba(233,30,99,0.2);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff;"><div style="font-size:16px;font-weight:500;color:#000;">₹2000</div><div style="font-size:10px;color:#555;margin-top:2px;">40 credits</div><div style="font-size:9px;color:#28a745;margin-top:2px;">Best value!</div></div>
+    </div>
+    <img id="credits-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=500%26cu=INR%26tn=Drapely+Credits" style="width:150px;height:150px;border-radius:6px;margin-bottom:8px;" alt="UPI QR" />
+    <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:3px;">GPay · PhonePe · Paytm</div>
+    <div style="font-size:11px;color:#555;margin-bottom:5px;">6352197977@ptyes</div>
+    <div style="font-size:14px;font-weight:600;color:#E91E63;margin-bottom:1rem;" id="credits-amount">₹500</div>
+    <a id="wa-credits-link" href="https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9500%20for%20Drapely%20credits." target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:500;margin-bottom:8px;">💬 Send Payment Screenshot</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+var sb = window.supabase.createClient(
+  'https://oqmoneclnirnhqpcdeqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbW9uZWNsbmlybmhxcGNkZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDQ5NDMsImV4cCI6MjA5MjY4MDk0M30.GjhQiQYxAlK3eGE6MtJ_e_UTMfzdrLFco0f5RFSb-mM'
+);
+
+var selectedDuration = '5';
+var currentVideoUrl = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+  var fromPhoto = sessionStorage.getItem('videoFromPhoto');
+  if (fromPhoto) {
+    sessionStorage.removeItem('videoFromPhoto');
+    window._videoFromPhotoUrl = fromPhoto;
+    var preview = document.getElementById('v-suit-preview');
+    var empty = document.getElementById('v-upload-empty');
+    var zone = document.getElementById('v-upload-zone');
+    var clearBtn = document.getElementById('v-clear-btn');
+    if (preview) { preview.src = fromPhoto; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  }
+});
+
+sb.auth.getSession().then(function(r) {
+  if (!r.data.session) { window.location.href = 'auth.html'; return; }
+  var user = r.data.session.user;
+  var meta = user.user_metadata || {};
+  var fname = (meta.first_name || '').trim();
+  var lname = (meta.last_name || '').trim();
+  var fullname = (fname + ' ' + lname).trim();
+  var displayName = fullname.length > 1 ? fullname : user.email.split('@')[0];
+  var initials = fname && lname ? (fname[0]+lname[0]).toUpperCase() : (fname||displayName).slice(0,1).toUpperCase();
+  if (document.getElementById('user-name')) document.getElementById('user-name').textContent = displayName;
+  if (document.getElementById('user-avatar')) document.getElementById('user-avatar').textContent = initials;
+  if (document.getElementById('m-avatar')) document.getElementById('m-avatar').textContent = initials;
+  if (document.getElementById('m-name')) document.getElementById('m-name').textContent = displayName;
+  loadCredits(user.id);
+  loadVideoCount(user.id);
+});
+
+async function uploadVideoToStorage(videoUrl) {
   try {
-    // Step 1: Upload image to fal storage to get a public URL
-    // Convert base64 to blob and upload
-    let imageUrl = image;
-    try {
-      // Extract base64 data
-      const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
-      const mimeType = image.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
-      const buffer = Buffer.from(base64Data, 'base64');
-
-      const uploadRes = await fetch('https://fal.run/fal-ai/storage/upload/base64', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Key ${process.env.FAL_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content_type: mimeType,
-          data: base64Data
-        })
-      });
-
-      if (uploadRes.ok) {
-        const uploadData = await uploadRes.json();
-        imageUrl = uploadData.url || image;
-        console.log('Uploaded to fal storage:', imageUrl);
-      } else {
-        const errText = await uploadRes.text();
-        console.log('fal upload failed:', errText, '— using raw base64');
-      }
-    } catch(e) {
-      console.log('fal upload error:', e.message, '— using raw base64');
-    }
-
-    // Build Kling input
-    const input = {
-      prompt: prompt || 'model walking gracefully, showing full outfit, Indian fashion photography',
-      start_image_url: imageUrl,
-      duration: String(duration || 5),
-      cfg_scale: 0.5,
-    };
-
-    // Optional end frame
-    if (end_image) {
-      let endUrl = end_image;
-      try {
-        const endBase64 = end_image.replace(/^data:image\/\w+;base64,/, '');
-        const endMime = end_image.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
-        const endUpload = await fetch('https://fal.run/fal-ai/storage/upload/base64', {
-          method: 'POST',
-          headers: { 'Authorization': `Key ${process.env.FAL_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content_type: endMime, data: endBase64 })
-        });
-        if (endUpload.ok) {
-          const ed = await endUpload.json();
-          endUrl = ed.url || end_image;
-        }
-      } catch(e) { console.log('end_image upload failed:', e.message); }
-      input.end_image_url = endUrl;
-    }
-
-    console.log('Kling video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
-
-    // Step 2: Submit to Kling 2.1 Pro via fal queue
-    const submitRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v2.1/pro/image-to-video', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Key ${process.env.FAL_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ input })
-    });
-
-    const submitData = await submitRes.json();
-    console.log('Kling submit response:', JSON.stringify(submitData).substring(0, 300));
-
-    if (!submitData.request_id) {
-      return res.status(500).json({ error: 'No request_id from Kling', debug: JSON.stringify(submitData).substring(0, 200) });
-    }
-
-    return res.status(200).json({
-      prediction_id: submitData.request_id,
-      status: 'starting',
-      provider: 'kling'
-    });
-
-  } catch (err) {
-    console.error('Kling video error:', err.message);
-    return res.status(500).json({ error: err.message });
+    var res = await fetch(videoUrl);
+    if (!res.ok) throw new Error('fetch failed');
+    var blob = await res.blob();
+    var fileName = 'video_' + Date.now() + '.mp4';
+    var uploadRes = await sb.storage.from('photoshoots').upload(fileName, blob, { contentType: 'video/mp4', upsert: false });
+    if (uploadRes.error) throw new Error(uploadRes.error.message);
+    var urlRes = sb.storage.from('photoshoots').getPublicUrl(fileName);
+    return urlRes.data.publicUrl;
+  } catch(e) {
+    console.log('Video storage upload failed:', e.message);
+    return null;
   }
 }
+
+function loadCredits(userId) {
+  sb.from('credits').select('balance').eq('user_id', userId).single().then(function(r) {
+    var el = document.getElementById('stat-credits');
+    if (r.data !== null && r.data !== undefined) {
+      if (el) el.textContent = r.data.balance;
+    } else {
+      if (el) el.textContent = '3';
+      sb.from('credits').upsert({ user_id: userId, balance: 3 }, { onConflict: 'user_id' });
+    }
+  });
+}
+
+function loadVideoCount(userId) {
+  sb.from('photoshoots').select('id').eq('user_id', userId)
+    .or('media_type.eq.video,image_url.like.%.mp4%')
+    .then(function(r) {
+      var el = document.getElementById('stat-videos');
+      if (el) el.textContent = (r.data || []).length;
+    });
+}
+
+function setVideoPrompt(btn, text) {
+  var allBtns = btn.parentElement.querySelectorAll('button');
+  allBtns.forEach(function(b){ b.style.background='#fff'; b.style.color='#555'; b.style.borderColor='rgba(233,30,99,0.3)'; });
+  btn.style.background = '#E91E63';
+  btn.style.color = '#fff';
+  btn.style.borderColor = '#E91E63';
+  document.getElementById('v-prompt').value = text;
+}
+
+function loadVideoSuit(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('v-suit-preview');
+    var empty = document.getElementById('v-upload-empty');
+    var zone = document.getElementById('v-upload-zone');
+    var clearBtn = document.getElementById('v-clear-btn');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearVideoSuit(e) {
+  e.stopPropagation();
+  var preview = document.getElementById('v-suit-preview');
+  var empty = document.getElementById('v-upload-empty');
+  var zone = document.getElementById('v-upload-zone');
+  var clearBtn = document.getElementById('v-clear-btn');
+  var input = document.getElementById('v-suit-input');
+  if (preview) { preview.style.display = 'none'; preview.src = ''; }
+  if (empty) empty.style.display = 'block';
+  if (zone) zone.classList.remove('has-file');
+  if (clearBtn) clearBtn.style.display = 'none';
+  if (input) input.value = '';
+  window._videoFromPhotoUrl = null;
+}
+
+// ── ADDED: End frame functions ──
+function loadEndImg(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    window._endImgData = ev.target.result;
+    var preview = document.getElementById('end-img-preview');
+    var empty = document.getElementById('end-img-empty');
+    var zone = document.getElementById('end-img-zone');
+    var clearBtn = document.getElementById('end-clear-btn');
+    if (preview) { preview.src = ev.target.result; preview.style.display = 'block'; }
+    if (empty) empty.style.display = 'none';
+    if (zone) zone.classList.add('has-file');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearEndImg(e) {
+  e.stopPropagation();
+  window._endImgData = null;
+  var preview = document.getElementById('end-img-preview');
+  var empty = document.getElementById('end-img-empty');
+  var zone = document.getElementById('end-img-zone');
+  var clearBtn = document.getElementById('end-clear-btn');
+  var input = document.getElementById('v-end-input');
+  if (preview) { preview.style.display = 'none'; preview.src = ''; }
+  if (empty) empty.style.display = 'block';
+  if (zone) zone.classList.remove('has-file');
+  if (clearBtn) clearBtn.style.display = 'none';
+  if (input) input.value = '';
+}
+// ── END ADDED ──
+
+function selectDur(btn, dur) {
+  document.querySelectorAll('.dur-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  selectedDuration = dur;
+}
+
+function shareVideo() {
+  var shareUrl = window._permanentVideoUrl || currentVideoUrl;
+  if (!shareUrl) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI fashion video from Drapely! ' + shareUrl), '_blank');
+}
+
+function downloadVideo() {
+  var url = window._permanentVideoUrl;
+  if (url) { doDownload(url); return; }
+  showToast('Preparing...');
+  var waited = 0;
+  var check = setInterval(function() {
+    waited += 500;
+    if (window._permanentVideoUrl) {
+      clearInterval(check);
+      doDownload(window._permanentVideoUrl);
+    } else if (waited >= 12000) {
+      clearInterval(check);
+      showToast('Please try downloading from Gallery');
+    }
+  }, 500);
+}
+
+function doDownload(url) {
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    if (navigator.share && window._videoBlob) {
+      var file = new File([window._videoBlob], 'drapely-video-' + Date.now() + '.mp4', { type: 'video/mp4' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'Drapely AI Fashion Video' }).catch(function(){});
+        return;
+      }
+    }
+    window.open(url, '_blank');
+    return;
+  }
+  showToast('Downloading...');
+  fetch(url)
+    .then(function(r){ return r.blob(); })
+    .then(function(blob){
+      var blobUrl = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'drapely-video-' + Date.now() + '.mp4';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 3000);
+    })
+    .catch(function(){ window.open(url, '_blank'); });
+}
+
+function showBuyCredits() {
+  var modal = document.getElementById('credits-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function hideBuyCredits() {
+  var modal = document.getElementById('credits-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function handleModalClick(e) {
+  if (e.target.id === 'credits-modal') hideBuyCredits();
+}
+
+function selectPack(amount, credits) {
+  ['500','1000','2000'].forEach(function(p) {
+    var el = document.getElementById('pack-' + p);
+    if (el) { el.style.border = '1.5px solid rgba(233,30,99,0.2)'; el.style.background = '#fff'; }
+  });
+  var sel = document.getElementById('pack-' + amount);
+  if (sel) { sel.style.border = '2px solid #E91E63'; sel.style.background = '#fff0f5'; }
+  var qr = document.getElementById('credits-qr');
+  if (qr) qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6352197977@ptyes%26pn=Drapely%26am=' + amount + '%26cu=INR%26tn=Drapely+Credits';
+  var amtEl = document.getElementById('credits-amount');
+  if (amtEl) amtEl.textContent = '₹' + amount;
+  var wa = document.getElementById('wa-credits-link');
+  if (wa) wa.href = 'https://wa.me/916352197977?text=Hi!%20I%20paid%20%E2%82%B9' + amount + '%20for%20Drapely%20' + credits + '%20credits.';
+}
+
+function openMobileNav() {
+  document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('touchstart', function(e) {
+  var nav = document.getElementById('mobile-nav');
+  var burger = document.querySelector('.burger');
+  if (nav && nav.classList.contains('open')) {
+    if (!nav.contains(e.target) && (!burger || !burger.contains(e.target))) closeMobileNav();
+  }
+}, { passive: true });
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+var _wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      _wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake lock acquired');
+    }
+  } catch(e) { console.log('Wake lock failed:', e.message); }
+}
+function releaseWakeLock() {
+  if (_wakeLock) { _wakeLock.release(); _wakeLock = null; }
+}
+
+function resetGenerateBtn() {
+  var btn = document.querySelector('.generate-btn');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+}
+
+async function startVideoGenerate() {
+  var generateBtn = document.querySelector('.generate-btn');
+  if (generateBtn.disabled) return; // prevent double click
+  generateBtn.disabled = true;
+  generateBtn.style.opacity = '0.6';
+  generateBtn.style.cursor = 'not-allowed';
+  var suitFile = document.getElementById('v-suit-input').files[0];
+  var fromPhotoUrl = window._videoFromPhotoUrl || null;
+  if (!suitFile && !fromPhotoUrl) { resetGenerateBtn(); showToast('Please upload your suit photo first!'); return; }
+  var credits = parseInt(document.getElementById('stat-credits').textContent) || 0;
+  var vidCost = selectedDuration === '10' ? 4 : 2;
+  if (credits < vidCost) { resetGenerateBtn(); showToast('Need ' + vidCost + ' credit' + (vidCost>1?'s':'') + ' for this video!'); showBuyCredits(); return; }
+  var promptEl = document.getElementById('v-prompt');
+  var prompt = (promptEl && promptEl.value.trim()) ? promptEl.value.trim() : 'model standing confidently, posing for camera';
+  var progressEl = document.getElementById('v-progress');
+  var progressFill = document.getElementById('v-progress-fill');
+  var progressPct = document.getElementById('v-progress-pct');
+  var progressLabel = document.getElementById('v-progress-label');
+  var downloadWrap = document.getElementById('v-download-wrap');
+  var resultEl = document.getElementById('v-result');
+  if (progressEl) progressEl.style.display = 'block';
+  if (downloadWrap) downloadWrap.style.display = 'none';
+  requestWakeLock();
+  if (resultEl) resultEl.innerHTML = '<div style="text-align:center;color:#555;padding:2rem;"><div style="font-size:32px;margin-bottom:8px;">⏳</div><div>AI is creating your video...</div><div style="font-size:11px;margin-top:4px;color:#aaa;">Keep screen on 📱 Takes 2-3 minutes</div></div>';
+
+  var progress = 0;
+  var vInterval = setInterval(function() {
+    if (progress < 90) {
+      progress += Math.random() * 2 + 0.5;
+      if (progress > 90) progress = 90;
+      if (progressFill) progressFill.style.width = Math.round(progress) + '%';
+      if (progressPct) progressPct.textContent = Math.round(progress) + '%';
+    }
+  }, 2000);
+
+  try {
+    var imgData;
+    if (fromPhotoUrl) {
+      imgData = fromPhotoUrl;
+    } else {
+      imgData = await new Promise(function(resolve) {
+        var reader = new FileReader();
+        reader.onload = function(e){ resolve(e.target.result); };
+        reader.readAsDataURL(suitFile);
+      });
+    }
+
+    // ADDED: include end_image if uploaded
+    var payload = { image: imgData, duration: parseInt(selectedDuration) || 5, prompt: prompt };
+    if (window._endImgData) payload.end_image = window._endImgData;
+
+    var response = await fetch('/api/video', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    });
+    var data = await response.json();
+    if (data.error) {
+      clearInterval(vInterval);
+      if (progressEl) progressEl.style.display = 'none';
+      releaseWakeLock();
+      resetGenerateBtn();
+      showToast('Error: ' + String(data.error).substring(0, 80));
+      return;
+    }
+    var predId = data.prediction_id;
+    var provider = data.provider || 'fashn';
+    var pollResult = null;
+    var attempts = 0;
+    while (attempts < 90) {
+      await new Promise(function(r){ setTimeout(r, 5000); });
+      try {
+        var pollRes = await fetch('/api/poll?id=' + predId + '&provider=' + provider);
+        pollResult = await pollRes.json();
+        if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
+        if (pollResult.status === 'succeeded') break;
+        if (pollResult.status === 'failed') {
+          clearInterval(vInterval);
+          if (progressEl) progressEl.style.display = 'none';
+          releaseWakeLock();
+          resetGenerateBtn();
+          showToast('Video failed. Try again.');
+          return;
+        }
+      } catch(e) { console.log('Poll retry:', e.message); }
+      attempts++;
+    }
+    var videoUrl = pollResult && pollResult.output
+      ? (Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output)
+      : null;
+
+    clearInterval(vInterval);
+    if (progressFill) progressFill.style.width = '100%';
+    if (progressPct) progressPct.textContent = '100%';
+
+    setTimeout(function() {
+      if (progressEl) progressEl.style.display = 'none';
+
+      if (videoUrl) {
+        currentVideoUrl = videoUrl;
+
+        var panel = document.getElementById('v-result-panel');
+        if (panel) {
+          panel.classList.add('has-results');
+          setTimeout(function(){
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+
+        if (resultEl) resultEl.innerHTML = '<video controls autoplay playsinline style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:10px;background:#000;max-height:500px;"><source src="' + videoUrl + '" type="video/mp4"></video>';
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+          fetch(videoUrl).then(function(r){ return r.blob(); }).then(function(blob){
+            window._videoBlob = blob;
+          }).catch(function(){});
+        }
+
+        if (downloadWrap) downloadWrap.style.display = 'block';
+
+        sb.auth.getSession().then(function(r) {
+          if (!r.data.session) return;
+          var userId = r.data.session.user.id;
+          uploadVideoToStorage(videoUrl).then(function(permanentUrl) {
+            var saveUrl = permanentUrl || videoUrl;
+            window._permanentVideoUrl = saveUrl;
+            sb.from('photoshoots').insert({
+              user_id: userId, image_url: saveUrl,
+              collection_name: 'Drapely AI Video', suit_type: 'Video',
+              image_count: (selectedDuration === '10' ? 4 : 2),
+              media_type: 'video'
+            }).then(function(res) {
+              if (!res.error) loadVideoCount(userId);
+            });
+          });
+          var cost = selectedDuration === '10' ? 4 : 2;
+          sb.from('credits').select('balance').eq('user_id', userId).single().then(function(res) {
+            if (res.data) {
+              var newBal = Math.max(0, res.data.balance - cost);
+              sb.from('credits').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', userId).then(function() {
+                var el = document.getElementById('stat-credits');
+                if (el) el.textContent = newBal;
+              });
+            }
+          });
+        });
+
+        releaseWakeLock();
+        resetGenerateBtn();
+        showToast('Your fashion video is ready!');
+      } else {
+        showToast('No video returned. Try again.');
+      }
+    }, 500);
+
+  } catch(err) {
+    clearInterval(vInterval);
+    if (progressEl) progressEl.style.display = 'none';
+    resetGenerateBtn();
+    showToast('Error: ' + err.message);
+  }
+}
+</script>
+</body>
+</html>
