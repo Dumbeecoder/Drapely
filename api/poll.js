@@ -23,8 +23,8 @@ export default async function handler(req, res) {
       }
 
       // Use URLs directly from submit response
-      const sUrl = statusUrl || `https://queue.fal.run/fal-ai/kling-video/v2.1/standard/image-to-video/requests/${id}/status`;
-      const rUrl = responseUrl || `https://queue.fal.run/fal-ai/kling-video/v2.1/standard/image-to-video/requests/${id}`;
+      const sUrl = statusUrl || `https://queue.fal.run/fal-ai/kling-video/v3/standard/image-to-video/requests/${id}/status`;
+      const rUrl = responseUrl || `https://queue.fal.run/fal-ai/kling-video/v3/standard/image-to-video/requests/${id}`;
       console.log('Polling status URL:', sUrl);
 
       let statusData;
