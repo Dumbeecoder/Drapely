@@ -148,51 +148,10 @@ export default async function handler(req, res) {
     };
     const garmentDesc = garmentDescMap[garment_type] || garmentDescMap['suit'];
 
-    // Build final prompt — use frontend-built prompt (includes pose + scene)
+    // Build final prompt
     let finalPrompt = prompt || '';
     if (!finalPrompt || finalPrompt === 'custom_bg_upload') {
       finalPrompt = garmentDesc + ', standing straight facing forward, professional Indian fashion photography, high quality';
-    }
-
-    // Custom background: use GPT-4o Vision to describe the scene, inject into prompt
-    if (custom_bg && custom_bg.startsWith('data:')) {
-      try {
-        const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight, graceful pose';
-
-        // Ask GPT-4o Vision to describe the background scene
-        const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            max_tokens: 60,
-            messages: [{
-              role: 'user',
-              content: [
-                { type: 'image_url', image_url: { url: custom_bg, detail: 'low' } },
-                { type: 'text', text: 'Describe this background location in 8-12 words for a fashion photo prompt. Focus on setting, lighting, atmosphere only. No people. Example: "Rajasthani fort courtyard, warm golden hour lighting, stone architecture"' }
-              ]
-            }]
-          })
-        });
-
-        const openaiData = await openaiRes.json();
-        const sceneDesc = openaiData.choices?.[0]?.message?.content?.trim() || '';
-        console.log('GPT-4o scene description:', sceneDesc);
-
-        if (sceneDesc) {
-          finalPrompt = garmentDesc + ', ' + posePart + ', ' + sceneDesc + ', professional Indian fashion photography, photorealistic, 4K quality, natural lighting';
-        } else {
-          finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
-        }
-      } catch(e) {
-        console.log('GPT-4o vision failed, using neutral prompt:', e.message);
-        const posePart = (prompt || '').split(',').slice(1, 3).join(',').trim() || 'standing straight';
-        finalPrompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, high quality';
-      }
     }
 
     const requestBody = {
@@ -200,12 +159,26 @@ export default async function handler(req, res) {
       inputs: {
         product_image: garmentUrl,
         model_image: humanImg,
-        resolution: '1k',
-        generation_mode: 'balanced',
+        resolution: '4k',
+        generation_mode: 'quality',
         output_format: 'jpeg',
         prompt: finalPrompt,
+        // Garment fidelity — preserve original design, colors, embroidery
+        garment_photo_type: 'auto',
+        restore_background: false,
+        restore_clothes: true,  // key param — preserves original garment details
+        long_top: false,
       }
     };
+
+    // Custom background
+    if (custom_bg && custom_bg.startsWith('data:')) {
+      delete requestBody.inputs.model_image;
+      requestBody.inputs.background_reference = custom_bg;
+      const posePart = (finalPrompt.split(',').slice(1, 3).join(',').trim()) || 'standing straight, graceful pose';
+      requestBody.inputs.prompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, photorealistic';
+      console.log('Using background_reference for custom bg');
+    }
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
