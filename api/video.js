@@ -27,8 +27,8 @@ export default async function handler(req, res) {
 
     console.log('Kling video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
 
-    // Step 2: Submit to Kling 2.1 Pro via fal queue
-    const submitRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v2.1/pro/image-to-video', {
+    // Submit to Kling 2.1 Standard via fal queue — faster than Pro
+    const submitRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v2.1/standard/image-to-video', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${process.env.FAL_KEY}`,
