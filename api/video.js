@@ -37,14 +37,14 @@ export default async function handler(req, res) {
 
     console.log('Kling video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
 
-    // Submit to Kling 2.1 Standard via fal queue — faster than Pro
+    // Submit to Kling 2.1 Standard — send fields directly, no input wrapper
     const submitRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v2.1/standard/image-to-video', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${process.env.FAL_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ input })
+      body: JSON.stringify(input)  // send directly, not { input }
     });
 
     const submitData = await submitRes.json();
