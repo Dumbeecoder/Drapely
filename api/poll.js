@@ -8,23 +8,25 @@ export default async function handler(req, res) {
   if (!id) return res.status(400).json({ error: 'Missing id' });
 
   try {
-    // Kling via fal.ai
+    // Kling via fal.ai — correct queue status endpoint
     if (provider === 'kling') {
-      const pollRes = await fetch(
-        `https://queue.fal.run/fal-ai/kling-video/v2.1/pro/image-to-video/requests/${id}/status`,
+      const endpoint = 'fal-ai/kling-video/v2.1/pro/image-to-video';
+      const statusRes = await fetch(
+        `https://queue.fal.run/${endpoint}/requests/${id}/status`,
         { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } }
       );
-      const data = await pollRes.json();
-      console.log('Kling poll status:', data.status);
+      const data = await statusRes.json();
+      console.log('Kling poll status:', data.status, 'queue pos:', data.queue_position);
 
       if (data.status === 'COMPLETED') {
         // Fetch result
         const resultRes = await fetch(
-          `https://queue.fal.run/fal-ai/kling-video/v2.1/pro/image-to-video/requests/${id}`,
+          `https://queue.fal.run/${endpoint}/requests/${id}`,
           { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } }
         );
         const result = await resultRes.json();
         const videoUrl = result?.video?.url || result?.output?.video?.url || null;
+        console.log('Kling result video URL:', videoUrl);
         return res.status(200).json({
           status: 'succeeded',
           output: videoUrl ? [videoUrl] : []
@@ -36,7 +38,11 @@ export default async function handler(req, res) {
       }
 
       // IN_QUEUE or IN_PROGRESS
-      return res.status(200).json({ status: 'processing', queue_position: data.queue_position });
+      return res.status(200).json({
+        status: 'processing',
+        queue_position: data.queue_position,
+        kling_status: data.status
+      });
     }
 
     // Default: FASHN polling
