@@ -651,12 +651,14 @@ async function startVideoGenerate() {
     var provider = data.provider || 'fashn';
     var pollResult = null;
     var attempts = 0;
-    while (attempts < 90) {
+    while (attempts < 120) {  // 10 minutes max
       await new Promise(function(r){ setTimeout(r, 5000); });
       try {
         var pollRes = await fetch('/api/poll?id=' + predId + '&provider=' + provider);
         pollResult = await pollRes.json();
-        if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)';
+        var kStatus = pollResult.kling_status || pollResult.status || '';
+        var qPos = pollResult.queue_position != null ? ' (Queue: ' + pollResult.queue_position + ')' : '';
+        if (progressLabel) progressLabel.textContent = 'Generating... (' + Math.round((attempts+1)*5) + 's)' + (kStatus ? ' · ' + kStatus : '') + qPos;
         if (pollResult.status === 'succeeded') break;
         if (pollResult.status === 'failed') {
           clearInterval(vInterval);
