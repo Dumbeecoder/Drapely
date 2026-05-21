@@ -2,13 +2,16 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const id = req.query.id || req.body?.id;
   const provider = req.query.provider || req.body?.provider;
+  const statusUrl = decodeURIComponent(req.query.status_url || req.body?.status_url || '');
+  const responseUrl = decodeURIComponent(req.query.response_url || req.body?.response_url || '');
   if (!id) return res.status(400).json({ error: 'Missing id' });
 
-  // 8 second timeout to stay within Vercel limits
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
 
@@ -16,61 +19,46 @@ export default async function handler(req, res) {
     if (provider === 'kling') {
       if (!process.env.FAL_KEY) {
         clearTimeout(timeout);
-        return res.status(200).json({ status: 'processing', error: 'FAL_KEY missing' });
+        return res.status(200).json({ status: 'processing', debug: 'FAL_KEY missing' });
       }
 
-      const endpoint = 'fal-ai/kling-video/v2.1/standard/image-to-video';
+      // Use URLs directly from submit response
+      const sUrl = statusUrl || `https://queue.fal.run/fal-ai/kling-video/v2.1/standard/image-to-video/requests/${id}/status`;
+      const rUrl = responseUrl || `https://queue.fal.run/fal-ai/kling-video/v2.1/standard/image-to-video/requests/${id}`;
+      console.log('Polling status URL:', sUrl);
+
       let statusData;
-
       try {
-        const statusRes = await fetch(
-          `https://queue.fal.run/${endpoint}/requests/${id}/status`,
-          {
-            headers: { 'Authorization': `Key ${process.env.FAL_KEY}` },
-            signal: controller.signal
-          }
-        );
+        const statusRes = await fetch(sUrl, {
+          headers: { 'Authorization': `Key ${process.env.FAL_KEY}` },
+          signal: controller.signal
+        });
         clearTimeout(timeout);
-
         if (!statusRes.ok) {
           const errText = await statusRes.text();
-          console.error('Kling status HTTP error:', statusRes.status, errText.substring(0, 200));
-          // Return processing so frontend keeps polling
+          console.error('Kling status error:', statusRes.status, errText.substring(0, 200));
           return res.status(200).json({ status: 'processing', debug: statusRes.status + ': ' + errText.substring(0, 100) });
         }
         statusData = await statusRes.json();
-      } catch(fetchErr) {
+      } catch(e) {
         clearTimeout(timeout);
-        console.error('Kling fetch error:', fetchErr.message);
-        return res.status(200).json({ status: 'processing', debug: fetchErr.message });
+        return res.status(200).json({ status: 'processing', debug: e.message });
       }
 
-      const status = (statusData.status || '').toUpperCase();
-      console.log('Kling status:', status, JSON.stringify(statusData).substring(0, 200));
+      console.log('Kling status response:', JSON.stringify(statusData).substring(0, 300));
+      const st = (statusData.status || '').toUpperCase();
 
-      if (status === 'COMPLETED') {
-        const resultRes = await fetch(
-          `https://queue.fal.run/${endpoint}/requests/${id}`,
-          { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } }
-        );
+      if (st === 'COMPLETED') {
+        const resultRes = await fetch(rUrl, { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } });
         const result = await resultRes.json();
-        console.log('Kling result:', JSON.stringify(result).substring(0, 300));
-        const videoUrl = result?.video?.url
-          || result?.output?.video?.url
-          || result?.videos?.[0]?.url
-          || null;
+        console.log('Kling result:', JSON.stringify(result).substring(0, 400));
+        const videoUrl = result?.video?.url || result?.output?.video?.url || result?.videos?.[0]?.url || null;
         return res.status(200).json({ status: 'succeeded', output: videoUrl ? [videoUrl] : [] });
       }
-
-      if (status === 'FAILED' || status === 'ERROR') {
+      if (st === 'FAILED' || st === 'ERROR') {
         return res.status(200).json({ status: 'failed', error: statusData.error || 'Failed' });
       }
-
-      return res.status(200).json({
-        status: 'processing',
-        queue_position: statusData.queue_position,
-        kling_status: status
-      });
+      return res.status(200).json({ status: 'processing', queue_position: statusData.queue_position, kling_status: st });
     }
 
     // FASHN fallback
@@ -80,15 +68,13 @@ export default async function handler(req, res) {
     });
     clearTimeout(timeout);
     const data = await pollRes.json();
-
     if (data.status === 'completed') return res.status(200).json({ status: 'succeeded', output: data.output });
     if (data.status === 'failed') return res.status(200).json({ status: 'failed', error: data.error });
     return res.status(200).json({ status: data.status });
 
-  } catch (err) {
+  } catch(err) {
     clearTimeout(timeout);
     console.error('Poll catch:', err.message);
-    // Never return 500 — always return processing so frontend keeps trying
     return res.status(200).json({ status: 'processing', debug: err.message });
   }
 }
