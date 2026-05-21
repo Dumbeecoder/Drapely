@@ -10,11 +10,19 @@ export default async function handler(req, res) {
   try {
     // Kling via fal.ai — correct queue status endpoint
     if (provider === 'kling') {
+      if (!process.env.FAL_KEY) {
+        return res.status(500).json({ error: 'FAL_KEY not configured in Vercel environment variables' });
+      }
       const endpoint = 'fal-ai/kling-video/v2.1/pro/image-to-video';
       const statusRes = await fetch(
         `https://queue.fal.run/${endpoint}/requests/${id}/status`,
         { headers: { 'Authorization': `Key ${process.env.FAL_KEY}` } }
       );
+      if (!statusRes.ok) {
+        const errText = await statusRes.text();
+        console.error('Kling status error:', statusRes.status, errText);
+        return res.status(500).json({ error: 'Kling poll failed: ' + statusRes.status + ' ' + errText.substring(0, 100) });
+      }
       const data = await statusRes.json();
       console.log('Kling poll status:', data.status, 'queue pos:', data.queue_position);
 
