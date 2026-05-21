@@ -2193,20 +2193,10 @@ function overlayLogoOnImages(imageUrls) {
 }
 
 
-// Remove background from photo then composite onto custom uploaded background
+// Background is now handled natively by FASHN background_reference parameter in generate.js
+// This function is kept as a no-op fallback — no compositing needed
 function compositeOnBackground(imageUrls) {
-  var bgDataUrl = window._customBgDataUrl;
-  if (!bgDataUrl) return Promise.resolve(imageUrls);
-
-  // Show status
-  var labelEl = document.getElementById('progress-label-text');
-  if (labelEl) labelEl.textContent = 'Removing background & applying custom scene...';
-  var progressWrap = document.getElementById('progress-wrap');
-  if (progressWrap) progressWrap.classList.add('visible');
-
-  return Promise.all(imageUrls.map(function(photoUrl) {
-    return removeBackgroundAndComposite(photoUrl, bgDataUrl);
-  }));
+  return Promise.resolve(imageUrls);
 }
 
 async function removeBackgroundAndComposite(photoUrl, bgDataUrl) {
