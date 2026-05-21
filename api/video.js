@@ -9,8 +9,18 @@ export default async function handler(req, res) {
   if (!image) return res.status(400).json({ error: 'Missing image' });
 
   try {
-    // fal.ai accepts base64 data URIs directly - no upload needed
-    const imageUrl = image; // pass base64 data URL directly
+    // Compress image to reduce size - Vercel has 4.5MB body limit
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    console.log('Image size:', Math.round(buffer.length / 1024), 'KB');
+
+    if (buffer.length > 3 * 1024 * 1024) {
+      console.log('Image too large, rejecting');
+      return res.status(400).json({ error: 'Image too large. Please use a smaller photo.' });
+    }
+
+    // Use image directly as data URL
+    const imageUrl = image;
 
     // Build Kling input
     const input = {
