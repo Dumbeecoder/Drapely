@@ -649,14 +649,19 @@ async function startVideoGenerate() {
     }
     var predId = data.prediction_id;
     var provider = data.provider || 'fashn';
+    var statusUrl = data.status_url || '';
+    var responseUrl = data.response_url || '';
     console.log('VIDEO REQUEST ID:', predId, '| Provider:', provider);
-    alert('Request ID: ' + predId + '\nProvider: ' + provider + '\n\nCopy this ID for debugging!');
+    console.log('Status URL:', statusUrl);
     var pollResult = null;
     var attempts = 0;
     while (attempts < 120) {  // 10 minutes max
       await new Promise(function(r){ setTimeout(r, 5000); });
       try {
-        var pollRes = await fetch('/api/poll?id=' + predId + '&provider=' + provider + '&t=' + Date.now(), {
+        var pollUrl = '/api/poll?id=' + predId + '&provider=' + provider + '&t=' + Date.now();
+        if (statusUrl) pollUrl += '&status_url=' + encodeURIComponent(statusUrl);
+        if (responseUrl) pollUrl += '&response_url=' + encodeURIComponent(responseUrl);
+        var pollRes = await fetch(pollUrl, {
           cache: 'no-store',
           headers: { 'Cache-Control': 'no-cache' }
         });
