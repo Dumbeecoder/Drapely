@@ -23,21 +23,23 @@ export default async function handler(req, res) {
     const imageUrl = image;
 
     // Build Kling input
+    // V3 Standard uses start_image_url (different from v2.1)
     const input = {
       prompt: prompt || 'model walking gracefully, showing full outfit, Indian fashion photography',
-      image_url: imageUrl,
+      start_image_url: imageUrl,
       duration: String(duration || 5),
       cfg_scale: 0.5,
+      generate_audio: false,
     };
 
     if (end_image) {
-      input.tail_image_url = end_image;
+      input.end_image_url = end_image;
     }
 
-    console.log('Kling video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
+    console.log('Kling V3 Standard video — duration:', duration, 'prompt:', (prompt||'').substring(0,60));
 
-    // Submit to Kling 2.1 Standard — send fields directly, no input wrapper
-    const submitRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v2.1/standard/image-to-video', {
+    // Submit to Kling V3 Standard via fal queue
+    const submitRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v3/standard/image-to-video', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${process.env.FAL_KEY}`,
