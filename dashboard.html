@@ -321,6 +321,7 @@
               </div>
               <div class="upload-title">Upload your suit photo</div>
               <div class="upload-hint">JPG or PNG · Clear photo works best</div>
+              <div onclick="event.stopPropagation();showUploadTips()" style="margin-top:6px;font-size:11px;color:#E91E63;font-weight:500;cursor:pointer;text-decoration:underline;">📸 Tips for best quality</div>
             </div>
             <img id="suit-preview" class="upload-preview" />
             <button class="clear-file-btn" id="suit-clear-btn" onclick="clearSuit(event)">✕</button>
@@ -1092,12 +1093,21 @@ function loadGalleryFromDB(userId) {
       videoGallery = [];
       photos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
       videos.forEach(function(item){ if(item.image_url) videoGallery.push(item.image_url); });
+
+      // Count actual images using image_count field, not just rows
+      var totalImages = photos.reduce(function(sum, item){
+        return sum + (parseInt(item.image_count) || 1);
+      }, 0);
+      var totalVideos = videos.reduce(function(sum, item){
+        return sum + (parseInt(item.image_count) || 1);
+      }, 0);
+
       var statShoots = document.getElementById('stat-shoots');
       var statImages = document.getElementById('stat-images');
-      if (statShoots) statShoots.textContent = photos.length;
-      if (statImages) statImages.textContent = photos.length;
       var statVideos = document.getElementById('stat-videos');
-      if (statVideos) statVideos.textContent = videos.length;
+      if (statShoots) statShoots.textContent = photos.length; // shoots = number of sessions
+      if (statImages) statImages.textContent = totalImages;   // images = sum of image_count
+      if (statVideos) statVideos.textContent = totalVideos;   // videos = sum of video count
       renderGallery();
       renderVideoGallery();
   });
@@ -1172,24 +1182,199 @@ function loadSuit(e) {
   if (!file) return;
   var reader = new FileReader();
   reader.onload = function(ev) {
-    document.getElementById('suit-preview').src = ev.target.result;
+    var dataUrl = ev.target.result;
+
+    // Show preview immediately
+    document.getElementById('suit-preview').src = dataUrl;
     document.getElementById('suit-preview').style.display = 'block';
     document.getElementById('upload-empty').style.display = 'none';
     document.getElementById('suit-clear-btn').style.display = 'flex';
     document.getElementById('suit-upload-zone').classList.add('has-file');
+
+    // Show processing indicator
+    var zone = document.getElementById('suit-upload-zone');
+    var indicator = document.createElement('div');
+    indicator.id = 'suit-process-indicator';
+    indicator.style.cssText = 'position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:#E91E63;font-family:DM Sans,sans-serif;background:rgba(255,255,255,0.9);padding:4px;border-radius:4px;margin:0 8px;';
+    indicator.textContent = '✨ Enhancing image...';
+    zone.style.position = 'relative';
+    zone.appendChild(indicator);
+
+    // Auto-enhance the image
+    autoEnhanceGarment(dataUrl).then(function(enhanced) {
+      window._garmentDataUrl = enhanced;
+      document.getElementById('suit-preview').src = enhanced;
+      var ind = document.getElementById('suit-process-indicator');
+      if (ind) ind.remove();
+      showToast('✅ Image enhanced & ready!');
+    });
   };
   reader.readAsDataURL(file);
 }
 
+// ── Auto enhance garment image ──
+function autoEnhanceGarment(dataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      // Upscale small images to at least 1200px wide
+      var scale = Math.max(1, 1200 / img.width);
+      if (scale > 1 && scale < 3) {
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+      } else {
+        canvas.width = img.width;
+        canvas.height = img.height;
+      }
+      var ctx = canvas.getContext('2d');
+
+      // Enable image smoothing for better upscaling
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var pixels = data.data;
+
+      // Analyze brightness
+      var totalBrightness = 0;
+      for (var i = 0; i < pixels.length; i += 16) {
+        totalBrightness += (pixels[i] * 0.299 + pixels[i+1] * 0.587 + pixels[i+2] * 0.114);
+      }
+      var avgBrightness = totalBrightness / (pixels.length / 16);
+
+      // Dynamic brightness boost based on how dark the image is
+      var brightnessBoost = avgBrightness < 100 ? 30 : avgBrightness < 140 ? 18 : 8;
+
+      for (var j = 0; j < pixels.length; j += 4) {
+        var r = pixels[j], g = pixels[j+1], b = pixels[j+2];
+
+        // Brightness boost
+        r = Math.min(255, r + brightnessBoost);
+        g = Math.min(255, g + brightnessBoost);
+        b = Math.min(255, b + brightnessBoost);
+
+        // Contrast (1.1x)
+        r = Math.min(255, Math.max(0, (r - 128) * 1.1 + 128));
+        g = Math.min(255, Math.max(0, (g - 128) * 1.1 + 128));
+        b = Math.min(255, Math.max(0, (b - 128) * 1.1 + 128));
+
+        // Saturation boost (1.15x)
+        var rn = r/255, gn = g/255, bn = b/255;
+        var mx = Math.max(rn,gn,bn), mn = Math.min(rn,gn,bn);
+        var l = (mx+mn)/2, s = 0, h = 0;
+        if (mx !== mn) {
+          var d = mx - mn;
+          s = l > 0.5 ? d/(2-mx-mn) : d/(mx+mn);
+          if (mx===rn) h=((gn-bn)/d+(gn<bn?6:0))/6;
+          else if (mx===gn) h=((bn-rn)/d+2)/6;
+          else h=((rn-gn)/d+4)/6;
+        }
+        s = Math.min(1, s * 1.15);
+        if (s === 0) { r=g=b=Math.round(l*255); }
+        else {
+          var h2r = function(p,q,t){ if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<0.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p; };
+          var q2=l<0.5?l*(1+s):l+s-l*s, p2=2*l-q2;
+          r=Math.round(h2r(p2,q2,h+1/3)*255);
+          g=Math.round(h2r(p2,q2,h)*255);
+          b=Math.round(h2r(p2,q2,h-1/3)*255);
+        }
+        pixels[j]=r; pixels[j+1]=g; pixels[j+2]=b;
+      }
+      ctx.putImageData(data, 0, 0);
+      resolve(canvas.toDataURL('image/jpeg', 0.95));
+    };
+    img.onerror = function(){ resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
+
 function clearSuit(e) {
   e.stopPropagation();
+  window._garmentDataUrl = null;
   document.getElementById('suit-preview').style.display = 'none';
   document.getElementById('upload-empty').style.display = 'block';
   document.getElementById('suit-clear-btn').style.display = 'none';
   document.getElementById('suit-upload-zone').classList.remove('has-file');
   document.getElementById('suit-input').value = '';
+  var ind = document.getElementById('suit-process-indicator');
+  if (ind) ind.remove();
 }
 
+
+function shareOnWhatsApp(url, num) {
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isAndroid = /Android/.test(navigator.userAgent);
+
+  // Fetch image as blob then share as FILE to avoid WhatsApp compression
+  showToast('Preparing for WhatsApp...');
+  fetch(url).then(function(res){ return res.blob(); }).then(async function(blob) {
+    var fileName = 'drapely-photo-' + num + '.jpg';
+    var file = new File([blob], fileName, { type: 'image/jpeg' });
+
+    // Try Web Share API with file (Android Chrome 75+ and iOS Safari 15+)
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'Drapely AI Fashion Photo',
+        });
+        return;
+      } catch(e) {
+        if (e.name !== 'AbortError') console.log('Share failed:', e.message);
+      }
+    }
+
+    // Fallback: download the file first, then open WhatsApp with instruction
+    var blobUrl = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fileName;
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 3000);
+
+    // Show instruction toast
+    showToast('Photo downloaded! Open WhatsApp → + → Document → select this photo for full quality');
+  }).catch(function() {
+    // Last fallback: just open WhatsApp
+    window.open('https://wa.me/', '_blank');
+    showToast('Open WhatsApp and send photo as Document for best quality');
+  });
+}
+
+// Upload tips for better photos
+function showUploadTips() {
+  var existing = document.getElementById('upload-tips-modal');
+  if (existing) { existing.remove(); return; }
+
+  var modal = document.createElement('div');
+  modal.id = 'upload-tips-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
+
+  var card = document.createElement('div');
+  card.style.cssText = 'background:#fff;border-radius:16px;padding:20px;max-width:360px;width:100%;';
+  card.onclick = function(e){ e.stopPropagation(); };
+
+  card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+    '<div style="font-size:16px;font-weight:700;font-family:DM Sans,sans-serif;">📸 How to get best results</div>' +
+    '<button onclick="document.getElementById(\'upload-tips-modal\').remove()" style="background:#f5f5f5;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;">✕</button>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px;font-family:DM Sans,sans-serif;">' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:20px;flex-shrink:0;">✅</div><div><div style="font-size:13px;font-weight:600;">Bright lighting</div><div style="font-size:12px;color:#888;">Photo near a window or in daylight. Avoid dark rooms.</div></div></div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:20px;flex-shrink:0;">✅</div><div><div style="font-size:13px;font-weight:600;">Hang or lay flat</div><div style="font-size:12px;color:#888;">Hang suit on wall or lay flat on clean floor. No wrinkles.</div></div></div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:20px;flex-shrink:0;">✅</div><div><div style="font-size:13px;font-weight:600;">Remove plastic wrap</div><div style="font-size:12px;color:#888;">Remove packaging. Glare from plastic reduces quality.</div></div></div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:20px;flex-shrink:0;">✅</div><div><div style="font-size:13px;font-weight:600;">Full suit in frame</div><div style="font-size:12px;color:#888;">Include kurta, salwar and dupatta in one photo.</div></div></div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:20px;flex-shrink:0;">❌</div><div><div style="font-size:13px;font-weight:600;">Avoid dark backgrounds</div><div style="font-size:12px;color:#888;">White or light background gives the sharpest results.</div></div></div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:20px;flex-shrink:0;">❌</div><div><div style="font-size:13px;font-weight:600;">No multiple suits</div><div style="font-size:12px;color:#888;">One suit per photo. AI gets confused with multiple.</div></div></div>' +
+    '</div>' +
+    '<button onclick="document.getElementById(\'upload-tips-modal\').remove()" style="width:100%;margin-top:16px;padding:12px;background:#E91E63;color:#fff;border:none;border-radius:10px;font-family:DM Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Got it!</button>';
+
+  modal.appendChild(card);
+  document.body.appendChild(modal);
+}
 
 function loadCustomBackground(e) {
   var file = e.target.files[0];
@@ -1461,7 +1646,8 @@ async function startGenerate() {
   }, 1000);
 
   try {
-    var compressed = await compressImage(suitFile);
+    // Use pre-enhanced image if available, otherwise compress from file
+    var compressed = window._garmentDataUrl ? window._garmentDataUrl : await compressImage(suitFile);
     var count = getVarCount();
     var results = [];
 
