@@ -13,11 +13,11 @@ export default async function handler(req, res) {
 
   const models = [
     'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461108131.jpeg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_56_44%20AM.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_57_37%20AM.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2001_59_01%20AM.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/ChatGPT%20Image%20May%204,%202026,%2002_01_12%20AM.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel3.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel1.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel2.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel4.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel5.png',
   ];
 
   // ── MANNEQUIN IMAGES ──
