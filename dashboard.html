@@ -1646,8 +1646,28 @@ async function startGenerate() {
   }, 1000);
 
   try {
-    // Use pre-enhanced image if available, otherwise compress from file
-    var compressed = window._garmentDataUrl ? window._garmentDataUrl : await compressImage(suitFile);
+    // Use pre-enhanced image if available, compress it for API
+    var compressed;
+    if (window._garmentDataUrl) {
+      // Re-compress the enhanced image to API-safe size
+      compressed = await new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var MAX = 1024; // larger than before for tryon-max quality
+          var w = img.width, h = img.height;
+          if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+          else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = window._garmentDataUrl;
+      });
+    } else {
+      compressed = await compressImage(suitFile);
+    }
+    console.log('Compressed size:', Math.round(compressed.length / 1024), 'KB');
     var count = getVarCount();
     var results = [];
 
