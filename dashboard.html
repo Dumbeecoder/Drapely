@@ -1079,35 +1079,46 @@ function loadGalleryFromDB(userId) {
     .select('*')
     .eq('user_id', userId)
     .order('created_at', {ascending: false})
-    .limit(100)
+    .limit(200)
     .then(function(r) {
       if (r.error) return;
       var allData = r.data || [];
+
       var photos = allData.filter(function(i){
-        return i.media_type !== 'video' && !(i.image_url && i.image_url.includes('.mp4'));
+        return i.media_type !== 'video' &&
+               i.suit_type !== 'Video' &&
+               !(i.image_url && i.image_url.includes('.mp4'));
       });
       var videos = allData.filter(function(i){
-        return i.media_type === 'video' || (i.image_url && i.image_url.includes('.mp4'));
+        return i.media_type === 'video' ||
+               i.suit_type === 'Video' ||
+               (i.image_url && i.image_url.includes('.mp4'));
       });
+
+      // For gallery display, exclude Customized/Edited from grid
+      var displayPhotos = photos.filter(function(i){
+        return i.suit_type !== 'Edited' &&
+               !(i.collection_name && i.collection_name === 'Customized');
+      });
+
       galleryImages = [];
       videoGallery = [];
-      photos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
+      displayPhotos.forEach(function(item){ if(item.image_url) galleryImages.push(item.image_url); });
       videos.forEach(function(item){ if(item.image_url) videoGallery.push(item.image_url); });
 
-      // Count actual images using image_count field, not just rows
+      // Count ALL photos including customized (each row = 1 image shown)
       var totalImages = photos.reduce(function(sum, item){
-        return sum + (parseInt(item.image_count) || 1);
+        return sum + Math.max(1, parseInt(item.image_count) || 1);
       }, 0);
-      var totalVideos = videos.reduce(function(sum, item){
-        return sum + (parseInt(item.image_count) || 1);
-      }, 0);
+      // Videos: use image_count for credit cost tracking
+      var totalVideos = videos.length;
 
       var statShoots = document.getElementById('stat-shoots');
       var statImages = document.getElementById('stat-images');
       var statVideos = document.getElementById('stat-videos');
-      if (statShoots) statShoots.textContent = photos.length; // shoots = number of sessions
-      if (statImages) statImages.textContent = totalImages;   // images = sum of image_count
-      if (statVideos) statVideos.textContent = totalVideos;   // videos = sum of video count
+      if (statShoots) statShoots.textContent = displayPhotos.length; // sessions excl. customized
+      if (statImages) statImages.textContent = totalImages;           // all images incl. customized
+      if (statVideos) statVideos.textContent = totalVideos;           // video count
       renderGallery();
       renderVideoGallery();
   });
