@@ -155,9 +155,10 @@ export default async function handler(req, res) {
     }
 
     const requestBody = {
-      model_name: 'product-to-model',
+      model_name: 'tryon-max',
       inputs: {
         product_image: garmentUrl,
+        model_image: humanImg,  // required for tryon-max — preserves model identity/pose
         resolution: '4k',
         generation_mode: 'quality',
         output_format: 'jpeg',
@@ -165,17 +166,11 @@ export default async function handler(req, res) {
       }
     };
 
-    // Custom background
+    // Custom background — use prompt to describe scene since tryon-max doesn't support background_reference
     if (custom_bg && custom_bg.startsWith('data:')) {
-      requestBody.inputs.background_reference = custom_bg;
       const posePart = (finalPrompt.split(',').slice(1, 3).join(',').trim()) || 'standing straight, graceful pose';
       requestBody.inputs.prompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, photorealistic';
-      console.log('Using background_reference for custom bg');
-    }
-
-    // Use model image as image_prompt (inspiration) — valid parameter
-    if (humanImg && !custom_bg) {
-      requestBody.inputs.image_prompt = humanImg;
+      console.log('Custom bg — using prompt for scene description');
     }
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
