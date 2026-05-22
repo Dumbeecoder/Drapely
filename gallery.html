@@ -203,11 +203,34 @@ function loadGallery(userId) {
   sb.from('photoshoots').select('*').eq('user_id', userId).order('created_at', {ascending: false}).then(function(r) {
     if (r.error) return;
     var data = r.data || [];
+
+    // Exclude customized/edited entries — they don't cost credits and shouldn't count
+    data = data.filter(function(i){
+      return i.suit_type !== 'Edited' && i.suit_type !== 'Customized' &&
+             !(i.collection_name && i.collection_name === 'Customized');
+    });
+
     allPhotos = data.filter(function(i){ return i.media_type !== 'video' && i.suit_type !== 'Video'; });
     allVideos = data.filter(function(i){ return i.media_type === 'video' || i.suit_type === 'Video'; });
-    document.getElementById('total-shoots').textContent = allPhotos.length;
-    document.getElementById('total-images').textContent = allPhotos.length;
-    document.getElementById('total-videos').textContent = allVideos.length;
+
+    // Count actual images using image_count field
+    var totalImages = allPhotos.reduce(function(sum, i){
+      return sum + (parseInt(i.image_count) || 1);
+    }, 0);
+    var totalVideos = allVideos.reduce(function(sum, i){
+      return sum + (parseInt(i.image_count) || 1);
+    }, 0);
+
+    document.getElementById('total-shoots').textContent = allPhotos.length;  // sessions
+    document.getElementById('total-images').textContent = totalImages;        // actual images
+    document.getElementById('total-videos').textContent = totalVideos;        // actual videos
+
+    // Also update credits
+    sb.from('credits').select('balance').eq('user_id', userId).single().then(function(cr) {
+      var el = document.getElementById('total-credits');
+      if (el && cr.data) el.textContent = cr.data.balance;
+    });
+
     renderPhotos(allPhotos);
   });
 }
@@ -354,8 +377,17 @@ function closeViewer() { document.getElementById('viewer-modal').classList.remov
 
 function downloadImage(url, num) {
   if (isIOS) {
-    // iOS Safari: open directly → tap Share → Save to Photos
-    window.open(url, '_blank');
+    // Try Web Share API with file — shows "Save to Photos" on iOS
+    fetch(url).then(function(res){ return res.blob(); }).then(async function(blob) {
+      var file = new File([blob], 'drapely-photo-' + num + '.jpg', { type: 'image/jpeg' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: 'Drapely Photo' }); return; }
+        catch(e) { if (e.name === 'AbortError') return; }
+      }
+      // Fallback: open blob URL
+      var blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    }).catch(function(){ window.open(url, '_blank'); });
     return;
   }
   showToast('Downloading...');
