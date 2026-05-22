@@ -1012,11 +1012,10 @@ function deductCredit(count) {
 }
 
 function updateStats(count) {
-  // Immediately increment counters without waiting for DB
   var el1 = document.getElementById('stat-shoots');
   var el2 = document.getElementById('stat-images');
-  if (el1) el1.textContent = (parseInt(el1.textContent) || 0) + count;
-  if (el2) el2.textContent = (parseInt(el2.textContent) || 0) + count;
+  if (el1) el1.textContent = (parseInt(el1.textContent) || 0) + 1; // +1 shoot per generation
+  if (el2) el2.textContent = (parseInt(el2.textContent) || 0) + count; // +count images
 }
 
 function selectPack(amount, credits) {
@@ -1671,6 +1670,14 @@ function showRealResults(images) {
 
     actions.appendChild(dlBtn); actions.appendChild(vidBtn);
 
+    // WhatsApp share as document (no compression)
+    var waBtn = document.createElement('button');
+    waBtn.className = 'result-btn';
+    waBtn.style.cssText = 'background:#25D366;color:#fff;border-color:#25D366;font-size:10px;';
+    waBtn.textContent = '📎 WhatsApp';
+    waBtn.onclick = (function(u, n){ return function(){ shareOnWhatsApp(u, n); }; })(url, i+1);
+    actions.appendChild(waBtn);
+
     // Customize button — full width, prominent
     var cusBtn = document.createElement('button');
     cusBtn.style.cssText = 'width:100%;padding:9px;background:#fff0f5;color:#E91E63;border:1.5px solid rgba(233,30,99,0.3);border-radius:8px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:5px;';
@@ -1682,6 +1689,12 @@ function showRealResults(images) {
     grid.appendChild(item);
   });
   body.appendChild(grid);
+
+  // Quality tip banner
+  var tip = document.createElement('div');
+  tip.style.cssText = 'background:#fff8e1;border:1px solid #ffe082;border-radius:10px;padding:10px 14px;margin-top:8px;font-size:12px;color:#795548;font-family:DM Sans,sans-serif;line-height:1.5;';
+  tip.innerHTML = '📎 <strong>Tip:</strong> To share on WhatsApp without quality loss — use the <strong>WhatsApp</strong> button above, or send as a <strong>Document</strong> (not photo) in WhatsApp. Sending as photo compresses quality.';
+  body.appendChild(tip);
 
   var newBtn = document.createElement('button'); newBtn.className = 'new-shoot-btn';
   newBtn.textContent = '+ Start a new photoshoot'; newBtn.onclick = newShoot;
@@ -2649,6 +2662,10 @@ async function startVideoGenerate() {
         });
 
         deductVideoCredits(); // 2 credits for 5s, 4 for 10s
+
+        // Update video counter
+        var statVid = document.getElementById('stat-videos');
+        if (statVid) statVid.textContent = (parseInt(statVid.textContent) || 0) + 1;
 
         showToast('Your fashion video is ready!');
       } else {
