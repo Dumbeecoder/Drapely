@@ -204,26 +204,32 @@ function loadGallery(userId) {
     if (r.error) return;
     var data = r.data || [];
 
-    // Exclude customized/edited entries — they don't cost credits and shouldn't count
-    data = data.filter(function(i){
-      return i.suit_type !== 'Edited' && i.suit_type !== 'Customized' &&
+    var photos = data.filter(function(i){
+      return i.media_type !== 'video' &&
+             i.suit_type !== 'Video' &&
+             !(i.image_url && i.image_url.includes('.mp4'));
+    });
+    allVideos = data.filter(function(i){
+      return i.media_type === 'video' ||
+             i.suit_type === 'Video' ||
+             (i.image_url && i.image_url.includes('.mp4'));
+    });
+
+    // For display: exclude Customized/Edited from grid
+    allPhotos = photos.filter(function(i){
+      return i.suit_type !== 'Edited' &&
              !(i.collection_name && i.collection_name === 'Customized');
     });
 
-    allPhotos = data.filter(function(i){ return i.media_type !== 'video' && i.suit_type !== 'Video'; });
-    allVideos = data.filter(function(i){ return i.media_type === 'video' || i.suit_type === 'Video'; });
-
-    // Count actual images using image_count field
-    var totalImages = allPhotos.reduce(function(sum, i){
-      return sum + (parseInt(i.image_count) || 1);
+    // Count ALL photos including customized
+    var totalImages = photos.reduce(function(sum, i){
+      return sum + Math.max(1, parseInt(i.image_count) || 1);
     }, 0);
-    var totalVideos = allVideos.reduce(function(sum, i){
-      return sum + (parseInt(i.image_count) || 1);
-    }, 0);
+    var totalVideos = allVideos.length;
 
-    document.getElementById('total-shoots').textContent = allPhotos.length;  // sessions
-    document.getElementById('total-images').textContent = totalImages;        // actual images
-    document.getElementById('total-videos').textContent = totalVideos;        // actual videos
+    document.getElementById('total-shoots').textContent = allPhotos.length;  // sessions excl. customized
+    document.getElementById('total-images').textContent = totalImages;        // all images incl. customized
+    document.getElementById('total-videos').textContent = totalVideos;        // video count
 
     // Also update credits
     sb.from('credits').select('balance').eq('user_id', userId).single().then(function(cr) {
