@@ -248,7 +248,6 @@
     <a href="dashboard.html" class="nav-item active">✨ New photoshoot</a>
     <a href="video.html" class="nav-item">🎬 New video</a>
     <a href="bulk.html" class="nav-item">⚡ Bulk Studio</a>
-    <a href="catalogue.html" class="nav-item">📋 Catalogue Index</a>
     <a href="gallery.html" class="nav-item">🖼️ My gallery</a>
     <a href="backgrounds.html" class="nav-item">🌄 Backgrounds</a>
     <a href="poster.html" class="nav-item">🎨 Poster Builder</a>
@@ -1230,9 +1229,10 @@ function autoEnhanceGarment(dataUrl) {
     var img = new Image();
     img.onload = function() {
       var canvas = document.createElement('canvas');
-      // Upscale small images to at least 1200px wide
-      var scale = Math.max(1, 1200 / img.width);
-      if (scale > 1 && scale < 3) {
+      // Upscale small images — phone photos often 800-1200px
+      // Upscale to at least 1800px for better FASHN input quality
+      var scale = Math.max(1, 1800 / Math.max(img.width, img.height));
+      if (scale > 1 && scale < 4) {
         canvas.width = Math.round(img.width * scale);
         canvas.height = Math.round(img.height * scale);
       } else {
@@ -1662,17 +1662,18 @@ async function startGenerate() {
     var compressed;
     if (window._garmentDataUrl) {
       // Re-compress the enhanced image to API-safe size
+      // Use 1280px for better pattern/print detail preservation
       compressed = await new Promise(function(resolve) {
         var img = new Image();
         img.onload = function() {
           var canvas = document.createElement('canvas');
-          var MAX = 1024; // larger than before for tryon-max quality
+          var MAX = 1280;
           var w = img.width, h = img.height;
           if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
           else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.82));
+          resolve(canvas.toDataURL('image/jpeg', 0.88)); // higher quality
         };
         img.src = window._garmentDataUrl;
       });
