@@ -501,7 +501,7 @@
           <input type="hidden" id="photo-prompt-val" value="Rajasthani sandstone haveli corridor with pink bougainvillea flowers cascading down carved stone walls, bright natural daylight, airy and vibrant atmosphere" data-bg="Rajasthani sandstone haveli corridor with pink bougainvillea flowers cascading down carved stone walls, bright natural daylight, airy and vibrant atmosphere" />
 
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:0.75rem;">
-            <div class="prompt-preset selected" onclick="selectScene(this,'Rajasthani sandstone haveli corridor with pink bougainvillea flowers cascading down carved stone walls, bright natural daylight, airy and vibrant atmosphere, professional Indian fashion photography, 4K ultra detail')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌸</div><div style="font-size:10px;font-weight:500;">Floral Haveli</div></div>
+            <div class="prompt-preset selected" onclick="selectScene(this,'Rajasthani sandstone haveli corridor with pink bougainvillea flowers cascading down carved stone walls, bright natural daylight, airy and vibrant atmosphere, bright vivid lighting, professional Indian fashion photography, 4K ultra detail')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌸</div><div style="font-size:10px;font-weight:500;">Floral Haveli</div></div>
             <div class="prompt-preset" onclick="selectScene(this,'bright sunlit Rajasthani sandstone palace corridor with intricate carved arches, warm golden daylight streaming through jali windows, fresh pink and white flowers, vibrant Indian fashion editorial, 4K ultra detail')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🏛️</div><div style="font-size:10px;font-weight:500;">Palace Corridor</div></div>
             <div class="prompt-preset" onclick="selectScene(this,'lush blooming garden with bright pink roses and white jasmine, soft natural daylight, dreamy bokeh background, fresh airy atmosphere, Indian bridal fashion editorial, 4K ultra detail')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🌹</div><div style="font-size:10px;font-weight:500;">Rose Garden</div></div>
             <div class="prompt-preset" onclick="selectScene(this,'bright white marble Taj Mahal background at soft morning light, iconic Indian heritage monument, fresh flowers in foreground, clean bright atmosphere, luxury editorial fashion photography, 4K')" style="padding:8px 4px;text-align:center;"><div style="font-size:18px;margin-bottom:2px;">🕌</div><div style="font-size:10px;font-weight:500;">Taj Mahal</div></div>
@@ -873,7 +873,7 @@ function buildPhotoPrompt() {
   if (document.getElementById('enh-golden') && document.getElementById('enh-golden').checked) enhancements.push('warm golden hour glow');
   if (enhancements.length > 0) parts.push(enhancements.join(', '));
 
-  parts.push('professional Indian fashion photography, 4K ultra-high quality, sharp details, full outfit visible, photorealistic');
+  parts.push('bright vivid lighting, overexposed bright airy look, professional Indian fashion photography, 4K ultra-high quality, sharp details, full outfit visible, photorealistic');
 
   var finalPrompt = parts.join(', ');
   console.log('Final photo prompt:', finalPrompt);
@@ -1807,17 +1807,17 @@ function enhancePhoto(imageUrl) {
       for (var i = 0; i < pixels.length; i += 4) {
         var r = pixels[i], g = pixels[i+1], b = pixels[i+2];
 
-        // 1. Brightness +8
-        r = Math.min(255, r + 8);
-        g = Math.min(255, g + 8);
-        b = Math.min(255, b + 8);
+        // 1. Brightness +20 (was +8)
+        r = Math.min(255, r + 20);
+        g = Math.min(255, g + 20);
+        b = Math.min(255, b + 20);
 
-        // 2. Contrast boost (factor 1.08)
-        r = Math.min(255, Math.max(0, (r - 128) * 1.08 + 128));
-        g = Math.min(255, Math.max(0, (g - 128) * 1.08 + 128));
-        b = Math.min(255, Math.max(0, (b - 128) * 1.08 + 128));
+        // 2. Contrast boost (factor 1.12 was 1.08)
+        r = Math.min(255, Math.max(0, (r - 128) * 1.12 + 128));
+        g = Math.min(255, Math.max(0, (g - 128) * 1.12 + 128));
+        b = Math.min(255, Math.max(0, (b - 128) * 1.12 + 128));
 
-        // 3. Saturation boost — convert to HSL, boost S by 12%
+        // 3. Saturation boost — boost S by 18% (was 12%)
         var rn = r/255, gn = g/255, bn = b/255;
         var max = Math.max(rn,gn,bn), min = Math.min(rn,gn,bn);
         var l = (max+min)/2, s = 0, h = 0;
@@ -1828,7 +1828,7 @@ function enhancePhoto(imageUrl) {
           else if(max===gn) h = ((bn-rn)/d + 2)/6;
           else h = ((rn-gn)/d + 4)/6;
         }
-        s = Math.min(1, s * 1.12);
+        s = Math.min(1, s * 1.18);
         // HSL back to RGB
         if(s === 0){ r=g=b=Math.round(l*255); }
         else {
@@ -2357,17 +2357,18 @@ function selectLogoPos(btn, pos) {
 }
 
 function compressForImgur(dataUrl) {
+  // Keep high quality for Supabase storage — don't downscale 4K images
   return new Promise(function(resolve) {
     var img = new Image();
     img.onload = function() {
       var canvas = document.createElement('canvas');
-      var MAX = 800; // max 800px for Imgur
+      var MAX = 4096; // preserve up to 4K
       var w = img.width, h = img.height;
       if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
       if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.75));
+      resolve(canvas.toDataURL('image/jpeg', 0.95)); // high quality
     };
     img.onerror = function() { resolve(dataUrl); };
     img.src = dataUrl;
@@ -2457,11 +2458,14 @@ function tryDirectCanvas(photoSrc, logoDataUrl, position) {
           if (position === 'bottom-left')   { x=pad; y=H-lh-pad; }
           if (position === 'bottom-center') { x=Math.round((W-lw)/2); y=H-lh-pad; }
 
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
           ctx.globalAlpha = 1.0;
           ctx.drawImage(logo, x, y, lw, lh);
           console.log('Drew logo at', x, y, 'size', lw, 'x', lh, 'on canvas', W, 'x', H);
 
-          var result = canvas.toDataURL('image/jpeg', 0.92);
+          // Use high quality JPEG to preserve 4K image detail
+          var result = canvas.toDataURL('image/jpeg', 0.97);
           if (result && result.length > 5000) {
             resolve(result);
           } else {
