@@ -847,13 +847,22 @@ function buildPhotoPrompt() {
     'pakistani':  'beautiful fair-skinned Indian woman wearing a heavy embroidered Pakistani-style straight-cut suit with a straight A-line kurta falling to calf length, heavy gold zari embroidery and cutwork border at hem and sleeves, slim cigarette-cut salwar with embroidery at ankle, heavily embroidered dupatta with scalloped border draped over head and shoulder, full length bridal ethnic wear',
     'georgette':  'beautiful fair-skinned Indian woman wearing an elegant georgette embroidered suit with a sheer flowing georgette kurta heavily embroidered with sequins and zari work, matching embroidered bottom and georgette dupatta with border, full length party and wedding wear, sheer fabric with golden embroidery details',
   };
-  // Mannequin mode — replace "Indian woman" with mannequin description
+  // Garment description — adapt for kid / mannequin mode
   var garmentDesc = garmentDescMap[selectedGarmentType] || garmentDescMap['salwar'];
-  if (selectedModelIndex === 98) {
+  var isKidSelected = String(selectedModelIndex).startsWith('k');
+  if (isKidSelected) {
+    // Kid model — replace adult woman with girl
+    garmentDesc = garmentDesc
+      .replace('beautiful fair-skinned Indian woman wearing', 'beautiful fair-skinned Indian girl wearing')
+      .replace('Indian woman wearing', 'Indian girl wearing')
+      .replace('Indian woman in', 'Indian girl in')
+      .replace('bridal lehenga', 'festive lehenga')
+      .replace('bridal ethnic wear', 'festive ethnic wear');
+  } else if (selectedModelIndex === 98) {
+    // Mannequin mode
     garmentDesc = garmentDesc
       .replace('Indian woman wearing', 'a realistic white dress form mannequin wearing')
       .replace('Indian woman in', 'a realistic white dress form mannequin in');
-    // For mannequin, override pose to static display
     selectedPosePrompt = selectedPosePrompt || 'standing upright, static display pose, full body visible, full length';
   }
 
