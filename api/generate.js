@@ -155,25 +155,15 @@ export default async function handler(req, res) {
     }
 
     const requestBody = {
-      model_name: 'product-to-model',
+      model_name: 'tryon-max',
       inputs: {
         product_image: garmentUrl,
-        image_prompt: humanImg,
-        resolution: '4k',
-        generation_mode: 'quality',
+        model_image: humanImg,
         output_format: 'jpeg',
-        prompt: finalPrompt,
       }
     };
 
-    // Custom background
-    if (custom_bg && custom_bg.startsWith('data:')) {
-      requestBody.inputs.background_reference = custom_bg;
-      const posePart = (finalPrompt.split(',').slice(1,3).join(',').trim()) || 'standing straight, graceful pose';
-      requestBody.inputs.prompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, photorealistic';
-    }
-
-    console.log('Using product-to-model 4K quality');
+    console.log('Using tryon-max with model:', humanImg.substring(0, 60));
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
