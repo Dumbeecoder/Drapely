@@ -1895,7 +1895,7 @@ async function enhanceAllPhotos(urls) {
   return enhanced;
 }
 
-function showRealResults(images) {
+function showRealResults(images, applyLogoOverlay) {
   var body = document.getElementById('results-body');
   if (!body) return;
   body.innerHTML = '';
@@ -1906,9 +1906,31 @@ function showRealResults(images) {
   grid.className = 'results-grid';
   images.forEach(function(url, i) {
     var item = document.createElement('div'); item.className = 'result-item';
+
+    // Image wrapper for CSS logo overlay
+    var imgWrap = document.createElement('div');
+    imgWrap.style.cssText = 'position:relative;width:100%;border-radius:10px 10px 0 0;overflow:hidden;';
+
     var img = document.createElement('img');
     img.src = url;
-    img.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;border-radius:10px 10px 0 0;';
+    img.style.cssText = 'width:100%;height:200px;object-fit:cover;display:block;';
+    imgWrap.appendChild(img);
+
+    // CSS logo overlay — zero quality loss, no re-encoding
+    if (applyLogoOverlay && logoDataUrl) {
+      var logoEl = document.createElement('img');
+      logoEl.src = logoDataUrl;
+      var pos = logoPosition || 'top-center';
+      var ps = 'position:absolute;width:22%;max-width:110px;pointer-events:none;';
+      if (pos === 'top-left')        ps += 'top:5%;left:4%;';
+      else if (pos === 'top-center') ps += 'top:5%;left:50%;transform:translateX(-50%);';
+      else if (pos === 'top-right')  ps += 'top:5%;right:4%;';
+      else if (pos === 'bottom-left')   ps += 'bottom:5%;left:4%;';
+      else if (pos === 'bottom-center') ps += 'bottom:5%;left:50%;transform:translateX(-50%);';
+      else if (pos === 'bottom-right')  ps += 'bottom:5%;right:4%;';
+      logoEl.style.cssText = ps;
+      imgWrap.appendChild(logoEl);
+    }
 
     var actions = document.createElement('div'); actions.className = 'result-actions';
 
@@ -1939,7 +1961,7 @@ function showRealResults(images) {
     cusBtn.textContent = '🎨 Customize & Save';
     cusBtn.onclick = (function(u){ return function(){ openCustomizeModal(u); }; })(url);
 
-    item.appendChild(img); item.appendChild(actions);
+    item.appendChild(imgWrap); item.appendChild(actions);
     var cw = document.createElement('div'); cw.appendChild(cusBtn); item.appendChild(cw);
     grid.appendChild(item);
   });
@@ -2341,6 +2363,41 @@ function downloadImg(url, num) {
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (isIOS) { window.open(url, '_blank'); return; }
   showToast('Downloading image ' + num + '...');
+
+  // If logo uploaded — bake it in losslessly at download time
+  if (logoDataUrl) {
+    var photo = new Image(); photo.crossOrigin = 'anonymous';
+    var logo = new Image();
+    logo.onload = function() {
+      photo.onload = function() {
+        var canvas = document.createElement('canvas');
+        canvas.width = photo.naturalWidth; canvas.height = photo.naturalHeight;
+        var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(photo, 0, 0);
+        var lw = Math.round(canvas.width * 0.22);
+        var lh = Math.round(logo.naturalHeight * (lw / logo.naturalWidth));
+        var pad = Math.round(canvas.width * 0.03);
+        var pos = logoPosition || 'top-center';
+        var x = Math.round((canvas.width - lw) / 2), y = pad;
+        if (pos === 'top-left')         { x = pad; y = pad; }
+        else if (pos === 'top-right')   { x = canvas.width - lw - pad; y = pad; }
+        else if (pos === 'bottom-left') { x = pad; y = canvas.height - lh - pad; }
+        else if (pos === 'bottom-center') { x = Math.round((canvas.width - lw) / 2); y = canvas.height - lh - pad; }
+        else if (pos === 'bottom-right')  { x = canvas.width - lw - pad; y = canvas.height - lh - pad; }
+        ctx.drawImage(logo, x, y, lw, lh);
+        var a = document.createElement('a');
+        a.download = 'drapely-photo-' + num + '.jpg';
+        a.href = canvas.toDataURL('image/jpeg', 0.97);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      };
+      photo.src = url;
+    };
+    logo.src = logoDataUrl;
+    return;
+  }
+
+  // No logo — download original directly
   fetch(url).then(function(res){ return res.blob(); }).then(function(blob){
     var blobUrl = URL.createObjectURL(blob);
     var a = document.createElement('a'); a.href = blobUrl; a.download = 'drapely-photo-' + num + '.jpg';
