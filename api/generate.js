@@ -9,16 +9,24 @@ export default async function handler(req, res) {
   if (!garment_img) return res.status(400).json({ error: 'Missing image' });
 
   const modelIdx = parseInt(model_index) || 0;
-  console.log('Model index:', modelIdx, 'Garment type:', garment_type);
+  const modelIdxStr = String(model_index || '0');
+  console.log('Model index:', modelIdxStr, 'Garment type:', garment_type);
 
   const models = [
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel3.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel1.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel2.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel4.png',
-    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel5.png',
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/fashn-export-1777461285245.jpeg', // 0 Priya
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel3.png',  // 1 Anjali
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel1.png',  // 2 Kavya
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel2.png',  // 3 Simran
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel4.png',  // 4 Meera
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/newmodel5.png',  // 5 Naina
   ];
+
+  // ── KID MODELS ──
+  const kidModels = [
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-1.png', // k0 Riya
+    'https://oqmoneclnirnhqpcdeqy.supabase.co/storage/v1/object/public/models/kid-girl-2.png', // k1 Sneha
+  ];
+  const isKidModel = modelIdxStr.startsWith('k');
 
   // ── MANNEQUIN IMAGES ──
   // Upload these 2 mannequin images to your Supabase storage bucket "models" folder
@@ -79,9 +87,9 @@ export default async function handler(req, res) {
       console.log('Mannequin prompt:', mannequinPrompt);
 
       const mannequinBody = {
-        model_name: 'product-to-model',
+        model_name: 'tryon-max',
         inputs: {
-          product_image: garmentUrl,
+          model_image: humanImg,
           model_image: mannequinModels[0],
           resolution: '1k',
           generation_mode: 'balanced',
@@ -115,6 +123,7 @@ export default async function handler(req, res) {
     // ── HUMAN MODEL MODE ──
     let humanImg;
     if (custom_model && custom_model.startsWith('data:')) {
+      // Custom uploaded model (adult custom or custom kid)
       const customBase64 = custom_model.replace(/^data:image\/\w+;base64,/, '');
       const customImgurRes = await fetch('https://api.imgur.com/3/image', {
         method: 'POST',
@@ -123,9 +132,15 @@ export default async function handler(req, res) {
       });
       const customImgurData = await customImgurRes.json();
       humanImg = customImgurData.success ? customImgurData.data.link : models[0];
+    } else if (isKidModel) {
+      // Kid preset models: k0 = Riya, k1 = Sneha
+      const kidIdx = parseInt(modelIdxStr.replace('k', '')) || 0;
+      humanImg = kidModels[kidIdx] || kidModels[0];
+      console.log('Using kid model:', modelIdxStr, humanImg);
     } else {
+      // Adult preset models: 0–5
       humanImg = models[modelIdx] || models[0];
-      console.log('Using model:', modelIdx, humanImg);
+      console.log('Using adult model:', modelIdx, humanImg);
     }
 
     // All 14 garment type descriptions
@@ -157,13 +172,23 @@ export default async function handler(req, res) {
     const requestBody = {
       model_name: 'tryon-max',
       inputs: {
+        model_image: humanImg,       // ✅ correct field for tryon-max
         product_image: garmentUrl,
-        model_image: humanImg,
+        resolution: '4k',
+        generation_mode: 'quality',
         output_format: 'jpeg',
+        prompt: finalPrompt,         // ✅ tryon-max DOES use prompt for scene/background
       }
     };
 
-    console.log('Using tryon-max with model:', humanImg.substring(0, 60));
+    // Custom background
+    if (custom_bg && custom_bg.startsWith('data:')) {
+      requestBody.inputs.background_reference = custom_bg;
+      const posePart = (finalPrompt.split(',').slice(1,3).join(',').trim()) || 'standing straight, graceful pose';
+      requestBody.inputs.prompt = garmentDesc + ', ' + posePart + ', professional Indian fashion photography, photorealistic';
+    }
+
+    console.log('Using tryon-max 4K quality, model:', humanImg);
 
     const response = await fetch('https://api.fashn.ai/v1/run', {
       method: 'POST',
