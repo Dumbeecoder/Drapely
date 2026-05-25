@@ -1750,37 +1750,26 @@ async function startGenerate() {
       if (results.length > 0) {
         updateStats(results.length);
         // Composite onto custom background if uploaded
-        compositeOnBackground(results).then(function(composited) {
-        overlayLogoOnImages(composited).then(async function(finalImages) {
-          var urlsToSave = [];
-          for (var fi = 0; fi < finalImages.length; fi++) {
-            var fImg = finalImages[fi];
-            if (fImg && fImg.startsWith('data:')) {
-              var compressedLogo = await compressForImgur(fImg);
-              var storedUrl = await uploadLogoedImageToStorage(compressedLogo);
-              urlsToSave.push(storedUrl || composited[fi]);
-            } else {
-              urlsToSave.push(composited[fi]);
-            }
-          }
+        compositeOnBackground(results).then(async function(composited) {
+          // Step 1: Save clean images to storage (no logo baked in)
+          var urlsToSave = composited;
           addToGallery(urlsToSave, collectionName);
-          var enhancedUrls = await enhanceAllPhotos(urlsToSave);
-          showRealResults(enhancedUrls);
-          deductCredit(urlsToSave.length); // deduct ONLY after confirmed results
+          deductCredit(urlsToSave.length);
+
+          // Step 2: ESRGAN upscale (runs in background, shows progress)
+          showToast('✨ Upscaling for maximum quality...');
+          progressLabel.textContent = 'Upscaling with AI...';
+          var esrganUrls = await esrganAllPhotos(urlsToSave);
+
+          // Step 3: Brightness/contrast/saturation post-enhancement
+          var enhancedUrls = await enhanceAllPhotos(esrganUrls);
+
+          // Step 4: Show results with CSS logo overlay
+          showRealResults(enhancedUrls, true);
           releaseWakeLock();
           resetGenBtn();
           showToast('Photoshoot ready! Download your images.');
           goStep(0);
-        }).catch(async function() {
-          addToGallery(composited, collectionName);
-          var enhancedComposited = await enhanceAllPhotos(composited);
-          showRealResults(enhancedComposited);
-          deductCredit(composited.length); // deduct ONLY after confirmed results
-          releaseWakeLock();
-          resetGenBtn();
-          showToast('Photoshoot ready! Download your images.');
-          goStep(0);
-        });
         });
       } else {
         resetGenBtn();
@@ -1796,6 +1785,36 @@ async function startGenerate() {
     resetGenBtn();
     showToast('Error: ' + err.message);
   }
+}
+
+// ── ESRGAN upscale via fal.ai ──
+async function esrganUpscale(imageUrl) {
+  try {
+    const res = await fetch('/api/esrgan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: imageUrl })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.enhanced_url || null;
+  } catch(e) {
+    console.log('ESRGAN fetch error:', e.message);
+    return null;
+  }
+}
+
+async function esrganAllPhotos(urls) {
+  var enhanced = [];
+  for (var i = 0; i < urls.length; i++) {
+    try {
+      var upscaled = await esrganUpscale(urls[i]);
+      enhanced.push(upscaled || urls[i]); // fallback to original if ESRGAN fails
+    } catch(e) {
+      enhanced.push(urls[i]);
+    }
+  }
+  return enhanced;
 }
 
 // Auto-enhance photo — brightness, contrast, saturation boost to match catalogue quality
