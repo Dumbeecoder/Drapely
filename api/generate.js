@@ -172,7 +172,7 @@ export default async function handler(req, res) {
     const requestBody = {
       model_name: 'product-to-model',
       inputs: {
-        image_prompt: humanImg,      // product-to-model uses image_prompt for model reference
+        model_image: humanImg,      // product-to-model uses model_image for model reference
         product_image: garmentUrl,
         resolution: '4k',
         generation_mode: 'quality',
