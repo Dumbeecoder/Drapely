@@ -1751,25 +1751,33 @@ async function startGenerate() {
         updateStats(results.length);
         // Composite onto custom background if uploaded
         compositeOnBackground(results).then(async function(composited) {
-          // Step 1: Save clean images to storage (no logo baked in)
+          // Step 1: Save clean images to storage
           var urlsToSave = composited;
           addToGallery(urlsToSave, collectionName);
           deductCredit(urlsToSave.length);
 
-          // Step 2: ESRGAN upscale (runs in background, shows progress)
-          showToast('✨ Upscaling for maximum quality...');
-          progressLabel.textContent = 'Upscaling with AI...';
-          var esrganUrls = await esrganAllPhotos(urlsToSave);
-
-          // Step 3: Brightness/contrast/saturation post-enhancement
-          var enhancedUrls = await enhanceAllPhotos(esrganUrls);
-
-          // Step 4: Show results with CSS logo overlay
+          // Step 2: Show results IMMEDIATELY with basic enhancement (don't block on ESRGAN)
+          var enhancedUrls = await enhanceAllPhotos(urlsToSave);
           showRealResults(enhancedUrls, true);
           releaseWakeLock();
           resetGenBtn();
-          showToast('Photoshoot ready! Download your images.');
+          showToast('Photoshoot ready! Upscaling in background...');
           goStep(0);
+
+          // Step 3: ESRGAN upscale in background — update results when done
+          try {
+            var esrganUrls = await esrganAllPhotos(urlsToSave);
+            var finalEnhanced = await enhanceAllPhotos(esrganUrls);
+            // Silently update the displayed images with sharper versions
+            var imgs = document.querySelectorAll('.result-item img');
+            finalEnhanced.forEach(function(url, i) {
+              if (imgs[i] && url) imgs[i].src = url;
+            });
+            showToast('✨ Images sharpened with AI upscaling!');
+          } catch(e) {
+            console.log('ESRGAN background failed:', e.message);
+            // No error shown to user — they already have the enhanced image
+          }
         });
       } else {
         resetGenBtn();
